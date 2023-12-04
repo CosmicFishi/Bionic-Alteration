@@ -1,0 +1,23 @@
+{
+    "id":"pigeonpun_bionicalteration", # For the convenience of troubleshooters, include your name and the mod name, not just an acronym.
+	"name":"Bionic Alteration", # Displayed to the player
+	"author":"PigeonPun",
+    "utility":"false",
+	"version":"0.0.1",
+	"description":"Modify and fight against foe with bionics",
+    "gameVersion": "0.96a-RC10", 
+  	"jars":["jars/bionicalteration.jar"],
+  	"modPlugin":"pigeonpun.bionicalteration.plugin.bionicalterationplugin",
+	  	"dependencies": [
+        {
+            "id": "lw_lazylib",
+            "name": "LazyLib",
+            #"version": "2.7b"
+        },
+        {
+            "id": "MagicLib",
+            "name": "MagicLib",
+            #"version": "0.34"
+        },
+    ],
+}
