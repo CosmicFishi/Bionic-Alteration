@@ -5,12 +5,12 @@ import com.fs.starfarer.api.campaign.CustomUIPanelPlugin;
 import com.fs.starfarer.api.campaign.CustomVisualDialogDelegate;
 import com.fs.starfarer.api.campaign.InteractionDialogAPI;
 import com.fs.starfarer.api.characters.OfficerDataAPI;
+import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
+import com.fs.starfarer.api.graphics.SpriteAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
-import com.fs.starfarer.api.ui.ButtonAPI;
-import com.fs.starfarer.api.ui.CustomPanelAPI;
-import com.fs.starfarer.api.ui.PositionAPI;
-import com.fs.starfarer.api.ui.TooltipMakerAPI;
+import com.fs.starfarer.api.ui.*;
+import com.fs.starfarer.combat.P;
 import org.apache.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -26,7 +26,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
     static Logger log = Global.getLogger(ba_uiplugin.class);
     protected CustomVisualDialogDelegate.DialogCallbacks callbacks;
     protected InteractionDialogAPI dialog;
-    protected CustomPanelAPI containerPanel;
+    protected CustomPanelAPI containerPanel; //Created panel from ba_deligate.java
     protected TooltipMakerAPI mainTooltip;
     int dW, dH, pW, pH;
     public static final float MAIN_CONTAINER_PADDING = 150f;
@@ -35,10 +35,15 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
     List<ButtonAPI> buttons = new ArrayList<>();
     HashMap<ButtonAPI, String> buttonMap = new HashMap<>();
     List<ba_component> listComponents = new ArrayList<>();
+    List<SpriteAPI> listImgs = new ArrayList<>();
     public static final String OVERVIEW = "OVERVIEW", DETAILS = "DETAILS";
+    public enum KEYS {
+        IMG,
+        TITLE,
+        PARA
+    }
     HashMap<String, ba_component> tabMap = new HashMap<>();
     String currentTabId = OVERVIEW;
-    public static final float sidePanelWidth = 0.3f;
     public static ba_uiplugin createDefault() {
         return new ba_uiplugin();
     }
@@ -86,9 +91,8 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             buttonMap.clear();
 //            listComponents.clear();
             for (ba_component component: listComponents) {
-                if(component.tooltip != null) {
-                    component.panel.removeComponent(component.tooltip);
-                }
+                component.tooltipMap.values().clear();
+                component.tooltipListMap.values().clear();
             }
             listComponents.clear();
             log.info("reseting");
@@ -104,33 +108,80 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         displayDetails();
     }
     protected void displayOverview() {
-        ba_component overviewContainer = new ba_component(containerPanel, 100f, pH, false, 0, 0);
+        String mainTooltipKey = "MAIN_TOOLTIP";
+        ba_component overviewContainer = new ba_component(containerPanel, pW, pH, MAIN_CONTAINER_PADDING/2, MAIN_CONTAINER_PADDING/2);
+        //important to set the container tooltip to have scroll enable if you want scroll
+        //Next important is to have panel.addUI at the bottom of the code if you have scroll enabled, or the scroll wont work
+        TooltipMakerAPI overviewTooltipContainer = overviewContainer.createTooltip(mainTooltipKey, pW, pH, true, 0, 0, false);
         tabMap.put(OVERVIEW, overviewContainer);
         overviewContainer.unfocusComponent();
-        overviewContainer.tooltip.addPara("test overview", 0);
-        ButtonAPI button = overviewContainer.tooltip.addButton("switch details", null,200f, 100f,0f);
-        buttons.add(button);
-        buttonMap.put(button, "tab:"+ DETAILS);
+//        overviewContainer.getTooltip(mainTooltipKey).addPara("test overview", 0);
+//        ButtonAPI button = overviewContainer.getTooltip(mainTooltipKey).addButton("switch details", null,200f, 100f,0f);
+//        buttons.add(button);
+//        buttonMap.put(button, "tab:"+ DETAILS);
+        int i = 0;
+        int xStart = 0;
+        int yStart = 10;
+        int imageH = 100;
+        int imageW = 100;
+        int ySpacer = 10;
+        List<ba_component> subComponentPersonList = new ArrayList<>();
+        for (PersonAPI member: getListPerson()) {
+            float personW = pW - 10;
+            float personH = imageH;
+            float currentStartX = xStart;
+            float currentStartY = yStart+(ySpacer*i);
+            String spriteName = member.getPortraitSprite();
+            listImgs.add(Global.getSettings().getSprite(spriteName));
+            String defaultPersonTooltipContainerKey = "PERSON_TOOLTIP_CONTAINER";
+            //--------person container
+            ba_component personDisplayContainer = new ba_component(overviewContainer.mainPanel, personW, personH,0,0,false);
+            personDisplayContainer.mainPanel.getPosition().inTL(0,0);
+            subComponentPersonList.add(personDisplayContainer);
+                //attach to have the main tooltip scroll effect this component's panel
+            overviewContainer.attachExistingPanel(mainTooltipKey, personDisplayContainer);
+                //Default person container tooltip
+            TooltipMakerAPI personDisplayContainerTooltip = personDisplayContainer.createTooltip(defaultPersonTooltipContainerKey, personW, personH, false, 0,0);
+            personDisplayContainerTooltip.getPosition().inTL(currentStartX,currentStartY);
+                //border
+            UIComponentAPI border = personDisplayContainerTooltip.createRect(Color.red, 1);
+            border.getPosition().setSize(personW, personH);
+            personDisplayContainer.mainPanel.addComponent(border).setLocation(0,0).inTL(currentStartX, currentStartY);
 
-        List<OfficerDataAPI> listPlayerMember = Global.getSector().getPlayerFleet().getFleetData().getOfficersCopy();
-        for (OfficerDataAPI member: listPlayerMember) {
-            log.info(member.getPerson().isDefault());
+            //---------Name
+            TooltipMakerAPI personNameTooltip = personDisplayContainer.createTooltip("PERSON_NAME", pW - imageW - 100, 20f, false, imageW, 0);
+            personNameTooltip.getPosition().inTL(currentStartX + imageW, currentStartY);
+            personNameTooltip.addPara(member.getName().getFullName(), 5);
+            //--------image
+            TooltipMakerAPI personImageTooltip = personDisplayContainer.createTooltip("PERSON_IMAGE", imageW, imageH, false, 0, 0);
+            personImageTooltip.getPosition().inTL(currentStartX, currentStartY);
+            personImageTooltip.addImage(spriteName, imageW, imageH, 0);
+            //--------Skill panels
+//
+            //add new skill
+//            member.getPerson().getFleetCommanderStats().sets
+            i++;
         }
+        overviewContainer.subComponentListMap.put("SUB_PERSON_LIST", subComponentPersonList);
+
+        //do the adding late so the scroll work (thanks Lukas04)
+        overviewContainer.mainPanel.addUIElement(overviewTooltipContainer);
+//        overviewContainer.subComponentListMap.put("SUB_IMG_LIST", subComponentImgList);
     }
     protected void displayDetails() {
-        ba_component detailContainer = new ba_component(containerPanel, 100f, pH, false, 0, 0);
-        tabMap.put(DETAILS, detailContainer);
-        detailContainer.unfocusComponent();
-        detailContainer.tooltip.addPara("test details", 0);
-        ButtonAPI button = detailContainer.tooltip.addButton("switch overview", null,200f, 100f,0f);
-        buttons.add(button);
-        buttonMap.put(button, "tab:"+ OVERVIEW);
+//        ba_component detailContainer = new ba_component(containerPanel, 100f, pH, false, 0, 0);
+//        tabMap.put(DETAILS, detailContainer);
+//        detailContainer.unfocusComponent();
+//        detailContainer.tooltip.addPara("test details", 0);
+//        ButtonAPI button = detailContainer.tooltip.addButton("switch overview", null,200f, 100f,0f);
+//        buttons.add(button);
+//        buttonMap.put(button, "tab:"+ OVERVIEW);
     }
     protected void focusContent(String focusTabId) {
         if(focusTabId == "") {
             //go to default if empty
             ba_component focusTab = tabMap.get(this.currentTabId);
-            focusTab.panel.getPosition().inTL(0, 0);
+            focusTab.mainPanel.getPosition().inTL(0, 0);
         } else {
             String previousTabId = this.currentTabId;
             this.currentTabId = focusTabId;
@@ -139,11 +190,20 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
 
             //move the previous tab out
             ba_component previousTab = tabMap.get(previousTabId);
-            previousTab.panel.getPosition().inTL(dW,0);
+            previousTab.mainPanel.getPosition().inTL(dW,0);
             //move the focus tab in
             ba_component focusTab = tabMap.get(currentTabId);
-            focusTab.panel.getPosition().inTL(0, 0);
+            focusTab.mainPanel.getPosition().inTL(0, 0);
         }
+    }
+    public List<PersonAPI> getListPerson() {
+        List<PersonAPI> listPerson = new ArrayList<>();
+        List<OfficerDataAPI> listPlayerMember = Global.getSector().getPlayerFleet().getFleetData().getOfficersCopy();
+        for (OfficerDataAPI officer: listPlayerMember) {
+            listPerson.add(officer.getPerson());
+        }
+        listPerson.add(Global.getSector().getPlayerPerson());
+        return listPerson;
     }
     @Override
     public void positionChanged(PositionAPI position) {
@@ -157,28 +217,35 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
 
     @Override
     public void render(float alphaMult) {
-        //GL bottom left is 0,0
-        ba_component previousTab = tabMap.get(DETAILS);
-        int sidePanelLocationX = (int) (previousTab.panel.getPosition().getX());
-        int sidePanelLocationY = (int) (previousTab.panel.getPosition().getY());
-        ba_utils.drawBox(
-                sidePanelLocationX,sidePanelLocationY,
-                pW,
-                pH,
-                0.3f,
-                Color.red
-        );
-
-        ba_component previousTab2 = tabMap.get(OVERVIEW);
-        int sidePanelLocationX2 = (int) (previousTab2.panel.getPosition().getX());
-        int sidePanelLocationY2 = (int) (previousTab2.panel.getPosition().getY());
-        ba_utils.drawBox(
-                sidePanelLocationX2,sidePanelLocationY2,
-                pW,
-                pH,
-                0.3f,
-                Color.green
-        );
+//        ba_component previousTab2 = tabMap.get(OVERVIEW);
+//        ba_utils.drawBox(
+//                (int) previousTab2.getTooltip("MAIN_TOOLTIP").getPosition().getX(),
+//                (int) previousTab2.getTooltip("MAIN_TOOLTIP").getPosition().getY(),
+//                (int) previousTab2.getTooltip("MAIN_TOOLTIP").getPosition().getWidth(),
+//                (int) previousTab2.getTooltip("MAIN_TOOLTIP").getPosition().getHeight(),
+//                0.3f,
+//                Color.pink
+//        );
+//
+//        List<ba_component> personList = previousTab2.subComponentListMap.get("SUB_PERSON_LIST");
+//        for (ba_component personPanel: personList) {
+//            ba_utils.drawBox(
+//                    (int) personPanel.getTooltip("PERSON_TOOLTIP_CONTAINER").getPosition().getX(),
+//                    (int) personPanel.getTooltip("PERSON_TOOLTIP_CONTAINER").getPosition().getY(),
+//                    (int) personPanel.getTooltip("PERSON_TOOLTIP_CONTAINER").getPosition().getWidth(),
+//                    (int) personPanel.getTooltip("PERSON_TOOLTIP_CONTAINER").getPosition().getHeight(),
+//                    0.3f,
+//                    Color.green
+//            );
+//            ba_utils.drawBox(
+//                    (int) personPanel.getTooltip("PERSON_NAME").getPosition().getX(),
+//                    (int) personPanel.getTooltip("PERSON_NAME").getPosition().getY(),
+//                    (int) personPanel.getTooltip("PERSON_NAME").getPosition().getWidth(),
+//                    (int) personPanel.getTooltip("PERSON_NAME").getPosition().getHeight(),
+//                    0.3f,
+//                    Color.blue
+//            );
+//        }
     }
 
     @Override
@@ -232,21 +299,80 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
 
     }
     public class ba_component {
-        protected TooltipMakerAPI tooltip;
-        protected CustomPanelAPI panel;
-        public ba_component(CustomPanelAPI creatorPanel, float width, float height, boolean hasScroller, float tooltipLocationX, float tooltipLocationY) {
+//        protected TooltipMakerAPI tooltip;
+        protected CustomPanelAPI mainPanel;
+        protected HashMap<String, TooltipMakerAPI> tooltipMap = new HashMap<>();
+        protected HashMap<String, List<TooltipMakerAPI>> tooltipListMap = new HashMap<>();
+        protected HashMap<String, List<ba_component>> subComponentListMap = new HashMap<>();
+
+        /**
+         * Do note that this doesn't create a panel attach to the creator panel's tooltip. Therefor, scrolling on creator's tooltip will not work on the newly created component. <br>
+         * If you want to create one that get effected by the scroll, use {@code createAndAttachSubPanel}
+         * @param creatorPanel creator panel
+         * @param width Width of this component
+         * @param height Height of this component
+         */
+        public ba_component(CustomPanelAPI creatorPanel, float width, float height, float x, float y) {
             //create both panel and tooltip
-            panel = creatorPanel.createCustomPanel(width, height, null);
-            tooltip = panel.createUIElement(width, height, hasScroller);
-            //move the tooltip
-            panel.addUIElement(tooltip).inTL(tooltipLocationX, tooltipLocationY);
-            //add into the big panel
-            creatorPanel.addComponent(panel);
+            mainPanel = creatorPanel.createCustomPanel(width, height, null);
+            mainPanel.getPosition().setLocation(x,y).inTL(0, 0);
+            //extremely important or nothing will render
+            creatorPanel.addComponent(mainPanel);
             //add into list to remove on reset
             listComponents.add(this);
         }
+        public ba_component(CustomPanelAPI creatorPanel, float width, float height,float x, float y, boolean addToCreatorPanel) {
+            //create both panel and tooltip
+            mainPanel = creatorPanel.createCustomPanel(width, height, null);
+            mainPanel.getPosition().setLocation(0,0).setLocation(x, y);
+            //add into the big panel
+            if(addToCreatorPanel) {
+                creatorPanel.addComponent(mainPanel);
+            }
+            //add into list to remove on reset
+            listComponents.add(this);
+        }
+        protected TooltipMakerAPI createTooltip(String key, float width, float height, boolean hasScroller, float tooltipLocationX, float tooltipLocationY) {
+            TooltipMakerAPI tooltip = createTooltip(key, width, height, hasScroller, tooltipLocationX, tooltipLocationY, true);
+            return tooltip;
+        }
+        protected TooltipMakerAPI createTooltip(String key, float width, float height, boolean hasScroller, float tooltipLocationX, float tooltipLocationY, boolean isImmediatelyAddToPanel) {
+            TooltipMakerAPI tooltip = this.mainPanel.createUIElement(width, height, hasScroller);
+            tooltip.setForceProcessInput(true);
+            if(isImmediatelyAddToPanel) this.mainPanel.addUIElement(tooltip).setLocation(tooltipLocationX, tooltipLocationY);
+            this.tooltipMap.put(key, tooltip);
+            return tooltip;
+        }
+        protected TooltipMakerAPI getTooltip(String key) {
+            TooltipMakerAPI tooltip = this.tooltipMap.get(key);
+            if(tooltip == null) {
+                log.error("Can not find tooltip of key " + key);
+            }
+            return tooltip;
+        }
+        protected CustomPanelAPI createAndAttachSubPanel(String tooltipKeyAttachTo, float width, float height, float panelX, float panelY) {
+            CustomPanelAPI panel = this.mainPanel.createCustomPanel(width, height, null);
+            TooltipMakerAPI tooltipAttachingTo = this.tooltipMap.get(tooltipKeyAttachTo);
+            tooltipAttachingTo.addCustom(panel, 0f).getPosition().inTL(panelX, panelY);
+            return panel;
+        }
+        protected void attachExistingPanel(String tooltipKeyAttachTo, CustomPanelAPI panel) {
+            TooltipMakerAPI tooltipAttachingTo = this.tooltipMap.get(tooltipKeyAttachTo);
+            tooltipAttachingTo.addCustom(panel, 0f);
+        }
+
+        /**
+         * Use for attaching an existing component's panel into this one <br>
+         * If
+         * @param tooltipKeyAttachTo Tooltip key
+         * @param otherComponent the attaching component
+         */
+        protected void attachExistingPanel(String tooltipKeyAttachTo, ba_component otherComponent) {
+            TooltipMakerAPI tooltipAttachingTo = this.tooltipMap.get(tooltipKeyAttachTo);
+            tooltipAttachingTo.addCustom(otherComponent.mainPanel, 0f);
+        }
         public void unfocusComponent() {
-            panel.getPosition().inTL(dW, 0);
+            mainPanel.getPosition().inTL(dW, 0);
         }
     }
 }

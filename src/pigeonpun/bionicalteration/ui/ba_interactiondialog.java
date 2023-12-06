@@ -20,6 +20,7 @@ public class ba_interactiondialog implements InteractionDialogPlugin {
         this.dialog = dialog;
         dialog.hideTextPanel();
         dialog.hideVisualPanel();
+        dialog.setPromptText("");
 
         optionSelected(null, OptionID.INIT);
     }
