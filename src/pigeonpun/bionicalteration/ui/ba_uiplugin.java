@@ -4,12 +4,14 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CustomUIPanelPlugin;
 import com.fs.starfarer.api.campaign.CustomVisualDialogDelegate;
 import com.fs.starfarer.api.campaign.InteractionDialogAPI;
+import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import com.fs.starfarer.api.characters.OfficerDataAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.graphics.SpriteAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.ui.*;
+import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.combat.P;
 import org.apache.log4j.Logger;
 import org.lwjgl.input.Keyboard;
@@ -108,65 +110,124 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         displayDetails();
     }
     protected void displayOverview() {
+        float pad = 5f;
+        float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        Color t = Misc.getTextColor();
+        Color g = Misc.getGrayColor();
+
+        //big overview container
         String mainTooltipKey = "MAIN_TOOLTIP";
         ba_component overviewContainer = new ba_component(containerPanel, pW, pH, MAIN_CONTAINER_PADDING/2, MAIN_CONTAINER_PADDING/2);
-        //important to set the container tooltip to have scroll enable if you want scroll
-        //Next important is to have panel.addUI at the bottom of the code if you have scroll enabled, or the scroll wont work
-        TooltipMakerAPI overviewTooltipContainer = overviewContainer.createTooltip(mainTooltipKey, pW, pH, true, 0, 0, false);
+        TooltipMakerAPI overviewTooltipContainer = overviewContainer.createTooltip(mainTooltipKey, pW, pH, false, 0, 0, true);
         tabMap.put(OVERVIEW, overviewContainer);
         overviewContainer.unfocusComponent();
-//        overviewContainer.getTooltip(mainTooltipKey).addPara("test overview", 0);
-//        ButtonAPI button = overviewContainer.getTooltip(mainTooltipKey).addButton("switch details", null,200f, 100f,0f);
-//        buttons.add(button);
-//        buttonMap.put(button, "tab:"+ DETAILS);
+
+        //overview personContainer
+        String overviewPersonTooltipKey = "OVERVIEW_PERSON_TOOLTIP";
+        float overviewPersonW = 0.6f * pW;
+        float infoPersonW = (1 - overviewPersonW) * pW;
+        ba_component overviewPersonContainer = new ba_component(overviewContainer.mainPanel, overviewPersonW, pH, MAIN_CONTAINER_PADDING/2, MAIN_CONTAINER_PADDING/2);
+        TooltipMakerAPI overviewPersonTooltipContainer = overviewPersonContainer.createTooltip(overviewPersonTooltipKey, overviewPersonW, pH, true, 0, 0, false);
+        //important to set the container tooltip to have scroll enable if you want scroll
+        //Next important is to have panel.addUI at the bottom of the code if you have scroll enabled, or the scroll wont work
+        overviewContainer.attachExistingPanel(mainTooltipKey, overviewPersonContainer);
+        overviewContainer.subComponentMap.put("OVERVIEW_PERSON_PANEL", overviewPersonContainer);
+
         int i = 0;
         int xStart = 0;
-        int yStart = 10;
-        int imageH = 100;
-        int imageW = 100;
+        int yStart = 0;
+        int imageH = 80;
+        int imageW = 80;
         int ySpacer = 10;
+        float personW = overviewPersonW - 10;
+        float personH = imageH + 20;
         List<ba_component> subComponentPersonList = new ArrayList<>();
-        for (PersonAPI member: getListPerson()) {
-            float personW = pW - 10;
-            float personH = imageH;
+        List<PersonAPI> members = getListPerson();
+        for (PersonAPI member: members) {
             float currentStartX = xStart;
-            float currentStartY = yStart+(ySpacer*i);
+            float currentStartY = yStart;
             String spriteName = member.getPortraitSprite();
             listImgs.add(Global.getSettings().getSprite(spriteName));
             String defaultPersonTooltipContainerKey = "PERSON_TOOLTIP_CONTAINER";
             //--------person container
-            ba_component personDisplayContainer = new ba_component(overviewContainer.mainPanel, personW, personH,0,0,false);
+            ba_component personDisplayContainer = new ba_component(overviewPersonContainer.mainPanel, personW, personH,0,0,false);
             personDisplayContainer.mainPanel.getPosition().inTL(0,0);
             subComponentPersonList.add(personDisplayContainer);
                 //attach to have the main tooltip scroll effect this component's panel
-            overviewContainer.attachExistingPanel(mainTooltipKey, personDisplayContainer);
+            overviewPersonContainer.attachExistingPanel(overviewPersonTooltipKey, personDisplayContainer);
                 //Default person container tooltip
             TooltipMakerAPI personDisplayContainerTooltip = personDisplayContainer.createTooltip(defaultPersonTooltipContainerKey, personW, personH, false, 0,0);
-            personDisplayContainerTooltip.getPosition().inTL(currentStartX,currentStartY);
                 //border
             UIComponentAPI border = personDisplayContainerTooltip.createRect(Color.red, 1);
             border.getPosition().setSize(personW, personH);
             personDisplayContainer.mainPanel.addComponent(border).setLocation(0,0).inTL(currentStartX, currentStartY);
-
-            //---------Name
-            TooltipMakerAPI personNameTooltip = personDisplayContainer.createTooltip("PERSON_NAME", pW - imageW - 100, 20f, false, imageW, 0);
-            personNameTooltip.getPosition().inTL(currentStartX + imageW, currentStartY);
-            personNameTooltip.addPara(member.getName().getFullName(), 5);
             //--------image
+            int imageX = (int) currentStartX;
             TooltipMakerAPI personImageTooltip = personDisplayContainer.createTooltip("PERSON_IMAGE", imageW, imageH, false, 0, 0);
-            personImageTooltip.getPosition().inTL(currentStartX, currentStartY);
+            personImageTooltip.getPosition().inTL(imageX, currentStartY);
             personImageTooltip.addImage(spriteName, imageW, imageH, 0);
+            personImageTooltip.getPosition().inTL(0, (personH - imageH ) / 2);
+            //---------Name
+            int nameH = 20;
+            int nameW = 150;
+            int nameX = (int) (imageX + imageW + pad);
+            TooltipMakerAPI personNameTooltip = personDisplayContainer.createTooltip("PERSON_NAME", nameW, nameH, false, 0, 0);
+            personNameTooltip.getPosition().inTL(nameX, 0);
+            LabelAPI name = personNameTooltip.addPara(member.getName().getFullName(), pad);
+            name.setHighlight(member.getName().getFullName());
+            name.setHighlightColors(t);
+            //Level
+            int levelH = 20;
+            int levelW = 100;
+            int levelX = (int) (nameX + nameW);
+            TooltipMakerAPI personLevelTooltip = personDisplayContainer.createTooltip("PERSON_LEVEL", levelW, levelH, false, 0, 0);
+            personLevelTooltip.getPosition().inTL(levelX, 0);
+            LabelAPI level = personLevelTooltip.addPara("Level: " + member.getStats().getLevel(), pad);
+            level.setHighlight("Level: ","" + member.getStats().getLevel());
+            level.setHighlightColors(g,h);
+            //Personality
+            //BRM (Bionic Rights Management)
+            int brmH = 20;
+            int brmW = 100;
+            int brmX = (int) (nameX);
+            int brmY = (int) (currentStartY + nameH);
+            TooltipMakerAPI personBRMTooltip = personDisplayContainer.createTooltip("PERSON_BRM", brmW, brmH, false, 0, 0);
+            personBRMTooltip.getPosition().inTL(brmX, brmY);
+            LabelAPI BRM = personBRMTooltip.addPara("BRM: " + 0, pad);
+            BRM.setHighlight("BRM: ","" + 0);
+            BRM.setHighlightColors(h,h);
+            //Profession: Captain/Administrator
+            int profH = 20;
+            int profW = 100;
+            int profX = (int) (levelX);
+            int profY = (int) (currentStartY + levelH);
+            TooltipMakerAPI personProfTooltip = personDisplayContainer.createTooltip("PERSON_PROF", profW, profH, false, 9, 0);
+            personProfTooltip.getPosition().inTL(profX, profY);
+            LabelAPI prof = personProfTooltip.addPara("Profession: " + "---", pad);
+            prof.setHighlight("Profession: ","---");
+            prof.setHighlightColors(g,h);
+            //Monthly Salary
+            //Assign to ship/planet
+
+//            member.addTag("idk");
+//            log.info(member.getTags().toString() + " " +member.getNameString());
             //--------Skill panels
-//
+//            int skillW = pW - imageW;
+//            int skillH = (int) (personH - nameH);
+//            UIComponentAPI personSkillTooltip = personDisplayContainerTooltip.addSkillPanelOneColumn(member, 0);
+//            personSkillTooltip.getPosition().setSize(skillW, skillH);
+//            personDisplayContainer.mainPanel.addComponent(personSkillTooltip).setLocation(0,0).inTL(currentStartX + imageW, currentStartY + nameH);
             //add new skill
 //            member.getPerson().getFleetCommanderStats().sets
+            //--------Spacer because scroller dont like position offseting as spacing
+            overviewPersonTooltipContainer.addSpacer(ySpacer);
             i++;
         }
-        overviewContainer.subComponentListMap.put("SUB_PERSON_LIST", subComponentPersonList);
-
+        overviewPersonContainer.subComponentListMap.put("SUB_PERSON_LIST", subComponentPersonList);
         //do the adding late so the scroll work (thanks Lukas04)
-        overviewContainer.mainPanel.addUIElement(overviewTooltipContainer);
-//        overviewContainer.subComponentListMap.put("SUB_IMG_LIST", subComponentImgList);
+        overviewPersonContainer.mainPanel.addUIElement(overviewPersonTooltipContainer);
     }
     protected void displayDetails() {
 //        ba_component detailContainer = new ba_component(containerPanel, 100f, pH, false, 0, 0);
@@ -198,11 +259,11 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
     }
     public List<PersonAPI> getListPerson() {
         List<PersonAPI> listPerson = new ArrayList<>();
+        listPerson.add(Global.getSector().getPlayerPerson());
         List<OfficerDataAPI> listPlayerMember = Global.getSector().getPlayerFleet().getFleetData().getOfficersCopy();
         for (OfficerDataAPI officer: listPlayerMember) {
             listPerson.add(officer.getPerson());
         }
-        listPerson.add(Global.getSector().getPlayerPerson());
         return listPerson;
     }
     @Override
@@ -226,7 +287,16 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
 //                0.3f,
 //                Color.pink
 //        );
-//
+//        ba_component a = previousTab2.subComponentMap.get("OVERVIEW_PERSON_PANEL");
+//        ba_utils.drawBox(
+//                (int) a.getTooltip("OVERVIEW_PERSON_TOOLTIP").getPosition().getX(),
+//                (int) a.getTooltip("OVERVIEW_PERSON_TOOLTIP").getPosition().getY(),
+//                (int) a.getTooltip("OVERVIEW_PERSON_TOOLTIP").getPosition().getWidth(),
+//                (int) a.getTooltip("OVERVIEW_PERSON_TOOLTIP").getPosition().getHeight(),
+//                0.3f,
+//                Color.pink
+//        );
+
 //        List<ba_component> personList = previousTab2.subComponentListMap.get("SUB_PERSON_LIST");
 //        for (ba_component personPanel: personList) {
 //            ba_utils.drawBox(
@@ -242,6 +312,14 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
 //                    (int) personPanel.getTooltip("PERSON_NAME").getPosition().getY(),
 //                    (int) personPanel.getTooltip("PERSON_NAME").getPosition().getWidth(),
 //                    (int) personPanel.getTooltip("PERSON_NAME").getPosition().getHeight(),
+//                    0.3f,
+//                    Color.blue
+//            );
+//            ba_utils.drawBox(
+//                    (int) personPanel.getTooltip("PERSON_LEVEL").getPosition().getX(),
+//                    (int) personPanel.getTooltip("PERSON_LEVEL").getPosition().getY(),
+//                    (int) personPanel.getTooltip("PERSON_LEVEL").getPosition().getWidth(),
+//                    (int) personPanel.getTooltip("PERSON_LEVEL").getPosition().getHeight(),
 //                    0.3f,
 //                    Color.blue
 //            );
@@ -303,6 +381,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         protected CustomPanelAPI mainPanel;
         protected HashMap<String, TooltipMakerAPI> tooltipMap = new HashMap<>();
         protected HashMap<String, List<TooltipMakerAPI>> tooltipListMap = new HashMap<>();
+        protected HashMap<String, ba_component> subComponentMap = new HashMap<>();
         protected HashMap<String, List<ba_component>> subComponentListMap = new HashMap<>();
 
         /**
