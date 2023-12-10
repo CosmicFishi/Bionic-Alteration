@@ -6,19 +6,22 @@ import com.fs.starfarer.api.campaign.CustomVisualDialogDelegate;
 import com.fs.starfarer.api.campaign.InteractionDialogAPI;
 import com.fs.starfarer.api.characters.OfficerDataAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
-import com.fs.starfarer.api.graphics.SpriteAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.ui.*;
 import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
-import pigeonpun.bionicalteration.utils.ba_utils;
+import pigeonpun.bionicalteration.ba_bionicmanager;
+import pigeonpun.bionicalteration.ba_officermanager;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
+import static pigeonpun.bionicalteration.ba_officermanager.getBionicAnatomyList;
 
 //the container panel
 public class ba_uiplugin implements CustomUIPanelPlugin {
@@ -136,7 +139,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         tabMap.put(OVERVIEW, overviewContainer);
         overviewContainer.unfocusComponent();
 
-        float listPersonW = 0.6f * pW;
+        float listPersonW = 0.3f * pW;
         float infoPersonW = (1 - (listPersonW/pW)) * pW;
         TooltipMakerAPI overviewPersonListTooltipContainer = overviewContainer.createTooltip(mainPersonListTooltipKey, listPersonW, pH, false, 0, 0);
         TooltipMakerAPI overviewInfoTooltipContainer = overviewContainer.createTooltip(mainInfoTooltipKey, infoPersonW, pH, false, 0, 0);
@@ -168,7 +171,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         int imageH = 80;
         int imageW = 80;
         int ySpacer = 10;
-        float personW = personListW - 10;
+        float personW = personListW - 10 * 2; //time 2 for the padding both left and right
         float personH = imageH + 20;
         List<ba_component> subComponentPersonList = new ArrayList<>();
         for (PersonAPI member: this.listPersons) {
@@ -254,7 +257,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         overviewPersonContainer.mainPanel.addUIElement(overviewPersonTooltipContainer);
     }
     protected void displayPersonInfoList(ba_component creatorComponent, String creatorComponentTooltip, float personInfoW, float personInfoH, float personInfoX, float personInfoY) {
-        float pad = 5f;
+        float pad = 10f;
         float opad = 10f;
         Color h = Misc.getHighlightColor();
         Color bad = Misc.getNegativeHighlightColor();
@@ -276,27 +279,89 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         headerTooltip.addSectionHeading("DETAILS", Alignment.MID, 0);
         if(currentHoveredPerson != null) {
             //--------image
-            int imageX = (int) personInfoX;
-            int imageY = (int) (personInfoY + headerH);
-            int imageW = 200;
+            int imageX = (int) 0;
+            int imageY = (int) (0 + headerH);
+            int imageW = 160;
             int imageH = imageW;
             String spriteName = currentHoveredPerson.getPortraitSprite();
             TooltipMakerAPI personImageTooltip = infoPersonContainer.createTooltip("PERSON_INFO_IMAGE", imageW, imageH, false, 0, 0);
             personImageTooltip.getPosition().inTL(imageX, imageY);
             personImageTooltip.addImage(spriteName, imageW, imageH, 0);
             //--------Skill panels
+            int skillX = (int) 0;
+            int skillY = (int) (0 + headerH + imageH);
             int skillW = imageW;
             int skillH = (int) currentHoveredPerson.getStats().getSkillsCopy().size() * 100;
             TooltipMakerAPI personSkillTooltip = infoPersonContainer.createTooltip("PERSON_INFO_SKILLS", skillW, skillH, false, 0, 0);
+            personSkillTooltip.getPosition().inTL(skillX,skillY);
             UIComponentAPI personSkills = personSkillTooltip.addSkillPanelOneColumn(currentHoveredPerson, 0);
-            personSkillTooltip.getPosition().setSize(skillW, skillH);
-            infoPersonContainer.mainPanel.addComponent(personSkillTooltip).setLocation(0,0).inTL(personInfoX, personInfoY);
-
+            personSkills.getPosition().setSize(skillW, skillH);
+            //--------Stats
+            //--------Bionic table
+            displayBionicTable(infoPersonContainer, infoPersonTooltipKey, false, false, 200, 200, 0,0);
         }
-
-
         //do the adding late so the scroll work
 //        infoPersonContainer.mainPanel.addUIElement(infoPersonTooltipContainer);
+    }
+    protected void displayBionicTable(ba_component creatorComponent, String creatorComponentTooltip, boolean isEditMode, boolean isScroll ,float tableW, float tableH, float tableX, float tableY) {
+        float pad = 10f;
+        float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        Color t = Misc.getTextColor();
+        Color g = Misc.getGrayColor();
+
+        String infoPersonBionicTooltipKey = "PERSON_INFO_BIONICS_TOOLTIP";
+        String infoPersonBionicPanelKey = "PERSON_INFO_BIONICS_PANEL";
+        ba_component infoPersonBionicContainer = new ba_component(creatorComponent.mainPanel, tableW, tableH, tableX, tableY, !isScroll, infoPersonBionicPanelKey);
+        TooltipMakerAPI infoPersonBionicTooltipContainer = infoPersonBionicContainer.createTooltip(infoPersonBionicTooltipKey, tableW, tableH, isScroll, 0,0);
+        creatorComponent.attachSubPanel(creatorComponentTooltip, infoPersonBionicPanelKey, infoPersonBionicContainer);
+
+        int i = 0;
+        int xStart = 0;
+        int yStart = 0;
+        int bionicH = 50;
+        int bionicW = (int) tableW;
+//        int ySpacer = 10;
+        List<ba_component> subComponentBionicList = new ArrayList<>();
+        List<ba_officermanager.ba_bionicAugmentedData> currentAnatomyList = ba_officermanager.getBionicAnatomyList(this.currentHoveredPerson);
+//        log.info(currentAnatomyList.size() + " - " + this.currentHoveredPerson.getTags());
+        //todo: change this to a table
+        for (ba_officermanager.ba_bionicAugmentedData data: currentAnatomyList) {
+            log.info(data.limb.name + " - " + data.bionicInstalled.size());
+            if(data.bionicInstalled.size() != 0) {
+                for (ba_bionicmanager.ba_bionic bionic: data.bionicInstalled) {
+                    log.info("---------" + bionic.name);
+                }
+            }
+        }
+//        for(ba_bionicmanager.ba_bionic bionic: ba_bionicmanager.bionicList) {
+//            float currentStartX = xStart;
+//            float currentStartY = yStart;
+//            String bionicTooltipContainerKey = "BIONIC_TOOLTIP_CONTAINER";
+//            String bionicPanelContainerKey = "BIONIC_PANEL_CONTAINER_"+i;
+//            //--------bionic container
+//            ba_component bionicDisplayContainer = new ba_component(infoPersonBionicContainer.mainPanel, bionicW, bionicH,0,0,false, bionicPanelContainerKey);
+//            TooltipMakerAPI personDisplayContainerTooltip = bionicDisplayContainer.createTooltip(bionicTooltipContainerKey, bionicW, bionicH, false, 0,0);
+//            personDisplayContainerTooltip.setForceProcessInput(true);
+//            //attach to have the main tooltip scroll effect this component's panel
+//            infoPersonBionicContainer.attachSubPanel(infoPersonBionicTooltipKey, infoPersonBionicPanelKey, bionicDisplayContainer);
+//            subComponentBionicList.add(bionicDisplayContainer);
+//            //---------Name
+////            int nameH = bionicH;
+////            int nameW = 150;
+////            int nameX = (int) (imageX + imageW + pad);
+////            TooltipMakerAPI personNameTooltip = personDisplayContainer.createTooltip("PERSON_NAME", nameW, nameH, false, 0, 0);
+////            personNameTooltip.getPosition().inTL(nameX, 0);
+////            LabelAPI name = personNameTooltip.addPara(member.getName().getFullName(), pad);
+////            name.setHighlight(member.getName().getFullName());
+////            name.setHighlightColors(t);
+//            i++;
+//        }
+        infoPersonBionicContainer.subComponentListMap.put("SUB_BIONIC_LIST", subComponentBionicList);
+        if(isScroll) {
+            infoPersonBionicContainer.mainPanel.addUIElement(infoPersonBionicTooltipContainer);
+        }
     }
     protected void displayDetails() {
 //        ba_component detailContainer = new ba_component(containerPanel, 100f, pH, false, 0, 0);
@@ -348,60 +413,15 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
 
     @Override
     public void render(float alphaMult) {
-//        ba_component previousTab2 = tabMap.get(OVERVIEW);
+//        ba_component previousTab2 = componentMap.get("OVERVIEW_PERSON_INFO_PANEL");
 //        ba_utils.drawBox(
-//                (int) previousTab2.getTooltip("MAIN_LIST_TOOLTIP").getPosition().getX(),
-//                (int) previousTab2.getTooltip("MAIN_LIST_TOOLTIP").getPosition().getY(),
-//                (int) previousTab2.getTooltip("MAIN_LIST_TOOLTIP").getPosition().getWidth(),
-//                (int) previousTab2.getTooltip("MAIN_LIST_TOOLTIP").getPosition().getHeight(),
+//                (int) previousTab2.getTooltip("OVERVIEW_PERSON_INFO_TOOLTIP").getPosition().getX(),
+//                (int) previousTab2.getTooltip("OVERVIEW_PERSON_INFO_TOOLTIP").getPosition().getY(),
+//                (int) previousTab2.getTooltip("OVERVIEW_PERSON_INFO_TOOLTIP").getPosition().getWidth(),
+//                (int) previousTab2.getTooltip("OVERVIEW_PERSON_INFO_TOOLTIP").getPosition().getHeight(),
 //                0.3f,
 //                Color.pink
 //        );
-//        ba_utils.drawBox(
-//                (int) previousTab2.getTooltip("MAIN_INFO_TOOLTIP").getPosition().getX(),
-//                (int) previousTab2.getTooltip("MAIN_INFO_TOOLTIP").getPosition().getY(),
-//                (int) previousTab2.getTooltip("MAIN_INFO_TOOLTIP").getPosition().getWidth(),
-//                (int) previousTab2.getTooltip("MAIN_INFO_TOOLTIP").getPosition().getHeight(),
-//                0.3f,
-//                Color.green
-//        );
-//        ba_component a = previousTab2.subComponentMap.get("OVERVIEW_PERSON_INFO_PANEL");
-//        ba_utils.drawBox(
-//                (int) a.getTooltip("OVERVIEW_PERSON_INFO_TOOLTIP").getPosition().getX(),
-//                (int) a.getTooltip("OVERVIEW_PERSON_INFO_TOOLTIP").getPosition().getY(),
-//                (int) a.getTooltip("OVERVIEW_PERSON_INFO_TOOLTIP").getPosition().getWidth(),
-//                (int) a.getTooltip("OVERVIEW_PERSON_INFO_TOOLTIP").getPosition().getHeight(),
-//                0.3f,
-//                Color.green
-//        );
-
-//        List<ba_component> personList = previousTab2.subComponentListMap.get("SUB_PERSON_LIST");
-//        for (ba_component personPanel: personList) {
-//            ba_utils.drawBox(
-//                    (int) personPanel.getTooltip("PERSON_TOOLTIP_CONTAINER").getPosition().getX(),
-//                    (int) personPanel.getTooltip("PERSON_TOOLTIP_CONTAINER").getPosition().getY(),
-//                    (int) personPanel.getTooltip("PERSON_TOOLTIP_CONTAINER").getPosition().getWidth(),
-//                    (int) personPanel.getTooltip("PERSON_TOOLTIP_CONTAINER").getPosition().getHeight(),
-//                    0.3f,
-//                    Color.green
-//            );
-//            ba_utils.drawBox(
-//                    (int) personPanel.getTooltip("PERSON_NAME").getPosition().getX(),
-//                    (int) personPanel.getTooltip("PERSON_NAME").getPosition().getY(),
-//                    (int) personPanel.getTooltip("PERSON_NAME").getPosition().getWidth(),
-//                    (int) personPanel.getTooltip("PERSON_NAME").getPosition().getHeight(),
-//                    0.3f,
-//                    Color.blue
-//            );
-//            ba_utils.drawBox(
-//                    (int) personPanel.getTooltip("PERSON_LEVEL").getPosition().getX(),
-//                    (int) personPanel.getTooltip("PERSON_LEVEL").getPosition().getY(),
-//                    (int) personPanel.getTooltip("PERSON_LEVEL").getPosition().getWidth(),
-//                    (int) personPanel.getTooltip("PERSON_LEVEL").getPosition().getHeight(),
-//                    0.3f,
-//                    Color.blue
-//            );
-//        }
     }
 
     @Override

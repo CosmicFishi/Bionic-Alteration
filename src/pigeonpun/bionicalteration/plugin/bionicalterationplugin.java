@@ -1,14 +1,15 @@
 package pigeonpun.bionicalteration.plugin;
 
 import com.fs.starfarer.api.BaseModPlugin;
+import pigeonpun.bionicalteration.ba_anatomymanager;
+import pigeonpun.bionicalteration.ba_bionicmanager;
 
 public class bionicalterationplugin extends BaseModPlugin {
     @Override
     public void onApplicationLoad() throws Exception {
 //        ba_manager.getInstance();
-
-        // Test that the .jar is loaded and working, using the most obnoxious way possible.
-//        throw new RuntimeException("Template mod loaded! Remove this crash in TemplateModPlugin.");
+        ba_bionicmanager.onApplicationLoad();
+        ba_anatomymanager.onApplicationLoad();
     }
 
     @Override
