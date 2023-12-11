@@ -10,6 +10,7 @@ import java.util.*;
 /**
  * Handle how many limbs can a person have
  * A person always have their ANATOMY VARIANT(s), which is defined in a csv along with their generic's limbs
+ * Probably will have a .json file to store all the variant type
  */
 public class ba_anatomymanager {
     static Logger log = Global.getLogger(ba_anatomymanager.class);

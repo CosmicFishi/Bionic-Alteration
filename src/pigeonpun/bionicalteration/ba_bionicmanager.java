@@ -32,6 +32,11 @@ public class ba_bionicmanager {
         bionicMap.put("4",new ba_bionic("4",new ArrayList<String>(Arrays.asList("eye_left", "eye_right")),"Big eye", "idk", Color.green));
         bionicMap.put("5",new ba_bionic("5",new ArrayList<String>(Arrays.asList("brain")),"Big brainnnnn", "idk", Color.CYAN));
         bionicMap.put("6",new ba_bionic("6",new ArrayList<String>(Arrays.asList("heart")),"My heart <3", "idk", Color.red));
+        bionicMap.put("7",new ba_bionic("7",new ArrayList<String>(Arrays.asList("hand_right", "hand_left")),"Big MF hand", "idk", Color.red));
+        bionicMap.put("8",new ba_bionic("8",new ArrayList<String>(Arrays.asList("heart")),"Broken heart </3", "idk", Color.red));
+        bionicMap.put("9",new ba_bionic("9",new ArrayList<String>(Arrays.asList("eye_left", "eye_right")),"Pirate eye, ARRRRR", "idk", Color.red));
+        bionicMap.put("10",new ba_bionic("10",new ArrayList<String>(Arrays.asList("brain")),"ANother fking brain to understand WTF did i code", "idk", Color.red));
+        bionicMap.put("11",new ba_bionic("11",new ArrayList<String>(Arrays.asList("brain")),"Another another brain", "idk", Color.red));
     }
     public static ba_bionic getBionic(String id) {
         ba_bionic bionic = bionicMap.get(id);
@@ -76,7 +81,8 @@ public class ba_bionicmanager {
         WeightedRandomPicker<String> random = new WeightedRandomPicker<>();
         random.addAll(getListBionicKeys());
         int i = 0;
-        while(i < 2) {
+        int maxNumberOfRandomBionic = 6;
+        while(i < maxNumberOfRandomBionic) {
             String picked = random.pick();
             random.remove(picked);
             ba_bionic bionic = getBionic(picked);

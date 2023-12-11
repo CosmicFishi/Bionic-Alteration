@@ -14,6 +14,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import pigeonpun.bionicalteration.ba_bionicmanager;
 import pigeonpun.bionicalteration.ba_officermanager;
+import pigeonpun.bionicalteration.utils.ba_utils;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -268,9 +269,9 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         String infoPersonPanelKey = "OVERVIEW_PERSON_INFO_PANEL";
         ba_component infoPersonContainer = new ba_component(creatorComponent.mainPanel, personInfoW, personInfoH, personInfoX, personInfoY, true, infoPersonPanelKey);
         TooltipMakerAPI infoPersonTooltipContainer = infoPersonContainer.createTooltip(infoPersonTooltipKey, personInfoW, personInfoH, false, 0,0);
-        creatorComponent.attachSubPanel(creatorComponentTooltip, infoPersonPanelKey,infoPersonContainer);
-        //move to correct place
-        infoPersonContainer.mainPanel.getPosition().inTL(0,0);
+        creatorComponent.attachSubPanel(creatorComponentTooltip, infoPersonPanelKey,infoPersonContainer,0,0);
+        //important to do this after you attach the sub panel
+//        infoPersonContainer.mainPanel.getPosition().inTL(0,0);
         //--------header
         float headerW = infoPersonTooltipContainer.getPosition().getWidth();
         float headerH = 30f;
@@ -298,7 +299,11 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             personSkills.getPosition().setSize(skillW, skillH);
             //--------Stats
             //--------Bionic table
-            displayBionicTable(infoPersonContainer, infoPersonTooltipKey, false, false, 200, 200, 0,0);
+            int tableX = skillX + skillW + 10;
+            int tableY = imageY + imageH + 10;
+            int tableW = (int) (personInfoW - skillW - pad);
+            int tableH = (int) (personInfoH - imageH - headerH - pad);
+            displayBionicTable(infoPersonContainer, infoPersonTooltipKey, false, true, tableW, tableH, tableX, tableY);
         }
         //do the adding late so the scroll work
 //        infoPersonContainer.mainPanel.addUIElement(infoPersonTooltipContainer);
@@ -315,13 +320,13 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         String infoPersonBionicPanelKey = "PERSON_INFO_BIONICS_PANEL";
         ba_component infoPersonBionicContainer = new ba_component(creatorComponent.mainPanel, tableW, tableH, tableX, tableY, !isScroll, infoPersonBionicPanelKey);
         TooltipMakerAPI infoPersonBionicTooltipContainer = infoPersonBionicContainer.createTooltip(infoPersonBionicTooltipKey, tableW, tableH, isScroll, 0,0);
-        creatorComponent.attachSubPanel(creatorComponentTooltip, infoPersonBionicPanelKey, infoPersonBionicContainer);
+        creatorComponent.attachSubPanel(creatorComponentTooltip, infoPersonBionicPanelKey, infoPersonBionicContainer, tableX, tableY);
+        //important to do this after you attach the sub panel
+//        infoPersonBionicContainer.mainPanel.getPosition().inTL(tableX,tableY);
 
         int i = 0;
         int xStart = 0;
         int yStart = 0;
-        int bionicH = 50;
-        int bionicW = (int) tableW;
 //        int ySpacer = 10;
         List<ba_component> subComponentBionicList = new ArrayList<>();
         List<ba_officermanager.ba_bionicAugmentedData> currentAnatomyList = ba_officermanager.getBionicAnatomyList(this.currentHoveredPerson);
@@ -335,29 +340,49 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                 }
             }
         }
-//        for(ba_bionicmanager.ba_bionic bionic: ba_bionicmanager.bionicList) {
-//            float currentStartX = xStart;
-//            float currentStartY = yStart;
-//            String bionicTooltipContainerKey = "BIONIC_TOOLTIP_CONTAINER";
-//            String bionicPanelContainerKey = "BIONIC_PANEL_CONTAINER_"+i;
-//            //--------bionic container
-//            ba_component bionicDisplayContainer = new ba_component(infoPersonBionicContainer.mainPanel, bionicW, bionicH,0,0,false, bionicPanelContainerKey);
-//            TooltipMakerAPI personDisplayContainerTooltip = bionicDisplayContainer.createTooltip(bionicTooltipContainerKey, bionicW, bionicH, false, 0,0);
-//            personDisplayContainerTooltip.setForceProcessInput(true);
-//            //attach to have the main tooltip scroll effect this component's panel
-//            infoPersonBionicContainer.attachSubPanel(infoPersonBionicTooltipKey, infoPersonBionicPanelKey, bionicDisplayContainer);
-//            subComponentBionicList.add(bionicDisplayContainer);
-//            //---------Name
-////            int nameH = bionicH;
-////            int nameW = 150;
-////            int nameX = (int) (imageX + imageW + pad);
-////            TooltipMakerAPI personNameTooltip = personDisplayContainer.createTooltip("PERSON_NAME", nameW, nameH, false, 0, 0);
-////            personNameTooltip.getPosition().inTL(nameX, 0);
-////            LabelAPI name = personNameTooltip.addPara(member.getName().getFullName(), pad);
-////            name.setHighlight(member.getName().getFullName());
-////            name.setHighlightColors(t);
-//            i++;
-//        }
+        for(ba_officermanager.ba_bionicAugmentedData bionic: currentAnatomyList) {
+            String bionicTooltipContainerKey = "BIONIC_TOOLTIP_CONTAINER";
+            String bionicPanelContainerKey = "BIONIC_PANEL_CONTAINER_"+i;
+            int singleBionicInstalledNameH = 40;
+            int bionicH = bionic.bionicInstalled.size()!= 0 ? singleBionicInstalledNameH * bionic.bionicInstalled.size() : singleBionicInstalledNameH;
+            int bionicW = (int) (tableW - pad);
+            //--------bionic container
+            ba_component bionicDisplayContainer = new ba_component(infoPersonBionicContainer.mainPanel, bionicW, bionicH,0,0,false, bionicPanelContainerKey);
+            TooltipMakerAPI personDisplayContainerTooltip = bionicDisplayContainer.createTooltip(bionicTooltipContainerKey, bionicW, bionicH, false, 0,0);
+            personDisplayContainerTooltip.setForceProcessInput(true);
+            //attach to have the main tooltip scroll effect this component's panel
+            infoPersonBionicContainer.attachSubPanel(infoPersonBionicTooltipKey, infoPersonBionicPanelKey, bionicDisplayContainer);
+            subComponentBionicList.add(bionicDisplayContainer);
+            //hover
+            ButtonAPI areaChecker = personDisplayContainerTooltip.addAreaCheckbox("", null,Color.pink.darker(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), bionicW, bionicH, 0);
+            addButtonToList(areaChecker, "hover_bionic:"+bionic);
+            areaChecker.getPosition().setLocation(0,0).inTL(0, 0);
+            //---------Limb Name
+            int nameH = bionicH;
+            int nameW = 150;
+            int nameX = (int) (0);
+            TooltipMakerAPI bionicLimbNameTooltip = bionicDisplayContainer.createTooltip("BIONIC_LIMB_NAME", nameW, nameH, false, 0, 0);
+            bionicLimbNameTooltip.getPosition().inTL(nameX, 0);
+            LabelAPI limbName = bionicLimbNameTooltip.addPara(bionic.limb.name, pad);
+            limbName.setHighlight(bionic.limb.name);
+            limbName.setHighlightColors(t);
+            //---------Bionic Name
+            int bionicInstalledI = 0;
+            for (ba_bionicmanager.ba_bionic b: bionic.bionicInstalled) {
+                int sectionH = bionicH;
+                int sectionW = 400;
+                int sectionX = (int) (nameW);
+                int sectionSpacerY = singleBionicInstalledNameH * bionicInstalledI;
+                TooltipMakerAPI bionicNameTooltip = bionicDisplayContainer.createTooltip("BIONIC_NAME"+bionicInstalledI, sectionW, sectionH, false, sectionX, sectionSpacerY);
+                bionicNameTooltip.getPosition().inTL(sectionX, sectionSpacerY);
+                LabelAPI bionicName = bionicNameTooltip.addPara(b.name, pad);
+                bionicName.setHighlight(b.name);
+                bionicName.setHighlightColors(b.displayColor);
+
+                bionicInstalledI++;
+            }
+            i++;
+        }
         infoPersonBionicContainer.subComponentListMap.put("SUB_BIONIC_LIST", subComponentBionicList);
         if(isScroll) {
             infoPersonBionicContainer.mainPanel.addUIElement(infoPersonBionicTooltipContainer);
@@ -413,15 +438,25 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
 
     @Override
     public void render(float alphaMult) {
-//        ba_component previousTab2 = componentMap.get("OVERVIEW_PERSON_INFO_PANEL");
+//        ba_component previousTab2 = componentMap.get("PERSON_INFO_BIONICS_PANEL");
 //        ba_utils.drawBox(
-//                (int) previousTab2.getTooltip("OVERVIEW_PERSON_INFO_TOOLTIP").getPosition().getX(),
-//                (int) previousTab2.getTooltip("OVERVIEW_PERSON_INFO_TOOLTIP").getPosition().getY(),
-//                (int) previousTab2.getTooltip("OVERVIEW_PERSON_INFO_TOOLTIP").getPosition().getWidth(),
-//                (int) previousTab2.getTooltip("OVERVIEW_PERSON_INFO_TOOLTIP").getPosition().getHeight(),
+//                (int) previousTab2.getTooltip("PERSON_INFO_BIONICS_TOOLTIP").getPosition().getX(),
+//                (int) previousTab2.getTooltip("PERSON_INFO_BIONICS_TOOLTIP").getPosition().getY(),
+//                (int) previousTab2.getTooltip("PERSON_INFO_BIONICS_TOOLTIP").getPosition().getWidth(),
+//                (int) previousTab2.getTooltip("PERSON_INFO_BIONICS_TOOLTIP").getPosition().getHeight(),
 //                0.3f,
 //                Color.pink
 //        );
+//        ba_component previousTab3 = componentMap.get("OVERVIEW_PERSON_INFO_PANEL");
+//        ba_utils.drawBox(
+//                (int) previousTab3.getTooltip("OVERVIEW_PERSON_INFO_TOOLTIP").getPosition().getX(),
+//                (int) previousTab3.getTooltip("OVERVIEW_PERSON_INFO_TOOLTIP").getPosition().getY(),
+//                (int) previousTab3.getTooltip("OVERVIEW_PERSON_INFO_TOOLTIP").getPosition().getWidth(),
+//                (int) previousTab3.getTooltip("OVERVIEW_PERSON_INFO_TOOLTIP").getPosition().getHeight(),
+//                0.3f,
+//                Color.pink
+//        );
+
     }
 
     @Override
@@ -572,6 +607,20 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             TooltipMakerAPI tooltipAttachingTo = this.tooltipMap.get(tooltipKeyAttachTo);
             tooltipAttachingTo.addCustom(otherComponent.mainPanel, 0f);
             subComponentMap.put(otherComponentMapKey, otherComponent);
+        }
+        /**
+         * Use for attaching an existing component's panel into this component<br>
+         * Use this for when the Sub component is aligning with the parent component which we want to break and reset it to certain point
+         * @param tooltipKeyAttachTo Creator component's tooltip key
+         * @param otherComponent the attaching component
+         * @param otherComponentMapKey the attaching component map key. So the creator component can access to the attaching component in {@code subComponentMap}
+         * @param locationX X
+         * @param locationY Y
+         */
+        protected void attachSubPanel(String tooltipKeyAttachTo, String otherComponentMapKey, ba_component otherComponent, float locationX, float locationY) {
+            attachSubPanel(tooltipKeyAttachTo, otherComponentMapKey, otherComponent);
+            //important to do this after you attach the sub panel
+            otherComponent.mainPanel.getPosition().inTL(locationX,locationY);
         }
         public void unfocusComponent() {
             mainPanel.getPosition().inTL(dW, 0);
