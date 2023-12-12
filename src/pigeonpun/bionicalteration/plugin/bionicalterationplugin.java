@@ -1,15 +1,17 @@
 package pigeonpun.bionicalteration.plugin;
 
 import com.fs.starfarer.api.BaseModPlugin;
-import pigeonpun.bionicalteration.ba_anatomymanager;
+import pigeonpun.bionicalteration.ba_variantmanager;
 import pigeonpun.bionicalteration.ba_bionicmanager;
+import pigeonpun.bionicalteration.ba_limbmanager;
 
 public class bionicalterationplugin extends BaseModPlugin {
     @Override
     public void onApplicationLoad() throws Exception {
 //        ba_manager.getInstance();
         ba_bionicmanager.onApplicationLoad();
-        ba_anatomymanager.onApplicationLoad();
+        ba_variantmanager.onApplicationLoad();
+        ba_limbmanager.onApplicationLoad();
     }
 
     @Override

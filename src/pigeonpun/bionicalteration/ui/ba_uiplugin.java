@@ -100,7 +100,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         refresh();
     }
     protected void refresh() {
-        log.info("refreshing");
+//        log.info("refreshing");
         ba_component overviewComponent = tabMap.get(OVERVIEW);
         ba_component detailComponent = tabMap.get(DETAILS);
         if (overviewComponent != null) {
@@ -282,7 +282,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             //--------image
             int imageX = (int) 0;
             int imageY = (int) (0 + headerH);
-            int imageW = 160;
+            int imageW = 200;
             int imageH = imageW;
             String spriteName = currentHoveredPerson.getPortraitSprite();
             TooltipMakerAPI personImageTooltip = infoPersonContainer.createTooltip("PERSON_INFO_IMAGE", imageW, imageH, false, 0, 0);
@@ -331,15 +331,14 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         List<ba_component> subComponentBionicList = new ArrayList<>();
         List<ba_officermanager.ba_bionicAugmentedData> currentAnatomyList = ba_officermanager.getBionicAnatomyList(this.currentHoveredPerson);
 //        log.info(currentAnatomyList.size() + " - " + this.currentHoveredPerson.getTags());
-        //todo: change this to a table
-        for (ba_officermanager.ba_bionicAugmentedData data: currentAnatomyList) {
-            log.info(data.limb.name + " - " + data.bionicInstalled.size());
-            if(data.bionicInstalled.size() != 0) {
-                for (ba_bionicmanager.ba_bionic bionic: data.bionicInstalled) {
-                    log.info("---------" + bionic.name);
-                }
-            }
-        }
+//        for (ba_officermanager.ba_bionicAugmentedData data: currentAnatomyList) {
+//            log.info(data.limb.name + " - " + data.bionicInstalled.size());
+//            if(data.bionicInstalled.size() != 0) {
+//                for (ba_bionicmanager.ba_bionic bionic: data.bionicInstalled) {
+//                    log.info("---------" + bionic.name);
+//                }
+//            }
+//        }
         for(ba_officermanager.ba_bionicAugmentedData bionic: currentAnatomyList) {
             String bionicTooltipContainerKey = "BIONIC_TOOLTIP_CONTAINER";
             String bionicPanelContainerKey = "BIONIC_PANEL_CONTAINER_"+i;

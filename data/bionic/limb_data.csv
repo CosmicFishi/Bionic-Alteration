@@ -1,0 +1,9 @@
+limbId,groupId,name,description
+heart,heart_group,Heart,Well it's a heart
+heart_2,heart_group,Second Heart,"Wow, 2nd heart :O"
+hand_left,hand_group,Left hand,The left one
+hand_right,hand_group,Right hand,The right one
+eye_left,eye_group,Left eye,The left one
+eye_right,eye_group,Right eye,The right one
+brain,brain_group,Brain,The thinking machine
+,,,

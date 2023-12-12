@@ -1,0 +1,9 @@
+bionicId,limbGroupId,name,description,colorDisplay
+ba_bionic_your_mom_hand,hand_group,Your mom hand,Your mom,"[255,0,0]"
+ba_bionic_smol_eye,eye_group,Smol eye,Smol,"[85,155,255]"
+ba_bionic_hand_2,hand_group,Another hand,HAnd,"[155,155,155]"
+ba_bionic_big_brain,brain_group,Big brain,Big,"[155,0,125]"
+ba_bionic_big_eye,eye_group,Beeg eye,Beeg,"[25,95,255]"
+ba_bionic_my_heart,heart_group,My heart,<3,"[0,255,255]"
+ba_bionic_another_brain,brain_group,Another brain effect,aaaaaaaaaaaa,"[0,0,199]"
+ba_bionic_my_broken_heart,heart_group,My broken heart,</3,"[0,255,0]"

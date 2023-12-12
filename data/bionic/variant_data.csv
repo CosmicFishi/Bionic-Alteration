@@ -1,0 +1,4 @@
+variantId,limbIdList
+GENERIC_HUMAN,"brain,heart,eye_left,eye_right,hand_left,hand_right"
+GENERIC_HALF_BORN,"brain,heart_2,heart,eye_left,eye_right,hand_left,hand_right"
+,

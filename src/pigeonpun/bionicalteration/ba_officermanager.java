@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 
 import java.util.*;
 
-import static pigeonpun.bionicalteration.ba_anatomymanager.getAnatomyVariantTag;
+import static pigeonpun.bionicalteration.ba_variantmanager.getAnatomyVariantTag;
 
 /**
  * Handle how many bionic available on an officer
@@ -18,7 +18,7 @@ public class ba_officermanager {
     public static List<ba_bionicAugmentedData> getBionicAnatomyList(PersonAPI person) {
         if(getAnatomyVariantTag(person.getTags()).isEmpty()) {
             //todo: generate random bionic
-            String randomVariant = ba_anatomymanager.getRandomVariant();
+            String randomVariant = ba_variantmanager.getRandomVariant();
             person.addTag(randomVariant);
             List<String> randomBionics = ba_bionicmanager.getRandomBionic();
             for (String random: randomBionics) {
@@ -27,14 +27,14 @@ public class ba_officermanager {
         }
 
         List<ba_bionicAugmentedData> anatomyList = new ArrayList<>();
-        HashMap<ba_anatomymanager.ba_limb, List<ba_bionicmanager.ba_bionic>> bionicsInstalledList = ba_bionicmanager.getListBionicInstalled(person);
+        HashMap<ba_limbmanager.ba_limb, List<ba_bionicmanager.ba_bionic>> bionicsInstalledList = ba_bionicmanager.getListBionicInstalled(person);
         List<String> personGenericVariant = getAnatomyVariantTag(person.getTags());
         //return list with full limb details
 //        log.info(bionicsInstalledList.size());
         for (String pGV: personGenericVariant) {
-            List<String> variantAnatomy = ba_anatomymanager.anatomyList.get(pGV);
+            List<String> variantAnatomy = ba_variantmanager.variantList.get(pGV);
             for (String limbString: variantAnatomy) {
-                ba_anatomymanager.ba_limb limb = ba_anatomymanager.getLimb(limbString);
+                ba_limbmanager.ba_limb limb = ba_limbmanager.getLimb(limbString);
                 if(bionicsInstalledList.get(limb) != null) {
                     List<ba_bionicmanager.ba_bionic> bionicsInstalled = bionicsInstalledList.get(limb);
                     anatomyList.add(new ba_bionicAugmentedData(limb, bionicsInstalled));
@@ -46,9 +46,9 @@ public class ba_officermanager {
         return anatomyList;
     }
     public static class ba_bionicAugmentedData {
-        public ba_anatomymanager.ba_limb limb;
+        public ba_limbmanager.ba_limb limb;
         public List<ba_bionicmanager.ba_bionic> bionicInstalled;
-        ba_bionicAugmentedData(ba_anatomymanager.ba_limb limb, List<ba_bionicmanager.ba_bionic> bionic) {
+        ba_bionicAugmentedData(ba_limbmanager.ba_limb limb, List<ba_bionicmanager.ba_bionic> bionic) {
             this.limb = limb;
             this.bionicInstalled = bionic;
         }
