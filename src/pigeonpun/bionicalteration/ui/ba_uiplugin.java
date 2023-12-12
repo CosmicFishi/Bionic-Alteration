@@ -309,7 +309,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
 //        infoPersonContainer.mainPanel.addUIElement(infoPersonTooltipContainer);
     }
     protected void displayBionicTable(ba_component creatorComponent, String creatorComponentTooltip, boolean isEditMode, boolean isScroll ,float tableW, float tableH, float tableX, float tableY) {
-        float pad = 10f;
+        final float pad = 10f;
         float opad = 10f;
         Color h = Misc.getHighlightColor();
         Color bad = Misc.getNegativeHighlightColor();
@@ -339,12 +339,12 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
 //                }
 //            }
 //        }
-        for(ba_officermanager.ba_bionicAugmentedData bionic: currentAnatomyList) {
+        for(final ba_officermanager.ba_bionicAugmentedData bionic: currentAnatomyList) {
             String bionicTooltipContainerKey = "BIONIC_TOOLTIP_CONTAINER";
             String bionicPanelContainerKey = "BIONIC_PANEL_CONTAINER_"+i;
             int singleBionicInstalledNameH = 40;
             int bionicH = bionic.bionicInstalled.size()!= 0 ? singleBionicInstalledNameH * bionic.bionicInstalled.size() : singleBionicInstalledNameH;
-            int bionicW = (int) (tableW - pad);
+            final int bionicW = (int) (tableW - pad);
             //--------bionic container
             ba_component bionicDisplayContainer = new ba_component(infoPersonBionicContainer.mainPanel, bionicW, bionicH,0,0,false, bionicPanelContainerKey);
             TooltipMakerAPI personDisplayContainerTooltip = bionicDisplayContainer.createTooltip(bionicTooltipContainerKey, bionicW, bionicH, false, 0,0);
@@ -356,10 +356,40 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             ButtonAPI areaChecker = personDisplayContainerTooltip.addAreaCheckbox("", null,Color.pink.darker(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), bionicW, bionicH, 0);
             addButtonToList(areaChecker, "hover_bionic:"+bionic);
             areaChecker.getPosition().setLocation(0,0).inTL(0, 0);
+            //hover pop up
+            personDisplayContainerTooltip.addTooltipToPrevious(new TooltipMakerAPI.TooltipCreator() {
+                @Override
+                public boolean isTooltipExpandable(Object tooltipParam) {
+                    return false;
+                }
+
+                @Override
+                public float getTooltipWidth(Object tooltipParam) {
+                    return bionicW * 0.6f;
+                }
+
+                @Override
+                public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                    tooltip.addSectionHeading("Limb", Alignment.MID, 0);
+                    tooltip.addPara(bionic.limb.description, pad);
+                    tooltip.addSpacer(pad);
+                    tooltip.addSectionHeading("Bionics", Alignment.MID, 0);
+                    if(bionic.bionicInstalled.size() != 0) {
+                        for(ba_bionicmanager.ba_bionic b: bionic.bionicInstalled) {
+                            tooltip.addPara(b.name + ": " + b.description, pad, Misc.getTextColor(), b.displayColor, b.description);
+                            tooltip.addSpacer(pad);
+                        }
+                    } else {
+                        tooltip.addPara("No bionic installed", pad, Misc.getGrayColor(), "No bionic installed");
+                        tooltip.addSpacer(pad);
+                    }
+
+                }
+            }, TooltipMakerAPI.TooltipLocation.ABOVE);
             //---------Limb Name
             int nameH = bionicH;
             int nameW = 150;
-            int nameX = (int) (0);
+            int nameX = (int) (pad);
             TooltipMakerAPI bionicLimbNameTooltip = bionicDisplayContainer.createTooltip("BIONIC_LIMB_NAME", nameW, nameH, false, 0, 0);
             bionicLimbNameTooltip.getPosition().inTL(nameX, 0);
             LabelAPI limbName = bionicLimbNameTooltip.addPara(bionic.limb.name, pad);
