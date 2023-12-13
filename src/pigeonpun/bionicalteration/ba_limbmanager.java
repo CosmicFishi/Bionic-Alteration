@@ -16,18 +16,8 @@ public class ba_limbmanager {
     protected static HashMap<String, List<ba_limb>> limbGroupMap = new HashMap<>();
     public static void onApplicationLoad() {
         loadLimbs();
-        loadLimbGroup();
     }
-    //todo: change to get csv
     public static void loadLimbs() {
-//        limbMap.put("heart",new ba_limbmanager.ba_limb("heart","Heart", "a"));
-//        limbMap.put("heart_2",new ba_limbmanager.ba_limb("heart_2","Second heart", "a"));
-//        limbMap.put("hand_left",new ba_limbmanager.ba_limb("hand_left","Left Hand", "a"));
-//        limbMap.put("hand_right",new ba_limbmanager.ba_limb("hand_right","Right Hand", "a"));
-//        limbMap.put("eye_left",new ba_limbmanager.ba_limb("eye_left","Left Eye", "a"));
-//        limbMap.put("eye_right",new ba_limbmanager.ba_limb("eye_right","Right Eye", "a"));
-//        limbMap.put("brain",new ba_limbmanager.ba_limb("brain","Brain", "a"));
-
         //load from csv
         //limbMap.clear();
         List<String> limbFiles = MagicSettings.getList(ba_variablemanager.BIONIC_ALTERATION, "limb_files");
@@ -54,6 +44,7 @@ public class ba_limbmanager {
                                 )
                         );
                         //limb group
+                        //todo: change the limb group to support array instead of single
                         String limbGroup = row.getString("groupId");
                         if(!Objects.equals(limbGroup, ""))
                         if(limbGroupMap.get(limbGroup) != null) {
@@ -70,13 +61,6 @@ public class ba_limbmanager {
 //        for (Map.Entry<String, ba_limb> entry: limbMap.entrySet()) {
 //            System.out.println(entry.getKey() + " " + entry.getValue().limbId);
 //        }
-    }
-    //todo: change to get csv
-    public static void loadLimbGroup() {
-//        limbGroupMap.put("heart_group", new ArrayList<ba_limb>(Arrays.asList(limbMap.get("heart"), limbMap.get("heart_2"))));
-//        limbGroupMap.put("hand_group", new ArrayList<ba_limb>(Arrays.asList(limbMap.get("hand_left"), limbMap.get("hand_right"))));
-//        limbGroupMap.put("eye_group", new ArrayList<ba_limb>(Arrays.asList(limbMap.get("eye_left"), limbMap.get("eye_right"))));
-//        limbGroupMap.put("brain_group", new ArrayList<ba_limb>(Arrays.asList(limbMap.get("brain"))));
     }
     public static List<String> getListLimbGroupKeys() {
         return new ArrayList<>(limbGroupMap.keySet());

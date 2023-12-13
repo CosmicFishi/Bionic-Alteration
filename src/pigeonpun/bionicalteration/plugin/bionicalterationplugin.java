@@ -2,7 +2,7 @@ package pigeonpun.bionicalteration.plugin;
 
 import com.fs.starfarer.api.BaseModPlugin;
 import pigeonpun.bionicalteration.ba_variantmanager;
-import pigeonpun.bionicalteration.ba_bionicmanager;
+import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.ba_limbmanager;
 
 public class bionicalterationplugin extends BaseModPlugin {

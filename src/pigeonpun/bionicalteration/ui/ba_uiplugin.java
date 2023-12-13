@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CustomUIPanelPlugin;
 import com.fs.starfarer.api.campaign.CustomVisualDialogDelegate;
 import com.fs.starfarer.api.campaign.InteractionDialogAPI;
+import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.characters.OfficerDataAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
@@ -12,19 +13,17 @@ import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
-import pigeonpun.bionicalteration.ba_bionicmanager;
+import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.ba_officermanager;
-import pigeonpun.bionicalteration.utils.ba_utils;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import static pigeonpun.bionicalteration.ba_officermanager.getBionicAnatomyList;
-
-//the container panel
+/**
+ * @author PigeonPun
+ */
 public class ba_uiplugin implements CustomUIPanelPlugin {
     static Logger log = Global.getLogger(ba_uiplugin.class);
     protected CustomVisualDialogDelegate.DialogCallbacks callbacks;
@@ -298,9 +297,44 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             UIComponentAPI personSkills = personSkillTooltip.addSkillPanelOneColumn(currentHoveredPerson, 0);
             personSkills.getPosition().setSize(skillW, skillH);
             //--------Stats
+            //todo: add button
+            int statsX = (int) (imageW + pad);
+            int statsY = imageY;
+            int statsW = (int) (personInfoW - skillW - pad);
+            int statsH = imageH;
+            int statsSpacer = 20;
+            TooltipMakerAPI personStatsTooltip = infoPersonContainer.createTooltip("PERSON_INFO_NAME", statsW, statsH, false, 0, 0);
+            personStatsTooltip.getPosition().inTL(statsX,statsY);
+            //>name
+            LabelAPI nameLabel = personStatsTooltip.addPara(this.currentHoveredPerson.getName().getFullName() + (currentHoveredPerson.isPlayer() ? " (You)" : ""), 0, Misc.getBrightPlayerColor(), this.currentHoveredPerson.getName().getFullName());
+            nameLabel.getPosition().setSize(200,20);
+            nameLabel.getPosition().inTL(0,0);
+            //>Level
+            LabelAPI levelLabel = personStatsTooltip.addPara("Level: " + this.currentHoveredPerson.getStats().getLevel(), 0, Misc.getHighlightColor(), "" + this.currentHoveredPerson.getStats().getLevel());
+            levelLabel.getPosition().setSize(100,20);
+            levelLabel.getPosition().inTL(nameLabel.getPosition().getWidth() + pad, 0);
+            //>personality
+            LabelAPI personalityLabel = personStatsTooltip.addPara("Personality: " + this.currentHoveredPerson.getPersonalityAPI().getDisplayName(), 0, Misc.getHighlightColor(), "" + this.currentHoveredPerson.getPersonalityAPI().getDisplayName());
+            personalityLabel.getPosition().setSize(200,20);
+            personalityLabel.getPosition().inTL(0, nameLabel.getPosition().getHeight() + statsSpacer);
+            //>Occupation
+            String occupation = "Idle";
+            if(this.currentHoveredPerson.getFleet() != null || this.currentHoveredPerson.isPlayer()) {
+                String shipName = Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentHoveredPerson).getShipName();
+                String shipClass = Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentHoveredPerson).getHullSpec().getNameWithDesignationWithDashClass();
+                occupation = "Piloting "+ shipName + " of " + shipClass;
+            } else if (this.currentHoveredPerson.getMarket() != null) {
+                MarketAPI market = this.currentHoveredPerson.getMarket();
+                if(market.getAdmin() == this.currentHoveredPerson) {
+                    occupation = "Admin of " + market.getName();
+                }
+            }
+            LabelAPI occupationLabel = personStatsTooltip.addPara(String.valueOf("Currently: " + occupation), 0, Misc.getGrayColor(), "Currently: " + occupation);
+            occupationLabel.getPosition().setSize(400,20);
+            occupationLabel.getPosition().inTL(0, nameLabel.getPosition().getHeight() + statsSpacer + personalityLabel.getPosition().getHeight() + statsSpacer);
             //--------Bionic table
-            int tableX = skillX + skillW + 10;
-            int tableY = imageY + imageH + 10;
+            int tableX = (int) (skillX + skillW + pad);
+            int tableY = (int) (imageY + imageH + pad);
             int tableW = (int) (personInfoW - skillW - pad);
             int tableH = (int) (personInfoH - imageH - headerH - pad);
             displayBionicTable(infoPersonContainer, infoPersonTooltipKey, false, true, tableW, tableH, tableX, tableY);
@@ -353,7 +387,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             infoPersonBionicContainer.attachSubPanel(infoPersonBionicTooltipKey, infoPersonBionicPanelKey, bionicDisplayContainer);
             subComponentBionicList.add(bionicDisplayContainer);
             //hover
-            ButtonAPI areaChecker = personDisplayContainerTooltip.addAreaCheckbox("", null,Color.pink.darker(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), bionicW, bionicH, 0);
+            ButtonAPI areaChecker = personDisplayContainerTooltip.addAreaCheckbox("", null,Color.blue.darker().darker(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), bionicW, bionicH, 0);
             addButtonToList(areaChecker, "hover_bionic:"+bionic);
             areaChecker.getPosition().setLocation(0,0).inTL(0, 0);
             //hover pop up

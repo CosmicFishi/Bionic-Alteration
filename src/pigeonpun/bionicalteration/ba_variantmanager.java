@@ -15,6 +15,7 @@ import java.util.*;
  * Handle how many limbs can a person have
  * A person always have their ANATOMY VARIANT(s), which is defined in a csv along with their generic's limbs
  * Probably will have a .json file to store all the variant type
+ * @author PigeonPun
  */
 public class ba_variantmanager {
     static Logger log = Global.getLogger(ba_variantmanager.class);
@@ -24,7 +25,6 @@ public class ba_variantmanager {
         loadAnatomyVariantList();
 //        loadLimbs();
     }
-    //todo: change this to get from csv
     public static void loadAnatomyVariantList() {
 //        variantList.put("GENERIC_HUMAN", new ArrayList<String>(Arrays.asList("brain", "heart", "eye_left", "eye_right", "hand_left", "hand_right")));
 //        variantList.put("GENERIC_HALF_BORN", new ArrayList<String>(Arrays.asList("brain", "heart_2", "heart", "eye_left", "eye_right", "hand_left", "hand_right")));

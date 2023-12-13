@@ -1,4 +1,4 @@
-package pigeonpun.bionicalteration;
+package pigeonpun.bionicalteration.bionic;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.characters.PersonAPI;
@@ -8,6 +8,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.magiclib.util.MagicSettings;
+import pigeonpun.bionicalteration.ba_limbmanager;
+import pigeonpun.bionicalteration.ba_variablemanager;
 
 import java.awt.*;
 import java.io.IOException;
@@ -17,6 +19,7 @@ import java.util.List;
 /**
  * Handle bionic list/loading
  * Install tag: <BIONIC_TAG>:<LIMB_TAB>. Ex: bionic_id:hand_right
+ * @author PigeonPun
  */
 public class ba_bionicmanager {
     static Logger log = Global.getLogger(ba_bionicmanager.class);
@@ -55,13 +58,27 @@ public class ba_bionicmanager {
                 try{
                     JSONObject row = bionicData.getJSONObject(i);
                     String bionicId = row.getString("bionicId");
+                    ba_bionicEffect effect = null;
+                    try {
+                        if(!Objects.equals(row.getString("scriptPath"), "") && row.getString("scriptPath") != null) {
+                            Class<?> clazz = Global.getSettings().getScriptClassLoader().loadClass(row.getString("scriptPath"));
+                            effect = (ba_bionicEffect) clazz.newInstance();
+                        }
+                    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
                     bionicMap.put(bionicId, new ba_bionic(
                             bionicId,
                             row.getString("limbGroupId"),
                             row.getString("name"),
                             row.getString("description"),
-                            MagicSettings.toColor3(row.getString("colorDisplay"))
+                            MagicSettings.toColor3(row.getString("colorDisplay")),
+                            (float) row.getDouble("consciousnessCost"),
+                            row.getInt("tier"),
+                            row.getBoolean("isOfficerBionic"),
+                            effect
                     ));
+
                 } catch (JSONException ex) {
                     log.error("Invalid line, skipping");
                 }
@@ -136,12 +153,22 @@ public class ba_bionicmanager {
         public String name;
         public String description;
         public Color displayColor;
+        public float consciousnessCost;
+        public int tier;
+        public ba_bionicEffect effectScript;
+        public boolean isOfficerBionic;
+        //todo: support sprite
         public HashMap<String, Object> customData = new HashMap<>();
-        public ba_bionic(String bionicId, String bionicLimbGroupId, String name, String description, Color displayColor) {
+        public ba_bionic(String bionicId, String bionicLimbGroupId, String name, String description, Color displayColor, float consciousnessCost, int tier, boolean isOfficerBionic, ba_bionicEffect effectScript) {
             this.bionicId = bionicId;
             this.bionicLimbGroupId = bionicLimbGroupId;
             this.name = name;
             this.description = description;
-            this.displayColor = displayColor;}
+            this.displayColor = displayColor;
+            this.consciousnessCost = consciousnessCost;
+            this.tier = tier;
+            this.isOfficerBionic = isOfficerBionic;
+            this.effectScript = effectScript;
+        }
     }
 }

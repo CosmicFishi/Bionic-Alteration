@@ -3,6 +3,7 @@ package pigeonpun.bionicalteration;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.characters.PersonAPI;
 import org.apache.log4j.Logger;
+import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 
 import java.util.*;
 
@@ -10,14 +11,12 @@ import static pigeonpun.bionicalteration.ba_variantmanager.getAnatomyVariantTag;
 
 /**
  * Handle how many bionic available on an officer
+ * @author PigeonPun
  */
 public class ba_officermanager {
     static Logger log = Global.getLogger(ba_officermanager.class);
-    public static final String GENERATED_BIONIC = "BA_GENERATED_BIONIC";
-    HashMap<String, ba_bionicmanager.ba_bionic> anatomy = new HashMap<>();
     public static List<ba_bionicAugmentedData> getBionicAnatomyList(PersonAPI person) {
         if(getAnatomyVariantTag(person.getTags()).isEmpty()) {
-            //todo: generate random bionic
             String randomVariant = ba_variantmanager.getRandomVariant();
             person.addTag(randomVariant);
             List<String> randomBionics = ba_bionicmanager.getRandomBionic();
