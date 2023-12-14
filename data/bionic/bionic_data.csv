@@ -1,9 +1,9 @@
-bionicId,limbGroupId,name,description,colorDisplay,consciousnessCost,tier,isOfficerBionic,scriptPath,iconPath
-ba_bionic_your_mom_hand,hand_group,Your mom hand,Your mom,"[255,0,0]",0,1,TRUE,,
-ba_bionic_smol_eye,eye_group,Smol eye,Smol,"[85,155,255]",0,2,TRUE,,
-ba_bionic_hand_2,hand_group,Another hand,HAnd,"[155,155,155]",0,3,TRUE,,
-ba_bionic_big_brain,brain_group,Big brain,Big,"[155,0,125]",0,1,TRUE,,
-ba_bionic_big_eye,eye_group,Beeg eye,Beeg,"[25,95,255]",0,2,TRUE,,
-ba_bionic_my_heart,heart_group,My heart,<3,"[0,255,255]",0,1,TRUE,,
-ba_bionic_another_brain,brain_group,Another brain effect,aaaaaaaaaaaa,"[0,0,199]",0,3,TRUE,,
-ba_bionic_my_broken_heart,heart_group,My broken heart,</3,"[0,255,0]",0,1,TRUE,,
+bionicId,limbGroupId,name,description,colorDisplay,brmCost,consciousnessCost,tier,isOfficerBionic,scriptPath,iconPath
+ba_bionic_your_mom_hand,hand_group,Your mom hand,Your mom,"[255,0,0]",10,0.05,1,TRUE,,
+ba_bionic_smol_eye,eye_group,Smol eye,Smol,"[85,155,255]",1,0.1,2,TRUE,,
+ba_bionic_hand_2,hand_group,Another hand,HAnd,"[155,155,155]",1,0.09,3,TRUE,,
+ba_bionic_big_brain,brain_group,Big brain,Big,"[155,0,125]",5,0.07,1,TRUE,,
+ba_bionic_big_eye,eye_group,Beeg eye,Beeg,"[25,95,255]",2,0.04,2,TRUE,,
+ba_bionic_my_heart,heart_group,My heart,<3,"[0,255,255]",7,0.04,1,TRUE,,
+ba_bionic_another_brain,brain_group,Another brain effect,aaaaaaaaaaaa,"[0,0,199]",5,0.06,3,TRUE,,
+ba_bionic_my_broken_heart,heart_group,My broken heart,</3,"[0,255,0]",7,0.08,1,TRUE,,

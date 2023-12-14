@@ -3,6 +3,9 @@ package pigeonpun.bionicalteration.utils;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ba_utils {
     /**
@@ -42,5 +45,12 @@ public class ba_utils {
         GL11.glVertex2f(x, y);
         GL11.glEnd();
         GL11.glPopMatrix();
+    }
+    public static List<String> trimAndSplitString(String string) {
+        List<String> listString = new ArrayList<>();
+        for (String s: string.split(",")) {
+            listString.add(s.trim());
+        }
+        return listString;
     }
 }

@@ -30,19 +30,7 @@ public class ba_bionicmanager {
     public static void onApplicationLoad() {
         loadBionic();
     }
-    //todo: change to get csv
     public static void loadBionic() {
-//        bionicMap.put("1",new ba_bionic("1","hand_group","Your mom hand", "idk", Color.RED.darker()));
-//        bionicMap.put("2",new ba_bionic("2","hand_group","Hand in Hand?", "idk", Color.YELLOW.darker()));
-//        bionicMap.put("3",new ba_bionic("3","eye_group","Smoll eye", "idk", Color.magenta));
-//        bionicMap.put("4",new ba_bionic("4","eye_group","Big eye", "idk", Color.green));
-//        bionicMap.put("5",new ba_bionic("5","brain_group","Big brainnnnn", "idk", Color.CYAN.darker()));
-//        bionicMap.put("6",new ba_bionic("6","heart_group","My heart <3", "idk", Color.blue));
-//        bionicMap.put("7",new ba_bionic("7","hand_group","Big MF hand", "idk", Color.pink));
-//        bionicMap.put("8",new ba_bionic("8","heart_group","Broken heart </3", "idk", Color.green));
-//        bionicMap.put("9",new ba_bionic("9","eye_group","Pirate eye, ARRRRR", "idk", Color.cyan));
-//        bionicMap.put("10",new ba_bionic("10","brain_group","ANother fking brain to understand WTF did i code", "idk", Color.YELLOW));
-//        bionicMap.put("11",new ba_bionic("11","brain_group","Another another brain", "idk", Color.blue.darker()));
 
         //load from csv
         List<String> limbFiles = MagicSettings.getList(ba_variablemanager.BIONIC_ALTERATION, "bionic_files");
@@ -73,6 +61,7 @@ public class ba_bionicmanager {
                             row.getString("name"),
                             row.getString("description"),
                             MagicSettings.toColor3(row.getString("colorDisplay")),
+                            row.getInt("brmCost"),
                             (float) row.getDouble("consciousnessCost"),
                             row.getInt("tier"),
                             row.getBoolean("isOfficerBionic"),
@@ -84,9 +73,9 @@ public class ba_bionicmanager {
                 }
             }
         }
-        for (Map.Entry<String, ba_bionic> entry: bionicMap.entrySet()) {
-            log.info(entry.getKey() + " " + entry.getValue().bionicLimbGroupId + "-----" + entry.getValue().bionicId);
-        }
+//        for (Map.Entry<String, ba_bionic> entry: bionicMap.entrySet()) {
+//            log.info(entry.getKey() + " " + entry.getValue().bionicLimbGroupId + "-----" + entry.getValue().bionicId);
+//        }
     }
     public static ba_bionic getBionic(String id) {
         ba_bionic bionic = bionicMap.get(id);
@@ -106,7 +95,37 @@ public class ba_bionicmanager {
         }
         return bionics;
     }
-    public static HashMap<ba_limbmanager.ba_limb, List<ba_bionic>> getListBionicInstalled(PersonAPI person) {
+
+    /**
+     * Get a list of all bionic installed <br>
+     * If you want to see the full list of which limb have which bionic. Use {@code getListLimbAndBionicInstalled}.
+     * @param person person
+     * @return List of bionic installed.<br> NOTE: There will be duplicate of existing bionic in the list.
+     */
+    public static List<ba_bionic> getListBionicInstalled(PersonAPI person) {
+        List<ba_bionic> bionicsInstalledList = new ArrayList<>();
+        if (!person.getTags().isEmpty()) {
+            for (String tag: person.getTags()) {
+                if(tag.contains(":")) {
+                    String[] tokens = tag.split(":");
+                    ba_bionic bionicInstalled = bionicMap.get(tokens[0]);
+                    if(bionicInstalled == null) {
+                        log.error("Can't find bionic of tag: " + tokens[0] + ". Skipping");
+                    } else {
+                        bionicsInstalledList.add(bionicInstalled);
+                    }
+                }
+            }
+        }
+        return bionicsInstalledList;
+    }
+
+    /**
+     * Get list bionic and which limb they are installed on. Unsorted.
+     * @param person Person
+     * @return The bionics and limb they are installed on.
+     */
+    public static HashMap<ba_limbmanager.ba_limb, List<ba_bionic>> getListLimbAndBionicInstalled(PersonAPI person) {
         HashMap<ba_limbmanager.ba_limb, List<ba_bionic>> bionicsInstalledList = new HashMap<>();
         if (!person.getTags().isEmpty()) {
             for (String tag: person.getTags()) {
@@ -148,23 +167,24 @@ public class ba_bionicmanager {
     }
     public static class ba_bionic {
         public String bionicId;
-//        public List<String> bionicSectionId;
         public String bionicLimbGroupId;
         public String name;
         public String description;
         public Color displayColor;
+        public float brmCost;
         public float consciousnessCost;
         public int tier;
         public ba_bionicEffect effectScript;
         public boolean isOfficerBionic;
         //todo: support sprite
         public HashMap<String, Object> customData = new HashMap<>();
-        public ba_bionic(String bionicId, String bionicLimbGroupId, String name, String description, Color displayColor, float consciousnessCost, int tier, boolean isOfficerBionic, ba_bionicEffect effectScript) {
+        public ba_bionic(String bionicId, String bionicLimbGroupId, String name, String description, Color displayColor, int brmCost, float consciousnessCost, int tier, boolean isOfficerBionic, ba_bionicEffect effectScript) {
             this.bionicId = bionicId;
             this.bionicLimbGroupId = bionicLimbGroupId;
             this.name = name;
             this.description = description;
             this.displayColor = displayColor;
+            this.brmCost = brmCost;
             this.consciousnessCost = consciousnessCost;
             this.tier = tier;
             this.isOfficerBionic = isOfficerBionic;

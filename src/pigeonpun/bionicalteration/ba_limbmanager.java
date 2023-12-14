@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.magiclib.util.MagicSettings;
+import pigeonpun.bionicalteration.utils.ba_utils;
 
 import java.io.IOException;
 import java.util.*;
@@ -44,13 +45,16 @@ public class ba_limbmanager {
                                 )
                         );
                         //limb group
-                        //todo: change the limb group to support array instead of single
                         String limbGroup = row.getString("groupId");
-                        if(!Objects.equals(limbGroup, ""))
-                        if(limbGroupMap.get(limbGroup) != null) {
-                            limbGroupMap.get(limbGroup).add(limbMap.get(limbId));
-                        } else {
-                            limbGroupMap.put(limbGroup, new ArrayList<>(Arrays.asList(limbMap.get(limbId))));
+                        if(!Objects.equals(limbGroup, "")) {
+                            List<String> limbGroupList = ba_utils.trimAndSplitString(limbGroup);
+                            for (String limbGroupId: limbGroupList) {
+                                if(limbGroupMap.get(limbGroupId) != null) {
+                                    limbGroupMap.get(limbGroupId).add(limbMap.get(limbId));
+                                } else {
+                                    limbGroupMap.put(limbGroupId, new ArrayList<>(Arrays.asList(limbMap.get(limbId))));
+                                }
+                            }
                         }
                     }
                 } catch (JSONException ex) {
@@ -58,9 +62,12 @@ public class ba_limbmanager {
                 }
             }
         }
-//        for (Map.Entry<String, ba_limb> entry: limbMap.entrySet()) {
-//            System.out.println(entry.getKey() + " " + entry.getValue().limbId);
-//        }
+        for (Map.Entry<String, List<ba_limb>> entry: limbGroupMap.entrySet()) {
+            log.info("loaded: " + entry.getKey() + "-----");
+            for(ba_limb limb: entry.getValue()) {
+                log.info("-----child: " + limb.name);
+            }
+        }
     }
     public static List<String> getListLimbGroupKeys() {
         return new ArrayList<>(limbGroupMap.keySet());

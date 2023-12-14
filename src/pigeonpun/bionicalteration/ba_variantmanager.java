@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.magiclib.util.MagicSettings;
+import pigeonpun.bionicalteration.utils.ba_utils;
 
 import java.io.IOException;
 import java.util.*;
@@ -43,7 +44,7 @@ public class ba_variantmanager {
                     JSONObject row = variantData.getJSONObject(i);
                     String variantId = row.getString("variantId");
                     if(!Objects.equals(variantId, "")) {
-                        List<String> limbIdList = Arrays.asList(row.getString("limbIdList").split(","));
+                        List<String> limbIdList = ba_utils.trimAndSplitString(row.getString("limbIdList"));
                         variantList.put(variantId, new ArrayList<>(limbIdList));
                     }
                 } catch (JSONException ex) {
@@ -60,7 +61,7 @@ public class ba_variantmanager {
     }
     /**
      * @param keys Person tags
-     * @return the Generic Variants
+     * @return the Generic Variant tags
      */
     public static List<String> getAnatomyVariantTag(Set<String> keys) {
         List<String> anatomyVariantList = getListAnatomyKeys();
