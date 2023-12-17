@@ -2,8 +2,11 @@ package pigeonpun.bionicalteration;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.characters.AdminData;
+import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import com.fs.starfarer.api.characters.OfficerDataAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent;
+import com.fs.starfarer.api.impl.campaign.ids.Factions;
 import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
@@ -22,17 +25,24 @@ public class ba_officermanager {
     public static List<PersonAPI> listPersons = new ArrayList<>();
     static Logger log = Global.getLogger(ba_officermanager.class);
     public static void onSaveLoad() {
-        //get list person
+        refresh();
+    }
+
+    /**
+     * Refresh the entire list person pls all the other stats set up needed
+     */
+    public static void refresh() {
         refreshListPerson();
+        setUpVariant();
         //install random bionic on start
         for (PersonAPI person: listPersons) {
             installRandomBionic(person);
         }
-        //checkIfInitStat
         setUpDynamicStats();
-        //checkIfApplySkill
         setUpSkill();
     }
+    //create new admin
+    //runcode import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent; import com.fs.starfarer.api.impl.campaign.ids.Factions; PersonAPI person = OfficerManagerEvent.createAdmin(Global.getSector().getFaction(Factions.MERCENARY), 1, new Random()); Global.getSector().getCharacterData().addAdmin(person);
     public static List<PersonAPI> refreshListPerson() {
         listPersons.clear();
         List<PersonAPI> listP = new ArrayList<>();
@@ -47,6 +57,15 @@ public class ba_officermanager {
         listPersons.addAll(listP);
         return listPersons;
     }
+    public static void setUpVariant() {
+        //todo: set up variant per faction
+        for(PersonAPI person: listPersons) {
+            if(getAnatomyVariantTag(person.getTags()).isEmpty()) {
+                String randomVariant = ba_variantmanager.getRandomVariant();
+                person.addTag(randomVariant);
+            }
+        }
+    }
     public static void setUpDynamicStats() {
         //todo: have side effects base on consciousness
         for(PersonAPI person: listPersons) {
@@ -59,9 +78,13 @@ public class ba_officermanager {
         }
     }
     public static void setUpSkill() {
-        //todo: set up skill
-        //add new skill
-//            member.getPerson().getFleetCommanderStats().sets
+        for(PersonAPI person: ba_officermanager.listPersons) {
+            for (MutableCharacterStatsAPI.SkillLevelAPI skill: person.getStats().getSkillsCopy()) {
+                if (!skill.getSkill().getId().equals(ba_variablemanager.BA_BIONIC_SKILL_ID) && ba_bionicmanager.checkIfHaveBionic(person)) {
+                    person.getStats().setSkillLevel(ba_variablemanager.BA_BIONIC_SKILL_ID, 1);
+                }
+            }
+        }
     }
     protected static int getBRMLimit(PersonAPI person) {
         int brmLimit = (int) (person.getStats().getLevel() * ba_variablemanager.BA_BRM_LIMIT_BONUS_PER_LEVEL);
@@ -81,7 +104,7 @@ public class ba_officermanager {
         for (ba_bionicmanager.ba_bionic bionic: listBionics) {
             currentConsciousness -= bionic.consciousnessCost;
         }
-        log.info(currentConsciousness);
+//        log.info(currentConsciousness);
         return currentConsciousness;
     }
 
@@ -91,7 +114,7 @@ public class ba_officermanager {
      * @return
      */
     public static Color getConsciousnessColorByLevel(float consciousnessLevel) {
-        log.info(ba_variablemanager.BA_CONSCIOUSNESS_THRESHOLD.get(ba_variablemanager.BA_CONSCIOUSNESS_STABLE_THRESHOLD));
+//        log.info(ba_variablemanager.BA_CONSCIOUSNESS_THRESHOLD.get(ba_variablemanager.BA_CONSCIOUSNESS_STABLE_THRESHOLD));
         Color returnColor = Misc.getPositiveHighlightColor();
         if (consciousnessLevel < ba_variablemanager.BA_CONSCIOUSNESS_THRESHOLD.get(ba_variablemanager.BA_CONSCIOUSNESS_STABLE_THRESHOLD)) {
             returnColor = ba_variablemanager.BA_CONSCIOUSNESS_COLOR.get(ba_variablemanager.BA_CONSCIOUSNESS_STABLE_THRESHOLD);
@@ -140,15 +163,13 @@ public class ba_officermanager {
     }
     protected static void installRandomBionic(PersonAPI person) {
         //todo: setting.json that control random installment
-        if(getAnatomyVariantTag(person.getTags()).isEmpty()) {
-            String randomVariant = ba_variantmanager.getRandomVariant();
-            person.addTag(randomVariant);
+        if(!person.hasTag(ba_variablemanager.BA_RANDOM_BIONIC_GENERATED_TAG)) {
             List<String> randomBionics = ba_bionicmanager.getRandomBionic();
             for (String random: randomBionics) {
                 person.addTag(random);
             }
+            person.addTag(ba_variablemanager.BA_RANDOM_BIONIC_GENERATED_TAG);
         }
-//        refreshListPerson();
     }
     public static class ba_bionicAugmentedData {
         public ba_limbmanager.ba_limb limb;

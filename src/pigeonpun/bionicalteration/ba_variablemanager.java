@@ -40,4 +40,6 @@ public class ba_variablemanager {
         BA_CONSCIOUSNESS_COLOR.put(BA_CONSCIOUSNESS_FRAGILE_THRESHOLD, Misc.interpolateColor(Misc.getPositiveHighlightColor(), Misc.getNegativeHighlightColor(), 0.2f));
         BA_CONSCIOUSNESS_COLOR.put(BA_CONSCIOUSNESS_CRITICAL_THRESHOLD, Misc.getNegativeHighlightColor());
     }
+    public static final String BA_BIONIC_SKILL_ID = "ba_bionic_augmented";
+    public static final String BA_RANDOM_BIONIC_GENERATED_TAG = "ba_random_bionic_generated";
 }

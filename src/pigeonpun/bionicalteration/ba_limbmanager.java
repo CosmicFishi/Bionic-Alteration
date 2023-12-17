@@ -98,6 +98,13 @@ public class ba_limbmanager {
         }
         return section;
     }
+    public static List<ba_limb> getListLimb(String groupId) {
+        List<ba_limb> list = limbGroupMap.get(groupId);
+        if(list == null) {
+            log.error("Can not find list of id: "+ groupId);
+        }
+        return list;
+    }
     public static class ba_limb {
         public String limbId;
         public String name;

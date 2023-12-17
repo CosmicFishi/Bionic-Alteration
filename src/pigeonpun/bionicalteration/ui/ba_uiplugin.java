@@ -21,6 +21,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author PigeonPun
@@ -65,6 +66,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         pW = (int) this.containerPanel.getPosition().getWidth();
         pH = (int) this.containerPanel.getPosition().getHeight();
         initialUICreation();
+        ba_officermanager.refresh();
         //change the current tab id and "focus" on it
         focusContent(moveToTabId);
     }
@@ -183,45 +185,57 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             personImageTooltip.addImage(spriteName, imageW, imageH, 0);
             personImageTooltip.getPosition().inTL(0, (personH - imageH ) / 2);
             //---------Name
-            int nameH = 20;
+            int nameH = 30;
             int nameW = 150;
             int nameX = (int) (imageX + imageW + pad);
             TooltipMakerAPI personNameTooltip = personDisplayContainer.createTooltip("PERSON_NAME", nameW, nameH, false, 0, 0);
             personNameTooltip.getPosition().inTL(nameX, 0);
-            LabelAPI name = personNameTooltip.addPara(member.getName().getFullName(), pad);
+            LabelAPI name = personNameTooltip.addPara(member.getName().getFullName() + (member.isPlayer() ? " (" + "You" + ")": ""), pad);
             name.setHighlight(member.getName().getFullName());
-            name.setHighlightColors(t);
-            //Level
-            int levelH = 20;
-            int levelW = 100;
-            int levelX = (int) (nameX + nameW);
-            TooltipMakerAPI personLevelTooltip = personDisplayContainer.createTooltip("PERSON_LEVEL", levelW, levelH, false, 0, 0);
-            personLevelTooltip.getPosition().inTL(levelX, 0);
-            LabelAPI level = personLevelTooltip.addPara("Level: " + member.getStats().getLevel(), pad);
-            level.setHighlight("Level: ","" + member.getStats().getLevel());
-            level.setHighlightColors(g,h);
+            name.setHighlightColors(Misc.getBrightPlayerColor());
             //Personality
             //BRM (Bionic Rights Management)
-            int brmH = 20;
-            int brmW = 100;
+            int brmH = 30;
+            int brmW = 120;
             int brmX = (int) (nameX);
             int brmY = (int) (currentStartY + nameH);
             int currentBRM = (int) member.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);;
             int limitBRM = (int) member.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);;
             TooltipMakerAPI personBRMTooltip = personDisplayContainer.createTooltip("PERSON_BRM", brmW, brmH, false, 0, 0);
             personBRMTooltip.getPosition().inTL(brmX, brmY);
-            LabelAPI BRM = personBRMTooltip.addPara("BRM: " + currentBRM + "/" + limitBRM, pad);
+            LabelAPI BRM = personBRMTooltip.addPara("BRM: " + currentBRM + " / " + limitBRM, pad);
             BRM.setHighlight("BRM: ", "" +currentBRM, "" +limitBRM);
             BRM.setHighlightColors(t,currentBRM > limitBRM ? bad: h,Misc.getBrightPlayerColor());
+            //Level
+            int levelH = brmH;
+            int levelW = 100;
+            int levelX = (int) (brmX + brmW);
+            int levelY = brmY;
+            TooltipMakerAPI personLevelTooltip = personDisplayContainer.createTooltip("PERSON_LEVEL", levelW, levelH, false, 0, 0);
+            personLevelTooltip.getPosition().inTL(levelX, levelY);
+            LabelAPI level = personLevelTooltip.addPara("Level: " + member.getStats().getLevel(), pad);
+            level.setHighlight("Level: ","" + member.getStats().getLevel());
+            level.setHighlightColors(g,h);
             //Profession: Captain/Administrator
             int profH = 20;
-            int profW = 100;
-            int profX = (int) (levelX);
-            int profY = (int) (currentStartY + levelH);
+            int profW = 200;
+            int profX = (int) (nameX);
+            int profY = (int) (currentStartY + brmH + nameH);
             TooltipMakerAPI personProfTooltip = personDisplayContainer.createTooltip("PERSON_PROF", profW, profH, false, 9, 0);
             personProfTooltip.getPosition().inTL(profX, profY);
-            LabelAPI prof = personProfTooltip.addPara("Profession: " + "---", pad);
-            prof.setHighlight("Profession: ","---");
+            String profString = "Idle";
+            if(member.getFleet() != null || member.isPlayer()) {
+                if(Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(member) != null) {
+                    profString = "Captain";
+                }
+            } else if (member.getMarket() != null) {
+                MarketAPI market = member.getMarket();
+                if(market.getAdmin() == member) {
+                    profString = "Admin";
+                }
+            }
+            LabelAPI prof = personProfTooltip.addPara("Profession: " + profString, pad);
+            prof.setHighlight("Profession: ", profString);
             prof.setHighlightColors(g,h);
             //Monthly Salary
             //Assign to ship/planet
@@ -296,9 +310,11 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             //>Occupation
             String occupation = "Idle";
             if(this.currentHoveredPerson.getFleet() != null || this.currentHoveredPerson.isPlayer()) {
-                String shipName = Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentHoveredPerson).getShipName();
-                String shipClass = Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentHoveredPerson).getHullSpec().getNameWithDesignationWithDashClass();
-                occupation = "Piloting "+ shipName + " of " + shipClass;
+                if(Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentHoveredPerson) != null) {
+                    String shipName = Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentHoveredPerson).getShipName();
+                    String shipClass = Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentHoveredPerson).getHullSpec().getNameWithDesignationWithDashClass();
+                    occupation = "Piloting "+ shipName + " of " + shipClass;
+                }
             } else if (this.currentHoveredPerson.getMarket() != null) {
                 MarketAPI market = this.currentHoveredPerson.getMarket();
                 if(market.getAdmin() == this.currentHoveredPerson) {
@@ -331,6 +347,15 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             consciousnessLabel.setHighlightColor(ba_officermanager.getConsciousnessColorByLevel(consciousness));
             consciousnessLabel.getPosition().setSize(150,20);
             consciousnessLabel.getPosition().inTL(consciousnessX, consciousnessY);
+            //>Conditions: tiled with conscious //todo: add in conscious related code
+            String condition = "Fine";
+            int conditionY = (int) (limitBRMY + statsSpacer + limitBRMLabel.getPosition().getHeight());
+            int conditionX = (int) (0);
+            LabelAPI conditionLabel = personStatsTooltip.addPara("Condition: " + condition + "", 0);
+            conditionLabel.setHighlight("" + condition);
+            conditionLabel.setHighlightColor(ba_officermanager.getConsciousnessColorByLevel(consciousness));
+            conditionLabel.getPosition().setSize(150,20);
+            conditionLabel.getPosition().inTL(conditionX, conditionY);
             //Button switch page
             float upgradeBtnH = 80;
             float upgradeBtnW = 200;
@@ -439,12 +464,12 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             personDisplayContainerTooltip.addTooltipToPrevious(new TooltipMakerAPI.TooltipCreator() {
                 @Override
                 public boolean isTooltipExpandable(Object tooltipParam) {
-                    return false;
+                    return true;
                 }
 
                 @Override
                 public float getTooltipWidth(Object tooltipParam) {
-                    return bionicW * 0.6f;
+                    return bionicW * 0.8f;
                 }
 
                 @Override
@@ -455,14 +480,24 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                     tooltip.addSectionHeading("Bionics", Alignment.MID, 0);
                     if(bionic.bionicInstalled.size() != 0) {
                         for(ba_bionicmanager.ba_bionic b: bionic.bionicInstalled) {
-                            tooltip.addPara(b.name + ": " + b.description, pad, Misc.getTextColor(), b.displayColor, b.description);
+                            LabelAPI descriptions = tooltip.addPara(b.name + ": " + b.description, pad);
+                            descriptions.setHighlight(b.name);
+                            descriptions.setHighlightColor(b.displayColor);
+                            if(expanded) {
+                                String effect = "No effects yet...";
+                                if(b.effectScript != null) {
+                                    effect = b.effectScript.getShortEffectDescription();
+                                }
+                                LabelAPI expandedTooltip = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Effects:", effect);
+                                expandedTooltip.setHighlight("Effects:", effect);
+                                expandedTooltip.setHighlightColors(Misc.getGrayColor().brighter(), b.effectScript != null ? Misc.getHighlightColor() :Misc.getGrayColor());
+                            }
                             tooltip.addSpacer(pad);
                         }
                     } else {
                         tooltip.addPara("No bionic installed", pad, Misc.getGrayColor(), "No bionic installed");
                         tooltip.addSpacer(pad);
                     }
-
                 }
             }, TooltipMakerAPI.TooltipLocation.ABOVE);
             //---------Limb Name
@@ -484,10 +519,10 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                 TooltipMakerAPI bionicNameTooltip = bionicDisplayContainer.createTooltip("BIONIC_NAME"+bionicInstalledI, sectionW, sectionH, false, sectionX, sectionSpacerY);
                 bionicNameTooltip.getPosition().inTL(sectionX, sectionSpacerY);
                 //>name
-                LabelAPI bionicName = bionicNameTooltip.addPara(b.name, pad);
+                LabelAPI bionicName = bionicNameTooltip.addPara("(%s) %s", pad, h, !Objects.equals(b.namePrefix, "") ? b.namePrefix: " ", "" + b.name);
                 bionicName.getPosition().setSize(bionicNameW,sectionH);
-                bionicName.setHighlight(b.name);
-                bionicName.setHighlightColors(b.displayColor);
+//                bionicName.setHighlight(b.name, b.namePrefix);
+                bionicName.setHighlightColors(Misc.getBasePlayerColor() ,b.displayColor);
                 //>BRM
 //                int brmX = (int) (bionicName.getPosition().getWidth());
                 LabelAPI bionicBRM = bionicNameTooltip.addPara("" + Math.round(b.brmCost), pad);

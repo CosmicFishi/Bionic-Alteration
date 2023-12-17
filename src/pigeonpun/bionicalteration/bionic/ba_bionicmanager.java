@@ -1,6 +1,7 @@
 package pigeonpun.bionicalteration.bionic;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import org.apache.log4j.Logger;
@@ -9,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.magiclib.util.MagicSettings;
 import pigeonpun.bionicalteration.ba_limbmanager;
+import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
 
 import java.awt.*;
@@ -46,11 +48,11 @@ public class ba_bionicmanager {
                 try{
                     JSONObject row = bionicData.getJSONObject(i);
                     String bionicId = row.getString("bionicId");
-                    ba_bionicEffect effect = null;
+                    ba_bioniceffect effect = null;
                     try {
                         if(!Objects.equals(row.getString("scriptPath"), "") && row.getString("scriptPath") != null) {
                             Class<?> clazz = Global.getSettings().getScriptClassLoader().loadClass(row.getString("scriptPath"));
-                            effect = (ba_bionicEffect) clazz.newInstance();
+                            effect = (ba_bioniceffect) clazz.newInstance(); //check if this is created ?
                         }
                     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                         throw new RuntimeException(e);
@@ -59,16 +61,20 @@ public class ba_bionicmanager {
                             bionicId,
                             row.getString("limbGroupId"),
                             row.getString("name"),
+                            row.getString("namePrefix") != "" ? row.getString("namePrefix") : "",
                             row.getString("description"),
                             MagicSettings.toColor3(row.getString("colorDisplay")),
                             row.getInt("brmCost"),
                             (float) row.getDouble("consciousnessCost"),
                             row.getInt("tier"),
                             row.getBoolean("isOfficerBionic"),
-                            effect
+                            effect,
+                            row.getBoolean("isAdvanceInCombat"),
+                            row.getBoolean("isAdvanceInCampaign")
                     ));
 
                 } catch (JSONException ex) {
+                    log.error(ex);
                     log.error("Invalid line, skipping");
                 }
             }
@@ -84,12 +90,21 @@ public class ba_bionicmanager {
         }
         return bionic;
     }
+    public static boolean checkIfHaveBionic(PersonAPI person) {
+        return getListStringBionicInstalled(person).size() > 0;
+    }
     public static List<String> getListStringBionicInstalled(PersonAPI person) {
         List<String> bionics = new ArrayList<>();
         if (!person.getTags().isEmpty()) {
             for (String tag: person.getTags()) {
-                if(bionicMap.get(tag) != null) {
-                    bionics.add(tag);
+                if(tag.contains(":")) {
+                    String[] tokens = tag.split(":");
+                    ba_bionic bionicInstalled = bionicMap.get(tokens[0]);
+                    if(bionicInstalled == null) {
+                        log.error("Can't find bionic of tag: " + tokens[0] + ". Skipping");
+                    } else {
+                        bionics.add(tag);
+                    }
                 }
             }
         }
@@ -169,19 +184,24 @@ public class ba_bionicmanager {
         public String bionicId;
         public String bionicLimbGroupId;
         public String name;
+        public String namePrefix;
         public String description;
         public Color displayColor;
         public float brmCost;
         public float consciousnessCost;
         public int tier;
-        public ba_bionicEffect effectScript;
+        public ba_bioniceffect effectScript;
         public boolean isOfficerBionic;
+        public boolean isAdvanceInCombat;
+        public boolean isAdvanceInCampaign;
+        public String iconPath;
         //todo: support sprite
         public HashMap<String, Object> customData = new HashMap<>();
-        public ba_bionic(String bionicId, String bionicLimbGroupId, String name, String description, Color displayColor, int brmCost, float consciousnessCost, int tier, boolean isOfficerBionic, ba_bionicEffect effectScript) {
+        public ba_bionic(String bionicId, String bionicLimbGroupId, String name, String namePrefix, String description, Color displayColor, int brmCost, float consciousnessCost, int tier, boolean isOfficerBionic, ba_bioniceffect effectScript, boolean isAdvanceInCombat, boolean isAdvanceInCampaign) {
             this.bionicId = bionicId;
             this.bionicLimbGroupId = bionicLimbGroupId;
             this.name = name;
+            this.namePrefix = namePrefix;
             this.description = description;
             this.displayColor = displayColor;
             this.brmCost = brmCost;
@@ -189,6 +209,9 @@ public class ba_bionicmanager {
             this.tier = tier;
             this.isOfficerBionic = isOfficerBionic;
             this.effectScript = effectScript;
+            this.isAdvanceInCombat = isAdvanceInCombat;
+            this.isAdvanceInCampaign = isAdvanceInCampaign;
         }
+
     }
 }

@@ -18,6 +18,7 @@ import java.util.*;
  * Probably will have a .json file to store all the variant type
  * @author PigeonPun
  */
+//todo: change variant manager so it can control which faction have what type of variant, what kind of bionic do they have.
 public class ba_variantmanager {
     static Logger log = Global.getLogger(ba_variantmanager.class);
     static HashMap<String, List<String>> variantList = new HashMap<>();

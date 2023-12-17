@@ -1,0 +1,18 @@
+{
+	"id":"ba_bionic_augmented",
+	"governingAptitude":"technology",
+    "compressHullmods":false,
+	"scope":"CUSTOM",
+    "scopeStr":"Piloted Ship/Governed Planet",
+	"effectGroups":[
+		{
+			"requiredSkillLevel":0,
+			"effectBasedOnLevel":false,
+			"effects":[
+				{"type":"SHIP", "script":"pigeonpun.bionicalteration.skills.ba_bionic_augmented$Officer"},
+				{"type":"CHARACTER_STATS", "script":"pigeonpun.bionicalteration.skills.ba_bionic_augmented$Admin"},
+			]
+		}
+	],
+}
+

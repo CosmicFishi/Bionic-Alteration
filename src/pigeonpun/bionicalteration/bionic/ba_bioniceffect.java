@@ -1,15 +1,16 @@
 package pigeonpun.bionicalteration.bionic;
 
 import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
+import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.combat.MutableShipStatsAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
 
 /**
  * @author PigeonPun
  */
-public interface ba_bionicEffect {
+public interface ba_bioniceffect {
     /**
-     * Use to display the effect of bionic on the person skill panel.
+     * Use to display the effect of bionic on the person skill panel and on bionics description.
      * @return text
      */
     public String getShortEffectDescription();
@@ -42,4 +43,18 @@ public interface ba_bionicEffect {
      * @param id
      */
     public void unapplyAdminEffect(MutableCharacterStatsAPI stats, String id);
+    /**
+     * isAdvanceInCombat in bionic_data.csv needed to be set to true
+     * Note: This also run in refit :D. Magic I know
+     */
+    //todo: focus on this
+    public void advanceInCombat(ShipAPI ship, float amount);
+
+    /**
+     * isAdvanceInCampaign in bionic_data.csv needed to be set to true
+     */
+    //todo: look into this
+    public void advanceInCampaign();
+    public void onRemove();
+    public void onInstall();
 }
