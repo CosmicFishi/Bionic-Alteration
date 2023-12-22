@@ -9,6 +9,7 @@ import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent;
 import com.fs.starfarer.api.impl.campaign.ids.Factions;
 import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
+import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 
 import java.awt.*;
@@ -92,16 +93,16 @@ public class ba_officermanager {
     }
     protected static int getBRMCurrent(PersonAPI person) {
         int brmCurrent = 0;
-        List<ba_bionicmanager.ba_bionic> listBionics = ba_bionicmanager.getListBionicInstalled(person);
-        for (ba_bionicmanager.ba_bionic bionic: listBionics) {
+        List<ba_bionicitemplugin> listBionics = ba_bionicmanager.getListBionicInstalled(person);
+        for (ba_bionicitemplugin bionic: listBionics) {
             brmCurrent += bionic.brmCost;
         }
         return brmCurrent;
     }
     protected static float getConsciousness(PersonAPI person) {
         float currentConsciousness = ba_variablemanager.BA_CONSCIOUSNESS_DEFAULT;
-        List<ba_bionicmanager.ba_bionic> listBionics = ba_bionicmanager.getListBionicInstalled(person);
-        for (ba_bionicmanager.ba_bionic bionic: listBionics) {
+        List<ba_bionicitemplugin> listBionics = ba_bionicmanager.getListBionicInstalled(person);
+        for (ba_bionicitemplugin bionic: listBionics) {
             currentConsciousness -= bionic.consciousnessCost;
         }
 //        log.info(currentConsciousness);
@@ -145,17 +146,17 @@ public class ba_officermanager {
 
         //return list with full limb details
         List<ba_bionicAugmentedData> anatomyList = new ArrayList<>();
-        HashMap<ba_limbmanager.ba_limb, List<ba_bionicmanager.ba_bionic>> bionicsInstalledList = ba_bionicmanager.getListLimbAndBionicInstalled(person);
+        HashMap<ba_limbmanager.ba_limb, List<ba_bionicitemplugin>> bionicsInstalledList = ba_bionicmanager.getListLimbAndBionicInstalled(person);
         List<String> personGenericVariant = getAnatomyVariantTag(person.getTags());
         for (String pGV: personGenericVariant) {
             List<String> variantAnatomy = ba_variantmanager.variantList.get(pGV);
             for (String limbString: variantAnatomy) {
                 ba_limbmanager.ba_limb limb = ba_limbmanager.getLimb(limbString);
                 if(bionicsInstalledList.get(limb) != null) {
-                    List<ba_bionicmanager.ba_bionic> bionicsInstalled = bionicsInstalledList.get(limb);
+                    List<ba_bionicitemplugin> bionicsInstalled = bionicsInstalledList.get(limb);
                     anatomyList.add(new ba_bionicAugmentedData(limb, bionicsInstalled));
                 } else {
-                    anatomyList.add(new ba_bionicAugmentedData(limb, new ArrayList<ba_bionicmanager.ba_bionic>()));
+                    anatomyList.add(new ba_bionicAugmentedData(limb, new ArrayList<ba_bionicitemplugin>()));
                 }
             }
         }
@@ -173,8 +174,8 @@ public class ba_officermanager {
     }
     public static class ba_bionicAugmentedData {
         public ba_limbmanager.ba_limb limb;
-        public List<ba_bionicmanager.ba_bionic> bionicInstalled;
-        ba_bionicAugmentedData(ba_limbmanager.ba_limb limb, List<ba_bionicmanager.ba_bionic> bionic) {
+        public List<ba_bionicitemplugin> bionicInstalled;
+        ba_bionicAugmentedData(ba_limbmanager.ba_limb limb, List<ba_bionicitemplugin> bionic) {
             this.limb = limb;
             this.bionicInstalled = bionic;
         }

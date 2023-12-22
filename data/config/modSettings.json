@@ -7,7 +7,7 @@
             "data/bionic/limb_data.csv"
         ],
         "bionic_files": [
-            "data/bionic/bionic_data.csv"
+            "data/campaign/special_items.csv"
         ],
         "variant_files": [
             "data/bionic/variant_data.csv"

@@ -57,4 +57,9 @@ public class ba_prosthetic_brain_serenity_effect implements ba_bioniceffect {
     public void onInstall() {
 
     }
+    //todo: do custom rendering with sprite in graphics/icons/danger.png
+    @Override
+    public void renderExtraOnItem() {
+
+    }
 }

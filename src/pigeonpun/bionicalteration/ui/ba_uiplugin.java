@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import pigeonpun.bionicalteration.ba_variablemanager;
+import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.ba_officermanager;
 
@@ -479,9 +480,9 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                     tooltip.addSpacer(pad);
                     tooltip.addSectionHeading("Bionics", Alignment.MID, 0);
                     if(bionic.bionicInstalled.size() != 0) {
-                        for(ba_bionicmanager.ba_bionic b: bionic.bionicInstalled) {
-                            LabelAPI descriptions = tooltip.addPara(b.name + ": " + b.description, pad);
-                            descriptions.setHighlight(b.name);
+                        for(ba_bionicitemplugin b: bionic.bionicInstalled) {
+                            LabelAPI descriptions = tooltip.addPara(b.getName() + ": " + b.getSpec().getDesc(), pad);
+                            descriptions.setHighlight(b.getName());
                             descriptions.setHighlightColor(b.displayColor);
                             if(expanded) {
                                 String effect = "No effects yet...";
@@ -511,7 +512,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             limbName.setHighlightColors(t);
             //---------Bionic
             int bionicInstalledI = 0;
-            for (ba_bionicmanager.ba_bionic b: bionic.bionicInstalled) {
+            for (ba_bionicitemplugin b: bionic.bionicInstalled) {
                 int sectionH = bionicH;
                 int sectionW = bionicRowW;
                 int sectionX = bionicRowX;
@@ -519,7 +520,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                 TooltipMakerAPI bionicNameTooltip = bionicDisplayContainer.createTooltip("BIONIC_NAME"+bionicInstalledI, sectionW, sectionH, false, sectionX, sectionSpacerY);
                 bionicNameTooltip.getPosition().inTL(sectionX, sectionSpacerY);
                 //>name
-                LabelAPI bionicName = bionicNameTooltip.addPara("(%s) %s", pad, h, !Objects.equals(b.namePrefix, "") ? b.namePrefix: " ", "" + b.name);
+                LabelAPI bionicName = bionicNameTooltip.addPara("(%s) %s", pad, h, !Objects.equals(b.namePrefix, "") ? b.namePrefix: " ", "" + b.getName());
                 bionicName.getPosition().setSize(bionicNameW,sectionH);
 //                bionicName.setHighlight(b.name, b.namePrefix);
                 bionicName.setHighlightColors(Misc.getBasePlayerColor() ,b.displayColor);

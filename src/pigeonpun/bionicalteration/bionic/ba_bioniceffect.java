@@ -1,5 +1,6 @@
 package pigeonpun.bionicalteration.bionic;
 
+import com.fs.starfarer.api.campaign.SpecialItemPlugin;
 import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.combat.MutableShipStatsAPI;
@@ -8,7 +9,7 @@ import com.fs.starfarer.api.combat.ShipAPI;
 /**
  * @author PigeonPun
  */
-public interface ba_bioniceffect {
+public interface ba_bioniceffect{
     /**
      * Use to display the effect of bionic on the person skill panel and on bionics description.
      * @return text
@@ -47,7 +48,6 @@ public interface ba_bioniceffect {
      * isAdvanceInCombat in bionic_data.csv needed to be set to true
      * Note: This also run in refit :D. Magic I know
      */
-    //todo: focus on this
     public void advanceInCombat(ShipAPI ship, float amount);
 
     /**
@@ -57,4 +57,10 @@ public interface ba_bioniceffect {
     public void advanceInCampaign();
     public void onRemove();
     public void onInstall();
+
+    /**
+     * Render extra indicators on top right of the item (Visual cue for the player)
+     * Can leave empty if not needed
+     */
+    public void renderExtraOnItem();
 }

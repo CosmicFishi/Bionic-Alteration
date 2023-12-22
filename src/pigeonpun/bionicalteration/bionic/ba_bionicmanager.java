@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class ba_bionicmanager {
     static Logger log = Global.getLogger(ba_bionicmanager.class);
-    protected static HashMap<String, ba_bionic> bionicMap = new HashMap<>();
+    protected static HashMap<String, ba_bionicitemplugin> bionicItemMap = new HashMap<>();
     public ba_bionicmanager() {
         loadBionic();
     }
@@ -40,34 +40,39 @@ public class ba_bionicmanager {
             log.error("merging bionic files");
             JSONArray bionicData = new JSONArray();
             try {
-                bionicData = Global.getSettings().getMergedSpreadsheetDataForMod("bionicId", path, ba_variablemanager.BIONIC_ALTERATION);
+                bionicData = Global.getSettings().getMergedSpreadsheetDataForMod("id", path, ba_variablemanager.BIONIC_ALTERATION);
             } catch (IOException | JSONException | RuntimeException ex) {
                 log.error("unable to read " + path, ex);
             }
             for (int i = 0; i < bionicData.length(); i++) {
                 try{
                     JSONObject row = bionicData.getJSONObject(i);
-                    String bionicId = row.getString("bionicId");
+                    try{
+                        row.getString("limbGroupId");
+                    }catch (JSONException ex) {
+                        continue;
+                    }
+                    String bionicId = row.getString("id");
                     ba_bioniceffect effect = null;
                     try {
-                        if(!Objects.equals(row.getString("scriptPath"), "") && row.getString("scriptPath") != null) {
-                            Class<?> clazz = Global.getSettings().getScriptClassLoader().loadClass(row.getString("scriptPath"));
+                        if(!Objects.equals(row.getString("effectScript"), "")) {
+                            Class<?> clazz = Global.getSettings().getScriptClassLoader().loadClass(row.getString("effectScript"));
                             effect = (ba_bioniceffect) clazz.newInstance(); //check if this is created ?
                         }
                     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
-                    bionicMap.put(bionicId, new ba_bionic(
+                    //todo: next step, UI
+                    bionicItemMap.put(bionicId, new ba_bionicitemplugin(
                             bionicId,
+                            Global.getSettings().getSpecialItemSpec(bionicId),
                             row.getString("limbGroupId"),
-                            row.getString("name"),
                             row.getString("namePrefix") != "" ? row.getString("namePrefix") : "",
-                            row.getString("description"),
                             MagicSettings.toColor3(row.getString("colorDisplay")),
                             row.getInt("brmCost"),
                             (float) row.getDouble("consciousnessCost"),
-                            row.getInt("tier"),
-                            row.getBoolean("isOfficerBionic"),
+                            row.getBoolean("isCaptainBionic"),
+                            row.getBoolean("isAICoreBionic"),
                             effect,
                             row.getBoolean("isAdvanceInCombat"),
                             row.getBoolean("isAdvanceInCampaign")
@@ -79,12 +84,12 @@ public class ba_bionicmanager {
                 }
             }
         }
-//        for (Map.Entry<String, ba_bionic> entry: bionicMap.entrySet()) {
-//            log.info(entry.getKey() + " " + entry.getValue().bionicLimbGroupId + "-----" + entry.getValue().bionicId);
+//        for (Map.Entry<String, ba_bionicitemplugin> entry: bionicItemMap.entrySet()) {
+//            log.info(entry.getKey() + ": " + entry.getValue().bionicLimbGroupId + "-----" + entry.getValue().getSpec().getDesc());
 //        }
     }
-    public static ba_bionic getBionic(String id) {
-        ba_bionic bionic = bionicMap.get(id);
+    public static ba_bionicitemplugin getBionic(String id) {
+        ba_bionicitemplugin bionic = bionicItemMap.get(id);
         if(bionic == null) {
             log.error("Can not find bionic of id: "+ id);
         }
@@ -99,7 +104,7 @@ public class ba_bionicmanager {
             for (String tag: person.getTags()) {
                 if(tag.contains(":")) {
                     String[] tokens = tag.split(":");
-                    ba_bionic bionicInstalled = bionicMap.get(tokens[0]);
+                    ba_bionicitemplugin bionicInstalled = bionicItemMap.get(tokens[0]);
                     if(bionicInstalled == null) {
                         log.error("Can't find bionic of tag: " + tokens[0] + ". Skipping");
                     } else {
@@ -117,13 +122,13 @@ public class ba_bionicmanager {
      * @param person person
      * @return List of bionic installed.<br> NOTE: There will be duplicate of existing bionic in the list.
      */
-    public static List<ba_bionic> getListBionicInstalled(PersonAPI person) {
-        List<ba_bionic> bionicsInstalledList = new ArrayList<>();
+    public static List<ba_bionicitemplugin> getListBionicInstalled(PersonAPI person) {
+        List<ba_bionicitemplugin> bionicsInstalledList = new ArrayList<>();
         if (!person.getTags().isEmpty()) {
             for (String tag: person.getTags()) {
                 if(tag.contains(":")) {
                     String[] tokens = tag.split(":");
-                    ba_bionic bionicInstalled = bionicMap.get(tokens[0]);
+                    ba_bionicitemplugin bionicInstalled = bionicItemMap.get(tokens[0]);
                     if(bionicInstalled == null) {
                         log.error("Can't find bionic of tag: " + tokens[0] + ". Skipping");
                     } else {
@@ -140,20 +145,20 @@ public class ba_bionicmanager {
      * @param person Person
      * @return The bionics and limb they are installed on.
      */
-    public static HashMap<ba_limbmanager.ba_limb, List<ba_bionic>> getListLimbAndBionicInstalled(PersonAPI person) {
-        HashMap<ba_limbmanager.ba_limb, List<ba_bionic>> bionicsInstalledList = new HashMap<>();
+    public static HashMap<ba_limbmanager.ba_limb, List<ba_bionicitemplugin>> getListLimbAndBionicInstalled(PersonAPI person) {
+        HashMap<ba_limbmanager.ba_limb, List<ba_bionicitemplugin>> bionicsInstalledList = new HashMap<>();
         if (!person.getTags().isEmpty()) {
             for (String tag: person.getTags()) {
                 if(tag.contains(":")) {
                     String[] tokens = tag.split(":");
-                    ba_bionic bionicInstalled = bionicMap.get(tokens[0]);
+                    ba_bionicitemplugin bionicInstalled = bionicItemMap.get(tokens[0]);
                     if(bionicInstalled == null) log.error("Can't find bionic of tag: " + tokens[0]);
                     ba_limbmanager.ba_limb sectionInstalled = ba_limbmanager.getLimb(tokens[1]);
                     if(sectionInstalled == null) log.error("Can't find section of tag: " + tokens[1]);
                     if(bionicsInstalledList.get(sectionInstalled) != null) {
                         bionicsInstalledList.get(sectionInstalled).add(bionicInstalled);
                     } else {
-                        bionicsInstalledList.put(sectionInstalled, new ArrayList<ba_bionic>(Arrays.asList(bionicInstalled)));
+                        bionicsInstalledList.put(sectionInstalled, new ArrayList<ba_bionicitemplugin>(Arrays.asList(bionicInstalled)));
                     }
                 }
             }
@@ -166,10 +171,10 @@ public class ba_bionicmanager {
         random.addAll(getListBionicKeys());
         int i = 0;
         int maxNumberOfRandomBionic = 6;
-        while(i < maxNumberOfRandomBionic) {
+        while(i < maxNumberOfRandomBionic && !random.isEmpty()) {
             String picked = random.pick();
             random.remove(picked);
-            ba_bionic bionic = getBionic(picked);
+            ba_bionicitemplugin bionic = getBionic(picked);
             WeightedRandomPicker<String> randomSectionPicker = new WeightedRandomPicker<>();
             randomSectionPicker.addAll(ba_limbmanager.getListLimbKeys(bionic.bionicLimbGroupId));
             randomBionic.add(picked+":"+ randomSectionPicker.pick());
@@ -178,40 +183,6 @@ public class ba_bionicmanager {
         return randomBionic;
     }
     public static List<String> getListBionicKeys() {
-        return new ArrayList<>(bionicMap.keySet());
-    }
-    public static class ba_bionic {
-        public String bionicId;
-        public String bionicLimbGroupId;
-        public String name;
-        public String namePrefix;
-        public String description;
-        public Color displayColor;
-        public float brmCost;
-        public float consciousnessCost;
-        public int tier;
-        public ba_bioniceffect effectScript;
-        public boolean isOfficerBionic;
-        public boolean isAdvanceInCombat;
-        public boolean isAdvanceInCampaign;
-        public String iconPath;
-        //todo: support sprite
-        public HashMap<String, Object> customData = new HashMap<>();
-        public ba_bionic(String bionicId, String bionicLimbGroupId, String name, String namePrefix, String description, Color displayColor, int brmCost, float consciousnessCost, int tier, boolean isOfficerBionic, ba_bioniceffect effectScript, boolean isAdvanceInCombat, boolean isAdvanceInCampaign) {
-            this.bionicId = bionicId;
-            this.bionicLimbGroupId = bionicLimbGroupId;
-            this.name = name;
-            this.namePrefix = namePrefix;
-            this.description = description;
-            this.displayColor = displayColor;
-            this.brmCost = brmCost;
-            this.consciousnessCost = consciousnessCost;
-            this.tier = tier;
-            this.isOfficerBionic = isOfficerBionic;
-            this.effectScript = effectScript;
-            this.isAdvanceInCombat = isAdvanceInCombat;
-            this.isAdvanceInCampaign = isAdvanceInCampaign;
-        }
-
+        return new ArrayList<>(bionicItemMap.keySet());
     }
 }

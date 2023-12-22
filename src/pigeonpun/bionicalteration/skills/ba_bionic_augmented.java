@@ -15,6 +15,7 @@ import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.util.DynamicStats;
 import org.apache.log4j.Logger;
 import pigeonpun.bionicalteration.ba_officermanager;
+import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 
 import java.awt.*;
@@ -53,15 +54,15 @@ public class ba_bionic_augmented {
 
             PersonAPI person = findPerson(stats);
             if(person != null) {
-                List<ba_bionicmanager.ba_bionic> listBionic = ba_bionicmanager.getListBionicInstalled(person);
-                for(ba_bionicmanager.ba_bionic bionic: listBionic) {
-                    if(bionic.isOfficerBionic) {
+                List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
+                for(ba_bionicitemplugin bionic: listBionic) {
+                    if(bionic.isCaptainBionic) {
                         String description = "No effect yet";
                         if(bionic.effectScript != null) {
                             description = bionic.effectScript.getShortEffectDescription();
                         }
-                        LabelAPI descriptionLabel = info.addPara("%s: %s", opad, Misc.getBrightPlayerColor() ,bionic.name ,description);
-                        descriptionLabel.setHighlight(bionic.name, description);
+                        LabelAPI descriptionLabel = info.addPara("%s: %s", opad, Misc.getBrightPlayerColor() ,bionic.getName() ,description);
+                        descriptionLabel.setHighlight(bionic.getName(), description);
                         descriptionLabel.setHighlightColors(bionic.displayColor, bionic.effectScript != null ? c : Misc.getGrayColor());
                     }
                 }
@@ -71,8 +72,8 @@ public class ba_bionic_augmented {
         @Override
         public void applyEffectsAfterShipCreation(ShipAPI ship, String id) {
             PersonAPI captain = ship.getCaptain();
-            List<ba_bionicmanager.ba_bionic> listBionic = ba_bionicmanager.getListBionicInstalled(captain);
-            for(ba_bionicmanager.ba_bionic bionic: listBionic) {
+            List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(captain);
+            for(ba_bionicitemplugin bionic: listBionic) {
                 if(bionic.isAdvanceInCombat) {
                     log.info("Registering Bionic Listener");
                     ship.addListener(new bionicInCombat(ship, listBionic));
@@ -92,9 +93,9 @@ public class ba_bionic_augmented {
         public void apply(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id, float level) {
             if(stats.getFleetMember() != null) {
                 PersonAPI captain = stats.getFleetMember().getCaptain();
-                List<ba_bionicmanager.ba_bionic> listBionic = ba_bionicmanager.getListBionicInstalled(captain);
-                for(ba_bionicmanager.ba_bionic bionic: listBionic) {
-                    if(bionic.isOfficerBionic && bionic.effectScript != null) {
+                List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(captain);
+                for(ba_bionicitemplugin bionic: listBionic) {
+                    if(bionic.isCaptainBionic && bionic.effectScript != null) {
                         bionic.effectScript.applyOfficerEffect(stats, hullSize, id);
                     }
                 }
@@ -105,9 +106,9 @@ public class ba_bionic_augmented {
         public void unapply(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
             if(stats.getFleetMember() != null) {
                 PersonAPI captain = stats.getFleetMember().getCaptain();
-                List<ba_bionicmanager.ba_bionic> listBionic = ba_bionicmanager.getListBionicInstalled(captain);
-                for(ba_bionicmanager.ba_bionic bionic: listBionic) {
-                    if(bionic.isOfficerBionic && bionic.effectScript != null) {
+                List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(captain);
+                for(ba_bionicitemplugin bionic: listBionic) {
+                    if(bionic.isCaptainBionic && bionic.effectScript != null) {
                         bionic.effectScript.unapplyOfficerEffect(stats, hullSize, id);
                     }
                 }
@@ -157,15 +158,15 @@ public class ba_bionic_augmented {
         }
     }
     public static class bionicInCombat implements AdvanceableListener {
-        protected List<ba_bionicmanager.ba_bionic> bionics;
+        protected List<ba_bionicitemplugin> bionics;
         protected ShipAPI ship;
-        public bionicInCombat(ShipAPI ship, List<ba_bionicmanager.ba_bionic> bionics) {
+        public bionicInCombat(ShipAPI ship, List<ba_bionicitemplugin> bionics) {
             this.bionics = bionics;
             this.ship = ship;
         }
         @Override
         public void advance(float amount) {
-            for(ba_bionicmanager.ba_bionic bionic: this.bionics) {
+            for(ba_bionicitemplugin bionic: this.bionics) {
                 if (bionic.isAdvanceInCombat && bionic.effectScript != null) {
                     bionic.effectScript.advanceInCombat(this.ship, amount);
                 }
