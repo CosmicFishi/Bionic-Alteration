@@ -13,10 +13,12 @@ import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
+import pigeonpun.bionicalteration.ba_limbmanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.ba_officermanager;
+import pigeonpun.bionicalteration.utils.ba_utils;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -40,10 +42,12 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
     List<ButtonAPI> buttons = new ArrayList<>();
     HashMap<ButtonAPI, String> buttonMap = new HashMap<>();
     HashMap<String, ba_component> componentMap = new HashMap<>();
-    public static final String OVERVIEW = "OVERVIEW", DETAILS = "DETAILS";
+    public static final String OVERVIEW = "OVERVIEW", WORKSHOP = "WORKSHOP";
     public PersonAPI currentHoveredPerson;
+    public ba_limbmanager.ba_limb currentSelectedLimb;
+    public ba_bionicitemplugin currentSelectedBionic;
     HashMap<String, ba_component> tabMap = new HashMap<>();
-    String currentTabId = OVERVIEW;
+    String currentTabId = WORKSHOP;
     public static ba_uiplugin createDefault() {
         return new ba_uiplugin();
     }
@@ -81,7 +85,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
     protected void refresh() {
 //        log.info("refreshing");
         ba_component overviewComponent = tabMap.get(OVERVIEW);
-        ba_component detailComponent = tabMap.get(DETAILS);
+        ba_component detailComponent = tabMap.get(WORKSHOP);
         if (overviewComponent != null) {
             containerPanel.removeComponent(overviewComponent.mainPanel);
         }
@@ -94,7 +98,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         getNewListPerson();
         //create smaller container for focus/unforcus
         displayOverview();
-        displayDetails();
+        displayWorkshop();
         focusContent("");
     }
     protected void displayOverview() {
@@ -187,7 +191,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             personImageTooltip.getPosition().inTL(0, (personH - imageH ) / 2);
             //---------Name
             int nameH = 30;
-            int nameW = 150;
+            int nameW = (int) (personListW - imageW - 30);
             int nameX = (int) (imageX + imageW + pad);
             TooltipMakerAPI personNameTooltip = personDisplayContainer.createTooltip("PERSON_NAME", nameW, nameH, false, 0, 0);
             personNameTooltip.getPosition().inTL(nameX, 0);
@@ -365,35 +369,37 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             TooltipMakerAPI personUpgradeTooltip = infoPersonContainer.createTooltip("PERSON_INFO_UPGRADE", statsW, statsH, false, 0, 0);
             personUpgradeTooltip.getPosition().inTL(upgradeX,upgradeY);
             ButtonAPI upgradeButton = personUpgradeTooltip.addButton("Upgrade/Change", null, upgradeBtnW, upgradeBtnH, 0);
-            addButtonToList(upgradeButton, "tab:" + DETAILS);
+            addButtonToList(upgradeButton, "tab:" + WORKSHOP);
 
             //--------Bionic table
             int tableX = (int) (skillX + skillW + pad);
             int tableY = (int) (imageY + imageH + pad);
             int tableW = (int) (personInfoW - skillW - pad);
             int tableH = (int) (personInfoH - imageH - headerH - pad);
-            displayBionicTable(infoPersonContainer, infoPersonTooltipKey, false, true, tableW, tableH, tableX, tableY);
+            displayBionicTable(infoPersonContainer, infoPersonTooltipKey, "OVERVIEW",false, true, tableW, tableH, tableX, tableY);
         }
         //do the adding late so the scroll work
 //        infoPersonContainer.mainPanel.addUIElement(infoPersonTooltipContainer);
     }
-    protected void displayBionicTable(ba_component creatorComponent, String creatorComponentTooltip, boolean isEditMode, boolean isScroll ,float tableW, float tableH, float tableX, float tableY) {
+    //todo: make isWorkshopMode a thing (clicking on a line, remove/add etc)
+    protected void displayBionicTable(ba_component creatorComponent, String creatorComponentTooltip, String keyPrefix, boolean isWorkshopMode, boolean isScroll ,float tableW, float tableH, float tableX, float tableY) {
         final float pad = 10f;
         float opad = 10f;
         Color h = Misc.getHighlightColor();
         Color bad = Misc.getNegativeHighlightColor();
         Color t = Misc.getTextColor();
         Color g = Misc.getGrayColor();
+        String prefix = keyPrefix + "_";
 
         String infoPersonBionicTooltipKey = "PERSON_INFO_BIONICS_TOOLTIP";
-        String infoPersonBionicPanelKey = "PERSON_INFO_BIONICS_PANEL";
+        String infoPersonBionicPanelKey = prefix + "PERSON_INFO_BIONICS_PANEL";
         ba_component infoPersonBionicContainer = new ba_component(creatorComponent.mainPanel, tableW, tableH, tableX, tableY, !isScroll, infoPersonBionicPanelKey);
         TooltipMakerAPI infoPersonBionicTooltipContainer = infoPersonBionicContainer.createTooltip(infoPersonBionicTooltipKey, tableW, tableH, isScroll, 0,0);
         creatorComponent.attachSubPanel(creatorComponentTooltip, infoPersonBionicPanelKey, infoPersonBionicContainer, tableX, tableY);
 
         //table header
         String tableHeaderTooltipContainerKey = "BIONIC_TABLE_HEADER_TOOLTIP";
-        String tableHeaderPanelContainerKey = "BIONIC_TABLE_HEADER_PANEL";
+        String tableHeaderPanelContainerKey = prefix + "BIONIC_TABLE_HEADER_PANEL";
         int tableHeaderH = 40;
         int tableHeaderW = (int) (tableW - pad);
         //--------bionic container
@@ -446,7 +452,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
 //        }
         for(final ba_officermanager.ba_bionicAugmentedData bionic: currentAnatomyList) {
             String bionicTooltipContainerKey = "BIONIC_TOOLTIP_CONTAINER";
-            String bionicPanelContainerKey = "BIONIC_PANEL_CONTAINER_"+i;
+            String bionicPanelContainerKey = prefix + "BIONIC_PANEL_CONTAINER_"+i;
             int singleBionicInstalledNameH = 40;
             int bionicH = bionic.bionicInstalled.size()!= 0 ? singleBionicInstalledNameH * bionic.bionicInstalled.size() : singleBionicInstalledNameH;
             final int bionicW = (int) (tableW - pad);
@@ -500,7 +506,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                         tooltip.addSpacer(pad);
                     }
                 }
-            }, TooltipMakerAPI.TooltipLocation.ABOVE);
+            }, isWorkshopMode? TooltipMakerAPI.TooltipLocation.BELOW : TooltipMakerAPI.TooltipLocation.ABOVE);
             //---------Limb Name
             int nameH = bionicH;
             int nameW = limbW;
@@ -548,14 +554,212 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             infoPersonBionicContainer.mainPanel.addUIElement(infoPersonBionicTooltipContainer);
         }
     }
-    protected void displayDetails() {
-//        ba_component detailContainer = new ba_component(containerPanel, 100f, pH, false, 0, 0);
-//        tabMap.put(DETAILS, detailContainer);
-//        detailContainer.unfocusComponent();
-//        detailContainer.tooltip.addPara("test details", 0);
-//        ButtonAPI button = detailContainer.tooltip.addButton("switch overview", null,200f, 100f,0f);
-//        buttons.add(button);
-//        buttonMap.put(button, "tab:"+ OVERVIEW);
+    protected void displayWorkshop() {
+        float pad = 5f;
+        float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        Color t = Misc.getTextColor();
+        Color g = Misc.getGrayColor();
+        //set default hover person - this shouldn't be triggered by default but somehow currentHoveredPerson is null, do it
+        if(ba_officermanager.listPersons.size() != 0 && this.currentHoveredPerson == null) {
+            this.currentHoveredPerson = ba_officermanager.listPersons.get(0);
+        }
+        //installing process
+        /*
+        Fist the player right click the item or enter the bionic UI
+        - Selecting a npc by clicking on the npc in the npc list or the install bionic option on the top right will transfer to the install UI
+        - Bionic will show up in the inventory on the bottom. Clicking on them will select them (an indicator text say selected bionic)
+        - Clicking on a limb will select the limb (highlight the limb line on the table).
+        - When the player hover over the install or remove button, description will show up guiding the player (If haven't select bionic or limb, will show information about it)
+        - the menu on the right will show up all the bionic installed on the person and their effects
+         */
+
+        //big detail container
+        String mainOverviewPanelKey = "MAIN_WORKSHOP_CONTAINER";
+        String mainPersonInfoTooltipKey = "MAIN_PERSON_TOOLTIP";
+        String mainInventoryTooltipKey = "MAIN_INVENTORY_TOOLTIP";
+        String mainEffectsTooltipKey = "MAIN_EFFECTS_TOOLTIP";
+        ba_component workshopContainer = new ba_component(containerPanel, pW, pH, MAIN_CONTAINER_PADDING/2, MAIN_CONTAINER_PADDING/2, true, mainOverviewPanelKey);
+        tabMap.put(WORKSHOP, workshopContainer);
+        workshopContainer.unfocusComponent();
+
+        //tooltip for scroll
+        float personInfoW = 0.7f * pW;
+        float personInfoH = 0.6f * pH;
+        TooltipMakerAPI personInfoTooltipContainer = workshopContainer.createTooltip(mainPersonInfoTooltipKey, personInfoW, personInfoH, false, 0, 0);
+        personInfoTooltipContainer.getPosition().inTL(0,0);
+//        personInfoTooltipContainer.addPara("addd", 0);
+        displayPersonInfoWorkshop(workshopContainer, mainPersonInfoTooltipKey, personInfoW, personInfoH, 0,0);
+
+        float inventoryW = personInfoW;
+        float inventoryH = (pH - (personInfoH));
+        TooltipMakerAPI inventoryTooltipContainer = workshopContainer.createTooltip(mainInventoryTooltipKey, inventoryW, inventoryH, false, 0, 0);
+        inventoryTooltipContainer.getPosition().inTL(0, personInfoH);
+//        inventoryTooltipContainer.addPara("bbbb", 0);
+        displayInventoryWorkshop(workshopContainer, mainInventoryTooltipKey, inventoryW, inventoryH, 0,0);
+
+        float effectListW = (pW - personInfoW);
+        float effectListH = pH;
+        TooltipMakerAPI effectListTooltipContainer = workshopContainer.createTooltip(mainEffectsTooltipKey, effectListW, effectListH, false, 0, 0);
+        effectListTooltipContainer.getPosition().inTL(personInfoW, effectListTooltipContainer.getPosition().getY());
+//        effectListTooltipContainer.addPara("cccc", 0);
+        displayEffectListWorkshop(workshopContainer, mainEffectsTooltipKey, effectListW, effectListH, 0,0);
+    }
+    public void displayPersonInfoWorkshop(ba_component creatorComponent, String creatorComponentTooltip, float personInfoW, float personInfoH, float personInfoX, float personInfoY) {
+        float pad = 10f;
+        float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        Color t = Misc.getTextColor();
+        Color g = Misc.getGrayColor();
+
+        String infoPersonTooltipKey = "WORKSHOP_PERSON_INFO_TOOLTIP";
+        String infoPersonPanelKey = "WORKSHOP_PERSON_INFO_PANEL";
+        ba_component infoPersonContainer = new ba_component(creatorComponent.mainPanel, personInfoW, personInfoH, personInfoX, personInfoY, true, infoPersonPanelKey);
+        TooltipMakerAPI infoPersonTooltipContainer = infoPersonContainer.createTooltip(infoPersonTooltipKey, personInfoW, personInfoH, false, 0,0);
+        creatorComponent.attachSubPanel(creatorComponentTooltip, infoPersonPanelKey,infoPersonContainer,0,0);
+
+//        infoPersonTooltipContainer.addPara("person info" , 0);
+        float infoLeftW = personInfoW * 0.2f;
+        float infoRightW = personInfoW - infoLeftW;
+
+        int upgradeBtnH = 40;
+        int upgradeBtnW = (int) (infoLeftW - pad);
+        int upgradeBtnX = (int) (0 + pad);
+        int upgradeBtnY = (int) (0 + pad);
+        ButtonAPI upgradeButton = infoPersonTooltipContainer.addButton("< Back", null, upgradeBtnW, upgradeBtnH, 0);
+        upgradeButton.getPosition().inTL(upgradeBtnX,upgradeBtnY);
+        addButtonToList(upgradeButton, "tab:" + OVERVIEW);
+
+        //--------image
+        int imageX = (int) (0 + pad);
+        int imageY = (int) (upgradeBtnH + upgradeBtnY + pad);
+        int imageW = (int) infoLeftW;
+        int imageH = imageW;
+        String spriteName = this.currentHoveredPerson.getPortraitSprite();
+        TooltipMakerAPI personImageTooltip = infoPersonContainer.createTooltip("WORKSHOP_PERSON_IMAGE", imageW, imageH, false, 0, 0);
+        personImageTooltip.getPosition().inTL(imageX, imageY);
+        personImageTooltip.addImage(spriteName, imageW, imageH, 0);
+        //---------Name
+        int nameH = 30;
+        int nameW = (int) infoLeftW;
+        int nameX = (int) (0 + pad);
+        int nameY = (int) (imageH + imageY+ pad);
+        LabelAPI name = infoPersonTooltipContainer.addPara(this.currentHoveredPerson.getName().getFullName() + (this.currentHoveredPerson.isPlayer() ? " (" + "You" + ")": ""), pad);
+        name.getPosition().inTL(nameX, nameY);
+        name.getPosition().setSize(nameW, nameH);
+        name.setHighlight(this.currentHoveredPerson.getName().getFullName());
+        name.setHighlightColors(Misc.getBrightPlayerColor());
+        //BRM (Bionic Rights Management)
+        int brmH = 30;
+        int brmW = (int) infoLeftW;
+        int brmX = (int) (0 + pad);
+        int brmY = (int) (nameY + nameH);
+        int currentBRM = (int) this.currentHoveredPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);;
+        int limitBRM = (int) this.currentHoveredPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);;
+        LabelAPI BRM = infoPersonTooltipContainer.addPara("BRM: " + currentBRM + " / " + limitBRM, pad);
+        BRM.setHighlight("BRM: ", "" +currentBRM, "" +limitBRM);
+        BRM.setHighlightColors(t,currentBRM > limitBRM ? bad: h,Misc.getBrightPlayerColor());
+        BRM.getPosition().inTL(brmX, brmY);
+        BRM.getPosition().setSize(brmW, brmH);
+        //>Consciousness
+        float consciousness = this.currentHoveredPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
+        int consciousnessY = (int) (brmY + brmH);
+        int consciousnessX = (int) (0 + pad);
+        int consciousnessH = 30;
+        int consciousnessW = (int) infoLeftW;
+        LabelAPI consciousnessLabel = infoPersonTooltipContainer.addPara("Conscious: " + Math.round(consciousness * 100) + "%", 0);
+        consciousnessLabel.setHighlight("" + Math.round(consciousness * 100) + "%");
+        consciousnessLabel.setHighlightColor(ba_officermanager.getConsciousnessColorByLevel(consciousness));
+        consciousnessLabel.getPosition().setSize(consciousnessW,consciousnessH);
+        consciousnessLabel.getPosition().inTL(consciousnessX, consciousnessY);
+
+        int btnH = 40;
+        //--------Bionic table
+        int tableX = (int) (infoLeftW + pad  + pad);
+        int tableY = (int) (0 + pad);
+        int tableW = (int) (infoRightW - pad - pad);
+        int tableH = (int) (personInfoH - pad - btnH);
+        displayBionicTable(infoPersonContainer, infoPersonTooltipKey, "WORKSHOP",true, true, tableW, tableH, tableX, tableY);
+
+        //--------upgrade button
+        //todo: add guide info on hover
+        int installBtnH = btnH;
+        int installBtnW = (int) (200 - pad);
+        int installBtnX = (int) (personInfoW - installBtnW - pad);
+        int installBtnY = (int) (personInfoH - installBtnH - pad);
+        ButtonAPI installButton = infoPersonTooltipContainer.addButton("Install", null, installBtnW, installBtnH, 0);
+        installButton.getPosition().inTL(installBtnX,installBtnY);
+        addButtonToList(installButton, "bionic:install");
+        //--------remove button
+        //todo: add guide info on hover
+        int removeBtnH = btnH;
+        int removeBtnW = (int) (100 - pad);
+        int removeBtnX = (int) (installBtnX - pad - removeBtnW);
+        int removeBtnY = (int) (installBtnY);
+        ButtonAPI removeButton = infoPersonTooltipContainer.addButton("Remove", null, removeBtnW, removeBtnH, 0);
+        removeButton.getPosition().inTL(removeBtnX,removeBtnY);
+        addButtonToList(removeButton, "bionic:remove");
+        //--------selected
+        //todo: add guide info on hover
+        int selectedH = btnH / 2;
+        int selectedW = (int) (infoRightW - removeBtnW - installBtnW - pad);
+        int selectedLimbX = (int) (tableX);
+        int selectedLimbY = (int) (tableH);
+        String limbName = this.currentSelectedLimb != null ? this.currentSelectedLimb.name : "None";
+        LabelAPI selectedLimbLabel = infoPersonTooltipContainer.addPara("%s %s", 0, t, "Selected:", limbName);
+        selectedLimbLabel.getPosition().inTL(selectedLimbX,selectedLimbY);
+        selectedLimbLabel.getPosition().setSize(selectedW, selectedH);
+        selectedLimbLabel.setHighlight("Selected:", limbName);
+        selectedLimbLabel.setHighlightColors(Misc.getBrightPlayerColor(), this.currentSelectedLimb != null ? t :Misc.getGrayColor());
+        int selectedBionicX = (int) (tableX);
+        int selectedBionicY = (int) (tableH + selectedH);
+        String bionicName = this.currentSelectedBionic != null ? this.currentSelectedBionic.getName(): "None";
+        LabelAPI selectedBionicLabel = infoPersonTooltipContainer.addPara("%s %s", 0, t,"Selected:",  bionicName);
+        selectedBionicLabel.getPosition().inTL(selectedBionicX,selectedBionicY);
+        selectedBionicLabel.getPosition().setSize(selectedW, selectedH);
+        selectedBionicLabel.setHighlight("Selected:", bionicName);
+        selectedBionicLabel.setHighlightColors(Misc.getBrightPlayerColor(), this.currentSelectedBionic != null ? this.currentSelectedBionic.displayColor: Misc.getGrayColor());
+    }
+    public void displayInventoryWorkshop(ba_component creatorComponent, String creatorComponentTooltip, float inventoryW, float inventoryH, float inventoryX, float inventoryY) {
+        float pad = 10f;
+        float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        Color t = Misc.getTextColor();
+        Color g = Misc.getGrayColor();
+
+        String inventoryTooltipKey = "WORKSHOP_INVENTORY_TOOLTIP";
+        String inventoryPanelKey = "WORKSHOP_INVENTORY_PANEL";
+        ba_component inventoryContainer = new ba_component(creatorComponent.mainPanel, inventoryW, inventoryH, inventoryX, inventoryY, true, inventoryPanelKey);
+        TooltipMakerAPI inventoryTooltipContainer = inventoryContainer.createTooltip(inventoryTooltipKey, inventoryW, inventoryH, false, 0,0);
+        creatorComponent.attachSubPanel(creatorComponentTooltip, inventoryPanelKey,inventoryContainer,0,0);
+
+        inventoryTooltipContainer.addPara("inventory", 0);
+    }
+    public void displayEffectListWorkshop(ba_component creatorComponent, String creatorComponentTooltip, float effectListW, float effectListH, float effectListX, float effectListY) {
+        float pad = 10f;
+        float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        Color t = Misc.getTextColor();
+        Color g = Misc.getGrayColor();
+
+        String infoPersonTooltipKey = "WORKSHOP_EFFECT_LIST_TOOLTIP";
+        String infoPersonPanelKey = "WORKSHOP_EFFECT_LIST_PANEL";
+        ba_component effectListContainer = new ba_component(creatorComponent.mainPanel, effectListW, effectListH, effectListX, effectListY, true, infoPersonPanelKey);
+        TooltipMakerAPI effectListTooltipContainer = effectListContainer.createTooltip(infoPersonTooltipKey, effectListW, effectListH, false, 0,0);
+        creatorComponent.attachSubPanel(creatorComponentTooltip, infoPersonPanelKey,effectListContainer,0,0);
+
+        //border
+        int borderW = (int) (effectListW - pad - pad);
+        int borderH = (int) (effectListH - pad - pad);
+        int borderX = (int) pad;
+        int borderY = (int) pad / 2;
+        UIComponentAPI border = effectListTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
+        border.getPosition().setSize(borderW, borderH);
+        effectListContainer.mainPanel.addComponent(border).setLocation(0,0).inTL(borderX, borderY);
     }
     protected void focusContent(String focusTabId) {
         if(focusTabId == "") {
@@ -591,12 +795,12 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
 
     @Override
     public void render(float alphaMult) {
-//        ba_component previousTab2 = componentMap.get("PERSON_INFO_BIONICS_PANEL");
+//        ba_component previousTab2 = componentMap.get("WORKSHOP_INVENTORY_PANEL");
 //        ba_utils.drawBox(
-//                (int) previousTab2.getTooltip("PERSON_INFO_BIONICS_TOOLTIP").getPosition().getX(),
-//                (int) previousTab2.getTooltip("PERSON_INFO_BIONICS_TOOLTIP").getPosition().getY(),
-//                (int) previousTab2.getTooltip("PERSON_INFO_BIONICS_TOOLTIP").getPosition().getWidth(),
-//                (int) previousTab2.getTooltip("PERSON_INFO_BIONICS_TOOLTIP").getPosition().getHeight(),
+//                (int) previousTab2.getTooltip("WORKSHOP_INVENTORY_TOOLTIP").getPosition().getX(),
+//                (int) previousTab2.getTooltip("WORKSHOP_INVENTORY_TOOLTIP").getPosition().getY(),
+//                (int) previousTab2.getTooltip("WORKSHOP_INVENTORY_TOOLTIP").getPosition().getWidth(),
+//                (int) previousTab2.getTooltip("WORKSHOP_INVENTORY_TOOLTIP").getPosition().getHeight(),
 //                0.3f,
 //                Color.pink
 //        );
@@ -632,9 +836,8 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
 //                        needsReset = true;
                         break;
                     }
-                    if(tokens[1].equals(DETAILS)) {
-                        //todo: add function to this
-//                        focusContent(DETAILS);
+                    if(tokens[1].equals(WORKSHOP)) {
+                        focusContent(WORKSHOP);
 //                        needsReset = true;
                         break;
                     }
