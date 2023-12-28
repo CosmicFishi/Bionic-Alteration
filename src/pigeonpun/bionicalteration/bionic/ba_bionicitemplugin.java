@@ -14,6 +14,7 @@ import com.fs.starfarer.api.ui.LabelAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Highlights;
 import com.fs.starfarer.api.util.Misc;
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 
 import java.awt.*;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class ba_bionicitemplugin implements SpecialItemPlugin {
+    static Logger log = Global.getLogger(ba_bionicitemplugin.class);
     public String bionicId;
     public String bionicLimbGroupId;
     public String namePrefix;
@@ -37,6 +39,7 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
     public String iconPath;
     //todo: support sprite
     public HashMap<String, Object> customData = new HashMap<>();
+    public ba_bionicitemplugin() {}
     public ba_bionicitemplugin(String bionicId, SpecialItemSpecAPI spec ,String bionicLimbGroupId, String namePrefix, Color displayColor, int brmCost, float consciousnessCost, boolean isCaptainBionic, boolean isAICoreBionic, ba_bioniceffect effectScript, boolean isAdvanceInCombat, boolean isAdvanceInCampaign) {
         this.bionicId = bionicId;
         this.spec = spec;
@@ -57,6 +60,7 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
     public void setId(String id) {
         this.bionicId = id;
         spec = Global.getSettings().getSpecialItemSpec(id);
+        log.info(spec);
     }
 
     public void init(CargoStackAPI stack) {
@@ -228,7 +232,7 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
         renderer.renderScanlinesWithCorners(blX, blY, tlX, tlY, trX, trY, brX, brY, alphaMult, false);
         //do effect render ?
         if(this.effectScript != null) {
-            effectScript.renderExtraOnItem();
+            effectScript.renderExtraOnItem(x,y,w,h,alphaMult,glowMult,renderer);
         }
     }
 

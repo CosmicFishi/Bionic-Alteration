@@ -3,6 +3,7 @@ package pigeonpun.bionicalteration.bionic;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -25,7 +26,7 @@ import java.util.List;
  */
 public class ba_bionicmanager {
     static Logger log = Global.getLogger(ba_bionicmanager.class);
-    protected static HashMap<String, ba_bionicitemplugin> bionicItemMap = new HashMap<>();
+    public static HashMap<String, ba_bionicitemplugin> bionicItemMap = new HashMap<>();
     public ba_bionicmanager() {
         loadBionic();
     }
@@ -184,5 +185,9 @@ public class ba_bionicmanager {
     }
     public static List<String> getListBionicKeys() {
         return new ArrayList<>(bionicItemMap.keySet());
+    }
+    //todo: Render the stars
+    public static TooltipMakerAPI renderExtraOnItem() {
+        return null;
     }
 }

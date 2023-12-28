@@ -62,5 +62,5 @@ public interface ba_bioniceffect{
      * Render extra indicators on top right of the item (Visual cue for the player)
      * Can leave empty if not needed
      */
-    public void renderExtraOnItem();
+    public void renderExtraOnItem(float x, float y, float w, float h, float alphaMult, float glowMult, SpecialItemPlugin.SpecialItemRendererAPI renderer);
 }

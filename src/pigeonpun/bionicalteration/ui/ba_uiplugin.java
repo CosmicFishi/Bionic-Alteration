@@ -1,9 +1,7 @@
 package pigeonpun.bionicalteration.ui;
 
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.CustomUIPanelPlugin;
-import com.fs.starfarer.api.campaign.CustomVisualDialogDelegate;
-import com.fs.starfarer.api.campaign.InteractionDialogAPI;
+import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.characters.OfficerDataAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
@@ -42,12 +40,14 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
     List<ButtonAPI> buttons = new ArrayList<>();
     HashMap<ButtonAPI, String> buttonMap = new HashMap<>();
     HashMap<String, ba_component> componentMap = new HashMap<>();
-    public static final String OVERVIEW = "OVERVIEW", WORKSHOP = "WORKSHOP";
+    public static final String OVERVIEW = "OVERVIEW", WORKSHOP = "WORKSHOP", INSTALL_WORKSHOP="INSTALL", EDIT_WORKSHOP="EDIT";
+    public String currentWorkShopMode = INSTALL_WORKSHOP; //determine what mode workshop is in
     public PersonAPI currentHoveredPerson;
-    public ba_limbmanager.ba_limb currentSelectedLimb;
-    public ba_bionicitemplugin currentSelectedBionic;
+    public ba_bionicitemplugin currentHoveredBionic; //hovering in the inventory
+    public ba_limbmanager.ba_limb currentSelectedLimb; //selected for installation/removal
+    public ba_bionicitemplugin currentSelectedBionic; //selected for installation
     HashMap<String, ba_component> tabMap = new HashMap<>();
-    String currentTabId = WORKSHOP;
+    String currentTabId = OVERVIEW;
     public static ba_uiplugin createDefault() {
         return new ba_uiplugin();
     }
@@ -465,7 +465,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             subComponentBionicList.add(bionicDisplayContainer);
             //hover
             ButtonAPI areaChecker = personDisplayContainerTooltip.addAreaCheckbox("", null,Misc.getBasePlayerColor(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), bionicW, bionicH, 0);
-            addButtonToList(areaChecker, "hover_bionic:"+bionic);
+            addButtonToList(areaChecker, "hover_bionic_installed:"+bionic);
             areaChecker.getPosition().setLocation(0,0).inTL(0, 0);
             //hover pop up
             personDisplayContainerTooltip.addTooltipToPrevious(new TooltipMakerAPI.TooltipCreator() {
@@ -602,7 +602,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         float effectListW = (pW - personInfoW);
         float effectListH = pH;
         TooltipMakerAPI effectListTooltipContainer = workshopContainer.createTooltip(mainEffectsTooltipKey, effectListW, effectListH, false, 0, 0);
-        effectListTooltipContainer.getPosition().inTL(personInfoW, effectListTooltipContainer.getPosition().getY());
+        effectListTooltipContainer.getPosition().inTL(personInfoW, 0);
 //        effectListTooltipContainer.addPara("cccc", 0);
         displayEffectListWorkshop(workshopContainer, mainEffectsTooltipKey, effectListW, effectListH, 0,0);
     }
@@ -676,45 +676,45 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         consciousnessLabel.getPosition().inTL(consciousnessX, consciousnessY);
 
         int btnH = 40;
-        //--------Bionic table
-        int tableX = (int) (infoLeftW + pad  + pad);
-        int tableY = (int) (0 + pad);
-        int tableW = (int) (infoRightW - pad - pad);
-        int tableH = (int) (personInfoH - pad - btnH);
-        displayBionicTable(infoPersonContainer, infoPersonTooltipKey, "WORKSHOP",true, true, tableW, tableH, tableX, tableY);
-
         //--------upgrade button
         //todo: add guide info on hover
         int installBtnH = btnH;
         int installBtnW = (int) (200 - pad);
         int installBtnX = (int) (personInfoW - installBtnW - pad);
-        int installBtnY = (int) (personInfoH - installBtnH - pad);
-        ButtonAPI installButton = infoPersonTooltipContainer.addButton("Install", null, installBtnW, installBtnH, 0);
+        int installBtnY = (int) (personInfoH - installBtnH);
+        ButtonAPI installButton = infoPersonTooltipContainer.addButton("Install", null, t, Color.green.darker().darker(), installBtnW, installBtnH, 0);
         installButton.getPosition().inTL(installBtnX,installBtnY);
         addButtonToList(installButton, "bionic:install");
         //--------remove button
         //todo: add guide info on hover
+        //edit: enter edit mode, display list a list of bionic for a limb with remove button next to it
         int removeBtnH = btnH;
         int removeBtnW = (int) (100 - pad);
         int removeBtnX = (int) (installBtnX - pad - removeBtnW);
         int removeBtnY = (int) (installBtnY);
-        ButtonAPI removeButton = infoPersonTooltipContainer.addButton("Remove", null, removeBtnW, removeBtnH, 0);
+        ButtonAPI removeButton = infoPersonTooltipContainer.addButton("Edit", null, t, Color.yellow.darker().darker(), removeBtnW, removeBtnH, 0);
         removeButton.getPosition().inTL(removeBtnX,removeBtnY);
-        addButtonToList(removeButton, "bionic:remove");
+        addButtonToList(removeButton, "bionic:edit");
+        //--------Bionic table
+        int tableX = (int) (infoLeftW + pad  + pad);
+        int tableY = (int) (0 + pad);
+        int tableW = (int) (infoRightW - pad - pad);
+        int tableH = (int) (personInfoH - pad - pad - btnH);
+        displayBionicTable(infoPersonContainer, infoPersonTooltipKey, "WORKSHOP",true, true, tableW, tableH, tableX, tableY);
         //--------selected
-        //todo: add guide info on hover
+        //todo: add guide info on hover and functionality
         int selectedH = btnH / 2;
         int selectedW = (int) (infoRightW - removeBtnW - installBtnW - pad);
-        int selectedLimbX = (int) (tableX);
-        int selectedLimbY = (int) (tableH);
+        int selectedLimbX = (int) (tableX + pad);
+        int selectedLimbY = (int) (removeBtnY);
         String limbName = this.currentSelectedLimb != null ? this.currentSelectedLimb.name : "None";
         LabelAPI selectedLimbLabel = infoPersonTooltipContainer.addPara("%s %s", 0, t, "Selected:", limbName);
         selectedLimbLabel.getPosition().inTL(selectedLimbX,selectedLimbY);
         selectedLimbLabel.getPosition().setSize(selectedW, selectedH);
         selectedLimbLabel.setHighlight("Selected:", limbName);
         selectedLimbLabel.setHighlightColors(Misc.getBrightPlayerColor(), this.currentSelectedLimb != null ? t :Misc.getGrayColor());
-        int selectedBionicX = (int) (tableX);
-        int selectedBionicY = (int) (tableH + selectedH);
+        int selectedBionicX = (int) (selectedLimbX);
+        int selectedBionicY = (int) (removeBtnY + selectedH);
         String bionicName = this.currentSelectedBionic != null ? this.currentSelectedBionic.getName(): "None";
         LabelAPI selectedBionicLabel = infoPersonTooltipContainer.addPara("%s %s", 0, t,"Selected:",  bionicName);
         selectedBionicLabel.getPosition().inTL(selectedBionicX,selectedBionicY);
@@ -723,20 +723,108 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         selectedBionicLabel.setHighlightColors(Misc.getBrightPlayerColor(), this.currentSelectedBionic != null ? this.currentSelectedBionic.displayColor: Misc.getGrayColor());
     }
     public void displayInventoryWorkshop(ba_component creatorComponent, String creatorComponentTooltip, float inventoryW, float inventoryH, float inventoryX, float inventoryY) {
-        float pad = 10f;
+        final float pad = 10f;
         float opad = 10f;
         Color h = Misc.getHighlightColor();
         Color bad = Misc.getNegativeHighlightColor();
-        Color t = Misc.getTextColor();
+        final Color t = Misc.getTextColor();
         Color g = Misc.getGrayColor();
 
+        //big container
+        final float containerW = inventoryW - pad - pad / 2;
+        int containerH = (int) (inventoryH - pad - pad);
+        int containerX = (int) pad;
+        int containerY = (int) pad;
         String inventoryTooltipKey = "WORKSHOP_INVENTORY_TOOLTIP";
         String inventoryPanelKey = "WORKSHOP_INVENTORY_PANEL";
-        ba_component inventoryContainer = new ba_component(creatorComponent.mainPanel, inventoryW, inventoryH, inventoryX, inventoryY, true, inventoryPanelKey);
-        TooltipMakerAPI inventoryTooltipContainer = inventoryContainer.createTooltip(inventoryTooltipKey, inventoryW, inventoryH, false, 0,0);
-        creatorComponent.attachSubPanel(creatorComponentTooltip, inventoryPanelKey,inventoryContainer,0,0);
+        ba_component inventoryContainer = new ba_component(creatorComponent.mainPanel, containerW, containerH, containerX, containerY, true, inventoryPanelKey);
+        TooltipMakerAPI inventoryTooltipContainer = inventoryContainer.createTooltip(inventoryTooltipKey, containerW, containerH, true, 0,0);
+        creatorComponent.attachSubPanel(creatorComponentTooltip, inventoryPanelKey, inventoryContainer, containerX, containerY);
 
-        inventoryTooltipContainer.addPara("inventory", 0);
+        CargoAPI playerCargo = Global.getSector().getPlayerFleet().getCargo();
+        List<CargoStackAPI> availableBionics = new ArrayList<>();
+        for(CargoStackAPI cargo: playerCargo.getStacksCopy()) {
+            if(cargo.isSpecialStack() && cargo.getSpecialItemSpecIfSpecial() != null && ba_bionicmanager.bionicItemMap.containsKey(cargo.getSpecialDataIfSpecial().getId())) {
+                availableBionics.add(cargo);
+            }
+        }
+        List<ba_component> subComponentItemList = new ArrayList<>();
+        if(availableBionics.size() != 0) {
+            int index = 0;
+            int row = 0;
+            int itemW = 100;
+            int itemH = 100;
+            int itemsPerRow = (int) Math.floor(containerW / itemW);
+            int defaultRows = 1;
+            int neededRows = defaultRows;
+            if(availableBionics.size() / itemsPerRow > defaultRows) {
+                neededRows = Math.round((float) availableBionics.size() / itemsPerRow);
+            }
+            while(row < neededRows) {
+                int rowX = 0;
+                int rowY = (int) (row * itemH);
+                int rowW = (int) containerW;
+                int rowH = (int) (itemH);
+                String rowTooltipKey = "INVENTORY_ROW_TOOLTIP";
+                String rowPanelKey = "INVENTORY_ROW_PANEL_"+ row;
+                ba_component rowContainer = new ba_component(inventoryContainer.mainPanel, rowW, rowH, rowX, rowY, false, rowPanelKey);
+                TooltipMakerAPI rowTooltipContainer = rowContainer.createTooltip(rowTooltipKey, rowW, rowH, false, 0,0);
+                inventoryContainer.attachSubPanel(inventoryTooltipKey, rowPanelKey, rowContainer, rowX, rowY);
+                subComponentItemList.add(rowContainer);
+
+                int rowItemCount = 0;
+                while(rowItemCount < itemsPerRow) {
+                    if(index < availableBionics.size()) {
+                        CargoStackAPI cargo = availableBionics.get(index);
+                        final ba_bionicitemplugin bionic = ba_bionicmanager.bionicItemMap.get(cargo.getSpecialItemSpecIfSpecial().getId());
+                        float quantity = cargo.getSize();
+
+                        int itemX = rowItemCount * itemW;
+                        int itemY = 0;
+                        //--------image
+                        int imageW = 80;
+                        int imageH = 80;
+                        int imageX = itemX + itemW / 2 - imageW / 2;
+                        int imageY = itemY + itemH / 2 - imageH / 2;
+                        String spriteName = bionic.getSpec().getIconName();
+                        TooltipMakerAPI personImageTooltip = rowContainer.createTooltip("ITEM_IMAGE", imageW, imageH, false, 0, 0);
+                        personImageTooltip.addImage(spriteName, imageW * 0.9f, imageH * 0.9f, 0);
+                        //---------quantity
+                        LabelAPI quantityLabel = rowTooltipContainer.addPara(String.valueOf((int) quantity), Misc.getBrightPlayerColor(), 0);
+                        quantityLabel.getPosition().inTL(itemX + itemW - quantityLabel.computeTextWidth(String.valueOf((int) quantity)) - pad / 2, itemY + pad / 2);
+                        //---------hover
+                        ButtonAPI areaChecker = rowTooltipContainer.addAreaCheckbox("", null,Misc.getBasePlayerColor(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), itemW, itemH, 0);
+                        addButtonToList(areaChecker, "hover_bionic_item:"+bionic.getId());
+                        areaChecker.getPosition().setLocation(0,0).inTL(itemX, itemY);
+                        if(this.currentHoveredBionic != null) {
+                            if(currentHoveredBionic.equals(bionic)) {
+                                areaChecker.highlight();
+                            }
+                        }
+
+                        personImageTooltip.getPosition().inTL(imageX, imageY);
+                    }
+                    rowItemCount++;
+                    index++;
+                }
+                row++;
+            }
+        } else {
+            //Empty text
+            int emptyX = (int) containerW / 2;
+            int emptyY = (int) containerH / 2;
+            String emptyText = "Currently no available bionic to install/remove.";
+            LabelAPI emptyLabel = inventoryTooltipContainer.addPara(emptyText,Misc.getDarkPlayerColor(), 1);
+            emptyLabel.getPosition().inTL(emptyX - (emptyLabel.computeTextWidth(emptyText) / 2), emptyY);
+        }
+        inventoryContainer.subComponentListMap.put("ITEM_LIST", subComponentItemList);
+        //add this later so scroll works
+        inventoryContainer.mainPanel.addUIElement(inventoryTooltipContainer).setLocation(0,0).inTL(0, 0);
+
+        //border
+        UIComponentAPI border = inventoryTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
+        border.getPosition().setSize(containerW, containerH);
+        inventoryContainer.mainPanel.addComponent(border).setLocation(0,0).inTL(0, 0);
     }
     public void displayEffectListWorkshop(ba_component creatorComponent, String creatorComponentTooltip, float effectListW, float effectListH, float effectListX, float effectListY) {
         float pad = 10f;
@@ -746,20 +834,113 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         Color t = Misc.getTextColor();
         Color g = Misc.getGrayColor();
 
-        String infoPersonTooltipKey = "WORKSHOP_EFFECT_LIST_TOOLTIP";
-        String infoPersonPanelKey = "WORKSHOP_EFFECT_LIST_PANEL";
-        ba_component effectListContainer = new ba_component(creatorComponent.mainPanel, effectListW, effectListH, effectListX, effectListY, true, infoPersonPanelKey);
-        TooltipMakerAPI effectListTooltipContainer = effectListContainer.createTooltip(infoPersonTooltipKey, effectListW, effectListH, false, 0,0);
-        creatorComponent.attachSubPanel(creatorComponentTooltip, infoPersonPanelKey,effectListContainer,0,0);
+        String effectListTooltipKey = "WORKSHOP_EFFECT_LIST_TOOLTIP";
+        String effectListPanelKey = "WORKSHOP_EFFECT_LIST_PANEL";
+        ba_component effectListContainer = new ba_component(creatorComponent.mainPanel, effectListW, effectListH, effectListX, effectListY, true, effectListPanelKey);
+        TooltipMakerAPI effectListTooltipContainer = effectListContainer.createTooltip(effectListTooltipKey, effectListW, effectListH, false, 0,0);
+        creatorComponent.attachSubPanel(creatorComponentTooltip, effectListPanelKey,effectListContainer,0,0);
 
-        //border
-        int borderW = (int) (effectListW - pad - pad);
-        int borderH = (int) (effectListH - pad - pad);
-        int borderX = (int) pad;
-        int borderY = (int) pad / 2;
+        //border effect list
+        int borderW = (int) (effectListW - pad - pad / 2);
+        int borderH = (int) (effectListH *0.6f - pad);
+        int borderX = (int) pad / 2;
+        int borderY = (int) (pad);
         UIComponentAPI border = effectListTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
         border.getPosition().setSize(borderW, borderH);
         effectListContainer.mainPanel.addComponent(border).setLocation(0,0).inTL(borderX, borderY);
+
+        //sub container
+        int subEffectW = (int) (borderW - pad - pad);
+        int subEffectH = (int) (borderH - pad);
+        int subEffectX = (int) (pad / 2 + pad);
+        int subEffectY = (int) (pad + pad);
+        String subEffectListTooltipKey = "WORKSHOP_SUB_EFFECT_LIST_TOOLTIP";
+        String subEffectListPanelKey = "WORKSHOP_SUB_EFFECT_LIST_PANEL";
+        ba_component subEffectListContainer = new ba_component(effectListContainer.mainPanel, subEffectW, subEffectH, subEffectX, subEffectY, false, subEffectListPanelKey);
+        TooltipMakerAPI subEffectListTooltipContainer = subEffectListContainer.createTooltip(subEffectListTooltipKey, subEffectW, subEffectH, true, 0,0);
+        effectListContainer.attachSubPanel(effectListTooltipKey, subEffectListPanelKey,subEffectListContainer,0,0);
+
+        List<ba_officermanager.ba_bionicAugmentedData> currentAnatomyList = ba_officermanager.getBionicAnatomyList(this.currentHoveredPerson);
+        int i = 0;
+        int spacerY = 5;
+        for(ba_officermanager.ba_bionicAugmentedData bionicAugmentedDatas: currentAnatomyList) {
+            for (ba_bionicitemplugin bionic: bionicAugmentedDatas.bionicInstalled) {
+                String effect = "No effects yet...";
+                if(bionic.effectScript != null) {
+                    effect = bionic.effectScript.getShortEffectDescription();
+                }
+                LabelAPI expandedTooltip = subEffectListTooltipContainer.addPara("%s - %s", pad, Misc.getBasePlayerColor(), bionic.getName(), effect);
+                expandedTooltip.setHighlight(bionic.getName(), effect);
+                expandedTooltip.setHighlightColors(bionic.displayColor, bionic.effectScript != null ? t :Misc.getGrayColor());
+//                expandedTooltip.getPosition().inTL(pad, expandedTooltip.getPosition().getHeight() * i);
+
+                subEffectListTooltipContainer.addSpacer(spacerY);
+                i++;
+            }
+        }
+        //do the adding late so the scroll work
+        subEffectListContainer.mainPanel.addUIElement(subEffectListTooltipContainer).setLocation(0,0).inTL(subEffectX, subEffectY);
+
+        //border bionic detail
+        int borderBionicW = (int) (effectListW - pad - pad / 2);
+        int borderBionicH = (int) (effectListH *0.4f - pad - pad);
+        int borderBionicX = (int) pad / 2;
+        int borderBionicY = (int) (pad + borderH + pad + 1);
+        UIComponentAPI borderBionic = effectListTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
+        borderBionic.getPosition().setSize(borderBionicW, borderBionicH);
+        effectListContainer.mainPanel.addComponent(borderBionic).setLocation(0,0).inTL(borderBionicX, borderBionicY);
+
+        //bionic detail container
+        int bionicDetailW = (int) (borderBionicW - pad - pad);
+        int bionicDetailH = (int) (borderBionicH - pad - pad );
+        int bionicDetailX = (int) (borderBionicX + pad);
+        int bionicDetailY = (int) (borderBionicY + pad);
+        String bionicDetailTooltipKey = "WORKSHOP_BIONIC_DETAIL_TOOLTIP";
+        String bionicDetailPanelKey = "WORKSHOP_BIONIC_DETAIL_PANEL";
+        ba_component bionicDetailContainer = new ba_component(effectListContainer.mainPanel, bionicDetailW, bionicDetailH, bionicDetailX, bionicDetailY, false, bionicDetailPanelKey);
+        TooltipMakerAPI bionicDetailTooltipContainer = bionicDetailContainer.createTooltip(bionicDetailTooltipKey, bionicDetailW, bionicDetailH, true, 0,0);
+        effectListContainer.attachSubPanel(effectListTooltipKey, bionicDetailPanelKey,bionicDetailContainer,0,0);
+
+        if(this.currentHoveredBionic != null) {
+            //---------name
+            bionicDetailTooltipContainer.setParaInsigniaLarge();
+            LabelAPI nameLabel = bionicDetailTooltipContainer.addPara(this.currentHoveredBionic.getName(), Misc.getHighlightColor(),0);
+            bionicDetailTooltipContainer.addSpacer(10);
+            bionicDetailTooltipContainer.setParaFontDefault();
+            //---------design
+            LabelAPI designLabel = bionicDetailTooltipContainer.addPara("%s %s",0,t, "Design by: ",this.currentHoveredBionic.getDesignType());
+            designLabel.setHighlight("Design by: ", this.currentHoveredBionic.getDesignType());
+            designLabel.setHighlightColors(g, t.darker());
+            //---------effect
+            String effect = "No effects yet...";
+            if(this.currentHoveredBionic.effectScript != null) {
+                effect = this.currentHoveredBionic.effectScript.getShortEffectDescription();
+            }
+            LabelAPI effectLabel = bionicDetailTooltipContainer.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Effects: ", effect);
+            effectLabel.setHighlight("Effects: ", effect);
+            effectLabel.setHighlightColors(g, this.currentHoveredBionic.effectScript != null ? Misc.getBrightPlayerColor() :Misc.getGrayColor());
+            //----------desc
+            String desc = this.currentHoveredBionic.getSpec().getDesc();
+            LabelAPI descLabel = bionicDetailTooltipContainer.addPara("%s %s", pad, t, "Description: ", desc);
+            descLabel.setHighlight("Description: ", desc);
+            descLabel.setHighlightColors(g, t);
+        } else {
+            String text = "Empty for now.";
+            String text_2 = "Hover on bionic item for information.";
+            LabelAPI emptyLabel = bionicDetailTooltipContainer.addPara(text, Misc.getDarkPlayerColor(),0);
+            emptyLabel.getPosition().inTL((float) bionicDetailW / 2 - emptyLabel.computeTextWidth(text) / 2, (float) bionicDetailH /2 - emptyLabel.computeTextHeight(text) / 2);
+            LabelAPI emptyLabel_2 = bionicDetailTooltipContainer.addPara(text_2, Misc.getDarkPlayerColor(),0);
+            emptyLabel_2.getPosition().inTL((float) bionicDetailW / 2 - emptyLabel.computeTextWidth(text_2) / 2, (float) bionicDetailH /2 + emptyLabel.computeTextHeight(text) / 2);
+        }
+
+        //do the adding late so the scroll work
+        bionicDetailContainer.mainPanel.addUIElement(bionicDetailTooltipContainer).setLocation(0,0).inTL(bionicDetailX, bionicDetailY);
+    }
+    public void installBionic(ba_bionicitemplugin bionic) {
+
+    }
+    public void removeBionic(ba_bionicitemplugin bionic) {
+
     }
     protected void focusContent(String focusTabId) {
         if(focusTabId == "") {
@@ -769,8 +950,8 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         } else {
             String previousTabId = this.currentTabId;
             this.currentTabId = focusTabId;
-            log.info(previousTabId);
-            log.info(currentTabId);
+//            log.info(previousTabId);
+//            log.info(currentTabId);
 
             //move the previous tab out
             ba_component previousTab = tabMap.get(previousTabId);
@@ -778,6 +959,10 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             //move the focus tab in
             ba_component focusTab = tabMap.get(currentTabId);
             focusTab.mainPanel.getPosition().inTL(0, 0);
+            //reset all the tab related variables
+            if(this.currentHoveredBionic != null) this.currentHoveredBionic = null;
+            if(this.currentSelectedBionic != null) this.currentSelectedBionic = null;
+            if(this.currentSelectedLimb != null) this.currentSelectedLimb = null;
         }
     }
     public void getNewListPerson() {
@@ -795,32 +980,33 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
 
     @Override
     public void render(float alphaMult) {
-//        ba_component previousTab2 = componentMap.get("WORKSHOP_INVENTORY_PANEL");
+//        ba_component previousTab2 = componentMap.get("WORKSHOP_BIONIC_DETAIL_PANEL");
 //        ba_utils.drawBox(
-//                (int) previousTab2.getTooltip("WORKSHOP_INVENTORY_TOOLTIP").getPosition().getX(),
-//                (int) previousTab2.getTooltip("WORKSHOP_INVENTORY_TOOLTIP").getPosition().getY(),
-//                (int) previousTab2.getTooltip("WORKSHOP_INVENTORY_TOOLTIP").getPosition().getWidth(),
-//                (int) previousTab2.getTooltip("WORKSHOP_INVENTORY_TOOLTIP").getPosition().getHeight(),
+//                (int) previousTab2.getTooltip("WORKSHOP_BIONIC_DETAIL_TOOLTIP").getPosition().getX(),
+//                (int) previousTab2.getTooltip("WORKSHOP_BIONIC_DETAIL_TOOLTIP").getPosition().getY(),
+//                (int) previousTab2.getTooltip("WORKSHOP_BIONIC_DETAIL_TOOLTIP").getPosition().getWidth(),
+//                (int) previousTab2.getTooltip("WORKSHOP_BIONIC_DETAIL_TOOLTIP").getPosition().getHeight(),
 //                0.3f,
 //                Color.pink
 //        );
-//        ba_component previousTab3 = componentMap.get("OVERVIEW_PERSON_INFO_PANEL");
-//        ba_utils.drawBox(
-//                (int) previousTab3.getTooltip("OVERVIEW_PERSON_INFO_TOOLTIP").getPosition().getX(),
-//                (int) previousTab3.getTooltip("OVERVIEW_PERSON_INFO_TOOLTIP").getPosition().getY(),
-//                (int) previousTab3.getTooltip("OVERVIEW_PERSON_INFO_TOOLTIP").getPosition().getWidth(),
-//                (int) previousTab3.getTooltip("OVERVIEW_PERSON_INFO_TOOLTIP").getPosition().getHeight(),
-//                0.3f,
-//                Color.pink
-//        );
-
+//        ba_component b = componentMap.get("INVENTORY_ROW_PANEL_1");
+//        if(b!=null) {
+//            ba_utils.drawBox(
+//                    (int) b.mainPanel.getPosition().getX(),
+//                    (int) b.mainPanel.getPosition().getY(),
+//                    (int) b.mainPanel.getPosition().getWidth(),
+//                    (int) b.mainPanel.getPosition().getHeight(),
+//                    0.3f,
+//                    Color.green
+//            );
+//        }
     }
 
     @Override
     public void advance(float amount) {
         //handles button input processing
         //if pressing a button changes something in the diplay, call reset()
-//        boolean needsReset = false;
+        boolean needsReset = false;
         for (ButtonAPI b : buttons)
         {
 //            log.info("" + b + "--" + b.isHighlighted() + "-" + b.isChecked() + "-" + b.isEnabled());
@@ -830,15 +1016,15 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                 String s = buttonMap.get(b);
                 String[] tokens = s.split(":");
                 if (tokens[0].equals("tab")) {
-                    log.info("clicked" + tokens[1]);
+//                    log.info("clicked" + tokens[1]);
                     if(tokens[1].equals(OVERVIEW)) {
                         focusContent(OVERVIEW);
-//                        needsReset = true;
+                        needsReset = true;
                         break;
                     }
                     if(tokens[1].equals(WORKSHOP)) {
                         focusContent(WORKSHOP);
-//                        needsReset = true;
+                        needsReset = true;
                         break;
                     }
                 }
@@ -846,7 +1032,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         }
 
         //pressing a button usually means something we are displaying has changed, so redraw the panel from scratch
-//        if (needsReset) reset();
+        if (needsReset) refresh();
     }
 
     @Override
@@ -873,6 +1059,13 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                                         shouldRefresh = true;
                                     }
                                 }
+                            }
+                        }
+                        //hover bionic item in inventory
+                        if(tokens[0].equals("hover_bionic_item")) {
+                            if(ba_bionicmanager.bionicItemMap.get(tokens[1]) != null && (this.currentHoveredBionic == null || !this.currentHoveredBionic.bionicId.equals(tokens[1]))) {
+                                this.currentHoveredBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
+                                shouldRefresh = true;
                             }
                         }
                     }
@@ -962,6 +1155,9 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
          */
         protected void attachSubPanel(String tooltipKeyAttachTo, String otherComponentMapKey, ba_component otherComponent) {
             TooltipMakerAPI tooltipAttachingTo = this.tooltipMap.get(tooltipKeyAttachTo);
+            if(tooltipAttachingTo == null) {
+                log.error("Can't find container tooltip of Id: " + tooltipAttachingTo + " for: " + otherComponentMapKey);
+            }
             tooltipAttachingTo.addCustom(otherComponent.mainPanel, 0f);
             subComponentMap.put(otherComponentMapKey, otherComponent);
         }

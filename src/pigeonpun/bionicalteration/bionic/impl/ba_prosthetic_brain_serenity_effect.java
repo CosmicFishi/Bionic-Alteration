@@ -1,6 +1,7 @@
 package pigeonpun.bionicalteration.bionic.impl;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.SpecialItemPlugin;
 import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import com.fs.starfarer.api.combat.MutableShipStatsAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
@@ -59,7 +60,7 @@ public class ba_prosthetic_brain_serenity_effect implements ba_bioniceffect {
     }
     //todo: do custom rendering with sprite in graphics/icons/danger.png
     @Override
-    public void renderExtraOnItem() {
+    public void renderExtraOnItem(float x, float y, float w, float h, float alphaMult, float glowMult, SpecialItemPlugin.SpecialItemRendererAPI renderer) {
 
     }
 }
