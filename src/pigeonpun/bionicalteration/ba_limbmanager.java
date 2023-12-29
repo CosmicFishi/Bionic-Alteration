@@ -35,25 +35,23 @@ public class ba_limbmanager {
                     JSONObject row = limbData.getJSONObject(i);
                     //limb
                     String limbId = row.getString("limbId");
-                    if(!Objects.equals(limbId, "")) {
+                    String limbGroup = row.getString("groupId");
+                    if(!Objects.equals(limbId, "") && !Objects.equals(limbGroup, "")) {
+                        List<String> limbGroupList = ba_utils.trimAndSplitString(limbGroup);
                         limbMap.put(
                                 limbId,
                                 new ba_limb(
                                         limbId,
                                         row.getString("name"),
-                                        row.getString("description")
+                                        row.getString("description"),
+                                        limbGroupList
                                 )
                         );
-                        //limb group
-                        String limbGroup = row.getString("groupId");
-                        if(!Objects.equals(limbGroup, "")) {
-                            List<String> limbGroupList = ba_utils.trimAndSplitString(limbGroup);
-                            for (String limbGroupId: limbGroupList) {
-                                if(limbGroupMap.get(limbGroupId) != null) {
-                                    limbGroupMap.get(limbGroupId).add(limbMap.get(limbId));
-                                } else {
-                                    limbGroupMap.put(limbGroupId, new ArrayList<>(Arrays.asList(limbMap.get(limbId))));
-                                }
+                        for (String limbGroupId: limbGroupList) {
+                            if(limbGroupMap.get(limbGroupId) != null) {
+                                limbGroupMap.get(limbGroupId).add(limbMap.get(limbId));
+                            } else {
+                                limbGroupMap.put(limbGroupId, new ArrayList<>(Arrays.asList(limbMap.get(limbId))));
                             }
                         }
                     }
@@ -98,7 +96,7 @@ public class ba_limbmanager {
         }
         return section;
     }
-    public static List<ba_limb> getListLimb(String groupId) {
+    public static List<ba_limb> getListLimbFromGroup(String groupId) {
         List<ba_limb> list = limbGroupMap.get(groupId);
         if(list == null) {
             log.error("Can not find list of id: "+ groupId);
@@ -109,11 +107,13 @@ public class ba_limbmanager {
         public String limbId;
         public String name;
         public String description;
+        public List<String> limbGroupList;
         public HashMap<String, Object> customData = new HashMap<>();
-        public ba_limb(String limbId, String name, String description) {
+        public ba_limb(String limbId, String name, String description, List<String> limbGroupId) {
             this.limbId = limbId;
             this.name = name;
             this.description = description;
+            this.limbGroupList = limbGroupId;
         }
     }
 }

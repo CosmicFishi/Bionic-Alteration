@@ -162,6 +162,39 @@ public class ba_officermanager {
         }
         return anatomyList;
     }
+    /**
+     * @param bionic the bionic going to be installed
+     * @param limb the limb to install bionic
+     * @param person the person that installing the bionic
+     * @return
+     */
+    public static boolean checkIfCanInstallBionic(ba_bionicitemplugin bionic, ba_limbmanager.ba_limb limb, PersonAPI person) {
+        if(limb.limbGroupList.contains(bionic.bionicLimbGroupId)) {
+            for(ba_bionicAugmentedData data: getBionicAnatomyList(person)) {
+                if(data.limb.limbId.equals(limb.limbId) && !data.bionicInstalled.contains(bionic)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public static boolean checkIfCanEditLimb(ba_limbmanager.ba_limb limb, PersonAPI person) {
+        for(ba_bionicAugmentedData data: getBionicAnatomyList(person)) {
+            if(data.limb.limbId.equals(limb.limbId) && !data.bionicInstalled.isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public static boolean installBionic(ba_bionicitemplugin bionic, ba_limbmanager.ba_limb limb, PersonAPI person) {
+        if(checkIfCanInstallBionic(bionic, limb, person)) {
+            person.addTag(bionic.bionicId+":"+limb.limbId);
+            return true;
+        } else {
+            log.error("Can't install "+ bionic.bionicId + " on " + limb.limbId);
+        }
+        return false;
+    }
     protected static void installRandomBionic(PersonAPI person) {
         //todo: setting.json that control random installment
         if(!person.hasTag(ba_variablemanager.BA_RANDOM_BIONIC_GENERATED_TAG)) {
