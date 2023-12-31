@@ -8,6 +8,8 @@ import com.fs.starfarer.api.combat.ShipAPI;
 import org.apache.log4j.Logger;
 import pigeonpun.bionicalteration.bionic.ba_bioniceffect;
 
+import java.util.List;
+
 public class ba_prosthetic_brain_serenity_effect implements ba_bioniceffect {
     public static float TURN_RATE_MULT = 1.2f;
     public static float MAX_SPEED_MULT = 1.1f;
@@ -15,6 +17,11 @@ public class ba_prosthetic_brain_serenity_effect implements ba_bioniceffect {
     @Override
     public String getShortEffectDescription() {
         return "Increase piloting ship max speed by " + Math.round(MAX_SPEED_MULT * 100 - 100) + "% and turn rate by " + Math.round(TURN_RATE_MULT * 100 - 100) + "%";
+    }
+
+    @Override
+    public String getShortOnRemoveEffectDescription() {
+        return null;
     }
 
     @Override

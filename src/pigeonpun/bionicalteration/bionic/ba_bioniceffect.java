@@ -6,6 +6,8 @@ import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.combat.MutableShipStatsAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
 
+import java.util.List;
+
 /**
  * @author PigeonPun
  */
@@ -15,6 +17,11 @@ public interface ba_bioniceffect{
      * @return text
      */
     public String getShortEffectDescription();
+    /**
+     * Use to display the effect of bionic on remove, will be display in bionic description inside bionic workshop inventory.
+     * @return text
+     */
+    public String getShortOnRemoveEffectDescription();
 
     /**
      * As the name implies, apply effects for officer
@@ -55,6 +62,7 @@ public interface ba_bioniceffect{
      */
     //todo: look into this
     public void advanceInCampaign();
+    //todo: look into onRemove and onInstall
     public void onRemove();
     public void onInstall();
 

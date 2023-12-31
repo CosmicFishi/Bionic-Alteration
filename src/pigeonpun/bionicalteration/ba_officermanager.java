@@ -1,6 +1,8 @@
 package pigeonpun.bionicalteration;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.CargoAPI;
+import com.fs.starfarer.api.campaign.SpecialItemData;
 import com.fs.starfarer.api.characters.AdminData;
 import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import com.fs.starfarer.api.characters.OfficerDataAPI;
@@ -26,7 +28,11 @@ public class ba_officermanager {
     public static List<PersonAPI> listPersons = new ArrayList<>();
     static Logger log = Global.getLogger(ba_officermanager.class);
     public static void onSaveLoad() {
+        //install random bionic on start
         refresh();
+        for (PersonAPI person: listPersons) {
+            installRandomBionic(person);
+        }
     }
 
     /**
@@ -35,10 +41,6 @@ public class ba_officermanager {
     public static void refresh() {
         refreshListPerson();
         setUpVariant();
-        //install random bionic on start
-        for (PersonAPI person: listPersons) {
-            installRandomBionic(person);
-        }
         setUpDynamicStats();
         setUpSkill();
     }
@@ -71,41 +73,43 @@ public class ba_officermanager {
         //todo: have side effects base on consciousness
         for(PersonAPI person: listPersons) {
             //consciousness
-            person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).modifyFlat(ba_variablemanager.BA_CONSCIOUSNESS_SOURCE_KEY, getConsciousness(person));
+            person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).modifyFlat(ba_variablemanager.BA_CONSCIOUSNESS_SOURCE_KEY, setUpConsciousness(person));
             //BRM limit
-            person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).modifyFlat(ba_variablemanager.BA_BRM_LIMIT_SOURCE_KEY, getBRMLimit(person));
+            person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).modifyFlat(ba_variablemanager.BA_BRM_LIMIT_SOURCE_KEY, setUpBRMLimit(person));
             //BRM current
-            person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).modifyFlat(ba_variablemanager.BA_BRM_CURRENT_SOURCE_KEY, getBRMCurrent(person));
+            person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).modifyFlat(ba_variablemanager.BA_BRM_CURRENT_SOURCE_KEY, setUpBRMCurrent(person));
         }
     }
     public static void setUpSkill() {
         for(PersonAPI person: ba_officermanager.listPersons) {
             for (MutableCharacterStatsAPI.SkillLevelAPI skill: person.getStats().getSkillsCopy()) {
-                if (!skill.getSkill().getId().equals(ba_variablemanager.BA_BIONIC_SKILL_ID) && ba_bionicmanager.checkIfHaveBionic(person)) {
+                if (!skill.getSkill().getId().equals(ba_variablemanager.BA_BIONIC_SKILL_ID) && ba_bionicmanager.checkIfHaveBionicInstalled(person)) {
                     person.getStats().setSkillLevel(ba_variablemanager.BA_BIONIC_SKILL_ID, 1);
                 }
             }
         }
     }
-    protected static int getBRMLimit(PersonAPI person) {
+    protected static int setUpBRMLimit(PersonAPI person) {
         int brmLimit = (int) (person.getStats().getLevel() * ba_variablemanager.BA_BRM_LIMIT_BONUS_PER_LEVEL);
         return brmLimit;
     }
-    protected static int getBRMCurrent(PersonAPI person) {
+    protected static int setUpBRMCurrent(PersonAPI person) {
         int brmCurrent = 0;
         List<ba_bionicitemplugin> listBionics = ba_bionicmanager.getListBionicInstalled(person);
         for (ba_bionicitemplugin bionic: listBionics) {
             brmCurrent += bionic.brmCost;
         }
+        if(brmCurrent < 0) brmCurrent = 0;
         return brmCurrent;
     }
-    protected static float getConsciousness(PersonAPI person) {
+    protected static float setUpConsciousness(PersonAPI person) {
         float currentConsciousness = ba_variablemanager.BA_CONSCIOUSNESS_DEFAULT;
         List<ba_bionicitemplugin> listBionics = ba_bionicmanager.getListBionicInstalled(person);
         for (ba_bionicitemplugin bionic: listBionics) {
             currentConsciousness -= bionic.consciousnessCost;
         }
 //        log.info(currentConsciousness);
+        if(currentConsciousness > ba_variablemanager.BA_CONSCIOUSNESS_DEFAULT) currentConsciousness = ba_variablemanager.BA_CONSCIOUSNESS_DEFAULT;
         return currentConsciousness;
     }
 
@@ -170,8 +174,34 @@ public class ba_officermanager {
      */
     public static boolean checkIfCanInstallBionic(ba_bionicitemplugin bionic, ba_limbmanager.ba_limb limb, PersonAPI person) {
         if(limb.limbGroupList.contains(bionic.bionicLimbGroupId)) {
+            //conflicts
+            if(ba_bionicmanager.checkIfBionicConflicted(bionic, person)) return false;
+
+            float currentBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
+            float limitBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);
+            float conscious = person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);;
             for(ba_bionicAugmentedData data: getBionicAnatomyList(person)) {
-                if(data.limb.limbId.equals(limb.limbId) && !data.bionicInstalled.contains(bionic)) {
+                if(data.limb.limbId.equals(limb.limbId) &&
+                        !data.bionicInstalled.contains(bionic) &&
+                        currentBrm + bionic.brmCost <= limitBrm &&
+                        conscious - bionic.consciousnessCost > 0
+                ) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    /**
+     * @param bionic the bionic going to be removed
+     * @param limb the limb to remove bionic
+     * @param person the person that removing the bionic
+     * @return
+     */
+    public static boolean checkIfCanRemoveBionic(ba_bionicitemplugin bionic, ba_limbmanager.ba_limb limb, PersonAPI person) {
+        if(limb.limbGroupList.contains(bionic.bionicLimbGroupId)) {
+            for(ba_bionicAugmentedData data: getBionicAnatomyList(person)) {
+                if(data.limb.limbId.equals(limb.limbId) && data.bionicInstalled.contains(bionic)) {
                     return true;
                 }
             }
@@ -180,7 +210,7 @@ public class ba_officermanager {
     }
     public static boolean checkIfCanEditLimb(ba_limbmanager.ba_limb limb, PersonAPI person) {
         for(ba_bionicAugmentedData data: getBionicAnatomyList(person)) {
-            if(data.limb.limbId.equals(limb.limbId) && !data.bionicInstalled.isEmpty()) {
+            if(data.limb.limbId.equals(limb.limbId)) {
                 return true;
             }
         }
@@ -189,14 +219,35 @@ public class ba_officermanager {
     public static boolean installBionic(ba_bionicitemplugin bionic, ba_limbmanager.ba_limb limb, PersonAPI person) {
         if(checkIfCanInstallBionic(bionic, limb, person)) {
             person.addTag(bionic.bionicId+":"+limb.limbId);
+            //todo: add class to handle interaction with player inventory
+            SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
+            Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, 1);
+            setUpDynamicStats();
+//            person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).modifyFlat("modify_"+bionic.bionicId, -bionic.consciousnessCost);
+//            person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).modifyFlat("modify_"+bionic.bionicId, bionic.brmCost);
             return true;
         } else {
             log.error("Can't install "+ bionic.bionicId + " on " + limb.limbId);
         }
         return false;
     }
+    public static boolean removeBionic(ba_bionicitemplugin bionic, ba_limbmanager.ba_limb limb, PersonAPI person) {
+        if(checkIfCanRemoveBionic(bionic, limb, person)) {
+            person.removeTag(bionic.bionicId+":"+limb.limbId);
+            SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
+            Global.getSector().getPlayerFleet().getCargo().addSpecial(specialItem, 1);
+            setUpDynamicStats();
+//            person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).unmodifyFlat("modify_"+bionic.bionicId);
+//            person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).unmodifyFlat("modify_"+bionic.bionicId);
+            return true;
+        } else {
+            log.error("Can't remove "+ bionic.bionicId + " on " + limb.limbId);
+        }
+        return false;
+    }
     protected static void installRandomBionic(PersonAPI person) {
         //todo: setting.json that control random installment
+        //todo: have check to see if the bionic can be install
         if(!person.hasTag(ba_variablemanager.BA_RANDOM_BIONIC_GENERATED_TAG)) {
             List<String> randomBionics = ba_bionicmanager.getRandomBionic();
             for (String random: randomBionics) {

@@ -41,12 +41,14 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
     List<ButtonAPI> buttons = new ArrayList<>();
     HashMap<ButtonAPI, String> buttonMap = new HashMap<>();
     HashMap<String, ba_component> componentMap = new HashMap<>();
-    public static final String OVERVIEW = "OVERVIEW", WORKSHOP = "WORKSHOP", INSTALL_WORKSHOP="INSTALL", EDIT_WORKSHOP="EDIT";
+    public static final String OVERVIEW = "OVERVIEW", WORKSHOP = "WORKSHOP";
+    public final String INSTALL_WORKSHOP="INSTALL", EDIT_WORKSHOP="EDIT";
     public String currentWorkShopMode = INSTALL_WORKSHOP; //determine what mode workshop is in
-    public PersonAPI currentHoveredPerson;
+    public PersonAPI currentPerson;
     public ba_bionicitemplugin currentHoveredBionic; //hovering in the inventory
     public ba_limbmanager.ba_limb currentSelectedLimb; //selected for installation/removal
     public ba_bionicitemplugin currentSelectedBionic; //selected for installation
+    public ba_bionicitemplugin currentRemovingBionic; //selected for removing
     HashMap<String, ba_component> tabMap = new HashMap<>();
     String currentTabId = OVERVIEW;
     public static ba_uiplugin createDefault() {
@@ -111,8 +113,8 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         Color t = Misc.getTextColor();
         Color g = Misc.getGrayColor();
         //set default hover person
-        if(ba_officermanager.listPersons.size() != 0 && this.currentHoveredPerson == null) {
-            this.currentHoveredPerson = ba_officermanager.listPersons.get(0);
+        if(ba_officermanager.listPersons.size() != 0 && this.currentPerson == null) {
+            this.currentPerson = ba_officermanager.listPersons.get(0);
         }
 
         //big overview container
@@ -274,13 +276,13 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         TooltipMakerAPI headerTooltip = infoPersonContainer.createTooltip("PERSON_INFO_HEADER", headerW, headerH, false, 0,0);
         headerTooltip.getPosition().inTL(0, 0);
         headerTooltip.addSectionHeading("DETAILS", Alignment.MID, 0);
-        if(currentHoveredPerson != null) {
+        if(currentPerson != null) {
             //--------image
             int imageX = (int) 0;
             int imageY = (int) (0 + headerH);
             int imageW = 200;
             int imageH = imageW;
-            String spriteName = currentHoveredPerson.getPortraitSprite();
+            String spriteName = currentPerson.getPortraitSprite();
             TooltipMakerAPI personImageTooltip = infoPersonContainer.createTooltip("PERSON_INFO_IMAGE", imageW, imageH, false, 0, 0);
             personImageTooltip.getPosition().inTL(imageX, imageY);
             personImageTooltip.addImage(spriteName, imageW, imageH, 0);
@@ -288,10 +290,10 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             int skillX = (int) 0;
             int skillY = (int) (0 + headerH + imageH);
             int skillW = imageW;
-            int skillH = (int) currentHoveredPerson.getStats().getSkillsCopy().size() * 100;
+            int skillH = (int) currentPerson.getStats().getSkillsCopy().size() * 100;
             TooltipMakerAPI personSkillTooltip = infoPersonContainer.createTooltip("PERSON_INFO_SKILLS", skillW, skillH, false, 0, 0);
             personSkillTooltip.getPosition().inTL(skillX,skillY);
-            UIComponentAPI personSkills = personSkillTooltip.addSkillPanelOneColumn(currentHoveredPerson, 0);
+            UIComponentAPI personSkills = personSkillTooltip.addSkillPanelOneColumn(currentPerson, 0);
             personSkills.getPosition().setSize(skillW, skillH);
             //--------Stats
             int statsX = (int) (imageW + pad);
@@ -302,28 +304,28 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             TooltipMakerAPI personStatsTooltip = infoPersonContainer.createTooltip("PERSON_INFO_NAME", statsW, statsH, false, 0, 0);
             personStatsTooltip.getPosition().inTL(statsX,statsY);
             //>name
-            LabelAPI nameLabel = personStatsTooltip.addPara(this.currentHoveredPerson.getName().getFullName() + (currentHoveredPerson.isPlayer() ? " (You)" : ""), 0, Misc.getBrightPlayerColor(), this.currentHoveredPerson.getName().getFullName());
+            LabelAPI nameLabel = personStatsTooltip.addPara(this.currentPerson.getName().getFullName() + (currentPerson.isPlayer() ? " (You)" : ""), 0, Misc.getBrightPlayerColor(), this.currentPerson.getName().getFullName());
             nameLabel.getPosition().setSize(200,20);
             nameLabel.getPosition().inTL(0,0);
             //>Level
-            LabelAPI levelLabel = personStatsTooltip.addPara("Level: " + this.currentHoveredPerson.getStats().getLevel(), 0, Misc.getHighlightColor(), "" + this.currentHoveredPerson.getStats().getLevel());
+            LabelAPI levelLabel = personStatsTooltip.addPara("Level: " + this.currentPerson.getStats().getLevel(), 0, Misc.getHighlightColor(), "" + this.currentPerson.getStats().getLevel());
             levelLabel.getPosition().setSize(100,20);
             levelLabel.getPosition().inTL(nameLabel.getPosition().getWidth() + pad, 0);
             //>personality
-            LabelAPI personalityLabel = personStatsTooltip.addPara("Personality: " + this.currentHoveredPerson.getPersonalityAPI().getDisplayName(), 0, Misc.getHighlightColor(), "" + this.currentHoveredPerson.getPersonalityAPI().getDisplayName());
+            LabelAPI personalityLabel = personStatsTooltip.addPara("Personality: " + this.currentPerson.getPersonalityAPI().getDisplayName(), 0, Misc.getHighlightColor(), "" + this.currentPerson.getPersonalityAPI().getDisplayName());
             personalityLabel.getPosition().setSize(200,20);
             personalityLabel.getPosition().inTL(0, nameLabel.getPosition().getHeight() + statsSpacer);
             //>Occupation
             String occupation = "Idle";
-            if(this.currentHoveredPerson.getFleet() != null || this.currentHoveredPerson.isPlayer()) {
-                if(Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentHoveredPerson) != null) {
-                    String shipName = Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentHoveredPerson).getShipName();
-                    String shipClass = Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentHoveredPerson).getHullSpec().getNameWithDesignationWithDashClass();
+            if(this.currentPerson.getFleet() != null || this.currentPerson.isPlayer()) {
+                if(Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentPerson) != null) {
+                    String shipName = Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentPerson).getShipName();
+                    String shipClass = Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentPerson).getHullSpec().getNameWithDesignationWithDashClass();
                     occupation = "Piloting "+ shipName + " of " + shipClass;
                 }
-            } else if (this.currentHoveredPerson.getMarket() != null) {
-                MarketAPI market = this.currentHoveredPerson.getMarket();
-                if(market.getAdmin() == this.currentHoveredPerson) {
+            } else if (this.currentPerson.getMarket() != null) {
+                MarketAPI market = this.currentPerson.getMarket();
+                if(market.getAdmin() == this.currentPerson) {
                     occupation = "Admin of " + market.getName();
                 }
             }
@@ -333,19 +335,19 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             occupationLabel.getPosition().inTL(0, occupationY);
             //>BRM limit
             int limitBRMY = (int) (occupationY + occupationLabel.getPosition().getHeight() + statsSpacer);
-            int limitBRM = (int) this.currentHoveredPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);
+            int limitBRM = (int) this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);
             LabelAPI limitBRMLabel = personStatsTooltip.addPara(String.valueOf("BRM Limit: " + limitBRM), 0, Misc.getBrightPlayerColor(), "" + limitBRM);
             limitBRMLabel.getPosition().setSize(150,20);
             limitBRMLabel.getPosition().inTL(0, limitBRMY);
             //>BRM available
-            int currentBRM = (int) this.currentHoveredPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
+            int currentBRM = (int) this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
             int currentBRMY = (int) limitBRMY;
             int currentBRMX = (int) (limitBRMLabel.getPosition().getWidth());
             LabelAPI currentBRMLabel = personStatsTooltip.addPara(String.valueOf("BRM Using: " + currentBRM), 0, currentBRM > limitBRM ? bad: Misc.getHighlightColor(), "" + currentBRM);
             currentBRMLabel.getPosition().setSize(150,20);
             currentBRMLabel.getPosition().inTL(currentBRMX, currentBRMY);
             //>Consciousness
-            float consciousness = this.currentHoveredPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
+            float consciousness = this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
             int consciousnessY = (int) limitBRMY;
             int consciousnessX = (int) (currentBRMX + currentBRMLabel.getPosition().getWidth());
             LabelAPI consciousnessLabel = personStatsTooltip.addPara("Conscious: " + Math.round(consciousness * 100) + "%", 0);
@@ -382,14 +384,13 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         //do the adding late so the scroll work
 //        infoPersonContainer.mainPanel.addUIElement(infoPersonTooltipContainer);
     }
-    //todo: make isWorkshopMode a thing (clicking on a line, remove/add etc)
-    protected void displayBionicTable(ba_component creatorComponent, String creatorComponentTooltip, String keyPrefix, boolean isWorkshopMode, boolean isScroll ,float tableW, float tableH, float tableX, float tableY) {
+    protected void displayBionicTable(ba_component creatorComponent, String creatorComponentTooltip, String keyPrefix, final boolean isWorkshopMode, boolean isScroll , float tableW, float tableH, float tableX, float tableY) {
         final float pad = 10f;
         float opad = 10f;
         Color h = Misc.getHighlightColor();
         Color bad = Misc.getNegativeHighlightColor();
-        Color t = Misc.getTextColor();
-        Color g = Misc.getGrayColor();
+        final Color t = Misc.getTextColor();
+        final Color g = Misc.getGrayColor();
         String prefix = keyPrefix + "_";
 
         String infoPersonBionicTooltipKey = "PERSON_INFO_BIONICS_TOOLTIP";
@@ -441,8 +442,8 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         //rows
         int i = 0;
         List<ba_component> subComponentBionicList = new ArrayList<>();
-        List<ba_officermanager.ba_bionicAugmentedData> currentAnatomyList = ba_officermanager.getBionicAnatomyList(this.currentHoveredPerson);
-//        log.info(currentAnatomyList.size() + " - " + this.currentHoveredPerson.getTags());
+        List<ba_officermanager.ba_bionicAugmentedData> currentAnatomyList = ba_officermanager.getBionicAnatomyList(this.currentPerson);
+//        log.info(currentAnatomyList.size() + " - " + this.currentPerson.getTags());
 //        for (ba_officermanager.ba_bionicAugmentedData data: currentAnatomyList) {
 //            log.info(data.limb.name + " - " + data.bionicInstalled.size());
 //            if(data.bionicInstalled.size() != 0) {
@@ -493,17 +494,39 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                     tooltip.addSectionHeading("Bionics", Alignment.MID, 0);
                     if(bionic.bionicInstalled.size() != 0) {
                         for(ba_bionicitemplugin b: bionic.bionicInstalled) {
-                            LabelAPI descriptions = tooltip.addPara(b.getName() + ": " + b.getSpec().getDesc(), pad);
-                            descriptions.setHighlight(b.getName());
-                            descriptions.setHighlightColor(b.displayColor);
-                            if(expanded) {
-                                String effect = "No effects yet...";
-                                if(b.effectScript != null) {
-                                    effect = b.effectScript.getShortEffectDescription();
+                            String effect = "No effects yet...";
+                            if(b.effectScript != null) {
+                                effect = b.effectScript.getShortEffectDescription();
+                            }
+                            String nameBehindText = isWorkshopMode? effect : b.getSpec().getDesc();
+                            LabelAPI descriptions = tooltip.addPara("%s: %s", pad, t, b.getName(), nameBehindText);
+                            descriptions.setHighlight(b.getName(), nameBehindText);
+                            descriptions.setHighlightColors(b.displayColor, t);
+                            if(isWorkshopMode) {
+                                //---------Conflicts
+                                StringBuilder conflictsList = new StringBuilder();
+                                for (ba_bionicitemplugin bionic: ba_bionicmanager.getListBionicConflicts(b)) {
+                                    conflictsList.append(bionic.getName()).append(", ");
                                 }
-                                LabelAPI expandedTooltip = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Effects:", effect);
-                                expandedTooltip.setHighlight("Effects:", effect);
-                                expandedTooltip.setHighlightColors(Misc.getGrayColor().brighter(), b.effectScript != null ? Misc.getHighlightColor() :Misc.getGrayColor());
+                                if(conflictsList.length() > 0) {
+                                    conflictsList.setLength(conflictsList.length() - 2);
+                                } else {
+                                    conflictsList.append("None");
+                                }
+                                LabelAPI conflictListLabel = tooltip.addPara("%s %s", pad, t,"Conflicts:", conflictsList.toString());
+                                conflictListLabel.setHighlight("Conflicts:", conflictsList.toString());
+                                conflictListLabel.setHighlightColors(g.brighter().brighter(), Misc.getNegativeHighlightColor());
+                            }
+                            if(expanded) {
+                                if(!isWorkshopMode) {
+                                    LabelAPI expandedTooltip = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Effects:", effect);
+                                    expandedTooltip.setHighlight("Effects:", effect);
+                                    expandedTooltip.setHighlightColors(Misc.getGrayColor().brighter(), b.effectScript != null ? Misc.getHighlightColor() :Misc.getGrayColor());
+                                } else {
+                                    LabelAPI expandedTooltip = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Description:", b.getSpec().getDesc());
+                                    expandedTooltip.setHighlight("Description:", b.getSpec().getDesc());
+                                    expandedTooltip.setHighlightColors(Misc.getGrayColor().brighter(), t);
+                                }
                             }
                             tooltip.addSpacer(pad);
                         }
@@ -567,9 +590,9 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         Color bad = Misc.getNegativeHighlightColor();
         Color t = Misc.getTextColor();
         Color g = Misc.getGrayColor();
-        //set default hover person - this shouldn't be triggered by default but somehow currentHoveredPerson is null, do it
-        if(ba_officermanager.listPersons.size() != 0 && this.currentHoveredPerson == null) {
-            this.currentHoveredPerson = ba_officermanager.listPersons.get(0);
+        //set default hover person - this shouldn't be triggered by default but somehow currentPerson is null, do it
+        if(ba_officermanager.listPersons.size() != 0 && this.currentPerson == null) {
+            this.currentPerson = ba_officermanager.listPersons.get(0);
         }
         //installing process
         /*
@@ -603,7 +626,11 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         TooltipMakerAPI inventoryTooltipContainer = workshopContainer.createTooltip(mainInventoryTooltipKey, inventoryW, inventoryH, false, 0, 0);
         inventoryTooltipContainer.getPosition().inTL(0, personInfoH);
 //        inventoryTooltipContainer.addPara("bbbb", 0);
-        displayInventoryWorkshop(workshopContainer, mainInventoryTooltipKey, inventoryW, inventoryH, 0,0);
+        if(this.currentWorkShopMode.equals(INSTALL_WORKSHOP)) {
+            displayInventoryWorkshop(workshopContainer, mainInventoryTooltipKey, inventoryW, inventoryH, 0,0);
+        } else if (this.currentWorkShopMode.equals(EDIT_WORKSHOP)) {
+            displayRemoveBionicWorkshop(workshopContainer, mainInventoryTooltipKey, inventoryW, inventoryH, 0,0);
+        }
 
         float effectListW = (pW - personInfoW);
         float effectListH = pH;
@@ -643,7 +670,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         int imageY = (int) (upgradeBtnH + upgradeBtnY + pad);
         int imageW = (int) infoLeftW;
         int imageH = imageW;
-        String spriteName = this.currentHoveredPerson.getPortraitSprite();
+        String spriteName = this.currentPerson.getPortraitSprite();
         TooltipMakerAPI personImageTooltip = infoPersonContainer.createTooltip("WORKSHOP_PERSON_IMAGE", imageW, imageH, false, 0, 0);
         personImageTooltip.getPosition().inTL(imageX, imageY);
         personImageTooltip.addImage(spriteName, imageW, imageH, 0);
@@ -652,25 +679,25 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         int nameW = (int) infoLeftW;
         int nameX = (int) (0 + pad);
         int nameY = (int) (imageH + imageY+ pad);
-        LabelAPI name = infoPersonTooltipContainer.addPara(this.currentHoveredPerson.getName().getFullName() + (this.currentHoveredPerson.isPlayer() ? " (" + "You" + ")": ""), pad);
+        LabelAPI name = infoPersonTooltipContainer.addPara(this.currentPerson.getName().getFullName() + (this.currentPerson.isPlayer() ? " (" + "You" + ")": ""), pad);
         name.getPosition().inTL(nameX, nameY);
         name.getPosition().setSize(nameW, nameH);
-        name.setHighlight(this.currentHoveredPerson.getName().getFullName());
+        name.setHighlight(this.currentPerson.getName().getFullName());
         name.setHighlightColors(Misc.getBrightPlayerColor());
         //BRM (Bionic Rights Management)
         int brmH = 30;
         int brmW = (int) infoLeftW;
         int brmX = (int) (0 + pad);
         int brmY = (int) (nameY + nameH);
-        int currentBRM = (int) this.currentHoveredPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);;
-        int limitBRM = (int) this.currentHoveredPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);;
+        int currentBRM = (int) this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);;
+        int limitBRM = (int) this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);;
         LabelAPI BRM = infoPersonTooltipContainer.addPara("BRM: " + currentBRM + " / " + limitBRM, pad);
         BRM.setHighlight("BRM: ", "" +currentBRM, "" +limitBRM);
         BRM.setHighlightColors(t,currentBRM > limitBRM ? bad: h,Misc.getBrightPlayerColor());
         BRM.getPosition().inTL(brmX, brmY);
         BRM.getPosition().setSize(brmW, brmH);
         //>Consciousness
-        float consciousness = this.currentHoveredPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
+        float consciousness = this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
         int consciousnessY = (int) (brmY + brmH);
         int consciousnessX = (int) (0 + pad);
         int consciousnessH = 30;
@@ -683,7 +710,6 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
 
         int btnH = 40;
         //--------upgrade button
-        //todo: add functionality
         int installBtnH = btnH;
         int installBtnW = (int) (200 - pad);
         int installBtnX = (int) (personInfoW - installBtnW - pad);
@@ -692,7 +718,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         installButton.getPosition().inTL(installBtnX,installBtnY);
         addButtonToList(installButton, "bionic:install");
         installButton.setEnabled(false);
-        if(this.currentSelectedLimb != null && this.currentSelectedBionic != null && ba_officermanager.checkIfCanInstallBionic(this.currentSelectedBionic, this.currentSelectedLimb, this.currentHoveredPerson)) {
+        if(this.currentSelectedLimb != null && this.currentSelectedBionic != null && ba_officermanager.checkIfCanInstallBionic(this.currentSelectedBionic, this.currentSelectedLimb, this.currentPerson)) {
             installButton.setEnabled(true);
             installButton.flash(false);
         }
@@ -727,24 +753,27 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                 tooltip.addPara("3. Click the INSTALL button.",pad/2);
 
                 tooltip.setParaFontVictor14();
-                tooltip.addPara("Button is still disabled ?", pad);
+                tooltip.addPara("Button is still disabled ? Hover on selected bionic for more information.", pad);
                 tooltip.setParaFontDefault();
-                tooltip.addPara("- Make sure that selected bionic can be install on selected limb. Hover on selected bionic for this information", pad/2);
-                tooltip.addPara("- Make sure that selected limb did not install the selected bionic. Hover on selected limb for this information", pad/2);
+                tooltip.addPara("Make sure that: ", pad);
+                tooltip.addPara("- %s on selected limb.", pad/2, Misc.getHighlightColor(), "Selected bionic can be install");
+                tooltip.addPara("- %s the selected bionic.", pad/2, Misc.getHighlightColor(), "Selected limb did not install");
+                tooltip.addPara("- %s the person BRM limit.", pad/2, Misc.getHighlightColor(), "Selected bionics BRM do not go pass");
+                tooltip.addPara("- %s the person consciousness to lower or equal to %s.", pad/2, Misc.getHighlightColor(), "Selected bionics consciousness cost do not reduce", "0");
+                tooltip.addPara("- %s with other bionics installed on the person", pad/2, Misc.getHighlightColor(), "Selected bionic does not conflict");
             }
         }, installButton, TooltipMakerAPI.TooltipLocation.ABOVE);
         //--------remove button
-        //todo: add functionality
         //edit: enter edit mode, display list a list of bionic for a limb with remove button next to it
         int removeBtnH = btnH;
         int removeBtnW = (int) (100 - pad);
         int removeBtnX = (int) (installBtnX - pad - removeBtnW);
         int removeBtnY = (int) (installBtnY);
-        ButtonAPI removeButton = infoPersonTooltipContainer.addButton("Edit", null, t, Color.yellow.darker().darker(), removeBtnW, removeBtnH, 0);
+        ButtonAPI removeButton = infoPersonTooltipContainer.addButton(this.currentWorkShopMode.equals(this.INSTALL_WORKSHOP) ?"Edit": "Exit edit", null, t, Color.yellow.darker().darker(), removeBtnW, removeBtnH, 0);
         removeButton.getPosition().inTL(removeBtnX,removeBtnY);
         addButtonToList(removeButton, "bionic:edit");
         removeButton.setEnabled(false);
-        if(this.currentSelectedLimb != null && ba_officermanager.checkIfCanEditLimb(this.currentSelectedLimb, this.currentHoveredPerson)) {
+        if(this.currentSelectedLimb != null && ba_officermanager.checkIfCanEditLimb(this.currentSelectedLimb, this.currentPerson)) {
             removeButton.setEnabled(true);
             removeButton.flash(false);
         }
@@ -909,21 +938,38 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                                 }
                                 LabelAPI effectLabel = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Effects:", effect);
                                 effectLabel.setHighlight("Effects:", effect);
-                                effectLabel.setHighlightColors(g, currentHoveredBionic.effectScript != null ? Misc.getBrightPlayerColor() :Misc.getGrayColor());
+                                effectLabel.setHighlightColors(g.brighter().brighter(), currentHoveredBionic.effectScript != null ? Misc.getBrightPlayerColor() :Misc.getGrayColor());
+                                //---------BRM + conscious
+                                LabelAPI brmConsciousLabel = tooltip.addPara("%s %s     %s %s", pad, Misc.getBasePlayerColor(), "BRM:", "" + Math.round(currentHoveredBionic.brmCost), "Conscious:", "" + Math.round(currentHoveredBionic.consciousnessCost * 100) + "%");
+                                brmConsciousLabel.setHighlight("BRM:", "" + Math.round(currentHoveredBionic.brmCost), "Conscious:", "" + Math.round(currentHoveredBionic.consciousnessCost * 100) + "%");
+                                brmConsciousLabel.setHighlightColors(g.brighter().brighter(), Color.red, g.brighter().brighter(), Color.red);
                                 //---------limb list
                                 StringBuilder limbNameList = new StringBuilder();
                                 for (ba_limbmanager.ba_limb limb: ba_limbmanager.getListLimbFromGroup(currentHoveredBionic.bionicLimbGroupId)) {
                                     limbNameList.append(limb.name).append(", ");
                                 }
-                                limbNameList.setLength(limbNameList.length()-2);
+                                if(limbNameList.length() > 0) limbNameList.setLength(limbNameList.length()-2);
                                 LabelAPI limbListLabel = tooltip.addPara("%s %s", pad, t,"Install on:", limbNameList.toString());
                                 limbListLabel.setHighlight("Install on:", limbNameList.toString());
-                                limbListLabel.setHighlightColors(g, Misc.getBrightPlayerColor());
+                                limbListLabel.setHighlightColors(g.brighter().brighter(), Misc.getBrightPlayerColor());
+                                //---------Conflicts
+                                StringBuilder conflictsList = new StringBuilder();
+                                for (ba_bionicitemplugin bionic: ba_bionicmanager.getListBionicConflicts(currentHoveredBionic)) {
+                                    conflictsList.append(bionic.getName()).append(", ");
+                                }
+                                if(conflictsList.length() > 0) {
+                                    conflictsList.setLength(conflictsList.length() - 2);
+                                } else {
+                                    conflictsList.append("None");
+                                }
+                                LabelAPI conflictListLabel = tooltip.addPara("%s %s", pad, t,"Conflicts:", conflictsList.toString());
+                                conflictListLabel.setHighlight("Conflicts:", conflictsList.toString());
+                                conflictListLabel.setHighlightColors(g.brighter().brighter(), Misc.getNegativeHighlightColor());
                                 //----------desc
                                 String desc = currentHoveredBionic.getSpec().getDesc();
                                 LabelAPI descLabel = tooltip.addPara("%s %s", pad, t, "Description:", desc);
                                 descLabel.setHighlight("Description:", desc);
-                                descLabel.setHighlightColors(g, t);
+                                descLabel.setHighlightColors(g.brighter().brighter(), t);
                             }
                         }, areaChecker, TooltipMakerAPI.TooltipLocation.ABOVE);
 
@@ -938,7 +984,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             //Empty text
             int emptyX = (int) containerW / 2;
             int emptyY = (int) containerH / 2;
-            String emptyText = "Currently no available bionic to install/remove.";
+            String emptyText = "Currently no available bionic to install.";
             LabelAPI emptyLabel = inventoryTooltipContainer.addPara(emptyText,Misc.getDarkPlayerColor(), 1);
             emptyLabel.getPosition().inTL(emptyX - (emptyLabel.computeTextWidth(emptyText) / 2), emptyY);
         }
@@ -985,7 +1031,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         TooltipMakerAPI subEffectListTooltipContainer = subEffectListContainer.createTooltip(subEffectListTooltipKey, subEffectW, subEffectH, true, 0,0);
         effectListContainer.attachSubPanel(effectListTooltipKey, subEffectListPanelKey,subEffectListContainer,0,0);
 
-        List<ba_officermanager.ba_bionicAugmentedData> currentAnatomyList = ba_officermanager.getBionicAnatomyList(this.currentHoveredPerson);
+        List<ba_officermanager.ba_bionicAugmentedData> currentAnatomyList = ba_officermanager.getBionicAnatomyList(this.currentPerson);
         int i = 0;
         int spacerY = 5;
         for(ba_officermanager.ba_bionicAugmentedData bionicAugmentedDatas: currentAnatomyList) {
@@ -1006,18 +1052,137 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         //do the adding late so the scroll work
         subEffectListContainer.mainPanel.addUIElement(subEffectListTooltipContainer).setLocation(0,0).inTL(subEffectX, subEffectY);
     }
+    public void displayRemoveBionicWorkshop(ba_component creatorComponent, String creatorComponentTooltip, float removeW, float removeH, float removeX, float removeY) {
+        final float pad = 10f;
+        float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        final Color t = Misc.getTextColor();
+        final Color g = Misc.getGrayColor();
+
+        //big container
+        final float containerW = removeW - pad - pad / 2;
+        int containerH = (int) (removeH - pad - pad);
+        int containerX = (int) pad;
+        int containerY = (int) pad;
+        String removeContainerTooltipKey = "WORKSHOP_REMOVE_CONTAINER_TOOLTIP";
+        String removeContainerPanelKey = "WORKSHOP_REMOVE_CONTAINER_PANEL";
+        ba_component removeContainer = new ba_component(creatorComponent.mainPanel, containerW, containerH, containerX, containerY, true, removeContainerPanelKey);
+        TooltipMakerAPI removeTooltipContainer = removeContainer.createTooltip(removeContainerTooltipKey, containerW, containerH, true, 0,0);
+        creatorComponent.attachSubPanel(creatorComponentTooltip, removeContainerPanelKey, removeContainer, containerX, containerY);
+
+        List<ba_bionicitemplugin> availableBionics = ba_bionicmanager.getListBionicInstalledOnLimb(this.currentSelectedLimb, this.currentPerson);
+        List<ba_component> subComponentItemList = new ArrayList<>();
+        if(availableBionics.size() != 0) {
+            int row = 0;
+            int btnH = 30;
+            for(ba_bionicitemplugin bionic: availableBionics) {
+                int rowX = 0;
+                final int rowW = (int) containerW;
+                int rowH = (int) (btnH * 2);
+                int rowY = (int) ((row * rowH) + pad);
+                String rowTooltipKey = "REMOVE_ROW_TOOLTIP";
+                String rowPanelKey = "REMOVE_ROW_PANEL_"+ row;
+                ba_component rowContainer = new ba_component(removeContainer.mainPanel, rowW, rowH, rowX, rowY, false, rowPanelKey);
+                TooltipMakerAPI rowTooltipContainer = rowContainer.createTooltip(rowTooltipKey, rowW, rowH, false, 0,0);
+                removeContainer.attachSubPanel(removeContainerTooltipKey, rowPanelKey, rowContainer, rowX, rowY);
+                subComponentItemList.add(rowContainer);
+
+                int nameW = (int) (containerW * 0.4f - pad);
+                int nameX = (int) (containerX + pad);
+                int removeWarnW =  (int) (containerW * 0.3f);
+                int removeWarnX = nameX + nameW;
+                int removeBtnW = (int) (containerW * 0.1f);
+                int removeBtnX = removeWarnX + removeWarnW;
+                int removeConfirmBtnW = (int) (containerW * 0.2f - pad - pad - pad);
+                int removeConfirmBtnX = (int) (removeBtnX + removeBtnW + pad);
+
+                int brmW = (int) (containerW * 0.4f - pad);
+                int brmX = (int) nameX;
+                int brmY = btnH;
+                int consciousnessW = (int) (containerW * 0.30f);
+                int consciousnessX = brmX + brmW;
+                int consciousnessY = btnH;
+
+                //>name
+                LabelAPI bionicName = rowTooltipContainer.addPara("(%s) %s", pad, h, !Objects.equals(bionic.namePrefix, "") ? bionic.namePrefix: " ", "" + bionic.getName());
+                bionicName.getPosition().setSize(nameW, btnH);
+                bionicName.getPosition().inTL(nameX, pad);
+                bionicName.setHighlightColors(Misc.getBasePlayerColor() ,bionic.displayColor);
+                //>Remove warn
+                String warnText = "No effect on remove";
+                if(bionic.effectScript != null && bionic.effectScript.getShortOnRemoveEffectDescription() != null) {
+                    if(!bionic.effectScript.getShortOnRemoveEffectDescription().equals("")) {
+                        warnText = bionic.effectScript.getShortOnRemoveEffectDescription();
+                    } else {
+                        warnText = "No description yet...";
+                    }
+                    if(!bionic.isAllowedRemoveAfterInstall) {
+                        warnText = "Can't be removed";
+                    }
+                }
+                LabelAPI warnLabel = rowTooltipContainer.addPara(warnText, pad);
+                warnLabel.getPosition().setSize(removeWarnW,btnH);
+                warnLabel.setHighlight(warnText);
+                warnLabel.setHighlightColors(bionic.effectScript != null && bionic.effectScript.getShortOnRemoveEffectDescription() != null? Misc.getNegativeHighlightColor(): Misc.getGrayColor().brighter());
+                warnLabel.getPosition().inTL(removeWarnX, pad);
+                //>remove button
+                ButtonAPI removeButton = rowTooltipContainer.addButton("Remove", null, t, Color.yellow.darker().darker(), removeBtnW, btnH, 0);
+                removeButton.getPosition().inTL(removeBtnX,pad);
+                removeButton.setEnabled(bionic.isAllowedRemoveAfterInstall);
+                addButtonToList(removeButton, "bionic:remove:" + bionic.bionicId);
+                //>remove button
+                ButtonAPI removeConfirmButton = rowTooltipContainer.addButton("Confirm remove", null, t, Color.red.darker().darker(), removeConfirmBtnW, btnH, 0);
+                removeConfirmButton.getPosition().inTL(removeConfirmBtnX,pad);
+                addButtonToList(removeConfirmButton, "bionic:removeConfirm:"+bionic.bionicId);
+                removeConfirmButton.setEnabled(this.currentRemovingBionic != null && this.currentRemovingBionic.bionicId.equals(bionic.bionicId));
+                //>BRM
+                LabelAPI bionicBRM = rowTooltipContainer.addPara("BRM: " + Math.round(bionic.brmCost), pad);
+                bionicBRM.getPosition().setSize(brmW,btnH);
+                bionicBRM.setHighlight("" + Math.round(bionic.brmCost));
+                bionicBRM.setHighlightColors(Misc.getBrightPlayerColor());
+                bionicBRM.getPosition().inTL(brmX, brmY);
+                //>Conscious
+                LabelAPI bionicConscious = rowTooltipContainer.addPara("Consciousness: " + Math.round(bionic.consciousnessCost * 100) + "%", pad);
+                bionicConscious.getPosition().setSize(consciousnessW,rowH);
+                bionicConscious.setHighlight("" + Math.round(bionic.consciousnessCost * 100) + "%");
+                bionicConscious.setHighlightColors(Misc.getNegativeHighlightColor());
+                bionicConscious.getPosition().inTL(consciousnessX, consciousnessY);
+
+                row++;
+            }
+        } else {
+            //Empty text
+            int emptyX = (int) containerW / 2;
+            int emptyY = (int) containerH / 2;
+            String emptyText = "Currently no available bionic to remove.";
+            LabelAPI emptyLabel = removeTooltipContainer.addPara(emptyText,Misc.getDarkPlayerColor(), 1);
+            emptyLabel.getPosition().inTL(emptyX - (emptyLabel.computeTextWidth(emptyText) / 2), emptyY);
+        }
+
+        removeContainer.subComponentListMap.put("ROW_LIST", subComponentItemList);
+        //scroll
+        removeContainer.mainPanel.addUIElement(removeTooltipContainer).setLocation(0,0).inTL(0, 0);
+        //border
+        UIComponentAPI border = removeTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
+        border.getPosition().setSize(containerW, containerH);
+        removeContainer.mainPanel.addComponent(border).setLocation(0,0).inTL(0, 0);
+    }
     protected void installBionic() {
-        if(this.currentSelectedBionic != null && this.currentSelectedLimb != null && ba_officermanager.checkIfCanInstallBionic(this.currentSelectedBionic, this.currentSelectedLimb, this.currentHoveredPerson)) {
-            //todo: add class to handle interaction with player inventory
-            ba_officermanager.installBionic(this.currentSelectedBionic, this.currentSelectedLimb, this.currentHoveredPerson);
-            SpecialItemData specialItem = new SpecialItemData(this.currentSelectedBionic.bionicId, null);
-            Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, 1);
+        if(this.currentSelectedBionic != null && this.currentSelectedLimb != null && ba_officermanager.checkIfCanInstallBionic(this.currentSelectedBionic, this.currentSelectedLimb, this.currentPerson)) {
+            //todo: add onInstall function from bionic here
+            ba_officermanager.installBionic(this.currentSelectedBionic, this.currentSelectedLimb, this.currentPerson);
             this.currentSelectedLimb = null;
             this.currentSelectedBionic = null;
+            this.currentRemovingBionic = null;
         }
     }
-    protected void removeBionic(ba_bionicitemplugin bionic) {
-        //todo: removing next
+    protected void removeBionic() {
+        //todo: add onRemove() function from bionic here
+        ba_officermanager.removeBionic(this.currentRemovingBionic, this.currentSelectedLimb, this.currentPerson);
+//        this.currentSelectedLimb = null;
+        this.currentSelectedBionic = null;
+        this.currentRemovingBionic = null;
     }
     protected void focusContent(String focusTabId) {
         if(focusTabId == "") {
@@ -1040,6 +1205,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             if(this.currentHoveredBionic != null) this.currentHoveredBionic = null;
             if(this.currentSelectedBionic != null) this.currentSelectedBionic = null;
             if(this.currentSelectedLimb != null) this.currentSelectedLimb = null;
+            if(this.currentRemovingBionic != null) this.currentRemovingBionic = null;
         }
     }
     public void getNewListPerson() {
@@ -1121,10 +1287,31 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                     if(tokens[1].equals("install")) {
                         installBionic();
                         needsReset = true;
+                        break;
                     }
-                    //todo: this
                     if(tokens[1].equals("edit")) {
-
+                        if(this.currentWorkShopMode.equals(this.EDIT_WORKSHOP)) {
+                            this.currentWorkShopMode = this.INSTALL_WORKSHOP;
+                            this.currentSelectedLimb = null;
+                        } else if(this.currentWorkShopMode.equals(this.INSTALL_WORKSHOP)) {
+                            this.currentWorkShopMode = this.EDIT_WORKSHOP;
+                        }
+                        this.currentSelectedBionic = null;
+                        this.currentRemovingBionic = null;
+                        needsReset = true;
+                        break;
+                    }
+                    if(tokens[1].equals("remove") && !tokens[2].isEmpty()) {
+                        this.currentRemovingBionic = ba_bionicmanager.getBionic(tokens[2]);
+                        needsReset = true;
+                        break;
+                    }
+                    if(tokens[1].equals("removeConfirm") && !tokens[2].isEmpty()) {
+                        if(tokens[2].equals(this.currentRemovingBionic.bionicId)) {
+                            removeBionic();
+                            needsReset = true;
+                            break;
+                        }
                     }
                 }
             }
@@ -1151,10 +1338,10 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                         String[] tokens = s.split(":");
 //                        log.info("hover " + s);
                         if(tokens[0].equals("hover")) {
-                            if(!this.currentHoveredPerson.getId().equals(tokens[1])) {
+                            if(!this.currentPerson.getId().equals(tokens[1])) {
                                 for(PersonAPI person: ba_officermanager.listPersons) {
                                     if(tokens[1].equals(person.getId())) {
-                                        this.currentHoveredPerson = person;
+                                        this.currentPerson = person;
                                         shouldRefresh = true;
                                     }
                                 }
@@ -1204,6 +1391,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
          * @param height Height of this component
          * @param x location
          * @param y location
+         * @param addToCreatorPanel true if is container, false if is element inside a scrolling container
          * @param thisComponentMapKey this component map key, access from {@code componentMap}
          */
         public ba_component(CustomPanelAPI creatorPanel, float width, float height,float x, float y, boolean addToCreatorPanel,String thisComponentMapKey) {

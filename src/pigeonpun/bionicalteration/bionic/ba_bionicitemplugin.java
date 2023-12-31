@@ -18,7 +18,9 @@ import org.apache.log4j.Logger;
 import org.json.JSONException;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 public class ba_bionicitemplugin implements SpecialItemPlugin {
@@ -34,13 +36,13 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
     public boolean isAICoreBionic;
     public boolean isAdvanceInCombat;
     public boolean isAdvanceInCampaign;
+    public boolean isAllowedRemoveAfterInstall;
+    public List<String> conflictedBionicIdList = new ArrayList<>();
     protected SpecialItemSpecAPI spec;
     protected CargoStackAPI stack;
-    public String iconPath;
-    //todo: support sprite
     public HashMap<String, Object> customData = new HashMap<>();
     public ba_bionicitemplugin() {}
-    public ba_bionicitemplugin(String bionicId, SpecialItemSpecAPI spec ,String bionicLimbGroupId, String namePrefix, Color displayColor, int brmCost, float consciousnessCost, boolean isCaptainBionic, boolean isAICoreBionic, ba_bioniceffect effectScript, boolean isAdvanceInCombat, boolean isAdvanceInCampaign) {
+    public ba_bionicitemplugin(String bionicId, SpecialItemSpecAPI spec ,String bionicLimbGroupId, String namePrefix, Color displayColor, int brmCost, float consciousnessCost, boolean isCaptainBionic, boolean isAICoreBionic, ba_bioniceffect effectScript, boolean isAdvanceInCombat, boolean isAdvanceInCampaign, List<String> conflictedBionicIdList, boolean isAllowedRemoveAfterInstall) {
         this.bionicId = bionicId;
         this.spec = spec;
         this.bionicLimbGroupId = bionicLimbGroupId;
@@ -53,6 +55,10 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
         this.isAdvanceInCombat = isAdvanceInCombat;
         this.isAdvanceInCampaign = isAdvanceInCampaign;
         this.effectScript = effectScript;
+        if(conflictedBionicIdList != null) {
+            this.conflictedBionicIdList = conflictedBionicIdList;
+        }
+        this.isAllowedRemoveAfterInstall = isAllowedRemoveAfterInstall;
     }
     public String getId() {
         return bionicId;

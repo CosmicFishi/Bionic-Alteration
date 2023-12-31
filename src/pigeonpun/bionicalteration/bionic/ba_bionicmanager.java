@@ -9,10 +9,12 @@ import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.lazywizard.lazylib.CollectionUtils;
 import org.magiclib.util.MagicSettings;
 import pigeonpun.bionicalteration.ba_limbmanager;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
+import pigeonpun.bionicalteration.utils.ba_utils;
 
 import java.awt.*;
 import java.io.IOException;
@@ -63,12 +65,11 @@ public class ba_bionicmanager {
                     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
-                    //todo: next step, UI
                     bionicItemMap.put(bionicId, new ba_bionicitemplugin(
                             bionicId,
                             Global.getSettings().getSpecialItemSpec(bionicId),
                             row.getString("limbGroupId"),
-                            row.getString("namePrefix") != "" ? row.getString("namePrefix") : "",
+                            !row.getString("namePrefix").equals("") ? row.getString("namePrefix") : "",
                             MagicSettings.toColor3(row.getString("colorDisplay")),
                             row.getInt("brmCost"),
                             (float) row.getDouble("consciousnessCost"),
@@ -76,7 +77,9 @@ public class ba_bionicmanager {
                             row.getBoolean("isAICoreBionic"),
                             effect,
                             row.getBoolean("isAdvanceInCombat"),
-                            row.getBoolean("isAdvanceInCampaign")
+                            row.getBoolean("isAdvanceInCampaign"),
+                            !row.getString("conflictedBionicIdList").equals("")? ba_utils.trimAndSplitString(row.getString("conflictedBionicIdList")): null,
+                            row.getBoolean("isAllowedRemoveAfterInstall")
                     ));
 
                 } catch (JSONException ex) {
@@ -89,6 +92,12 @@ public class ba_bionicmanager {
 //            log.info(entry.getKey() + ": " + entry.getValue().bionicLimbGroupId + "-----" + entry.getValue().getSpec().getDesc());
 //        }
     }
+
+    /**
+     * Return null with error if can't find the id
+     * @param id
+     * @return
+     */
     public static ba_bionicitemplugin getBionic(String id) {
         ba_bionicitemplugin bionic = bionicItemMap.get(id);
         if(bionic == null) {
@@ -96,8 +105,66 @@ public class ba_bionicmanager {
         }
         return bionic;
     }
-    public static boolean checkIfHaveBionic(PersonAPI person) {
+    public static boolean checkIfHaveBionicInstalled(PersonAPI person) {
         return getListStringBionicInstalled(person).size() > 0;
+    }
+
+    /**
+     * Check the entire person limbs. Want to check specific limb? use ba_officermanager.checkIfCanInstallBionic()
+     * @param bionic the bionic
+     * @param person the person
+     * @return
+     */
+    public static boolean checkIfHaveBionicInstalled(ba_bionicitemplugin bionic, PersonAPI person) {
+        if (!person.getTags().isEmpty()) {
+            for (String tag: person.getTags()) {
+                if(tag.contains(":")) {
+                    String[] tokens = tag.split(":");
+                    if(tokens[0].equals(bionic.bionicId)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * check the entire person limbs to see the bionic conflicts with any bionics installed on person
+     * @param bionic
+     * @param person
+     * @return true if conflicted
+     */
+    public static boolean checkIfBionicConflicted(ba_bionicitemplugin bionic, PersonAPI person) {
+        if (!person.getTags().isEmpty()) {
+            List<String> listStringBionicInstalled = getListStringBionicInstalled(person);
+            if(!bionic.conflictedBionicIdList.isEmpty()) {
+                for(String id: bionic.conflictedBionicIdList) {
+                    if(id.equals(bionic.bionicId)) return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Return list bionic that conflicted from the parameter.
+     * Note: Bionic isn't available from bionicItemMap won't show up in the return list in case the mod that have that bionic isn't enabled
+     * @param bionic search conflicted from this bionic
+     * @return
+     */
+    public static List<ba_bionicitemplugin> getListBionicConflicts(ba_bionicitemplugin bionic) {
+        List<ba_bionicitemplugin> conflictList = new ArrayList<>();
+        if(!bionic.conflictedBionicIdList.isEmpty()) {
+            for (String id: bionic.conflictedBionicIdList) {
+                ba_bionicitemplugin b = bionicItemMap.get(id);
+                if(b != null) {
+                    conflictList.add(b);
+                }
+            }
+        }
+
+        return conflictList;
     }
     public static List<String> getListStringBionicInstalled(PersonAPI person) {
         List<String> bionics = new ArrayList<>();
@@ -115,6 +182,32 @@ public class ba_bionicmanager {
             }
         }
         return bionics;
+    }
+
+    /**
+     * Return empty list if found none bionics on the limb
+     * @param limb the limb
+     * @param person the person
+     * @return List of bionic installed on that specific limb
+     */
+    public static List<ba_bionicitemplugin> getListBionicInstalledOnLimb(ba_limbmanager.ba_limb limb, PersonAPI person) {
+        List<ba_bionicitemplugin> bionicsInstalledList = new ArrayList<>();
+        if(limb != null && !person.getTags().isEmpty()) {
+            for (String tag: person.getTags()) {
+                if(tag.contains(":")) {
+                    String[] tokens = tag.split(":");
+                    if(tokens[1].equals(limb.limbId)) {
+                        ba_bionicitemplugin bionicInstalled = bionicItemMap.get(tokens[0]);
+                        if(bionicInstalled == null) {
+                            log.error("Can't find bionic of tag: " + tokens[0]);
+                        } else {
+                            bionicsInstalledList.add(bionicInstalled);
+                        }
+                    }
+                }
+            }
+        }
+        return bionicsInstalledList;
     }
 
     /**
@@ -155,7 +248,7 @@ public class ba_bionicmanager {
                     ba_bionicitemplugin bionicInstalled = bionicItemMap.get(tokens[0]);
                     if(bionicInstalled == null) log.error("Can't find bionic of tag: " + tokens[0]);
                     ba_limbmanager.ba_limb sectionInstalled = ba_limbmanager.getLimb(tokens[1]);
-                    if(sectionInstalled == null) log.error("Can't find section of tag: " + tokens[1]);
+                    if(sectionInstalled == null) log.error("Can't find limb of tag: " + tokens[1]);
                     if(bionicsInstalledList.get(sectionInstalled) != null) {
                         bionicsInstalledList.get(sectionInstalled).add(bionicInstalled);
                     } else {

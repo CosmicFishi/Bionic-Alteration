@@ -11,13 +11,22 @@ public class ba_variablemanager {
     /**
      * Use for changing bionic's consciousness cost
      */
-    public static final String BA_CONSCIOUSNESS_STATS_KEY = "ba_consciousness";
-    public static final String BA_CONSCIOUSNESS_SOURCE_KEY = "ba_consciousness_source";
     public static final float BA_BRM_LIMIT_BONUS_PER_LEVEL = 5;
+    /**
+     * person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f)
+     */
     public static final String BA_BRM_LIMIT_STATS_KEY = "ba_brmLimit";
     public static final String BA_BRM_LIMIT_SOURCE_KEY = "ba_brmLimit_source";
+    /**
+     * person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f)
+     */
     public static final String BA_BRM_CURRENT_STATS_KEY = "ba_brmCurrent";
     public static final String BA_BRM_CURRENT_SOURCE_KEY = "ba_brmCurrent_source";
+    /**
+     * person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f)
+     */
+    public static final String BA_CONSCIOUSNESS_STATS_KEY = "ba_consciousness";
+    public static final String BA_CONSCIOUSNESS_SOURCE_KEY = "ba_consciousness_source";
     public static final float BA_CONSCIOUSNESS_DEFAULT = 1f;
     public static final String BA_CONSCIOUSNESS_STABLE_THRESHOLD = "ba_conscious_stable";
     public static final String BA_CONSCIOUSNESS_UNSTEADY_THRESHOLD = "ba_conscious_unsteady";
