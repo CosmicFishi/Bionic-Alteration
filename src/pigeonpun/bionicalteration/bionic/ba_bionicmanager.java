@@ -259,19 +259,17 @@ public class ba_bionicmanager {
         }
         return bionicsInstalledList;
     }
-    public static List<String> getRandomBionic() {
+    public static List<String> getRandomBionic(int count) {
         List<String> randomBionic = new ArrayList<>();
         WeightedRandomPicker<String> random = new WeightedRandomPicker<>();
         random.addAll(getListBionicKeys());
         int i = 0;
-        int maxNumberOfRandomBionic = 6;
-        while(i < maxNumberOfRandomBionic && !random.isEmpty()) {
+        while(i < count && !random.isEmpty()) {
             String picked = random.pick();
             random.remove(picked);
-            ba_bionicitemplugin bionic = getBionic(picked);
-            WeightedRandomPicker<String> randomSectionPicker = new WeightedRandomPicker<>();
-            randomSectionPicker.addAll(ba_limbmanager.getListLimbKeys(bionic.bionicLimbGroupId));
-            randomBionic.add(picked+":"+ randomSectionPicker.pick());
+//            ba_bionicitemplugin bionic = getBionic(picked);
+//            WeightedRandomPicker<String> randomSectionPicker = new WeightedRandomPicker<>();
+            randomBionic.add(picked);
             i++;
         }
         return randomBionic;

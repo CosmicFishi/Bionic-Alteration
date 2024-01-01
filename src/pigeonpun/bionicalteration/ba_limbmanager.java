@@ -1,6 +1,7 @@
 package pigeonpun.bionicalteration;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.characters.PersonAPI;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -96,10 +97,25 @@ public class ba_limbmanager {
         }
         return section;
     }
+    public static List<ba_limb> getLimbListFromGroupOnPerson(String groupId, PersonAPI person) {
+        List<ba_limb> personLimbList = new ArrayList<>();
+        String personVariant = ba_variantmanager.getAnatomyVariantTag(person);
+        if(personVariant != null) {
+            for (ba_limbmanager.ba_limb limb: ba_limbmanager.getListLimbFromGroup(groupId)) {
+                for(String limbId: ba_variantmanager.getListLimbFromVariant(personVariant)) {
+                    if(limb.limbId.equals(limbId)) {
+                        personLimbList.add(limb);
+                    }
+                }
+            }
+        }
+
+        return personLimbList;
+    }
     public static List<ba_limb> getListLimbFromGroup(String groupId) {
         List<ba_limb> list = limbGroupMap.get(groupId);
         if(list == null) {
-            log.error("Can not find list of id: "+ groupId);
+            log.error("Can not find limb list of group id: "+ groupId);
         }
         return list;
     }

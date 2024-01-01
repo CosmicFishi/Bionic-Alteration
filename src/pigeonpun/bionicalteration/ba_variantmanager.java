@@ -1,6 +1,7 @@
 package pigeonpun.bionicalteration;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -18,7 +19,7 @@ import java.util.*;
  * Probably will have a .json file to store all the variant type
  * @author PigeonPun
  */
-//todo: change variant manager so it can control which faction have what type of variant, what kind of bionic do they have.
+//todo: change variant manager so it can control which faction have what type of variant, what kind of bionic do they have. Have a selection of what kind of variant do they want to be as well.
 public class ba_variantmanager {
     static Logger log = Global.getLogger(ba_variantmanager.class);
     static HashMap<String, List<String>> variantList = new HashMap<>();
@@ -28,9 +29,6 @@ public class ba_variantmanager {
 //        loadLimbs();
     }
     public static void loadAnatomyVariantList() {
-//        variantList.put("GENERIC_HUMAN", new ArrayList<String>(Arrays.asList("brain", "heart", "eye_left", "eye_right", "hand_left", "hand_right")));
-//        variantList.put("GENERIC_HALF_BORN", new ArrayList<String>(Arrays.asList("brain", "heart_2", "heart", "eye_left", "eye_right", "hand_left", "hand_right")));
-
         List<String> limbFiles = MagicSettings.getList(ba_variablemanager.BIONIC_ALTERATION, "variant_files");
         for (String path : limbFiles) {
             log.error("merging anatomy variant files");
@@ -57,21 +55,31 @@ public class ba_variantmanager {
 //            System.out.println(entry.getKey() + " " + Arrays.toString(entry.getValue().toArray()));
 //        }
     }
+    public static List<String> getListLimbFromVariant(String variantId) {
+        List<String> limbList = new ArrayList<>();
+        if (!variantList.isEmpty() &&  variantList.get(variantId) != null) {
+            limbList = variantList.get(variantId);
+        } else {
+            log.error("variant list is empty or can't find limb list from variant Id of: " + variantId);
+        }
+        return limbList;
+    }
     public static List<String> getListAnatomyKeys() {
         return new ArrayList<>(variantList.keySet());
     }
     /**
-     * @param keys Person tags
-     * @return the Generic Variant tags
+     * @param person Person
+     * @return the Generic Variant tag of a person. A person must only have 1 variant
      */
-    public static List<String> getAnatomyVariantTag(Set<String> keys) {
+    public static String getAnatomyVariantTag(PersonAPI person) {
         List<String> anatomyVariantList = getListAnatomyKeys();
-        List<String> personVariant = new ArrayList<>();
-        if(keys != null && !keys.isEmpty()) {
-            for (String k: keys) {
+        String personVariant = null;
+        Set<String> tags = person.getTags();
+        if(tags != null && !tags.isEmpty()) {
+            for (String k: tags) {
                 for(String variant: anatomyVariantList) {
                     if(variant.equals(k)) {
-                        personVariant.add(k);
+                        personVariant = k;
                     }
                 }
             }

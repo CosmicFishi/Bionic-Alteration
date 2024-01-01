@@ -5,6 +5,7 @@ import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.combat.MutableShipStatsAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
+import pigeonpun.bionicalteration.ba_limbmanager;
 
 import java.util.List;
 
@@ -63,8 +64,8 @@ public interface ba_bioniceffect{
     //todo: look into this
     public void advanceInCampaign();
     //todo: look into onRemove and onInstall
-    public void onRemove();
-    public void onInstall();
+    public void onRemove(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic);
+    public void onInstall(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic);
 
     /**
      * Render extra indicators on top right of the item (Visual cue for the player)

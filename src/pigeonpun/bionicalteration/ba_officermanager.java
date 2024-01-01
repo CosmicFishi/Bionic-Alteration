@@ -10,6 +10,7 @@ import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent;
 import com.fs.starfarer.api.impl.campaign.ids.Factions;
 import com.fs.starfarer.api.util.Misc;
+import com.fs.starfarer.api.util.WeightedRandomPicker;
 import org.apache.log4j.Logger;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
@@ -63,7 +64,7 @@ public class ba_officermanager {
     public static void setUpVariant() {
         //todo: set up variant per faction
         for(PersonAPI person: listPersons) {
-            if(getAnatomyVariantTag(person.getTags()).isEmpty()) {
+            if(getAnatomyVariantTag(person) == null) {
                 String randomVariant = ba_variantmanager.getRandomVariant();
                 person.addTag(randomVariant);
             }
@@ -151,17 +152,15 @@ public class ba_officermanager {
         //return list with full limb details
         List<ba_bionicAugmentedData> anatomyList = new ArrayList<>();
         HashMap<ba_limbmanager.ba_limb, List<ba_bionicitemplugin>> bionicsInstalledList = ba_bionicmanager.getListLimbAndBionicInstalled(person);
-        List<String> personGenericVariant = getAnatomyVariantTag(person.getTags());
-        for (String pGV: personGenericVariant) {
-            List<String> variantAnatomy = ba_variantmanager.variantList.get(pGV);
-            for (String limbString: variantAnatomy) {
-                ba_limbmanager.ba_limb limb = ba_limbmanager.getLimb(limbString);
-                if(bionicsInstalledList.get(limb) != null) {
-                    List<ba_bionicitemplugin> bionicsInstalled = bionicsInstalledList.get(limb);
-                    anatomyList.add(new ba_bionicAugmentedData(limb, bionicsInstalled));
-                } else {
-                    anatomyList.add(new ba_bionicAugmentedData(limb, new ArrayList<ba_bionicitemplugin>()));
-                }
+        String personGenericVariant = getAnatomyVariantTag(person);
+        List<String> variantAnatomy = ba_variantmanager.variantList.get(personGenericVariant);
+        for (String limbString: variantAnatomy) {
+            ba_limbmanager.ba_limb limb = ba_limbmanager.getLimb(limbString);
+            if(bionicsInstalledList.get(limb) != null) {
+                List<ba_bionicitemplugin> bionicsInstalled = bionicsInstalledList.get(limb);
+                anatomyList.add(new ba_bionicAugmentedData(limb, bionicsInstalled));
+            } else {
+                anatomyList.add(new ba_bionicAugmentedData(limb, new ArrayList<ba_bionicitemplugin>()));
             }
         }
         return anatomyList;
@@ -223,8 +222,9 @@ public class ba_officermanager {
             SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
             Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, 1);
             setUpDynamicStats();
-//            person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).modifyFlat("modify_"+bionic.bionicId, -bionic.consciousnessCost);
-//            person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).modifyFlat("modify_"+bionic.bionicId, bionic.brmCost);
+            if(bionic.effectScript != null) {
+                bionic.effectScript.onInstall(person, limb, bionic);
+            }
             return true;
         } else {
             log.error("Can't install "+ bionic.bionicId + " on " + limb.limbId);
@@ -237,8 +237,9 @@ public class ba_officermanager {
             SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
             Global.getSector().getPlayerFleet().getCargo().addSpecial(specialItem, 1);
             setUpDynamicStats();
-//            person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).unmodifyFlat("modify_"+bionic.bionicId);
-//            person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).unmodifyFlat("modify_"+bionic.bionicId);
+            if(bionic.effectScript != null) {
+                bionic.effectScript.onRemove(person, limb, bionic);
+            }
             return true;
         } else {
             log.error("Can't remove "+ bionic.bionicId + " on " + limb.limbId);
@@ -247,11 +248,24 @@ public class ba_officermanager {
     }
     protected static void installRandomBionic(PersonAPI person) {
         //todo: setting.json that control random installment
-        //todo: have check to see if the bionic can be install
+        int installedBionicCount = 0;
+        int totalBionicInstall = 2;
+        int currentTry = 0;
+        int maxTotalTries = 50;
         if(!person.hasTag(ba_variablemanager.BA_RANDOM_BIONIC_GENERATED_TAG)) {
-            List<String> randomBionics = ba_bionicmanager.getRandomBionic();
-            for (String random: randomBionics) {
-                person.addTag(random);
+            while(currentTry < maxTotalTries && installedBionicCount < totalBionicInstall){
+                List<String> randomBionics = ba_bionicmanager.getRandomBionic(2);
+                for (String random: randomBionics) {
+                    ba_bionicitemplugin bionic = ba_bionicmanager.getBionic(random);
+                    WeightedRandomPicker<ba_limbmanager.ba_limb> randomLimbPicker = new WeightedRandomPicker<>();
+                    randomLimbPicker.addAll(ba_limbmanager.getLimbListFromGroupOnPerson(bionic.bionicLimbGroupId, person));
+                    ba_limbmanager.ba_limb selectedLimb = randomLimbPicker.pick();
+                    boolean success = installBionic(bionic, selectedLimb, person);
+                    if(success) {
+                        installedBionicCount++;
+                    }
+                    currentTry++;
+                }
             }
             person.addTag(ba_variablemanager.BA_RANDOM_BIONIC_GENERATED_TAG);
         }

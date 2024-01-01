@@ -1170,7 +1170,6 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
     }
     protected void installBionic() {
         if(this.currentSelectedBionic != null && this.currentSelectedLimb != null && ba_officermanager.checkIfCanInstallBionic(this.currentSelectedBionic, this.currentSelectedLimb, this.currentPerson)) {
-            //todo: add onInstall function from bionic here
             ba_officermanager.installBionic(this.currentSelectedBionic, this.currentSelectedLimb, this.currentPerson);
             this.currentSelectedLimb = null;
             this.currentSelectedBionic = null;
@@ -1178,7 +1177,6 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         }
     }
     protected void removeBionic() {
-        //todo: add onRemove() function from bionic here
         ba_officermanager.removeBionic(this.currentRemovingBionic, this.currentSelectedLimb, this.currentPerson);
 //        this.currentSelectedLimb = null;
         this.currentSelectedBionic = null;
