@@ -53,4 +53,19 @@ public class ba_utils {
         }
         return listString;
     }
+
+    /**
+     * Serenity Neural Enhancement => S.N.E.
+     * @param fullBionicName
+     * @return
+     */
+    public static String getShortenBionicName(String fullBionicName) {
+        String[] listString = fullBionicName.split(" ");
+        StringBuilder returnString = new StringBuilder();
+        for(String s: listString) {
+            returnString.append(s.toUpperCase().charAt(0)).append(".");
+        }
+        if(returnString.length() > 1) returnString.setLength(returnString.length() - 1);
+        return returnString.toString();
+    }
 }

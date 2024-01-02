@@ -5,6 +5,7 @@ import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.characters.OfficerDataAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.combat.MutableStat;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.ui.*;
 import com.fs.starfarer.api.util.Misc;
@@ -515,7 +516,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                                 }
                                 LabelAPI conflictListLabel = tooltip.addPara("%s %s", pad, t,"Conflicts:", conflictsList.toString());
                                 conflictListLabel.setHighlight("Conflicts:", conflictsList.toString());
-                                conflictListLabel.setHighlightColors(g.brighter().brighter(), Misc.getNegativeHighlightColor());
+                                conflictListLabel.setHighlightColors(g.brighter().brighter(), conflictsList.toString().equals("None")? g : Misc.getNegativeHighlightColor());
                             }
                             if(expanded) {
                                 if(!isWorkshopMode) {
@@ -645,7 +646,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         Color h = Misc.getHighlightColor();
         Color bad = Misc.getNegativeHighlightColor();
         Color t = Misc.getTextColor();
-        Color g = Misc.getGrayColor();
+        final Color g = Misc.getGrayColor();
 
         String infoPersonTooltipKey = "WORKSHOP_PERSON_INFO_TOOLTIP";
         String infoPersonPanelKey = "WORKSHOP_PERSON_INFO_PANEL";
@@ -674,6 +675,28 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         TooltipMakerAPI personImageTooltip = infoPersonContainer.createTooltip("WORKSHOP_PERSON_IMAGE", imageW, imageH, false, 0, 0);
         personImageTooltip.getPosition().inTL(imageX, imageY);
         personImageTooltip.addImage(spriteName, imageW, imageH, 0);
+        //todo: hide this in dev mode from settings.json
+        infoPersonTooltipContainer.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
+            @Override
+            public boolean isTooltipExpandable(Object tooltipParam) {
+                return false;
+            }
+
+            @Override
+            public float getTooltipWidth(Object tooltipParam) {
+                return 400;
+            }
+
+            @Override
+            public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                tooltip.addSectionHeading("BRM MODIFY ID", Alignment.MID, 0);
+                HashMap<String, MutableStat.StatMod> brmIds = currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).getFlatBonuses();
+                tooltip.addPara(brmIds.keySet().toString(), pad);
+                tooltip.addSectionHeading("CONSCIOUSNESS MODIFY ID", Alignment.MID, pad);
+                HashMap<String, MutableStat.StatMod> consciousIds = currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).getFlatBonuses();
+                tooltip.addPara(consciousIds.keySet().toString(), pad);
+            }
+        }, personImageTooltip, TooltipMakerAPI.TooltipLocation.RIGHT);
         //---------Name
         int nameH = 30;
         int nameW = (int) infoLeftW;
@@ -730,7 +753,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
 
             @Override
             public float getTooltipWidth(Object tooltipParam) {
-                return personInfoW * 0.6f;
+                return personInfoW * 1f;
             }
 
             @Override
@@ -747,20 +770,38 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                     tooltip.addPara("Installing %s selected", pad, Misc.getBrightPlayerColor(), "bionic");
                 }
                 tooltip.addSectionHeading("Help", Alignment.MID, pad);
-                tooltip.addPara("To install a bionic, follow the steps below:", Misc.getBrightPlayerColor(),pad/2);
-                tooltip.addPara("1. Select a %s. Click on the bionic table and select the desired limb", pad/2, Misc.getBrightPlayerColor(), "limb");
-                tooltip.addPara("2. Select a %s. Click on bionic item in the inventory below if there are any bionic available from your fleet inventory", pad/2, Misc.getBrightPlayerColor(), "bionic");
-                tooltip.addPara("3. Click the INSTALL button.",pad/2);
+                tooltip.addPara("To install a bionic, follow the steps below:", Misc.getHighlightColor(),pad/2);
+                tooltip.addPara("1. Select a %s. Click on the bionic table and select the desired limb", pad/2, Misc.getHighlightColor(), "LIMB");
+                tooltip.addPara("2. Select a %s. Click on bionic item in the inventory below if there are any bionic available from your fleet inventory", pad/2, Misc.getHighlightColor(), "BIONIC");
+                tooltip.addPara("3. Click the %s button.",pad/2, Misc.getHighlightColor(), "INSTALL");
 
+                tooltip.addSectionHeading("Debug", Alignment.MID, pad);
+                boolean isBionicInstallableOnLimb = false;
+                boolean isBionicAlreadyInstalledOnLimb = false;
+                boolean isBrmExceed = false;
+                boolean isConsciousnessReduceToZero = false;
+                boolean isBionicConflicted = false;
+                if(currentSelectedLimb != null && currentSelectedBionic != null) {
+                    if(currentSelectedLimb.limbGroupList.contains(currentSelectedBionic.bionicLimbGroupId)) isBionicInstallableOnLimb = true;
+                    if(ba_bionicmanager.checkIfHaveBionicInstalled(currentSelectedBionic, currentPerson)) isBionicAlreadyInstalledOnLimb = true;
+                    if(!ba_officermanager.checkIfCurrentBRMLowerThanLimitOnInstall(currentSelectedBionic, currentPerson)) isBrmExceed = true;
+                    if(!ba_officermanager.checkIfConsciousnessReduceAboveZeroOnInstall(currentSelectedBionic, currentPerson)) isConsciousnessReduceToZero = true;
+                    if(ba_bionicmanager.checkIfBionicConflicted(currentSelectedBionic, currentPerson)) isBionicConflicted = true;
+                }
                 tooltip.setParaFontVictor14();
-                tooltip.addPara("Button is still disabled ? Hover on selected bionic for more information.", pad);
+                tooltip.addPara("Button is still disabled ? Hover on selected bionic/limb for more information.", pad);
                 tooltip.setParaFontDefault();
                 tooltip.addPara("Make sure that: ", pad);
-                tooltip.addPara("- %s on selected limb.", pad/2, Misc.getHighlightColor(), "Selected bionic can be install");
-                tooltip.addPara("- %s the selected bionic.", pad/2, Misc.getHighlightColor(), "Selected limb did not install");
-                tooltip.addPara("- %s the person BRM limit.", pad/2, Misc.getHighlightColor(), "Selected bionics BRM do not go pass");
-                tooltip.addPara("- %s the person consciousness to lower or equal to %s.", pad/2, Misc.getHighlightColor(), "Selected bionics consciousness cost do not reduce", "0");
-                tooltip.addPara("- %s with other bionics installed on the person", pad/2, Misc.getHighlightColor(), "Selected bionic does not conflict");
+                LabelAPI bionicInstallableLabel = tooltip.addPara("[ %s ] %s on selected limb.", pad/2, Misc.getHighlightColor(), isBionicInstallableOnLimb? "O": "X","Selected bionic can be installed");
+                bionicInstallableLabel.setHighlightColors(isBionicInstallableOnLimb? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
+                LabelAPI bionicInstalledLabel = tooltip.addPara("[ %s ] %s the selected bionic.", pad/2, Misc.getHighlightColor(), !isBionicAlreadyInstalledOnLimb? "O": "X", "Selected limb is not installed");
+                bionicInstalledLabel.setHighlightColors(!isBionicAlreadyInstalledOnLimb? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
+                LabelAPI brmLabel = tooltip.addPara("[ %s ] %s the person BRM limit.", pad/2, Misc.getHighlightColor(), !isBrmExceed? "O": "X","Selected bionics BRM do not go pass");
+                brmLabel.setHighlightColors(!isBrmExceed? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
+                LabelAPI consciousnessLabel = tooltip.addPara("[ %s ] %s the person consciousness to lower or equal to %s.", pad/2, Misc.getHighlightColor(), !isConsciousnessReduceToZero? "O": "X","Selected bionics consciousness cost do not reduce", "0");
+                consciousnessLabel.setHighlightColors(!isConsciousnessReduceToZero? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
+                LabelAPI conflictedLabel = tooltip.addPara("[ %s ] %s with other bionics installed on the person", pad/2, Misc.getHighlightColor(), !isBionicConflicted? "O": "X", "Selected bionic is not conflicting");
+                conflictedLabel.setHighlightColors(!isBionicConflicted? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
             }
         }, installButton, TooltipMakerAPI.TooltipLocation.ABOVE);
         //--------remove button
@@ -796,11 +837,11 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                 } else {
                     tooltip.addPara("Modifying %s selected", pad, Misc.getBrightPlayerColor(), "limb");
                 }
-                tooltip.addSectionHeading("Help", Alignment.MID, pad);
-                tooltip.setParaFontVictor14();
-                tooltip.addPara("Button is disabled ?", pad);
-                tooltip.setParaFontDefault();
-                tooltip.addPara("- Make sure that selected limb have bionics installed. Hover on selected limb for this information", pad / 2);
+//                tooltip.addSectionHeading("Help", Alignment.MID, pad);
+//                tooltip.setParaFontVictor14();
+//                tooltip.addPara("Button is disabled ?", pad);
+//                tooltip.setParaFontDefault();
+//                tooltip.addPara("- Make sure that selected limb have bionics installed. Hover on selected limb for this information", pad / 2);
             }
         }, removeButton, TooltipMakerAPI.TooltipLocation.ABOVE);
         //--------Bionic table
@@ -896,6 +937,10 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                         String spriteName = bionic.getSpec().getIconName();
                         TooltipMakerAPI personImageTooltip = rowContainer.createTooltip("ITEM_IMAGE", imageW, imageH, false, 0, 0);
                         personImageTooltip.addImage(spriteName, imageW * 0.9f, imageH * 0.9f, 0);
+                        //name
+                        String name = ba_utils.getShortenBionicName(bionic.getName());
+                        LabelAPI nameLabel = rowTooltipContainer.addPara(name, 0);
+                        nameLabel.getPosition().inTL(itemX + 5, itemY + itemH - nameLabel.getPosition().getHeight() - 5);
                         //---------quantity
                         LabelAPI quantityLabel = rowTooltipContainer.addPara(String.valueOf((int) quantity), Misc.getBrightPlayerColor(), 0);
                         quantityLabel.getPosition().inTL(itemX + itemW - quantityLabel.computeTextWidth(String.valueOf((int) quantity)) - pad / 2, itemY + pad / 2);
@@ -906,6 +951,11 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                         if(this.currentSelectedBionic != null) {
                             if(currentSelectedBionic.equals(bionic)) {
                                 areaChecker.highlight();
+                            }
+                        }
+                        if(this.currentSelectedLimb != null) {
+                            if(ba_bionicmanager.checkIfBionicConflicted(bionic, this.currentPerson)) {
+                                areaChecker.setEnabled(false);
                             }
                         }
                         //hover thingy
@@ -964,7 +1014,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                                 }
                                 LabelAPI conflictListLabel = tooltip.addPara("%s %s", pad, t,"Conflicts:", conflictsList.toString());
                                 conflictListLabel.setHighlight("Conflicts:", conflictsList.toString());
-                                conflictListLabel.setHighlightColors(g.brighter().brighter(), Misc.getNegativeHighlightColor());
+                                conflictListLabel.setHighlightColors(g.brighter().brighter(), conflictsList.toString().equals("None")? g: Misc.getNegativeHighlightColor());
                                 //----------desc
                                 String desc = currentHoveredBionic.getSpec().getDesc();
                                 LabelAPI descLabel = tooltip.addPara("%s %s", pad, t, "Description:", desc);

@@ -131,16 +131,28 @@ public class ba_bionicmanager {
 
     /**
      * check the entire person limbs to see the bionic conflicts with any bionics installed on person
-     * @param bionic
+     * @param bionic checking bionic
      * @param person
      * @return true if conflicted
      */
     public static boolean checkIfBionicConflicted(ba_bionicitemplugin bionic, PersonAPI person) {
         if (!person.getTags().isEmpty()) {
+            //check for bionic item
             List<String> listStringBionicInstalled = getListStringBionicInstalled(person);
             if(!bionic.conflictedBionicIdList.isEmpty()) {
                 for(String id: bionic.conflictedBionicIdList) {
-                    if(id.equals(bionic.bionicId)) return true;
+                    for(String conflictId: listStringBionicInstalled) {
+                        if(id.equals(conflictId)) return true;
+                    }
+                }
+            }
+            //check for person's bionics
+            Set<ba_bionicitemplugin> personConflictedList = getListBionicConflicts(person);
+            if(!personConflictedList.isEmpty()) {
+                for (ba_bionicitemplugin b: personConflictedList) {
+                    if(b.bionicId.equals(bionic.bionicId)) {
+                        return true;
+                    }
                 }
             }
         }
@@ -148,7 +160,7 @@ public class ba_bionicmanager {
     }
 
     /**
-     * Return list bionic that conflicted from the parameter.
+     * Return list bionic that conflicted from the parameter bionic.
      * Note: Bionic isn't available from bionicItemMap won't show up in the return list in case the mod that have that bionic isn't enabled
      * @param bionic search conflicted from this bionic
      * @return
@@ -165,6 +177,23 @@ public class ba_bionicmanager {
         }
 
         return conflictList;
+    }
+
+    /**
+     * Return list bionic that conflicted from a person.
+     * Note: this will return the entire list of conflicted bionic from the person's installed bionics
+     * @param person
+     * @return
+     */
+    public static Set<ba_bionicitemplugin> getListBionicConflicts(PersonAPI person) {
+        List<ba_bionicitemplugin> conflictList = new ArrayList<>();
+        List<ba_bionicitemplugin> personBionicList = getListBionicInstalled(person);
+        //get conflicted list from the person -> add it into a big array
+        for(ba_bionicitemplugin bionic: personBionicList) {
+            conflictList.addAll(getListBionicConflicts(bionic));
+        }
+
+        return new HashSet<>(conflictList);
     }
     public static List<String> getListStringBionicInstalled(PersonAPI person) {
         List<String> bionics = new ArrayList<>();

@@ -72,6 +72,10 @@ public class ba_officermanager {
     }
     public static void setUpDynamicStats() {
         //todo: have side effects base on consciousness
+        /**
+         * The idea is to have the lower the consciousness is the higher the DP cost, the CR cost is, the maintenance is
+         * Have to a chance to change personality in combat to a different one like aggressive/reckless/fearless
+         */
         for(PersonAPI person: listPersons) {
             //consciousness
             person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).modifyFlat(ba_variablemanager.BA_CONSCIOUSNESS_SOURCE_KEY, setUpConsciousness(person));
@@ -79,6 +83,15 @@ public class ba_officermanager {
             person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).modifyFlat(ba_variablemanager.BA_BRM_LIMIT_SOURCE_KEY, setUpBRMLimit(person));
             //BRM current
             person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).modifyFlat(ba_variablemanager.BA_BRM_CURRENT_SOURCE_KEY, setUpBRMCurrent(person));
+
+            if(ba_bionicmanager.checkIfHaveBionicInstalled(person)) {
+                List<ba_bionicAugmentedData> list = getBionicAnatomyList(person);
+                for(ba_bionicAugmentedData data: list) {
+                    for(ba_bionicitemplugin bionic: data.bionicInstalled) {
+                        updatePersonStatsOnInteract(bionic, data.limb, person, true);
+                    }
+                }
+            }
         }
     }
     public static void setUpSkill() {
@@ -96,22 +109,68 @@ public class ba_officermanager {
     }
     protected static int setUpBRMCurrent(PersonAPI person) {
         int brmCurrent = 0;
-        List<ba_bionicitemplugin> listBionics = ba_bionicmanager.getListBionicInstalled(person);
-        for (ba_bionicitemplugin bionic: listBionics) {
-            brmCurrent += bionic.brmCost;
-        }
-        if(brmCurrent < 0) brmCurrent = 0;
+//        List<ba_bionicitemplugin> listBionics = ba_bionicmanager.getListBionicInstalled(person);
+//        for (ba_bionicitemplugin bionic: listBionics) {
+//            brmCurrent += bionic.brmCost;
+//        }
+//        if(brmCurrent < 0) brmCurrent = 0;
         return brmCurrent;
     }
     protected static float setUpConsciousness(PersonAPI person) {
         float currentConsciousness = ba_variablemanager.BA_CONSCIOUSNESS_DEFAULT;
-        List<ba_bionicitemplugin> listBionics = ba_bionicmanager.getListBionicInstalled(person);
-        for (ba_bionicitemplugin bionic: listBionics) {
-            currentConsciousness -= bionic.consciousnessCost;
-        }
-//        log.info(currentConsciousness);
-        if(currentConsciousness > ba_variablemanager.BA_CONSCIOUSNESS_DEFAULT) currentConsciousness = ba_variablemanager.BA_CONSCIOUSNESS_DEFAULT;
+//        List<ba_bionicitemplugin> listBionics = ba_bionicmanager.getListBionicInstalled(person);
+//        for (ba_bionicitemplugin bionic: listBionics) {
+//            currentConsciousness -= bionic.consciousnessCost;
+//        }
+////        log.info(currentConsciousness);
+//        if(currentConsciousness > ba_variablemanager.BA_CONSCIOUSNESS_DEFAULT) currentConsciousness = ba_variablemanager.BA_CONSCIOUSNESS_DEFAULT;
         return currentConsciousness;
+    }
+
+    /**
+     * Update necessary stats on a person
+     * @param bionic
+     * @param limb
+     * @param person
+     * @param isInstall
+     */
+    public static void updatePersonStatsOnInteract(ba_bionicitemplugin bionic, ba_limbmanager.ba_limb limb, PersonAPI person, boolean isInstall) {
+        updateConsciousness(bionic, limb, person, isInstall);
+        updateCurrentBRM(bionic, limb, person, isInstall);
+    }
+
+    /**
+     * Update consciousness stats on a person. use .modifyFlat()
+*    * Note: Key should be {@code  bionicId:limbId} if you are planning to modify the stats. Important for the {@code bionicId} to be in the front so UI can display correctly
+     * @param bionic
+     * @param limb
+     * @param person
+     * @param isInstall
+     */
+    public static void updateConsciousness(ba_bionicitemplugin bionic, ba_limbmanager.ba_limb limb, PersonAPI person, boolean isInstall) {
+        String key = bionic.bionicId + ":" + limb.limbId;
+        if(isInstall) {
+            person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).modifyFlat(key, -bionic.consciousnessCost);
+        } else {
+            person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).unmodifyFlat(key);
+        }
+    }
+
+    /**
+     * Update current BRM stats on a person. use .modifyFlat()
+     * Note: Key should be {@code  bionicId:limbId} if you are planning to modify the stats. Important for the {@code bionicId} to be in the front so UI can display correctly
+     * @param bionic
+     * @param limb
+     * @param person
+     * @param isInstall
+     */
+    public static void updateCurrentBRM(ba_bionicitemplugin bionic, ba_limbmanager.ba_limb limb, PersonAPI person, boolean isInstall) {
+        String key = bionic.bionicId + ":" + limb.limbId;
+        if(isInstall) {
+            person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).modifyFlat(key, bionic.brmCost);
+        } else {
+            person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).unmodifyFlat(key);
+        }
     }
 
     /**
@@ -175,21 +234,26 @@ public class ba_officermanager {
         if(limb.limbGroupList.contains(bionic.bionicLimbGroupId)) {
             //conflicts
             if(ba_bionicmanager.checkIfBionicConflicted(bionic, person)) return false;
-
-            float currentBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
-            float limitBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);
-            float conscious = person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);;
             for(ba_bionicAugmentedData data: getBionicAnatomyList(person)) {
                 if(data.limb.limbId.equals(limb.limbId) &&
                         !data.bionicInstalled.contains(bionic) &&
-                        currentBrm + bionic.brmCost <= limitBrm &&
-                        conscious - bionic.consciousnessCost > 0
+                        checkIfCurrentBRMLowerThanLimitOnInstall(bionic, person) &&
+                        checkIfConsciousnessReduceAboveZeroOnInstall(bionic, person)
                 ) {
                     return true;
                 }
             }
         }
         return false;
+    }
+    public static boolean checkIfCurrentBRMLowerThanLimitOnInstall(ba_bionicitemplugin bionic, PersonAPI person) {
+        float currentBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
+        float limitBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);
+        return currentBrm + bionic.brmCost <= limitBrm;
+    }
+    public static boolean checkIfConsciousnessReduceAboveZeroOnInstall(ba_bionicitemplugin bionic, PersonAPI person) {
+        float conscious = person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
+        return conscious - bionic.consciousnessCost > 0;
     }
     /**
      * @param bionic the bionic going to be removed
@@ -221,7 +285,7 @@ public class ba_officermanager {
             //todo: add class to handle interaction with player inventory
             SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
             Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, 1);
-            setUpDynamicStats();
+            updatePersonStatsOnInteract(bionic, limb, person, true);
             if(bionic.effectScript != null) {
                 bionic.effectScript.onInstall(person, limb, bionic);
             }
@@ -236,7 +300,7 @@ public class ba_officermanager {
             person.removeTag(bionic.bionicId+":"+limb.limbId);
             SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
             Global.getSector().getPlayerFleet().getCargo().addSpecial(specialItem, 1);
-            setUpDynamicStats();
+            updatePersonStatsOnInteract(bionic, limb, person, false);
             if(bionic.effectScript != null) {
                 bionic.effectScript.onRemove(person, limb, bionic);
             }

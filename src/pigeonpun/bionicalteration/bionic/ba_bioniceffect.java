@@ -61,9 +61,8 @@ public interface ba_bioniceffect{
     /**
      * isAdvanceInCampaign in bionic_data.csv needed to be set to true
      */
-    //todo: look into this
+    //todo: look into advanceInCampaign
     public void advanceInCampaign();
-    //todo: look into onRemove and onInstall
     public void onRemove(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic);
     public void onInstall(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic);
 
