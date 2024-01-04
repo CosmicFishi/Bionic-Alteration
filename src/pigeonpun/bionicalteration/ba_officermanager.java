@@ -3,10 +3,12 @@ package pigeonpun.bionicalteration;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CargoAPI;
 import com.fs.starfarer.api.campaign.SpecialItemData;
+import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.characters.AdminData;
 import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import com.fs.starfarer.api.characters.OfficerDataAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent;
 import com.fs.starfarer.api.impl.campaign.ids.Factions;
 import com.fs.starfarer.api.util.Misc;
@@ -72,7 +74,7 @@ public class ba_officermanager {
     }
     public static void setUpDynamicStats() {
         //todo: have side effects base on consciousness
-        /**
+        /*
          * The idea is to have the lower the consciousness is the higher the DP cost, the CR cost is, the maintenance is
          * Have to a chance to change personality in combat to a different one like aggressive/reckless/fearless
          */
@@ -104,26 +106,16 @@ public class ba_officermanager {
         }
     }
     protected static int setUpBRMLimit(PersonAPI person) {
+        //todo: add extra tags for person to calculate BRM/Consciousness mult ?
         int brmLimit = (int) (person.getStats().getLevel() * ba_variablemanager.BA_BRM_LIMIT_BONUS_PER_LEVEL);
         return brmLimit;
     }
     protected static int setUpBRMCurrent(PersonAPI person) {
         int brmCurrent = 0;
-//        List<ba_bionicitemplugin> listBionics = ba_bionicmanager.getListBionicInstalled(person);
-//        for (ba_bionicitemplugin bionic: listBionics) {
-//            brmCurrent += bionic.brmCost;
-//        }
-//        if(brmCurrent < 0) brmCurrent = 0;
         return brmCurrent;
     }
     protected static float setUpConsciousness(PersonAPI person) {
         float currentConsciousness = ba_variablemanager.BA_CONSCIOUSNESS_DEFAULT;
-//        List<ba_bionicitemplugin> listBionics = ba_bionicmanager.getListBionicInstalled(person);
-//        for (ba_bionicitemplugin bionic: listBionics) {
-//            currentConsciousness -= bionic.consciousnessCost;
-//        }
-////        log.info(currentConsciousness);
-//        if(currentConsciousness > ba_variablemanager.BA_CONSCIOUSNESS_DEFAULT) currentConsciousness = ba_variablemanager.BA_CONSCIOUSNESS_DEFAULT;
         return currentConsciousness;
     }
 
@@ -172,33 +164,6 @@ public class ba_officermanager {
             person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).unmodifyFlat(key);
         }
     }
-
-    /**
-     * Return consciousness color
-     * @param consciousnessLevel 0-1
-     * @return
-     */
-    public static Color getConsciousnessColorByLevel(float consciousnessLevel) {
-//        log.info(ba_variablemanager.BA_CONSCIOUSNESS_THRESHOLD.get(ba_variablemanager.BA_CONSCIOUSNESS_STABLE_THRESHOLD));
-        Color returnColor = Misc.getPositiveHighlightColor();
-        if (consciousnessLevel < ba_variablemanager.BA_CONSCIOUSNESS_THRESHOLD.get(ba_variablemanager.BA_CONSCIOUSNESS_STABLE_THRESHOLD)) {
-            returnColor = ba_variablemanager.BA_CONSCIOUSNESS_COLOR.get(ba_variablemanager.BA_CONSCIOUSNESS_STABLE_THRESHOLD);
-        }
-        if (consciousnessLevel < ba_variablemanager.BA_CONSCIOUSNESS_THRESHOLD.get(ba_variablemanager.BA_CONSCIOUSNESS_UNSTEADY_THRESHOLD)) {
-            returnColor = ba_variablemanager.BA_CONSCIOUSNESS_COLOR.get(ba_variablemanager.BA_CONSCIOUSNESS_UNSTEADY_THRESHOLD);
-        }
-        if (consciousnessLevel < ba_variablemanager.BA_CONSCIOUSNESS_THRESHOLD.get(ba_variablemanager.BA_CONSCIOUSNESS_WEAKENED_THRESHOLD)) {
-            returnColor = ba_variablemanager.BA_CONSCIOUSNESS_COLOR.get(ba_variablemanager.BA_CONSCIOUSNESS_WEAKENED_THRESHOLD);
-        }
-        if (consciousnessLevel < ba_variablemanager.BA_CONSCIOUSNESS_THRESHOLD.get(ba_variablemanager.BA_CONSCIOUSNESS_FRAGILE_THRESHOLD)) {
-            returnColor = ba_variablemanager.BA_CONSCIOUSNESS_COLOR.get(ba_variablemanager.BA_CONSCIOUSNESS_FRAGILE_THRESHOLD);
-        }
-        if (consciousnessLevel < ba_variablemanager.BA_CONSCIOUSNESS_THRESHOLD.get(ba_variablemanager.BA_CONSCIOUSNESS_CRITICAL_THRESHOLD)) {
-            returnColor = ba_variablemanager.BA_CONSCIOUSNESS_COLOR.get(ba_variablemanager.BA_CONSCIOUSNESS_CRITICAL_THRESHOLD);
-        }
-        return returnColor;
-    }
-
     /**
      * Use for getting person anatomy including limb and bionic installed on the limb. Sort by person variant's limb order.
      * @param person
@@ -333,6 +298,37 @@ public class ba_officermanager {
             }
             person.addTag(ba_variablemanager.BA_RANDOM_BIONIC_GENERATED_TAG);
         }
+    }
+    public static String getProfessionText(PersonAPI person) {
+        String profString = "Idle";
+        if(person.isPlayer()) {
+            return "Captain/Admin";
+        }
+        if(person.getFleet() != null) {
+            if(Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(person) != null) {
+                profString = "Captain";
+            }
+        } else if (person.getMarket() != null) {
+            MarketAPI market = person.getMarket();
+            if(market.getAdmin() == person) {
+                profString = "Admin";
+            }
+        }
+        return profString;
+    }
+    public static boolean isOfficer(PersonAPI person) {
+        for (AdminData admin: Global.getSector().getCharacterData().getAdmins()) {
+            if(admin.getPerson().getId().equals(person.getId())) return false;
+        }
+        if(person.getFleet() != null) {
+            if(Global.getSector().getPlayerFleet().getFleetData().getOfficersCopy() != null) {
+                for(OfficerDataAPI member: Global.getSector().getPlayerFleet().getFleetData().getOfficersCopy()) {
+                    if(member.getPerson().getId().equals(person.getId())) return true;
+                }
+                return true;
+            }
+        }
+        return false;
     }
     public static class ba_bionicAugmentedData {
         public ba_limbmanager.ba_limb limb;

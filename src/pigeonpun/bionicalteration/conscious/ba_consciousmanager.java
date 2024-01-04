@@ -1,0 +1,78 @@
+package pigeonpun.bionicalteration.conscious;
+
+import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.ui.TooltipMakerAPI;
+import com.fs.starfarer.api.util.Misc;
+import org.apache.log4j.Logger;
+import pigeonpun.bionicalteration.ba_variablemanager;
+import pigeonpun.bionicalteration.conscious.impl.*;
+
+import java.awt.*;
+import java.util.HashMap;
+
+public class ba_consciousmanager {
+    //todo: change "Consciousness" to "Stability" for AI officer/admin
+    static Logger log = Global.getLogger(ba_consciousmanager.class);
+    public static HashMap<ba_variablemanager.ba_consciousnessLevel, ba_conscious> consciousMap = new HashMap<>();
+    public static void onGameLoad() {
+        consciousMap.put(ba_variablemanager.ba_consciousnessLevel.STABLE, new ba_conscious_stable());
+        consciousMap.put(ba_variablemanager.ba_consciousnessLevel.UNSTEADY, new ba_conscious_unsteady());
+        consciousMap.put(ba_variablemanager.ba_consciousnessLevel.WEAKEN, new ba_conscious_weaken());
+        consciousMap.put(ba_variablemanager.ba_consciousnessLevel.FRAGILE, new ba_conscious_fragile());
+        consciousMap.put(ba_variablemanager.ba_consciousnessLevel.CRITICAL, new ba_conscious_critical());
+    }
+    /**
+     * return conscious level
+     * @param consciousnessLevel 0-1
+     * @return
+     */
+    public static ba_conscious getConsciousnessLevel(float consciousnessLevel) {
+        ba_conscious defaultLevel = consciousMap.get(ba_variablemanager.ba_consciousnessLevel.STABLE);
+        if (consciousnessLevel < ba_variablemanager.BA_CONSCIOUSNESS_THRESHOLD.get(ba_variablemanager.BA_CONSCIOUSNESS_STABLE_THRESHOLD)) {
+            defaultLevel = consciousMap.get(ba_variablemanager.ba_consciousnessLevel.STABLE);
+        }
+        if (consciousnessLevel < ba_variablemanager.BA_CONSCIOUSNESS_THRESHOLD.get(ba_variablemanager.BA_CONSCIOUSNESS_UNSTEADY_THRESHOLD)) {
+            defaultLevel = consciousMap.get(ba_variablemanager.ba_consciousnessLevel.UNSTEADY);
+        }
+        if (consciousnessLevel < ba_variablemanager.BA_CONSCIOUSNESS_THRESHOLD.get(ba_variablemanager.BA_CONSCIOUSNESS_WEAKENED_THRESHOLD)) {
+            defaultLevel = consciousMap.get(ba_variablemanager.ba_consciousnessLevel.WEAKEN);
+        }
+        if (consciousnessLevel < ba_variablemanager.BA_CONSCIOUSNESS_THRESHOLD.get(ba_variablemanager.BA_CONSCIOUSNESS_FRAGILE_THRESHOLD)) {
+            defaultLevel = consciousMap.get(ba_variablemanager.ba_consciousnessLevel.FRAGILE);
+        }
+        if (consciousnessLevel < ba_variablemanager.BA_CONSCIOUSNESS_THRESHOLD.get(ba_variablemanager.BA_CONSCIOUSNESS_CRITICAL_THRESHOLD)) {
+            defaultLevel = consciousMap.get(ba_variablemanager.ba_consciousnessLevel.CRITICAL);
+        }
+
+        return defaultLevel;
+    }
+    /**
+     * Return consciousness color
+     * @param consciousnessLevel 0-1
+     * @return
+     */
+    public static Color getConsciousnessColorByLevel(float consciousnessLevel) {
+        if(getConsciousnessLevel(consciousnessLevel).getColor() != null) {
+            return getConsciousnessLevel(consciousnessLevel).getColor();
+        }
+        return Misc.getTextColor();
+    }
+    //todo: add this to UI
+    public static String getDisplayConsciousLabel(PersonAPI person) {
+        if(person.isAICore()) {
+            return "Stability";
+        }
+        return "Humanity";
+    }
+    public static void displayConsciousEffects(TooltipMakerAPI tooltip, PersonAPI person, boolean isSimpleMode) {
+        float consciousnessLevel = person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
+        ba_conscious conscious = getConsciousnessLevel(consciousnessLevel);
+        if(!isSimpleMode) {
+            //in hover view
+            tooltip.addPara(conscious.getDisplayName(),0);
+        } else {
+            //in effect list view
+        }
+    }
+}

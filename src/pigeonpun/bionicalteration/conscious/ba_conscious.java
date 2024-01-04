@@ -1,0 +1,23 @@
+package pigeonpun.bionicalteration.conscious;
+
+import com.fs.starfarer.api.campaign.econ.MarketAPI;
+import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
+import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.combat.MutableShipStatsAPI;
+import com.fs.starfarer.api.combat.ShipAPI;
+import com.fs.starfarer.api.ui.TooltipMakerAPI;
+
+import java.awt.*;
+
+public interface ba_conscious {
+    public Color getColor();
+    public float getThreshold();
+    public String getDisplayName();
+    public void displayTooltipDescription(TooltipMakerAPI tooltip, PersonAPI person, boolean isActive, boolean isSimpleMode);
+    public void applyEffectOfficer(MutableShipStatsAPI shipStats, String id);
+    public void unapplyEffectOfficer(String id);
+    public void applyEffectAdmin(MutableCharacterStatsAPI stats, MarketAPI market, String id);
+    public void unapplyEffectAdmin(String id);
+    public void advanceInCombat(ShipAPI ship, float amount);
+    public void advanceInCampaign();
+}

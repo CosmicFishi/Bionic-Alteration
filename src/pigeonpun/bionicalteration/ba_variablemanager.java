@@ -25,6 +25,13 @@ public class ba_variablemanager {
     /**
      * person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f)
      */
+    public enum ba_consciousnessLevel {
+        STABLE,
+        UNSTEADY,
+        WEAKEN,
+        FRAGILE,
+        CRITICAL
+    }
     public static final String BA_CONSCIOUSNESS_STATS_KEY = "ba_consciousness";
     public static final String BA_CONSCIOUSNESS_SOURCE_KEY = "ba_consciousness_source";
     public static final float BA_CONSCIOUSNESS_DEFAULT = 1f;
@@ -43,10 +50,10 @@ public class ba_variablemanager {
     }
     public static final HashMap<String, Color> BA_CONSCIOUSNESS_COLOR = new HashMap<>();
     static {
-        BA_CONSCIOUSNESS_COLOR.put(BA_CONSCIOUSNESS_STABLE_THRESHOLD, Misc.interpolateColor(Misc.getPositiveHighlightColor(), Misc.getNegativeHighlightColor(), 0.8f));
-        BA_CONSCIOUSNESS_COLOR.put(BA_CONSCIOUSNESS_UNSTEADY_THRESHOLD, Misc.interpolateColor(Misc.getPositiveHighlightColor(), Misc.getNegativeHighlightColor(), 0.6f));
-        BA_CONSCIOUSNESS_COLOR.put(BA_CONSCIOUSNESS_WEAKENED_THRESHOLD, Misc.interpolateColor(Misc.getPositiveHighlightColor(), Misc.getNegativeHighlightColor(), 0.4f));
-        BA_CONSCIOUSNESS_COLOR.put(BA_CONSCIOUSNESS_FRAGILE_THRESHOLD, Misc.interpolateColor(Misc.getPositiveHighlightColor(), Misc.getNegativeHighlightColor(), 0.2f));
+        BA_CONSCIOUSNESS_COLOR.put(BA_CONSCIOUSNESS_STABLE_THRESHOLD, Misc.interpolateColor(Misc.getPositiveHighlightColor(), Misc.getNegativeHighlightColor(), 0.2f));
+        BA_CONSCIOUSNESS_COLOR.put(BA_CONSCIOUSNESS_UNSTEADY_THRESHOLD, Misc.interpolateColor(Misc.getPositiveHighlightColor(), Misc.getNegativeHighlightColor(), 0.4f));
+        BA_CONSCIOUSNESS_COLOR.put(BA_CONSCIOUSNESS_WEAKENED_THRESHOLD, Misc.interpolateColor(Misc.getPositiveHighlightColor(), Misc.getNegativeHighlightColor(), 0.6f));
+        BA_CONSCIOUSNESS_COLOR.put(BA_CONSCIOUSNESS_FRAGILE_THRESHOLD, Misc.interpolateColor(Misc.getPositiveHighlightColor(), Misc.getNegativeHighlightColor(), 0.8f));
         BA_CONSCIOUSNESS_COLOR.put(BA_CONSCIOUSNESS_CRITICAL_THRESHOLD, Misc.getNegativeHighlightColor());
     }
     public static final String BA_BIONIC_SKILL_ID = "ba_bionic_augmented";
