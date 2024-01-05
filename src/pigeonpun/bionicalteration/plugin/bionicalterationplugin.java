@@ -14,6 +14,7 @@ public class bionicalterationplugin extends BaseModPlugin {
         ba_bionicmanager.onApplicationLoad();
         ba_variantmanager.onApplicationLoad();
         ba_limbmanager.onApplicationLoad();
+        ba_consciousmanager.onApplicationLoad();
     }
 
     @Override
@@ -24,7 +25,6 @@ public class bionicalterationplugin extends BaseModPlugin {
     @Override
     public void onGameLoad(boolean newGame) {
         ba_officermanager.onSaveLoad();
-        ba_consciousmanager.onGameLoad();
     }
 //
 //    @Override

@@ -11,6 +11,7 @@
 			"effects":[
 				{"type":"SHIP", "script":"pigeonpun.bionicalteration.skills.ba_bionic_augmented$Officer"},
 				{"type":"CHARACTER_STATS", "script":"pigeonpun.bionicalteration.skills.ba_bionic_augmented$Admin"},
+				{"type":"GOVERNED_OUTPOST", "script":"pigeonpun.bionicalteration.skills.ba_bionic_augmented$AdminMarket"}
 			]
 		}
 	],

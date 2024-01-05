@@ -65,7 +65,7 @@ public class ba_bionicmanager {
                     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
-                    bionicItemMap.put(bionicId, new ba_bionicitemplugin(
+                    ba_bionicitemplugin bionic = new ba_bionicitemplugin(
                             bionicId,
                             Global.getSettings().getSpecialItemSpec(bionicId),
                             row.getString("limbGroupId"),
@@ -80,7 +80,10 @@ public class ba_bionicmanager {
                             row.getBoolean("isAdvanceInCampaign"),
                             !row.getString("conflictedBionicIdList").equals("")? ba_utils.trimAndSplitString(row.getString("conflictedBionicIdList")): null,
                             row.getBoolean("isAllowedRemoveAfterInstall")
-                    ));
+                    );
+                    //todo: test this
+                    bionicItemMap.put(bionicId, bionic);
+                    if(effect != null) effect.setBionicItem(bionic);
 
                 } catch (JSONException ex) {
                     log.error(ex);

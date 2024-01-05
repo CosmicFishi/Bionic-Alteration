@@ -9,18 +9,22 @@ import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.conscious.impl.*;
 
 import java.awt.*;
-import java.util.HashMap;
+import java.util.*;
+import java.util.List;
 
 public class ba_consciousmanager {
-    //todo: change "Consciousness" to "Stability" for AI officer/admin
     static Logger log = Global.getLogger(ba_consciousmanager.class);
     public static HashMap<ba_variablemanager.ba_consciousnessLevel, ba_conscious> consciousMap = new HashMap<>();
-    public static void onGameLoad() {
+    public static void onApplicationLoad() {
         consciousMap.put(ba_variablemanager.ba_consciousnessLevel.STABLE, new ba_conscious_stable());
         consciousMap.put(ba_variablemanager.ba_consciousnessLevel.UNSTEADY, new ba_conscious_unsteady());
         consciousMap.put(ba_variablemanager.ba_consciousnessLevel.WEAKEN, new ba_conscious_weaken());
         consciousMap.put(ba_variablemanager.ba_consciousnessLevel.FRAGILE, new ba_conscious_fragile());
         consciousMap.put(ba_variablemanager.ba_consciousnessLevel.CRITICAL, new ba_conscious_critical());
+    }
+    public static ba_conscious getConsciousnessLevel(PersonAPI person) {
+        float conscious = person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
+        return getConsciousnessLevel(conscious);
     }
     /**
      * return conscious level
@@ -58,7 +62,6 @@ public class ba_consciousmanager {
         }
         return Misc.getTextColor();
     }
-    //todo: add this to UI
     public static String getDisplayConsciousLabel(PersonAPI person) {
         if(person.isAICore()) {
             return "Stability";
@@ -66,13 +69,32 @@ public class ba_consciousmanager {
         return "Humanity";
     }
     public static void displayConsciousEffects(TooltipMakerAPI tooltip, PersonAPI person, boolean isSimpleMode) {
+        final float pad = 10f;
         float consciousnessLevel = person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
         ba_conscious conscious = getConsciousnessLevel(consciousnessLevel);
+        List<ba_conscious> orderedList = new ArrayList<>();
+        for(ba_variablemanager.ba_consciousnessLevel level: consciousMap.keySet()) {
+            orderedList.add(consciousMap.get(level));
+        }
+        Collections.sort(orderedList, new Comparator<ba_conscious>() {
+            @Override
+            public int compare(ba_conscious o1, ba_conscious o2) {
+                return o1.getDisplayOrder() > o2.getDisplayOrder()? 1: (o1.getDisplayOrder() < o2.getDisplayOrder())? -1: 0;
+            }
+        });
         if(!isSimpleMode) {
             //in hover view
-            tooltip.addPara(conscious.getDisplayName(),0);
+            conscious.displayTooltipDescription(tooltip, person, true, isSimpleMode);
         } else {
             //in effect list view
+            for(ba_conscious level: orderedList) {
+                if(level.equals(conscious)) {
+                    level.displayTooltipDescription(tooltip, person, true ,isSimpleMode);
+                } else {
+                    level.displayTooltipDescription(tooltip, person, false ,isSimpleMode);
+                }
+                tooltip.addSpacer(pad);
+            }
         }
     }
 }

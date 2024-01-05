@@ -359,7 +359,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             consciousnessLabel.setHighlightColor(ba_consciousmanager.getConsciousnessColorByLevel(consciousness));
             consciousnessLabel.getPosition().setSize(consciousnessW,20);
             consciousnessLabel.getPosition().inTL(consciousnessX, consciousnessY);
-            //>Conditions: tiled with conscious //todo: add in conscious related code
+            //>Conditions: tiled with conscious
             LabelAPI conditionLabel = personStatsTooltip.addPara("Condition: " + condition + "", 0);
             conditionLabel.setHighlight("" + condition);
             conditionLabel.setHighlightColor(ba_consciousmanager.getConsciousnessColorByLevel(consciousness));
@@ -368,7 +368,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             personStatsTooltip.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
                 @Override
                 public boolean isTooltipExpandable(Object tooltipParam) {
-                    return false;
+                    return true;
                 }
 
                 @Override
@@ -378,7 +378,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
 
                 @Override
                 public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
-                    ba_consciousmanager.displayConsciousEffects(tooltip, currentPerson, false);
+                    ba_consciousmanager.displayConsciousEffects(tooltip, currentPerson, expanded);
                 }
             }, consciousAreaChecker, TooltipMakerAPI.TooltipLocation.ABOVE);
             //Button switch page
@@ -511,14 +511,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                     tooltip.addSectionHeading("Bionics", Alignment.MID, 0);
                     if(bionic.bionicInstalled.size() != 0) {
                         for(ba_bionicitemplugin b: bionic.bionicInstalled) {
-                            String effect = "No effects yet...";
-                            if(b.effectScript != null) {
-                                effect = b.effectScript.getShortEffectDescription();
-                            }
-                            String nameBehindText = isWorkshopMode? effect : b.getSpec().getDesc();
-                            LabelAPI descriptions = tooltip.addPara("%s: %s", pad, t, b.getName(), nameBehindText);
-                            descriptions.setHighlight(b.getName(), nameBehindText);
-                            descriptions.setHighlightColors(b.displayColor, t);
+                            b.effectScript.displayEffectDescription(tooltip, currentPerson, b, false);
                             if(isWorkshopMode) {
                                 //---------Conflicts
                                 StringBuilder conflictsList = new StringBuilder();
@@ -535,15 +528,17 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                                 conflictListLabel.setHighlightColors(g.brighter().brighter(), conflictsList.toString().equals("None")? g : Misc.getNegativeHighlightColor());
                             }
                             if(expanded) {
-                                if(!isWorkshopMode) {
-                                    LabelAPI expandedTooltip = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Effects:", effect);
-                                    expandedTooltip.setHighlight("Effects:", effect);
-                                    expandedTooltip.setHighlightColors(Misc.getGrayColor().brighter(), b.effectScript != null ? Misc.getHighlightColor() :Misc.getGrayColor());
-                                } else {
-                                    LabelAPI expandedTooltip = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Description:", b.getSpec().getDesc());
-                                    expandedTooltip.setHighlight("Description:", b.getSpec().getDesc());
-                                    expandedTooltip.setHighlightColors(Misc.getGrayColor().brighter(), t);
-                                }
+//                                if(!isWorkshopMode) {
+//                                    b.effectScript.displayEffectDescription(tooltip, currentPerson, b);
+////                                    LabelAPI expandedTooltip = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Effects:", effect);
+////                                    expandedTooltip.setHighlight("Effects:", effect);
+////                                    expandedTooltip.setHighlightColors(Misc.getGrayColor().brighter(), b.effectScript != null ? Misc.getHighlightColor() :Misc.getGrayColor());
+//                                } else {
+//
+//                                }
+                                LabelAPI expandedTooltip = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Description:", b.getSpec().getDesc());
+                                expandedTooltip.setHighlight("Description:", b.getSpec().getDesc());
+                                expandedTooltip.setHighlightColors(Misc.getGrayColor().brighter(), t);
                             }
                             tooltip.addSpacer(pad);
                         }
@@ -756,7 +751,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         consciousnessLabel.setHighlightColor(ba_consciousmanager.getConsciousnessColorByLevel(consciousness));
         consciousnessLabel.getPosition().setSize(consciousnessW,consciousnessH);
         consciousnessLabel.getPosition().inTL(consciousnessX, consciousnessY);
-        //>Conditions: tiled with conscious //todo: add in conscious related code
+        //>Conditions: tiled with conscious
         LabelAPI conditionLabel = infoPersonTooltipContainer.addPara("Condition: " + condition + "", 0);
         conditionLabel.setHighlight("" + condition);
         conditionLabel.setHighlightColor(ba_consciousmanager.getConsciousnessColorByLevel(consciousness));
@@ -765,7 +760,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         infoPersonTooltipContainer.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
             @Override
             public boolean isTooltipExpandable(Object tooltipParam) {
-                return false;
+                return true;
             }
 
             @Override
@@ -775,7 +770,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
 
             @Override
             public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
-                ba_consciousmanager.displayConsciousEffects(tooltip, currentPerson, false);
+                ba_consciousmanager.displayConsciousEffects(tooltip, currentPerson, expanded);
             }
         }, consciousAreaChecker, TooltipMakerAPI.TooltipLocation.ABOVE);
         int btnH = 40;
@@ -1036,13 +1031,14 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                                 designLabel.setHighlight("Design by:", currentHoveredBionic.getDesignType());
                                 designLabel.setHighlightColors(g, t.darker());
                                 //---------effect
-                                String effect = "No effects yet...";
-                                if(currentHoveredBionic.effectScript != null) {
-                                    effect = currentHoveredBionic.effectScript.getShortEffectDescription();
-                                }
-                                LabelAPI effectLabel = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Effects:", effect);
-                                effectLabel.setHighlight("Effects:", effect);
-                                effectLabel.setHighlightColors(g.brighter().brighter(), currentHoveredBionic.effectScript != null ? Misc.getBrightPlayerColor() :Misc.getGrayColor());
+                                currentHoveredBionic.effectScript.displayEffectDescription(tooltip, currentPerson, currentHoveredBionic, true);
+//                                String effect = "No effects yet...";
+//                                if(currentHoveredBionic.effectScript != null) {
+//                                    effect = currentHoveredBionic.effectScript.getShortEffectDescription();
+//                                }
+//                                LabelAPI effectLabel = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Effects:", effect);
+//                                effectLabel.setHighlight("Effects:", effect);
+//                                effectLabel.setHighlightColors(g.brighter().brighter(), currentHoveredBionic.effectScript != null ? Misc.getBrightPlayerColor() :Misc.getGrayColor());
                                 //---------BRM + conscious
                                 LabelAPI brmConsciousLabel = tooltip.addPara("%s %s     %s %s", pad, Misc.getBasePlayerColor(), "BRM:", "" + Math.round(currentHoveredBionic.brmCost), "Conscious:", "" + Math.round(currentHoveredBionic.consciousnessCost * 100) + "%");
                                 brmConsciousLabel.setHighlight("BRM:", "" + Math.round(currentHoveredBionic.brmCost), "Conscious:", "" + Math.round(currentHoveredBionic.consciousnessCost * 100) + "%");
@@ -1146,14 +1142,15 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         int i = 0;
         for(ba_officermanager.ba_bionicAugmentedData bionicAugmentedDatas: currentAnatomyList) {
             for (ba_bionicitemplugin bionic: bionicAugmentedDatas.bionicInstalled) {
-                String effect = "No effects yet...";
-                if(bionic.effectScript != null) {
-                    effect = bionic.effectScript.getShortEffectDescription();
-                }
-                LabelAPI expandedTooltip = subEffectListTooltipContainer.addPara("%s - %s", pad, Misc.getBasePlayerColor(), bionic.getName(), effect);
-                expandedTooltip.setHighlight(bionic.getName(), effect);
-                expandedTooltip.setHighlightColors(bionic.displayColor, bionic.effectScript != null ? t :Misc.getGrayColor());
+//                String effect = "No effects yet...";
+//                if(bionic.effectScript != null) {
+//                    effect = bionic.effectScript.getShortEffectDescription();
+//                }
+//                LabelAPI expandedTooltip = subEffectListTooltipContainer.addPara("%s - %s", pad, Misc.getBasePlayerColor(), bionic.getName(), effect);
+//                expandedTooltip.setHighlight(bionic.getName(), effect);
+//                expandedTooltip.setHighlightColors(bionic.displayColor, bionic.effectScript != null ? t :Misc.getGrayColor());
 //                expandedTooltip.getPosition().inTL(pad, expandedTooltip.getPosition().getHeight() * i);
+                bionic.effectScript.displayEffectDescription(subEffectListTooltipContainer, currentPerson, bionic, false);
 
                 subEffectListTooltipContainer.addSpacer(spacerY);
                 i++;

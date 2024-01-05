@@ -1,10 +1,12 @@
 package pigeonpun.bionicalteration.bionic;
 
 import com.fs.starfarer.api.campaign.SpecialItemPlugin;
+import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.combat.MutableShipStatsAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
+import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import pigeonpun.bionicalteration.ba_limbmanager;
 
 import java.util.List;
@@ -14,10 +16,15 @@ import java.util.List;
  */
 public interface ba_bioniceffect{
     /**
-     * Use to display the effect of bionic on the person skill panel and on bionics description.
+     * Return bionic item if needed
+     * @param bionic
+     */
+    public void setBionicItem(ba_bionicitemplugin bionic);
+    /**
+     * Use to display the effect of bionic on the bionic item and on bionics effects description in workshop.
      * @return text
      */
-    public String getShortEffectDescription();
+    public void displayEffectDescription(TooltipMakerAPI tooltip, PersonAPI person, ba_bionicitemplugin bionic, boolean isItem);
     /**
      * Use to display the effect of bionic on remove, will be display in bionic description inside bionic workshop inventory.
      * @return text
@@ -52,6 +59,19 @@ public interface ba_bioniceffect{
      * @param id
      */
     public void unapplyAdminEffect(MutableCharacterStatsAPI stats, String id);
+    /**
+     * As the name implies, apply effects for market
+     * @param market
+     * @param id
+     * @param level
+     */
+    public void applyEffectAdminMarket(MarketAPI market, String id, float level);
+    /**
+     * As the name implies, unapply effects for market
+     * @param market
+     * @param id
+     */
+    public void unapplyEffectAdminMarket(MarketAPI market, String id);
     /**
      * isAdvanceInCombat in bionic_data.csv needed to be set to true
      * Note: This also run in refit :D. Magic I know

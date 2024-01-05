@@ -12,12 +12,15 @@ import java.awt.*;
 public interface ba_conscious {
     public Color getColor();
     public float getThreshold();
+    public float getDisplayOrder();
     public String getDisplayName();
     public void displayTooltipDescription(TooltipMakerAPI tooltip, PersonAPI person, boolean isActive, boolean isSimpleMode);
     public void applyEffectOfficer(MutableShipStatsAPI shipStats, String id);
     public void unapplyEffectOfficer(String id);
-    public void applyEffectAdmin(MutableCharacterStatsAPI stats, MarketAPI market, String id);
+    public void applyEffectAdmin(MutableCharacterStatsAPI stats, String id);
     public void unapplyEffectAdmin(String id);
+    public void applyEffectAdminMarket(MarketAPI market, String id, float level);
+    public void unapplyEffectAdminMarket(MarketAPI market, String id);
     public void advanceInCombat(ShipAPI ship, float amount);
     public void advanceInCampaign();
 }

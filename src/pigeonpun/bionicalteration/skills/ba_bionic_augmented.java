@@ -1,6 +1,7 @@
 package pigeonpun.bionicalteration.skills;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.characters.*;
 import com.fs.starfarer.api.combat.MutableShipStatsAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
@@ -17,6 +18,7 @@ import org.apache.log4j.Logger;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
+import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
 
 import java.awt.*;
 import java.util.List;
@@ -50,22 +52,27 @@ public class ba_bionic_augmented {
         public void createCustomDescription(MutableCharacterStatsAPI stats, SkillSpecAPI skill, TooltipMakerAPI info, float width) {
             init(stats, skill);
             float opad = 10f;
-            Color c = Misc.getBasePlayerColor();
+            Color c = Misc.getHighlightColor();
 
             PersonAPI person = findPerson(stats);
             if(person != null) {
+                //bionics
+                info.setParaOrbitronLarge();
                 List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
-                for(ba_bionicitemplugin bionic: listBionic) {
-                    if(bionic.isCaptainBionic) {
-                        String description = "No effect yet";
-                        if(bionic.effectScript != null) {
-                            description = bionic.effectScript.getShortEffectDescription();
-                        }
-                        LabelAPI descriptionLabel = info.addPara("%s: %s", opad, Misc.getBrightPlayerColor() ,bionic.getName() ,description);
-                        descriptionLabel.setHighlight(bionic.getName(), description);
-                        descriptionLabel.setHighlightColors(bionic.displayColor, bionic.effectScript != null ? c : Misc.getGrayColor());
+                StringBuilder description = new StringBuilder("No bionic...yet");
+                if(!listBionic.isEmpty()) {
+                    description = new StringBuilder();
+                    for(ba_bionicitemplugin bionic: listBionic) {
+                        description.append(bionic.getName()).append(", ");
                     }
+                    description.setLength(description.length()-2);
                 }
+                LabelAPI descriptionLabel = info.addPara("%s: %s", opad, Misc.getBrightPlayerColor() , "Bionics" , description.toString());
+                descriptionLabel.setHighlight("Bionics", description.toString());
+                descriptionLabel.setHighlightColors(Misc.getTextColor(), listBionic.isEmpty()? Misc.getGrayColor() : c);
+                //conscious
+                info.setParaFontDefault();
+                ba_consciousmanager.getConsciousnessLevel(person).displayTooltipDescription(info, person, true, true);
             }
         }
 
@@ -99,6 +106,7 @@ public class ba_bionic_augmented {
                         bionic.effectScript.applyOfficerEffect(stats, hullSize, id);
                     }
                 }
+                ba_consciousmanager.getConsciousnessLevel(captain).applyEffectOfficer(stats, id);
             }
         }
 
@@ -112,6 +120,7 @@ public class ba_bionic_augmented {
                         bionic.effectScript.unapplyOfficerEffect(stats, hullSize, id);
                     }
                 }
+                ba_consciousmanager.getConsciousnessLevel(captain).unapplyEffectOfficer(id);
             }
         }
 
@@ -130,16 +139,79 @@ public class ba_bionic_augmented {
             return null;
         }
     }
-    public static class Admin extends BaseSkillEffectDescription implements CharacterStatsSkillEffect {
+    public static class Admin implements CharacterStatsSkillEffect {
 
         @Override
         public void apply(MutableCharacterStatsAPI stats, String id, float level) {
-
+            PersonAPI person = findPerson(stats);
+            if(person != null) {
+                List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
+                for(ba_bionicitemplugin bionic: listBionic) {
+                    if(bionic.isCaptainBionic && bionic.effectScript != null) {
+                        bionic.effectScript.applyAdminEffect(stats, id);
+                    }
+                }
+                ba_consciousmanager.getConsciousnessLevel(person).applyEffectAdmin(stats, id);
+            }
         }
 
         @Override
         public void unapply(MutableCharacterStatsAPI stats, String id) {
+            PersonAPI person = findPerson(stats);
+            if(person != null) {
+                List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
+                for(ba_bionicitemplugin bionic: listBionic) {
+                    if(bionic.isCaptainBionic && bionic.effectScript != null) {
+                        bionic.effectScript.unapplyAdminEffect(stats, id);
+                    }
+                }
+                ba_consciousmanager.getConsciousnessLevel(person).unapplyEffectAdmin(id);
+            }
+        }
 
+        @Override
+        public String getEffectDescription(float level) {
+            return null;
+        }
+
+        @Override
+        public String getEffectPerLevelDescription() {
+            return null;
+        }
+
+        @Override
+        public ScopeDescription getScopeDescription() {
+            return null;
+        }
+    }
+    public static class AdminMarket implements MarketSkillEffect {
+
+        @Override
+        public void apply(MarketAPI market, String id, float level) {
+            if(market.getAdmin() != null) {
+                PersonAPI person = market.getAdmin();
+                List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
+                for(ba_bionicitemplugin bionic: listBionic) {
+                    if(bionic.isCaptainBionic && bionic.effectScript != null) {
+                        bionic.effectScript.applyEffectAdminMarket(market, id, level);
+                    }
+                }
+                ba_consciousmanager.getConsciousnessLevel(person).applyEffectAdminMarket(market, id, level);
+            }
+        }
+
+        @Override
+        public void unapply(MarketAPI market, String id) {
+            if(market.getAdmin() != null) {
+                PersonAPI person = market.getAdmin();
+                List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
+                for(ba_bionicitemplugin bionic: listBionic) {
+                    if(bionic.isCaptainBionic && bionic.effectScript != null) {
+                        bionic.effectScript.unapplyEffectAdminMarket(market, id);
+                    }
+                }
+                ba_consciousmanager.getConsciousnessLevel(person).unapplyEffectAdminMarket(market, id);
+            }
         }
 
         @Override
