@@ -41,6 +41,7 @@ public class ba_officermanager {
     /**
      * Refresh the entire list person pls all the other stats set up needed
      */
+    //todo: check if refresh on save/game load run this
     public static void refresh() {
         refreshListPerson();
         setUpVariant();
@@ -73,7 +74,6 @@ public class ba_officermanager {
         }
     }
     public static void setUpDynamicStats() {
-        //todo: have side effects base on consciousness
         /*
          * The idea is to have the lower the consciousness is the higher the DP cost, the CR cost is, the maintenance is
          * Have to a chance to change personality in combat to a different one like aggressive/reckless/fearless
@@ -203,13 +203,27 @@ public class ba_officermanager {
                 if(data.limb.limbId.equals(limb.limbId) &&
                         !data.bionicInstalled.contains(bionic) &&
                         checkIfCurrentBRMLowerThanLimitOnInstall(bionic, person) &&
-                        checkIfConsciousnessReduceAboveZeroOnInstall(bionic, person)
+                        checkIfConsciousnessReduceAboveZeroOnInstall(bionic, person) &&
+                        checkIfBionicInstallableBaseOnPersonType(bionic, person)
                 ) {
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    /**
+     * Check the person type (Player/Admin/Officer) <br>
+     * True for player (meaning the player can install both admins bionic and officer bionic <br>
+     * If is admin/officer, check if the bionic can be installed on them or not base on {@code isCaptainBionic}
+     * @param bionic
+     * @param person
+     * @return
+     */
+    public static boolean checkIfBionicInstallableBaseOnPersonType(ba_bionicitemplugin bionic, PersonAPI person) {
+        if(person.isPlayer()) return true;
+        return isOfficer(person) == bionic.isCaptainBionic;
     }
     public static boolean checkIfCurrentBRMLowerThanLimitOnInstall(ba_bionicitemplugin bionic, PersonAPI person) {
         float currentBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
@@ -300,18 +314,22 @@ public class ba_officermanager {
         }
     }
     public static String getProfessionText(PersonAPI person) {
-        String profString = "Idle";
+        String profString = "";
         if(person.isPlayer()) {
             return "Captain/Admin";
         }
         if(person.getFleet() != null) {
+            if(isOfficer(person)) profString = "Captain (Idle)";
             if(Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(person) != null) {
                 profString = "Captain";
             }
-        } else if (person.getMarket() != null) {
-            MarketAPI market = person.getMarket();
-            if(market.getAdmin() == person) {
-                profString = "Admin";
+        } else {
+            if(!isOfficer(person)) profString = "Admin (Idle)";
+            if (person.getMarket() != null) {
+                MarketAPI market = person.getMarket();
+                if(market.getAdmin() == person) {
+                    profString = "Admin";
+                }
             }
         }
         return profString;

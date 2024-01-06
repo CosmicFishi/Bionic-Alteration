@@ -354,7 +354,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             addButtonToList(consciousAreaChecker, "hover_bionic_consciousness:"+ consciousness);
             consciousAreaChecker.getPosition().setLocation(0,0).inTL(conditionX - pad/2, conditionY - pad/2);
             //conscious label
-            LabelAPI consciousnessLabel = personStatsTooltip.addPara(ba_consciousmanager.getDisplayConsciousLabel(currentPerson) + ": " + Math.round(consciousness * 100) + "%", 0);
+            LabelAPI consciousnessLabel = personStatsTooltip.addPara(ba_consciousmanager.getDisplayConditionLabel(currentPerson) + ": " + Math.round(consciousness * 100) + "%", 0);
             consciousnessLabel.setHighlight("" + Math.round(consciousness * 100) + "%");
             consciousnessLabel.setHighlightColor(ba_consciousmanager.getConsciousnessColorByLevel(consciousness));
             consciousnessLabel.getPosition().setSize(consciousnessW,20);
@@ -451,7 +451,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         bionicBRMHeader.getPosition().inTL(bionicBRMX + bionicNameX,0);
         bionicBRMHeader.setAlignment(Alignment.MID);
         //>Conscious
-        LabelAPI bionicConsciousHeader = tableHeaderDisplayContainerTooltip.addPara(ba_consciousmanager.getDisplayConsciousLabel(currentPerson).toUpperCase(), 0, Misc.getBrightPlayerColor(), ba_consciousmanager.getDisplayConsciousLabel(currentPerson).toUpperCase());
+        LabelAPI bionicConsciousHeader = tableHeaderDisplayContainerTooltip.addPara(ba_consciousmanager.getDisplayConditionLabel(currentPerson).toUpperCase(), 0, Misc.getBrightPlayerColor(), ba_consciousmanager.getDisplayConditionLabel(currentPerson).toUpperCase());
         bionicConsciousHeader.getPosition().setSize(bionicConsciousW, tableHeaderH);
         bionicConsciousHeader.getPosition().inTL(bionicConsciousX + bionicNameX,0);
         bionicConsciousHeader.setAlignment(Alignment.MID);
@@ -746,7 +746,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         addButtonToList(consciousAreaChecker, "hover_bionic_consciousness:"+ consciousness);
         consciousAreaChecker.getPosition().setLocation(0,0).inTL(conditionX - pad/2, conditionY - pad/2);
         //conscious label
-        LabelAPI consciousnessLabel = infoPersonTooltipContainer.addPara(ba_consciousmanager.getDisplayConsciousLabel(currentPerson) + ": " + Math.round(consciousness * 100) + "%", 0);
+        LabelAPI consciousnessLabel = infoPersonTooltipContainer.addPara(ba_consciousmanager.getDisplayConditionLabel(currentPerson) + ": " + Math.round(consciousness * 100) + "%", 0);
         consciousnessLabel.setHighlight("" + Math.round(consciousness * 100) + "%");
         consciousnessLabel.setHighlightColor(ba_consciousmanager.getConsciousnessColorByLevel(consciousness));
         consciousnessLabel.getPosition().setSize(consciousnessW,consciousnessH);
@@ -820,12 +820,14 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                 tooltip.addSectionHeading("Debug", Alignment.MID, pad);
                 boolean isBionicInstallableOnLimb = false;
                 boolean isBionicAlreadyInstalledOnLimb = false;
+                boolean isBIonicInstallableBaseOnPersonType = false;
                 boolean isBrmExceed = false;
                 boolean isConsciousnessReduceToZero = false;
                 boolean isBionicConflicted = false;
                 if(currentSelectedLimb != null && currentSelectedBionic != null) {
                     if(currentSelectedLimb.limbGroupList.contains(currentSelectedBionic.bionicLimbGroupId)) isBionicInstallableOnLimb = true;
                     if(ba_bionicmanager.checkIfHaveBionicInstalled(currentSelectedBionic, currentPerson)) isBionicAlreadyInstalledOnLimb = true;
+                    if(ba_officermanager.checkIfBionicInstallableBaseOnPersonType(currentSelectedBionic, currentPerson)) isBIonicInstallableBaseOnPersonType = true;
                     if(!ba_officermanager.checkIfCurrentBRMLowerThanLimitOnInstall(currentSelectedBionic, currentPerson)) isBrmExceed = true;
                     if(!ba_officermanager.checkIfConsciousnessReduceAboveZeroOnInstall(currentSelectedBionic, currentPerson)) isConsciousnessReduceToZero = true;
                     if(ba_bionicmanager.checkIfBionicConflicted(currentSelectedBionic, currentPerson)) isBionicConflicted = true;
@@ -838,6 +840,8 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                 bionicInstallableLabel.setHighlightColors(isBionicInstallableOnLimb? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
                 LabelAPI bionicInstalledLabel = tooltip.addPara("[ %s ] %s on the selected bionic.", pad/2, Misc.getHighlightColor(), !isBionicAlreadyInstalledOnLimb? "O": "X", "Selected limb is not installed");
                 bionicInstalledLabel.setHighlightColors(!isBionicAlreadyInstalledOnLimb? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
+                LabelAPI bionicPersonTypeLabel = tooltip.addPara("[ %s ] %s as the person profession (Officer/Admin). Note: Player can install both type", pad/2, Misc.getHighlightColor(), isBIonicInstallableBaseOnPersonType? "O": "X", "Selected bionic install type is the same");
+                bionicPersonTypeLabel.setHighlightColors(isBIonicInstallableBaseOnPersonType? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
                 LabelAPI brmLabel = tooltip.addPara("[ %s ] %s the person BRM limit.", pad/2, Misc.getHighlightColor(), !isBrmExceed? "O": "X","Selected bionics BRM do not go past");
                 brmLabel.setHighlightColors(!isBrmExceed? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
                 LabelAPI consciousnessLabel = tooltip.addPara("[ %s ] %s the person's consciousness to lower or equal to %s.", pad/2, Misc.getHighlightColor(), !isConsciousnessReduceToZero? "O": "X","Selected bionics consciousness cost does not reduce", "0");
@@ -1032,13 +1036,10 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                                 designLabel.setHighlightColors(g, t.darker());
                                 //---------effect
                                 currentHoveredBionic.effectScript.displayEffectDescription(tooltip, currentPerson, currentHoveredBionic, true);
-//                                String effect = "No effects yet...";
-//                                if(currentHoveredBionic.effectScript != null) {
-//                                    effect = currentHoveredBionic.effectScript.getShortEffectDescription();
-//                                }
-//                                LabelAPI effectLabel = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Effects:", effect);
-//                                effectLabel.setHighlight("Effects:", effect);
-//                                effectLabel.setHighlightColors(g.brighter().brighter(), currentHoveredBionic.effectScript != null ? Misc.getBrightPlayerColor() :Misc.getGrayColor());
+                                //---------Install type
+                                LabelAPI installTypeLabel = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Install type:", currentHoveredBionic.isCaptainBionic? "Captain": "Admin");
+                                installTypeLabel.setHighlight("Install type:", currentHoveredBionic.isCaptainBionic? "Captain": "Admin");
+                                installTypeLabel.setHighlightColors(g.brighter().brighter(), Misc.getPositiveHighlightColor());
                                 //---------BRM + conscious
                                 LabelAPI brmConsciousLabel = tooltip.addPara("%s %s     %s %s", pad, Misc.getBasePlayerColor(), "BRM:", "" + Math.round(currentHoveredBionic.brmCost), "Conscious:", "" + Math.round(currentHoveredBionic.consciousnessCost * 100) + "%");
                                 brmConsciousLabel.setHighlight("BRM:", "" + Math.round(currentHoveredBionic.brmCost), "Conscious:", "" + Math.round(currentHoveredBionic.consciousnessCost * 100) + "%");

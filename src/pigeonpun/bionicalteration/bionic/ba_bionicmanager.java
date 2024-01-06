@@ -81,7 +81,6 @@ public class ba_bionicmanager {
                             !row.getString("conflictedBionicIdList").equals("")? ba_utils.trimAndSplitString(row.getString("conflictedBionicIdList")): null,
                             row.getBoolean("isAllowedRemoveAfterInstall")
                     );
-                    //todo: test this
                     bionicItemMap.put(bionicId, bionic);
                     if(effect != null) effect.setBionicItem(bionic);
 

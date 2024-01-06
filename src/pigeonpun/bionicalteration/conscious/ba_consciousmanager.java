@@ -62,7 +62,7 @@ public class ba_consciousmanager {
         }
         return Misc.getTextColor();
     }
-    public static String getDisplayConsciousLabel(PersonAPI person) {
+    public static String getDisplayConditionLabel(PersonAPI person) {
         if(person.isAICore()) {
             return "Stability";
         }

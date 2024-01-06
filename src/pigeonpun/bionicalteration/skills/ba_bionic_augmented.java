@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
+import pigeonpun.bionicalteration.conscious.ba_conscious;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
 
 import java.awt.*;
@@ -83,7 +84,7 @@ public class ba_bionic_augmented {
             for(ba_bionicitemplugin bionic: listBionic) {
                 if(bionic.isAdvanceInCombat) {
                     log.info("Registering Bionic Listener");
-                    ship.addListener(new bionicInCombat(ship, listBionic));
+                    ship.addListener(new bionicInCombat(ship, listBionic, captain));
                     break;
                 }
             }
@@ -120,7 +121,7 @@ public class ba_bionic_augmented {
                         bionic.effectScript.unapplyOfficerEffect(stats, hullSize, id);
                     }
                 }
-                ba_consciousmanager.getConsciousnessLevel(captain).unapplyEffectOfficer(id);
+                ba_consciousmanager.getConsciousnessLevel(captain).unapplyEffectOfficer(stats, id);
             }
         }
 
@@ -147,7 +148,7 @@ public class ba_bionic_augmented {
             if(person != null) {
                 List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
                 for(ba_bionicitemplugin bionic: listBionic) {
-                    if(bionic.isCaptainBionic && bionic.effectScript != null) {
+                    if(!bionic.isCaptainBionic && bionic.effectScript != null) {
                         bionic.effectScript.applyAdminEffect(stats, id);
                     }
                 }
@@ -161,11 +162,11 @@ public class ba_bionic_augmented {
             if(person != null) {
                 List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
                 for(ba_bionicitemplugin bionic: listBionic) {
-                    if(bionic.isCaptainBionic && bionic.effectScript != null) {
+                    if(!bionic.isCaptainBionic && bionic.effectScript != null) {
                         bionic.effectScript.unapplyAdminEffect(stats, id);
                     }
                 }
-                ba_consciousmanager.getConsciousnessLevel(person).unapplyEffectAdmin(id);
+                ba_consciousmanager.getConsciousnessLevel(person).unapplyEffectAdmin(stats, id);
             }
         }
 
@@ -185,14 +186,13 @@ public class ba_bionic_augmented {
         }
     }
     public static class AdminMarket implements MarketSkillEffect {
-
         @Override
         public void apply(MarketAPI market, String id, float level) {
             if(market.getAdmin() != null) {
                 PersonAPI person = market.getAdmin();
                 List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
                 for(ba_bionicitemplugin bionic: listBionic) {
-                    if(bionic.isCaptainBionic && bionic.effectScript != null) {
+                    if(!bionic.isCaptainBionic && bionic.effectScript != null) {
                         bionic.effectScript.applyEffectAdminMarket(market, id, level);
                     }
                 }
@@ -206,7 +206,7 @@ public class ba_bionic_augmented {
                 PersonAPI person = market.getAdmin();
                 List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
                 for(ba_bionicitemplugin bionic: listBionic) {
-                    if(bionic.isCaptainBionic && bionic.effectScript != null) {
+                    if(!bionic.isCaptainBionic && bionic.effectScript != null) {
                         bionic.effectScript.unapplyEffectAdminMarket(market, id);
                     }
                 }
@@ -232,12 +232,16 @@ public class ba_bionic_augmented {
     public static class bionicInCombat implements AdvanceableListener {
         protected List<ba_bionicitemplugin> bionics;
         protected ShipAPI ship;
-        public bionicInCombat(ShipAPI ship, List<ba_bionicitemplugin> bionics) {
+        protected PersonAPI person;
+        public bionicInCombat(ShipAPI ship, List<ba_bionicitemplugin> bionics, PersonAPI person) {
             this.bionics = bionics;
             this.ship = ship;
+            this.person = person;
         }
         @Override
         public void advance(float amount) {
+            ba_conscious conscious = ba_consciousmanager.getConsciousnessLevel(person);
+            conscious.advanceInCombat(this.ship, amount);
             for(ba_bionicitemplugin bionic: this.bionics) {
                 if (bionic.isAdvanceInCombat && bionic.effectScript != null) {
                     bionic.effectScript.advanceInCombat(this.ship, amount);

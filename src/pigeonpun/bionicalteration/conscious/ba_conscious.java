@@ -15,12 +15,13 @@ public interface ba_conscious {
     public float getDisplayOrder();
     public String getDisplayName();
     public void displayTooltipDescription(TooltipMakerAPI tooltip, PersonAPI person, boolean isActive, boolean isSimpleMode);
-    public void applyEffectOfficer(MutableShipStatsAPI shipStats, String id);
-    public void unapplyEffectOfficer(String id);
+    public void applyEffectOfficer(MutableShipStatsAPI stats, String id);
+    public void unapplyEffectOfficer(MutableShipStatsAPI stats, String id);
     public void applyEffectAdmin(MutableCharacterStatsAPI stats, String id);
-    public void unapplyEffectAdmin(String id);
+    public void unapplyEffectAdmin(MutableCharacterStatsAPI stats, String id);
     public void applyEffectAdminMarket(MarketAPI market, String id, float level);
     public void unapplyEffectAdminMarket(MarketAPI market, String id);
     public void advanceInCombat(ShipAPI ship, float amount);
+    //todo: look into advanceInCampaign for conscious
     public void advanceInCampaign();
 }

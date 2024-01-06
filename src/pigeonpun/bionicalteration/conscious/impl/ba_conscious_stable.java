@@ -57,11 +57,11 @@ public class ba_conscious_stable implements ba_conscious {
 
     @Override
     public void applyEffectOfficer(MutableShipStatsAPI shipStats, String id) {
-        //todo: add stats
+
     }
 
     @Override
-    public void unapplyEffectOfficer(String id) {
+    public void unapplyEffectOfficer(MutableShipStatsAPI shipStats, String id) {
 
     }
 
@@ -71,7 +71,7 @@ public class ba_conscious_stable implements ba_conscious {
     }
 
     @Override
-    public void unapplyEffectAdmin(String id) {
+    public void unapplyEffectAdmin(MutableCharacterStatsAPI stats, String id) {
 
     }
 
