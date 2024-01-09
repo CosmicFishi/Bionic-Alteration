@@ -1,0 +1,45 @@
+{
+  "messages": "Faction id as key to generate bionic on encounter",
+  "messageVariantUse": "variantUse use for encountering in fight to generate the opponent bionics/person variant/etc",
+  "messageBionicOverride": "bionicUseOverride Use for generate bionic in fight, will override bionicUse if the tags and ids list is not empty",
+  "default": {
+    "variantUse": [
+      {
+        "variantId": "GENERIC_HUMAN",
+        "spawnChance": "0.9f",
+        "bionicUseOverride": {
+          "tags": [],
+          "ids": []
+        }
+      },
+      {
+        "variantId": "GENERIC_HALF_BORN",
+        "spawnChance": "0.1f"
+      }
+    ],
+    "bionicUse": {
+      "tags": ["ba_bionic_t1"],
+      "ids": []
+    },
+    "targetBRMLevel": 1,
+    "targetConsciousLevel": 0.6
+  },
+  "hegemony": {
+    "variantUse": [
+      {
+        "variantId": "GENERIC_HUMAN",
+        "spawnChance": "0.9f"
+      },
+      {
+        "variantId": "GENERIC_HALF_BORN",
+        "spawnChance": "0.1f"
+      }
+    ],
+    "bionicUse": {
+      "tags": ["ba_bionic_t1"],
+      "ids": []
+    },
+    "targetBRMLevel": 1,
+    "targetConsciousLevel": 0.6
+  }
+}

@@ -65,7 +65,7 @@ public interface ba_bioniceffect{
      * @param id
      * @param level
      */
-    public void applyEffectAdminMarket(MarketAPI market, String id, float level);
+    public void applyEffectAdminMarket(MarketAPI market, String id, float level, ba_bionicitemplugin bionic);
     /**
      * As the name implies, unapply effects for market
      * @param market

@@ -193,7 +193,7 @@ public class ba_bionic_augmented {
                 List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
                 for(ba_bionicitemplugin bionic: listBionic) {
                     if(!bionic.isCaptainBionic && bionic.effectScript != null) {
-                        bionic.effectScript.applyEffectAdminMarket(market, id, level);
+                        bionic.effectScript.applyEffectAdminMarket(market, id, level, bionic);
                     }
                 }
                 ba_consciousmanager.getConsciousnessLevel(person).applyEffectAdminMarket(market, id, level);

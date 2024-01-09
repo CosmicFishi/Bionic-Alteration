@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.magiclib.util.MagicSettings;
 import pigeonpun.bionicalteration.utils.ba_utils;
+import pigeonpun.bionicalteration.variant.ba_variantmanager;
 
 import java.io.IOException;
 import java.util.*;

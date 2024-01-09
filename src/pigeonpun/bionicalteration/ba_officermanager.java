@@ -8,20 +8,16 @@ import com.fs.starfarer.api.characters.AdminData;
 import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import com.fs.starfarer.api.characters.OfficerDataAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
-import com.fs.starfarer.api.fleet.FleetMemberAPI;
-import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent;
-import com.fs.starfarer.api.impl.campaign.ids.Factions;
-import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import org.apache.log4j.Logger;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
+import pigeonpun.bionicalteration.variant.ba_variantmanager;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-import static pigeonpun.bionicalteration.ba_variantmanager.getAnatomyVariantTag;
+import static pigeonpun.bionicalteration.variant.ba_variantmanager.getAnatomyVariantTag;
 
 /**
  * Handle how many bionic available on an officer

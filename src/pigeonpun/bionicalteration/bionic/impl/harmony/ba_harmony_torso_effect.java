@@ -1,4 +1,4 @@
-package pigeonpun.bionicalteration.bionic.impl;
+package pigeonpun.bionicalteration.bionic.impl.harmony;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.SpecialItemPlugin;
@@ -7,6 +7,7 @@ import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.combat.MutableShipStatsAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
+import com.fs.starfarer.api.impl.campaign.ids.Stats;
 import com.fs.starfarer.api.ui.LabelAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
@@ -16,13 +17,10 @@ import pigeonpun.bionicalteration.bionic.ba_bioniceffect;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 
 import java.awt.*;
-import java.util.List;
 
-//todo: use a single file to have multiple effects depend on the bionic group Id -> Serenity/harmony/Stellar/Velo/Guardian. Pre collapse and experimental will have separate
-public class ba_prosthetic_brain_serenity_effect implements ba_bioniceffect {
-    public static float TURN_RATE_MULT = 1.2f;
-    public static float MAX_SPEED_MULT = 1.1f;
-    Logger log = Global.getLogger(ba_prosthetic_brain_serenity_effect.class);
+public class ba_harmony_torso_effect implements ba_bioniceffect {
+    public static float SHIP_PEAK_CR = 1.1f;
+    Logger log = Global.getLogger(ba_harmony_torso_effect.class);
 
     @Override
     public void setBionicItem(ba_bionicitemplugin bionic) {
@@ -38,7 +36,7 @@ public class ba_prosthetic_brain_serenity_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Increase piloting ship max speed by " + Math.round(MAX_SPEED_MULT * 100 - 100) + "% and turn rate by " + Math.round(TURN_RATE_MULT * 100 - 100) + "%";
+        String text = "Increase piloting ship max peak CR by " + Math.round(SHIP_PEAK_CR * 100 - 100) + "%";
         String name = isItem? "Effect:": bionic.getName() + ":";
         LabelAPI descriptions = tooltip.addPara("%s %s", pad, t, name, text);
         descriptions.setHighlight(name, text);
@@ -52,14 +50,12 @@ public class ba_prosthetic_brain_serenity_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getMaxSpeed().modifyMult(id, MAX_SPEED_MULT);
-        stats.getMaxTurnRate().modifyMult(id, TURN_RATE_MULT);
+        stats.getPeakCRDuration().modifyMult(id, SHIP_PEAK_CR);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getMaxSpeed().unmodify(id);
-        stats.getMaxTurnRate().unmodify(id);
+        stats.getPeakCRDuration().unmodifyMult(id);
     }
 
     @Override
@@ -96,13 +92,10 @@ public class ba_prosthetic_brain_serenity_effect implements ba_bioniceffect {
     public void onRemove(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {
 
     }
-
     @Override
     public void onInstall(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {
 
     }
-
-    //todo: do custom rendering with sprite in graphics/icons/danger.png
     @Override
     public void renderExtraOnItem(float x, float y, float w, float h, float alphaMult, float glowMult, SpecialItemPlugin.SpecialItemRendererAPI renderer) {
 

@@ -1,9 +1,12 @@
 limbId,groupId,name,description
-heart,heart_group,Heart,Well it's a heart
-heart_2,heart_group,Second Heart,"Wow, 2nd heart :O"
-hand_left,hand_group,Left hand,The left one
-hand_right,hand_group,Right hand,The right one
-eye_left,eye_group,Left eye,The left one
-eye_right,eye_group,Right eye,The right one
+heart,heart_group,Heart,Blood pumping machine
+heart_2,heart_group,Second Heart,"Wow, 2nd heart"
+hand_left,hand_group,Left hand,Left one
+hand_right,hand_group,Right hand,Right one
+eye_left,eye_group,Left eye,The thing that let you see (left)
+eye_right,eye_group,Right eye,The thing that let you see (right)
 brain,brain_group,Brain,The thinking machine
-,,,
+mouth,mouth_group,Mouth,The talky walky
+torso,torso_group,Torso,The central part
+leg_left,leg_group,Left leg,Left built in  walk stick
+leg_right,leg_group,Right leg,Right built in walk stick

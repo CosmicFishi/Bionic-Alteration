@@ -1,4 +1,4 @@
-package pigeonpun.bionicalteration.bionic.impl;
+package pigeonpun.bionicalteration.bionic.impl.serenity;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.SpecialItemPlugin;
@@ -16,13 +16,10 @@ import pigeonpun.bionicalteration.bionic.ba_bioniceffect;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 
 import java.awt.*;
-import java.util.List;
-
-//todo: use a single file to have multiple effects depend on the bionic group Id -> Serenity/harmony/Stellar/Velo/Guardian. Pre collapse and experimental will have separate
-public class ba_prosthetic_brain_serenity_effect implements ba_bioniceffect {
+public class ba_serenity_brain_effect implements ba_bioniceffect {
     public static float TURN_RATE_MULT = 1.2f;
-    public static float MAX_SPEED_MULT = 1.1f;
-    Logger log = Global.getLogger(ba_prosthetic_brain_serenity_effect.class);
+    public static float MAX_SPEED_MULT = 1.05f;
+    Logger log = Global.getLogger(ba_serenity_brain_effect.class);
 
     @Override
     public void setBionicItem(ba_bionicitemplugin bionic) {
@@ -96,13 +93,10 @@ public class ba_prosthetic_brain_serenity_effect implements ba_bioniceffect {
     public void onRemove(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {
 
     }
-
     @Override
     public void onInstall(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {
 
     }
-
-    //todo: do custom rendering with sprite in graphics/icons/danger.png
     @Override
     public void renderExtraOnItem(float x, float y, float w, float h, float alphaMult, float glowMult, SpecialItemPlugin.SpecialItemRendererAPI renderer) {
 

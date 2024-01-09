@@ -1,4 +1,4 @@
-package pigeonpun.bionicalteration;
+package pigeonpun.bionicalteration.variant;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.characters.PersonAPI;
@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.magiclib.util.MagicSettings;
+import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.utils.ba_utils;
 
 import java.io.IOException;
@@ -15,14 +16,14 @@ import java.util.*;
 
 /**
  * Handle how many limbs can a person have
- * A person always have their ANATOMY VARIANT(s), which is defined in a csv along with their generic's limbs
- * Probably will have a .json file to store all the variant type
+ * A person always have their ANATOMY VARIANT, which is defined in a csv along with their generic's limbs
  * @author PigeonPun
  */
 //todo: change variant manager so it can control which faction have what type of variant, what kind of bionic do they have. Have a selection of what kind of variant do they want to be as well.
 public class ba_variantmanager {
     static Logger log = Global.getLogger(ba_variantmanager.class);
-    static HashMap<String, List<String>> variantList = new HashMap<>();
+    public static HashMap<String, List<String>> variantList = new HashMap<>();
+    static HashMap<String, factionVariant> factionVariantMap = new HashMap<>();
 //    protected static HashMap<String, ba_limb> limbMap = new HashMap<>();
     public static void onApplicationLoad() {
         loadAnatomyVariantList();
