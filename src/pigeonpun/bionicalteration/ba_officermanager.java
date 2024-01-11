@@ -288,7 +288,7 @@ public class ba_officermanager {
     protected static void installRandomBionic(PersonAPI person) {
         //todo: setting.json that control random installment
         int installedBionicCount = 0;
-        int totalBionicInstall = 2;
+        int totalBionicInstall = 10;
         int currentTry = 0;
         int maxTotalTries = 50;
         if(!person.hasTag(ba_variablemanager.BA_RANDOM_BIONIC_GENERATED_TAG)) {

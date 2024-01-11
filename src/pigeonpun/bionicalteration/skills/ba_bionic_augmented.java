@@ -22,6 +22,8 @@ import pigeonpun.bionicalteration.conscious.ba_conscious;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ba_bionic_augmented {
@@ -60,17 +62,37 @@ public class ba_bionic_augmented {
                 //bionics
                 info.setParaOrbitronLarge();
                 List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
-                StringBuilder description = new StringBuilder("No bionic...yet");
+                Color[] listBionicColor = new Color[listBionic.size()+1];
+                StringBuilder description = new StringBuilder();
+                listBionicColor[0] = Misc.getBrightPlayerColor();
+                int colorIndex = 1;
                 if(!listBionic.isEmpty()) {
-                    description = new StringBuilder();
+                    description.append("Bionics").append(", ");
                     for(ba_bionicitemplugin bionic: listBionic) {
                         description.append(bionic.getName()).append(", ");
+                        listBionicColor[colorIndex] = bionic.displayColor;
+                        colorIndex++;
                     }
                     description.setLength(description.length()-2);
+                } else {
+                    description.append("No bionic...yet");
+                    listBionicColor[1] = Misc.getGrayColor();
                 }
-                LabelAPI descriptionLabel = info.addPara("%s: %s", opad, Misc.getBrightPlayerColor() , "Bionics" , description.toString());
-                descriptionLabel.setHighlight("Bionics", description.toString());
-                descriptionLabel.setHighlightColors(Misc.getTextColor(), listBionic.isEmpty()? Misc.getGrayColor() : c);
+                String[] stringArray = description.toString().split(", ");
+                StringBuilder formatString = new StringBuilder("%s: ");
+                if(!listBionic.isEmpty()) {
+                    int i = 0;
+                    while(i < listBionic.size()) {
+                        formatString.append("%s, ");
+                        i++;
+                    }
+                    formatString.setLength(formatString.length() - 2);
+                } else {
+                    formatString.append("%s");
+                }
+                LabelAPI descriptionLabel = info.addPara(formatString.toString(), opad, listBionicColor , stringArray);
+//                descriptionLabel.setHighlight("Bionics", description.toString());
+//                descriptionLabel.setHighlightColors(Misc.getTextColor(), listBionic.isEmpty()? Misc.getGrayColor() : c);
                 //conscious
                 info.setParaFontDefault();
                 ba_consciousmanager.getConsciousnessLevel(person).displayTooltipDescription(info, person, true, true);

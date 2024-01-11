@@ -23,7 +23,7 @@ import java.util.*;
 public class ba_variantmanager {
     static Logger log = Global.getLogger(ba_variantmanager.class);
     public static HashMap<String, List<String>> variantList = new HashMap<>();
-    static HashMap<String, factionVariant> factionVariantMap = new HashMap<>();
+    static HashMap<String, ba_factionvariant> factionVariantMap = new HashMap<>();
 //    protected static HashMap<String, ba_limb> limbMap = new HashMap<>();
     public static void onApplicationLoad() {
         loadAnatomyVariantList();
