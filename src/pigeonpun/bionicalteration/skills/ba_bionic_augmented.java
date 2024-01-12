@@ -125,7 +125,7 @@ public class ba_bionic_augmented {
                 PersonAPI captain = stats.getFleetMember().getCaptain();
                 List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(captain);
                 for(ba_bionicitemplugin bionic: listBionic) {
-                    if(bionic.isCaptainBionic && bionic.effectScript != null) {
+                    if(bionic.effectScript != null && bionic.isApplyCaptainEffect) {
                         bionic.effectScript.applyOfficerEffect(stats, hullSize, id);
                     }
                 }
@@ -139,7 +139,7 @@ public class ba_bionic_augmented {
                 PersonAPI captain = stats.getFleetMember().getCaptain();
                 List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(captain);
                 for(ba_bionicitemplugin bionic: listBionic) {
-                    if(bionic.isCaptainBionic && bionic.effectScript != null) {
+                    if(bionic.effectScript != null && bionic.isApplyCaptainEffect) {
                         bionic.effectScript.unapplyOfficerEffect(stats, hullSize, id);
                     }
                 }
@@ -170,7 +170,7 @@ public class ba_bionic_augmented {
             if(person != null) {
                 List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
                 for(ba_bionicitemplugin bionic: listBionic) {
-                    if(!bionic.isCaptainBionic && bionic.effectScript != null) {
+                    if(bionic.effectScript != null && bionic.isApplyAdminEffect) {
                         bionic.effectScript.applyAdminEffect(stats, id);
                     }
                 }
@@ -184,7 +184,7 @@ public class ba_bionic_augmented {
             if(person != null) {
                 List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
                 for(ba_bionicitemplugin bionic: listBionic) {
-                    if(!bionic.isCaptainBionic && bionic.effectScript != null) {
+                    if(bionic.effectScript != null && bionic.isApplyAdminEffect) {
                         bionic.effectScript.unapplyAdminEffect(stats, id);
                     }
                 }
@@ -214,7 +214,7 @@ public class ba_bionic_augmented {
                 PersonAPI person = market.getAdmin();
                 List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
                 for(ba_bionicitemplugin bionic: listBionic) {
-                    if(!bionic.isCaptainBionic && bionic.effectScript != null) {
+                    if(bionic.effectScript != null  && bionic.isApplyAdminEffect) {
                         bionic.effectScript.applyEffectAdminMarket(market, id, level, bionic);
                     }
                 }
@@ -228,7 +228,7 @@ public class ba_bionic_augmented {
                 PersonAPI person = market.getAdmin();
                 List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
                 for(ba_bionicitemplugin bionic: listBionic) {
-                    if(!bionic.isCaptainBionic && bionic.effectScript != null) {
+                    if(bionic.effectScript != null && bionic.isApplyAdminEffect) {
                         bionic.effectScript.unapplyEffectAdminMarket(market, id);
                     }
                 }

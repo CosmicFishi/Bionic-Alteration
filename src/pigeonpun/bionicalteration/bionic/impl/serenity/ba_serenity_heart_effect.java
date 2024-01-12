@@ -37,7 +37,7 @@ public class ba_serenity_heart_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Increase market accessibility by " + Math.round(MARKET_ACCESS_FLAT) + "% and decrease upkeep by " + Math.round(MARKET_UPKEEP_MULT) + "%";
+        String text = "Increase market accessibility by " + Math.round(MARKET_ACCESS_FLAT) + "% and decrease upkeep by " + Math.round(100 - MARKET_UPKEEP_MULT * 100) + "%";
         String name = isItem? "Effect:": bionic.getName() + ":";
         LabelAPI descriptions = tooltip.addPara("%s %s", pad, t, name, text);
         descriptions.setHighlight(name, text);
@@ -82,8 +82,18 @@ public class ba_serenity_heart_effect implements ba_bioniceffect {
     }
 
     @Override
+    public boolean isAdvanceInCombat() {
+        return false;
+    }
+
+    @Override
     public void advanceInCombat(ShipAPI ship, float amount) {
 
+    }
+
+    @Override
+    public boolean isAdvanceInCampaign() {
+        return false;
     }
 
     @Override

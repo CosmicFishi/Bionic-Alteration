@@ -820,14 +820,14 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                 tooltip.addSectionHeading("Debug", Alignment.MID, pad);
                 boolean isBionicInstallableOnLimb = false;
                 boolean isBionicAlreadyInstalledOnLimb = false;
-                boolean isBIonicInstallableBaseOnPersonType = false;
+                boolean isBionicInstallableBaseOnPersonType = false;
                 boolean isBrmExceed = false;
                 boolean isConsciousnessReduceToZero = false;
                 boolean isBionicConflicted = false;
                 if(currentSelectedLimb != null && currentSelectedBionic != null) {
-                    if(currentSelectedLimb.limbGroupList.contains(currentSelectedBionic.bionicLimbGroupId)) isBionicInstallableOnLimb = true;
-                    if(ba_bionicmanager.checkIfHaveBionicInstalled(currentSelectedBionic, currentPerson)) isBionicAlreadyInstalledOnLimb = true;
-                    if(ba_officermanager.checkIfBionicInstallableBaseOnPersonType(currentSelectedBionic, currentPerson)) isBIonicInstallableBaseOnPersonType = true;
+                    if(ba_officermanager.checkIfBionicLimbGroupContainSelected(currentSelectedBionic, currentSelectedLimb)) isBionicInstallableOnLimb = true;
+                    if(ba_officermanager.checkIfBionicIsAlreadyInstalled(currentSelectedBionic, currentSelectedLimb, currentPerson)) isBionicAlreadyInstalledOnLimb = true;
+                    if(ba_officermanager.checkIfBionicInstallableBaseOnPersonType(currentSelectedBionic, currentPerson)) isBionicInstallableBaseOnPersonType = true;
                     if(!ba_officermanager.checkIfCurrentBRMLowerThanLimitOnInstall(currentSelectedBionic, currentPerson)) isBrmExceed = true;
                     if(!ba_officermanager.checkIfConsciousnessReduceAboveZeroOnInstall(currentSelectedBionic, currentPerson)) isConsciousnessReduceToZero = true;
                     if(ba_bionicmanager.checkIfBionicConflicted(currentSelectedBionic, currentPerson)) isBionicConflicted = true;
@@ -838,10 +838,10 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                 tooltip.addPara("Make sure that: ", pad);
                 LabelAPI bionicInstallableLabel = tooltip.addPara("[ %s ] %s on selected limb.", pad/2, Misc.getHighlightColor(), isBionicInstallableOnLimb? "O": "X","Selected bionic can be installed");
                 bionicInstallableLabel.setHighlightColors(isBionicInstallableOnLimb? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
-                LabelAPI bionicInstalledLabel = tooltip.addPara("[ %s ] %s on the selected bionic.", pad/2, Misc.getHighlightColor(), !isBionicAlreadyInstalledOnLimb? "O": "X", "Selected limb is not installed");
+                LabelAPI bionicInstalledLabel = tooltip.addPara("[ %s ] %s bionic installable per limb limit. The current limit is %s", pad/2, Misc.getHighlightColor(), !isBionicAlreadyInstalledOnLimb? "O": "X", "Selected limb is not exceeding", "" +ba_variablemanager.BIONIC_INSTALL_PER_LIMB);
                 bionicInstalledLabel.setHighlightColors(!isBionicAlreadyInstalledOnLimb? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
-                LabelAPI bionicPersonTypeLabel = tooltip.addPara("[ %s ] %s as the person profession (Officer/Admin). Note: Player can install both type", pad/2, Misc.getHighlightColor(), isBIonicInstallableBaseOnPersonType? "O": "X", "Selected bionic install type is the same");
-                bionicPersonTypeLabel.setHighlightColors(isBIonicInstallableBaseOnPersonType? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
+                LabelAPI bionicPersonTypeLabel = tooltip.addPara("[ %s ] %s for the person profession (Officer/Admin). Note: Player can install both type", pad/2, Misc.getHighlightColor(), isBionicInstallableBaseOnPersonType? "O": "X", "Selected bionic have applying effect");
+                bionicPersonTypeLabel.setHighlightColors(isBionicInstallableBaseOnPersonType? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
                 LabelAPI brmLabel = tooltip.addPara("[ %s ] %s the person BRM limit.", pad/2, Misc.getHighlightColor(), !isBrmExceed? "O": "X","Selected bionics BRM do not go past");
                 brmLabel.setHighlightColors(!isBrmExceed? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
                 LabelAPI consciousnessLabel = tooltip.addPara("[ %s ] %s the person's consciousness to lower or equal to %s.", pad/2, Misc.getHighlightColor(), !isConsciousnessReduceToZero? "O": "X","Selected bionics consciousness cost does not reduce", "0");
@@ -1037,8 +1037,15 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                                 //---------effect
                                 currentHoveredBionic.effectScript.displayEffectDescription(tooltip, currentPerson, currentHoveredBionic, true);
                                 //---------Install type
-                                LabelAPI installTypeLabel = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Install type:", currentHoveredBionic.isCaptainBionic? "Captain": "Admin");
-                                installTypeLabel.setHighlight("Install type:", currentHoveredBionic.isCaptainBionic? "Captain": "Admin");
+                                StringBuilder effectType = new StringBuilder();
+                                if(currentHoveredBionic.isApplyCaptainEffect) effectType.append("Captain");
+                                if(currentHoveredBionic.isApplyAdminEffect && currentHoveredBionic.isApplyCaptainEffect) {
+                                    effectType.append(" and Administrator");
+                                } else {
+                                    effectType.append("Administrator");
+                                }
+                                LabelAPI installTypeLabel = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Install type:", effectType.toString());
+                                installTypeLabel.setHighlight("Apply effect type:", effectType.toString());
                                 installTypeLabel.setHighlightColors(g.brighter().brighter(), Misc.getPositiveHighlightColor());
                                 //---------BRM + conscious
                                 LabelAPI brmConsciousLabel = tooltip.addPara("%s %s     %s %s", pad, Misc.getBasePlayerColor(), "BRM:", "" + Math.round(currentHoveredBionic.brmCost), "Conscious:", "" + Math.round(currentHoveredBionic.consciousnessCost * 100) + "%");

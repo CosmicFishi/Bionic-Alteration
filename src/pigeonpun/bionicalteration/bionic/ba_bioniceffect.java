@@ -72,14 +72,15 @@ public interface ba_bioniceffect{
      * @param id
      */
     public void unapplyEffectAdminMarket(MarketAPI market, String id);
+    public boolean isAdvanceInCombat();
     /**
-     * isAdvanceInCombat in bionic_data.csv needed to be set to true
+     * isAdvanceInCombat() needed to be set to true
      * Note: This also run in refit :D. Magic I know
      */
     public void advanceInCombat(ShipAPI ship, float amount);
-
+    public boolean isAdvanceInCampaign();
     /**
-     * isAdvanceInCampaign in bionic_data.csv needed to be set to true
+     * isAdvanceInCampaign() needed to be set to true
      */
     //todo: look into advanceInCampaign
     public void advanceInCampaign();

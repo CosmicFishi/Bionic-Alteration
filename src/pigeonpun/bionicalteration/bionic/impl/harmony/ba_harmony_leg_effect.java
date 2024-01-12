@@ -35,7 +35,7 @@ public class ba_harmony_leg_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Reduces the rate at which combat readiness degrades by " + Math.round(SHIP_CR_DECREASE_MULT * 100 - 100) + "%";
+        String text = "Reduces the rate at which combat readiness degrades by " + Math.round(100 - SHIP_CR_DECREASE_MULT * 100) + "%";
         String name = isItem? "Effect:": bionic.getName() + ":";
         LabelAPI descriptions = tooltip.addPara("%s %s", pad, t, name, text);
         descriptions.setHighlight(name, text);
@@ -78,8 +78,18 @@ public class ba_harmony_leg_effect implements ba_bioniceffect {
     }
 
     @Override
+    public boolean isAdvanceInCombat() {
+        return false;
+    }
+
+    @Override
     public void advanceInCombat(ShipAPI ship, float amount) {
 
+    }
+
+    @Override
+    public boolean isAdvanceInCampaign() {
+        return false;
     }
 
     @Override

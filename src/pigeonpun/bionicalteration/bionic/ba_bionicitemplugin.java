@@ -32,7 +32,9 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
     public float brmCost;
     public float consciousnessCost;
     public ba_bioniceffect effectScript;
-    public boolean isCaptainBionic;
+//    public boolean isCaptainBionic;
+    public boolean isApplyCaptainEffect;
+    public boolean isApplyAdminEffect;
     public boolean isAICoreBionic;
     public boolean isAdvanceInCombat;
     public boolean isAdvanceInCampaign;
@@ -42,7 +44,9 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
     protected CargoStackAPI stack;
     public HashMap<String, Object> customData = new HashMap<>();
     public ba_bionicitemplugin() {}
-    public ba_bionicitemplugin(String bionicId, SpecialItemSpecAPI spec ,String bionicLimbGroupId, String namePrefix, Color displayColor, int brmCost, float consciousnessCost, boolean isCaptainBionic, boolean isAICoreBionic, ba_bioniceffect effectScript, boolean isAdvanceInCombat, boolean isAdvanceInCampaign, List<String> conflictedBionicIdList, boolean isAllowedRemoveAfterInstall) {
+    public ba_bionicitemplugin(String bionicId, SpecialItemSpecAPI spec ,String bionicLimbGroupId, String namePrefix, Color displayColor, int brmCost,
+                               float consciousnessCost, boolean isApplyCaptainEffect, boolean isApplyAdminEffect, boolean isAICoreBionic, ba_bioniceffect effectScript,
+                               List<String> conflictedBionicIdList, boolean isAllowedRemoveAfterInstall) {
         this.bionicId = bionicId;
         this.spec = spec;
         this.bionicLimbGroupId = bionicLimbGroupId;
@@ -50,10 +54,9 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
         this.displayColor = displayColor;
         this.brmCost = brmCost;
         this.consciousnessCost = consciousnessCost;
-        this.isCaptainBionic = isCaptainBionic;
         this.isAICoreBionic = isAICoreBionic;
-        this.isAdvanceInCombat = isAdvanceInCombat;
-        this.isAdvanceInCampaign = isAdvanceInCampaign;
+        this.isApplyAdminEffect = isApplyAdminEffect;
+        this.isApplyCaptainEffect = isApplyCaptainEffect;
         this.effectScript = effectScript;
         if(conflictedBionicIdList != null) {
             this.conflictedBionicIdList = conflictedBionicIdList;

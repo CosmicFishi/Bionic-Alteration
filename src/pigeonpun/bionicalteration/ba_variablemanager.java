@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 public class ba_variablemanager {
     public static final String BIONIC_ALTERATION = "pigeonpun_bionicalteration";
+    public static final int BIONIC_INSTALL_PER_LIMB = 1;
     /**
      * Use for changing bionic's consciousness cost
      */

@@ -80,8 +80,18 @@ public class ba_harmony_mouth_effect implements ba_bioniceffect {
     }
 
     @Override
+    public boolean isAdvanceInCombat() {
+        return false;
+    }
+
+    @Override
     public void advanceInCombat(ShipAPI ship, float amount) {
 
+    }
+
+    @Override
+    public boolean isAdvanceInCampaign() {
+        return false;
     }
 
     @Override

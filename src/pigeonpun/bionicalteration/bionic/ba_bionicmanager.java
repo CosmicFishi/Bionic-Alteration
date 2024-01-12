@@ -73,11 +73,10 @@ public class ba_bionicmanager {
                             MagicSettings.toColor3(row.getString("colorDisplay")),
                             row.getInt("brmCost"),
                             (float) row.getDouble("consciousnessCost"),
-                            row.getBoolean("isCaptainBionic"),
+                            row.getBoolean("isApplyCaptainEffect"),
+                            row.getBoolean("isApplyAdminEffect"),
                             row.getBoolean("isAICoreBionic"),
                             effect,
-                            row.getBoolean("isAdvanceInCombat"),
-                            row.getBoolean("isAdvanceInCampaign"),
                             !row.getString("conflictedBionicIdList").equals("")? ba_utils.trimAndSplitString(row.getString("conflictedBionicIdList")): null,
                             row.getBoolean("isAllowedRemoveAfterInstall")
                     );

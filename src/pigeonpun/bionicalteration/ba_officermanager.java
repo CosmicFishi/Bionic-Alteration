@@ -192,34 +192,39 @@ public class ba_officermanager {
      * @return
      */
     public static boolean checkIfCanInstallBionic(ba_bionicitemplugin bionic, ba_limbmanager.ba_limb limb, PersonAPI person) {
+        if(!checkIfBionicLimbGroupContainSelected(bionic, limb)) return false;
+        if(ba_bionicmanager.checkIfBionicConflicted(bionic, person)) return false;
+        if(!checkIfCurrentBRMLowerThanLimitOnInstall(bionic, person)) return false;
+        if(!checkIfConsciousnessReduceAboveZeroOnInstall(bionic, person)) return false;
+        if(!checkIfBionicInstallableBaseOnPersonType(bionic, person)) return false;
+        if(checkIfBionicIsAlreadyInstalled(bionic, limb, person)) return false;
+        return true;
+    }
+    public static boolean checkIfBionicLimbGroupContainSelected(ba_bionicitemplugin selectedBionic, ba_limbmanager.ba_limb limb) {
+        return limb.limbGroupList.contains(selectedBionic.bionicLimbGroupId);
+    }
+    public static boolean checkIfBionicIsAlreadyInstalled(ba_bionicitemplugin bionic, ba_limbmanager.ba_limb limb, PersonAPI person) {
         if(limb.limbGroupList.contains(bionic.bionicLimbGroupId)) {
-            //conflicts
-            if(ba_bionicmanager.checkIfBionicConflicted(bionic, person)) return false;
             for(ba_bionicAugmentedData data: getBionicAnatomyList(person)) {
-                if(data.limb.limbId.equals(limb.limbId) &&
-                        !data.bionicInstalled.contains(bionic) &&
-                        checkIfCurrentBRMLowerThanLimitOnInstall(bionic, person) &&
-                        checkIfConsciousnessReduceAboveZeroOnInstall(bionic, person) &&
-                        checkIfBionicInstallableBaseOnPersonType(bionic, person)
-                ) {
+                //ONLY ONE BIONIC PER LIMB, sorry forks :d
+                if(data.limb.limbId.equals(limb.limbId) && data.bionicInstalled.size() >= ba_variablemanager.BIONIC_INSTALL_PER_LIMB) {
                     return true;
                 }
             }
         }
         return false;
     }
-
     /**
      * Check the person type (Player/Admin/Officer) <br>
      * True for player (meaning the player can install both admins bionic and officer bionic <br>
-     * If is admin/officer, check if the bionic can be installed on them or not base on {@code isCaptainBionic}
+     * If is admin/officer, check if the bionics isApplyCaptainEffect and isApplyAdminEffect
      * @param bionic
      * @param person
      * @return
      */
     public static boolean checkIfBionicInstallableBaseOnPersonType(ba_bionicitemplugin bionic, PersonAPI person) {
-        if(person.isPlayer()) return true;
-        return isOfficer(person) == bionic.isCaptainBionic;
+        if(person.isPlayer() || (bionic.isApplyCaptainEffect && bionic.isApplyAdminEffect)) return true;
+        return (isOfficer(person) && bionic.isApplyCaptainEffect) || (!isOfficer(person) && bionic.isApplyAdminEffect);
     }
     public static boolean checkIfCurrentBRMLowerThanLimitOnInstall(ba_bionicitemplugin bionic, PersonAPI person) {
         float currentBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
