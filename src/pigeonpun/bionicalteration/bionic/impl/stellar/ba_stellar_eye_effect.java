@@ -38,10 +38,10 @@ public class ba_stellar_eye_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "For captain, increase piloting ship flux dissipation by " + Math.round(OFFICER_FLUX_DISSIPATION_FLAT) + "";
-        String negativeText = "but increase ship's combat readiness degradation rate after peak performance by" + Math.round(OFFICER_CR_LOST_PER_SECOND_MULT * 100 - 100) + "%";
+        String text = "For captain, increase piloting ship's flux dissipation by " + Math.round(OFFICER_FLUX_DISSIPATION_FLAT) + "";
+        String negativeText = "but increase ship's combat readiness degradation rate after peak performance by " + Math.round(OFFICER_CR_LOST_PER_SECOND_MULT * 100 - 100) + "%";
         String textAdmin = "For admin, increase market income by " + Math.round(ADMIN_INCOME_MULT * 100 - 100) + "%";
-        String negativeTextAdmin = "but also increase upkeep cost by" + Math.round(ADMIN_UPKEEP_MULT * 100 - 100) + "%";
+        String negativeTextAdmin = "but also increase upkeep cost by " + Math.round(ADMIN_UPKEEP_MULT * 100 - 100) + "%";
         String name = isItem? "Effect:": bionic.getName() + ":";
         LabelAPI descriptions = tooltip.addPara("%s %s %s. %s %s", pad, t, name, text, negativeText, textAdmin, negativeTextAdmin);
         descriptions.setHighlight(name, text, negativeText, textAdmin, negativeTextAdmin);

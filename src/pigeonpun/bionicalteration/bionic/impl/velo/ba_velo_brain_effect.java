@@ -36,8 +36,8 @@ public class ba_velo_brain_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Increase piloting ship maneuverability by " + Math.round(MANEUVER_MULT * 100 - 100) + "%";
-        String negativeText = "but increase ship's hull damage taken by" + Math.round(SHIP_HULL_DAMAGE_MULT * 100 - 100) + "%";
+        String text = "Increase piloting ship's maneuverability by " + Math.round(MANEUVER_MULT * 100 - 100) + "%";
+        String negativeText = "but increase ship's hull damage taken by " + Math.round(SHIP_HULL_DAMAGE_MULT * 100 - 100) + "%";
         String name = isItem? "Effect:": bionic.getName() + ":";
         LabelAPI descriptions = tooltip.addPara("%s %s %s", pad, t, name, text, negativeText);
         descriptions.setHighlight(name, text, negativeText);

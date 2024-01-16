@@ -36,8 +36,8 @@ public class ba_guardian_eye_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "For captain, increase piloting ship energy and ballistic weapon range by " + Math.round(OFFICER_WEAPON_RANGE_MULT * 100 - 100) + "%";
-        String negativeText = "but decrease ship's combat readiness peak performance by" + Math.round(100 - OFFICER_CR_PEAK_MULT * 100) + "%";
+        String text = "For captain, increase piloting ship's energy and ballistic weapon range by " + Math.round(OFFICER_WEAPON_RANGE_MULT * 100 - 100) + "%";
+        String negativeText = "but decrease ship's combat readiness peak performance by " + Math.round(100 - OFFICER_CR_PEAK_MULT * 100) + "%";
         String name = isItem? "Effect:": bionic.getName() + ":";
         LabelAPI descriptions = tooltip.addPara("%s %s %s", pad, t, name, text, negativeText);
         descriptions.setHighlight(name, text, negativeText);

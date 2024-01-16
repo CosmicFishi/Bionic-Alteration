@@ -36,7 +36,7 @@ public class ba_serenity_eye_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Increase piloting ship flux capacity by " + Math.round(FLUX_CAP_MULT * 100 - 100) + "% and flux dissipation by " + Math.round(FLUX_DISSIPATION_FLAT);
+        String text = "Increase piloting ship's flux capacity by " + Math.round(FLUX_CAP_MULT * 100 - 100) + "% and flux dissipation by " + Math.round(FLUX_DISSIPATION_FLAT);
         String name = isItem? "Effect:": bionic.getName() + ":";
         LabelAPI descriptions = tooltip.addPara("%s %s", pad, t, name, text);
         descriptions.setHighlight(name, text);

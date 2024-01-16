@@ -22,7 +22,7 @@ import java.awt.*;
 public class ba_stellar_brain_effect implements ba_bioniceffect {
     public static float OFFICER_FIGHTER_RATE_INCREASE_MULT = 1.15f;
     public static float OFFICER_MAINT_MULT = 1.2f;
-    public static float ADMIN_ACCESS_FLAT = 0.1f;
+    public static float ADMIN_DEFENSE_MULT = 1.1f;
     public static float ADMIN_UPKEEP_MULT = 1.15f;
     Logger log = Global.getLogger(ba_stellar_brain_effect.class);
 
@@ -40,10 +40,10 @@ public class ba_stellar_brain_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "For captain, increase piloting ship fighter replacement rate by " + Math.round(OFFICER_FIGHTER_RATE_INCREASE_MULT * 100 - 100) + "%";
-        String negativeText = "but increase ship's maintenance by" + Math.round(OFFICER_MAINT_MULT * 100 - 100) + "%";
-        String textAdmin = "For admin, increase market accessibility by " + Math.round(ADMIN_ACCESS_FLAT * 100) + "%";
-        String negativeTextAdmin = "but also increase upkeep cost by" + Math.round(ADMIN_UPKEEP_MULT * 100 - 100) + "%";
+        String text = "For captain, increase piloting ship's fighter replacement rate by " + Math.round(OFFICER_FIGHTER_RATE_INCREASE_MULT * 100 - 100) + "%";
+        String negativeText = "but increase ship's maintenance by " + Math.round(OFFICER_MAINT_MULT * 100 - 100) + "%";
+        String textAdmin = "For admin, increase market defense by " + Math.round(ADMIN_DEFENSE_MULT * 100 - 100) + "%";
+        String negativeTextAdmin = "but also increase upkeep cost by " + Math.round(ADMIN_UPKEEP_MULT * 100 - 100) + "%";
         String name = isItem? "Effect:": bionic.getName() + ":";
         LabelAPI descriptions = tooltip.addPara("%s %s %s. %s %s", pad, t, name, text, negativeText, textAdmin, negativeTextAdmin);
         descriptions.setHighlight(name, text, negativeText, textAdmin, negativeTextAdmin);
@@ -79,7 +79,7 @@ public class ba_stellar_brain_effect implements ba_bioniceffect {
 
     @Override
     public void applyEffectAdminMarket(MarketAPI market, String id, float level, ba_bionicitemplugin bionic) {
-        market.getAccessibilityMod().modifyFlat(id, ADMIN_ACCESS_FLAT, bionic.getName() + " (Admins bionic)");
+        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id, ADMIN_DEFENSE_MULT, bionic.getName() + " (Admins bionic)");
         market.getUpkeepMult().modifyMult(id, ADMIN_UPKEEP_MULT,  bionic.getName() + " (Admins bionic)");
     }
 

@@ -1,4 +1,4 @@
-package pigeonpun.bionicalteration.bionic.impl.harmony;
+package pigeonpun.bionicalteration.bionic.impl.stellar;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.SpecialItemPlugin;
@@ -17,9 +17,11 @@ import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 
 import java.awt.*;
 
-public class ba_harmony_heart_effect implements ba_bioniceffect {
+public class ba_stellar_heart_effect implements ba_bioniceffect {
     public static float SHIP_HULL = 1.1f;
-    Logger log = Global.getLogger(ba_harmony_heart_effect.class);
+    public static float SHIP_MANEUVERABILITY = 1.15f;
+    public static float SHIP_ARMOR = 0.8f;
+    Logger log = Global.getLogger(ba_stellar_heart_effect.class);
 
     @Override
     public void setBionicItem(ba_bionicitemplugin bionic) {
@@ -35,11 +37,12 @@ public class ba_harmony_heart_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Increase piloting ship's hull by " + Math.round(SHIP_HULL * 100 - 100) + "%";
+        String text = "For captain, increase piloting ship's hull by " + Math.round(SHIP_HULL * 100 - 100) + "% and ship's maneuverability by " + Math.round(SHIP_MANEUVERABILITY * 100 - 100) + "%";
+        String negativeText = "but decrease ship's armor by " + Math.round(100 - SHIP_ARMOR * 100) + "%";
         String name = isItem? "Effect:": bionic.getName() + ":";
-        LabelAPI descriptions = tooltip.addPara("%s %s", pad, t, name, text);
-        descriptions.setHighlight(name, text);
-        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t);
+        LabelAPI descriptions = tooltip.addPara("%s %s %s", pad, t, name, text, negativeText);
+        descriptions.setHighlight(name, text, negativeText);
+        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t, bad);
     }
 
     @Override
@@ -49,11 +52,21 @@ public class ba_harmony_heart_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
+        stats.getAcceleration().modifyMult(id, SHIP_MANEUVERABILITY * 2f);
+        stats.getDeceleration().modifyMult(id, SHIP_MANEUVERABILITY);
+        stats.getTurnAcceleration().modifyMult(id, SHIP_MANEUVERABILITY * 2f);
+        stats.getMaxTurnRate().modifyMult(id, SHIP_MANEUVERABILITY);
+        stats.getArmorBonus().modifyMult(id, SHIP_ARMOR);
         stats.getHullBonus().modifyMult(id, SHIP_HULL);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
+        stats.getAcceleration().unmodifyMult(id);
+        stats.getDeceleration().unmodifyMult(id);
+        stats.getTurnAcceleration().unmodifyMult(id);
+        stats.getMaxTurnRate().unmodifyMult(id);
+        stats.getArmorBonus().unmodifyMult(id);
         stats.getHullBonus().unmodifyMult(id);
     }
 

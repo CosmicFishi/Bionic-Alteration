@@ -39,10 +39,10 @@ public class ba_velo_torso_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "For captain, increase piloting ship peak CR by " + Math.round(OFFICER_SHIP_PEAK_CR * 100 - 100) + "";
-        String negativeText = "but increase ship's overload time by" + Math.round(OFFICER_SHIP_OVERLOAD_MULT * 100 - 100) + "%";
+        String text = "For captain, increase piloting ship's peak CR by " + Math.round(OFFICER_SHIP_PEAK_CR * 100 - 100) + "";
+        String negativeText = "but increase ship's overload time by " + Math.round(OFFICER_SHIP_OVERLOAD_MULT * 100 - 100) + "%";
         String textAdmin = "For admin, increase market defend by " + Math.round(ADMIN_DEFEND_MULT * 100 - 100) + "%";
-        String negativeTextAdmin = "but also increase upkeep cost by" + Math.round(ADMIN_UPKEEP_MULT * 100 - 100) + "%";
+        String negativeTextAdmin = "but also increase upkeep cost by " + Math.round(ADMIN_UPKEEP_MULT * 100 - 100) + "%";
         String name = isItem? "Effect:": bionic.getName() + ":";
         LabelAPI descriptions = tooltip.addPara("%s %s %s. %s %s", pad, t, name, text, negativeText, textAdmin, negativeTextAdmin);
         descriptions.setHighlight(name, text, negativeText, textAdmin, negativeTextAdmin);

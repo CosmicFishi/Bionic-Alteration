@@ -1,4 +1,4 @@
-package pigeonpun.bionicalteration.bionic.impl.harmony;
+package pigeonpun.bionicalteration.bionic.impl.guardian;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.SpecialItemPlugin;
@@ -17,9 +17,11 @@ import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 
 import java.awt.*;
 
-public class ba_harmony_heart_effect implements ba_bioniceffect {
-    public static float SHIP_HULL = 1.1f;
-    Logger log = Global.getLogger(ba_harmony_heart_effect.class);
+public class ba_guardian_leg_effect implements ba_bioniceffect {
+    public static float SHIP_CR_DECREASE_MULT = 0.86f;
+    public static float SHIP_ENGINE_DAMAGE_TAKEN_MULT = 0.95f;
+    public static float SHIP_HULL_DAMAGE_TAKEN_MULT = 1.15f;
+    Logger log = Global.getLogger(ba_guardian_leg_effect.class);
 
     @Override
     public void setBionicItem(ba_bionicitemplugin bionic) {
@@ -35,11 +37,12 @@ public class ba_harmony_heart_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Increase piloting ship's hull by " + Math.round(SHIP_HULL * 100 - 100) + "%";
+        String text = "Reduce piloting ship's combat readiness degrade speed by " + Math.round(100 - SHIP_CR_DECREASE_MULT * 100) + "% and reduce ship's engine damage taken by " + Math.round(100 - SHIP_ENGINE_DAMAGE_TAKEN_MULT * 100) + "%";
+        String negativeText = "but increase ship's hull damage taken by " + Math.round(SHIP_HULL_DAMAGE_TAKEN_MULT * 100 - 100) + "%";
         String name = isItem? "Effect:": bionic.getName() + ":";
-        LabelAPI descriptions = tooltip.addPara("%s %s", pad, t, name, text);
-        descriptions.setHighlight(name, text);
-        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t);
+        LabelAPI descriptions = tooltip.addPara("%s %s %s", pad, t, name, text, negativeText);
+        descriptions.setHighlight(name, text, negativeText);
+        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t, bad);
     }
 
     @Override
@@ -49,12 +52,16 @@ public class ba_harmony_heart_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getHullBonus().modifyMult(id, SHIP_HULL);
+        stats.getCRLossPerSecondPercent().modifyMult(id, SHIP_CR_DECREASE_MULT);
+        stats.getHullDamageTakenMult().modifyMult(id, SHIP_HULL_DAMAGE_TAKEN_MULT);
+        stats.getEngineDamageTakenMult().modifyMult(id, SHIP_ENGINE_DAMAGE_TAKEN_MULT);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getHullBonus().unmodifyMult(id);
+        stats.getCRLossPerSecondPercent().unmodifyMult(id);
+        stats.getHullDamageTakenMult().unmodifyMult(id);
+        stats.getEngineDamageTakenMult().unmodifyMult(id);
     }
 
     @Override
@@ -84,7 +91,7 @@ public class ba_harmony_heart_effect implements ba_bioniceffect {
 
     @Override
     public void advanceInCombat(ShipAPI ship, float amount) {
-//        log.info("working");
+
     }
 
     @Override

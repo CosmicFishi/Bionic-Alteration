@@ -37,8 +37,8 @@ public class ba_velo_mouth_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Increase piloting ship energy, ballistic and missile damage by " + Math.round(OFFICER_WEAPON_DAMAGE * 100 - 100) + "%";
-        String negativeText = "but increase ship's DP by" + Math.round(OFFICER_SHIP_DP) + "";
+        String text = "Increase piloting ship's energy, ballistic and missile damage by " + Math.round(OFFICER_WEAPON_DAMAGE * 100 - 100) + "%";
+        String negativeText = "but increase ship's DP by " + Math.round(OFFICER_SHIP_DP) + "";
         String name = isItem? "Effect:": bionic.getName() + ":";
         LabelAPI descriptions = tooltip.addPara("%s %s %s", pad, t, name, text, negativeText);
         descriptions.setHighlight(name, text, negativeText);

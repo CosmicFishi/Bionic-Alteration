@@ -1,4 +1,4 @@
-package pigeonpun.bionicalteration.bionic.impl.harmony;
+package pigeonpun.bionicalteration.bionic.impl.velo;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.SpecialItemPlugin;
@@ -17,9 +17,10 @@ import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 
 import java.awt.*;
 
-public class ba_harmony_heart_effect implements ba_bioniceffect {
-    public static float SHIP_HULL = 1.1f;
-    Logger log = Global.getLogger(ba_harmony_heart_effect.class);
+public class ba_velo_hand_effect implements ba_bioniceffect {
+    public static float SHIP_SHIELD_EFF = 0.88f;
+    public static float SHIP_MAINT = 1.18f;
+    Logger log = Global.getLogger(ba_velo_hand_effect.class);
 
     @Override
     public void setBionicItem(ba_bionicitemplugin bionic) {
@@ -35,11 +36,12 @@ public class ba_harmony_heart_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Increase piloting ship's hull by " + Math.round(SHIP_HULL * 100 - 100) + "%";
+        String text = "Increase piloting ship's shield efficiency by " + Math.round((1 - SHIP_SHIELD_EFF) * 100) + "%";
+        String negativeText = "but increase ship's maintenance by " + Math.round(SHIP_MAINT * 100 - 100) + "%";
         String name = isItem? "Effect:": bionic.getName() + ":";
-        LabelAPI descriptions = tooltip.addPara("%s %s", pad, t, name, text);
-        descriptions.setHighlight(name, text);
-        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t);
+        LabelAPI descriptions = tooltip.addPara("%s %s %s", pad, t, name, text, negativeText);
+        descriptions.setHighlight(name, text, negativeText);
+        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t, bad);
     }
 
     @Override
@@ -49,12 +51,14 @@ public class ba_harmony_heart_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getHullBonus().modifyMult(id, SHIP_HULL);
+        stats.getShieldAbsorptionMult().modifyMult(id, SHIP_SHIELD_EFF);
+        stats.getSuppliesPerMonth().modifyMult(id, SHIP_MAINT);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getHullBonus().unmodifyMult(id);
+        stats.getShieldAbsorptionMult().unmodifyMult(id);
+        stats.getSuppliesPerMonth().unmodifyMult(id);
     }
 
     @Override

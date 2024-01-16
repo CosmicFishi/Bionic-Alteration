@@ -37,8 +37,8 @@ public class ba_guardian_torso_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Increase piloting ship's shield efficiency by " + Math.round(100 - SHIP_SHIELD_EFF * 100) + "% and increase ship hull by" + Math.round(SHIP_HULL * 100 - 100) + "%";
-        String negativeText = "but increase ship's max speed by" + Math.round(100 - SHIP_MAX_SPEED * 100) + "%";
+        String text = "Increase piloting ship's shield efficiency by " + Math.round(100 - SHIP_SHIELD_EFF * 100) + "% and increase ship hull by " + Math.round(SHIP_HULL * 100 - 100) + "%";
+        String negativeText = "but decreasing ship's max speed by " + Math.round(100 - SHIP_MAX_SPEED * 100) + "%";
         String name = isItem? "Effect:": bionic.getName() + ":";
         LabelAPI descriptions = tooltip.addPara("%s %s %s", pad, t, name, text, negativeText);
         descriptions.setHighlight(name, text, negativeText);

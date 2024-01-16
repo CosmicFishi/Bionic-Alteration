@@ -1,4 +1,4 @@
-package pigeonpun.bionicalteration.bionic.impl.harmony;
+package pigeonpun.bionicalteration.bionic.impl.guardian;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.SpecialItemPlugin;
@@ -17,9 +17,12 @@ import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 
 import java.awt.*;
 
-public class ba_harmony_heart_effect implements ba_bioniceffect {
-    public static float SHIP_HULL = 1.1f;
-    Logger log = Global.getLogger(ba_harmony_heart_effect.class);
+public class ba_guardian_heart_effect implements ba_bioniceffect {
+    public static float OFFICER_SHIP_ARMOR = 1.2f;
+    public static float OFFICER_SHIP_MANEUVERABILITY = 0.75f;
+    public static float ADMIN_ACCESS_FLAT = 20f;
+    public static float ADMIN_UPKEEP_MULT = 1.25f;
+    Logger log = Global.getLogger(ba_guardian_heart_effect.class);
 
     @Override
     public void setBionicItem(ba_bionicitemplugin bionic) {
@@ -35,11 +38,14 @@ public class ba_harmony_heart_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Increase piloting ship's hull by " + Math.round(SHIP_HULL * 100 - 100) + "%";
+        String text = "For captain, increase piloting ship's armor by " + Math.round(OFFICER_SHIP_ARMOR * 100 - 100) + "%";
+        String negativeText = "but decrease ship's maneuverability by " + Math.round(100 - OFFICER_SHIP_MANEUVERABILITY * 100) + "%";
+        String textAdmin = "For admin, increase market accessibility by " + Math.round(ADMIN_ACCESS_FLAT * 100) + "%";
+        String negativeTextAdmin = "but also increase upkeep cost by " + Math.round(ADMIN_UPKEEP_MULT * 100 - 100) + "%";
         String name = isItem? "Effect:": bionic.getName() + ":";
-        LabelAPI descriptions = tooltip.addPara("%s %s", pad, t, name, text);
-        descriptions.setHighlight(name, text);
-        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t);
+        LabelAPI descriptions = tooltip.addPara("%s %s %s. %s %s", pad, t, name, text, negativeText, textAdmin, negativeTextAdmin);
+        descriptions.setHighlight(name, text, negativeText, textAdmin, negativeTextAdmin);
+        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t, bad, t, bad);
     }
 
     @Override
@@ -49,12 +55,20 @@ public class ba_harmony_heart_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getHullBonus().modifyMult(id, SHIP_HULL);
+        stats.getAcceleration().modifyMult(id, OFFICER_SHIP_MANEUVERABILITY);
+        stats.getDeceleration().modifyMult(id, OFFICER_SHIP_MANEUVERABILITY);
+        stats.getTurnAcceleration().modifyMult(id, OFFICER_SHIP_MANEUVERABILITY);
+        stats.getMaxTurnRate().modifyMult(id, OFFICER_SHIP_MANEUVERABILITY);
+        stats.getArmorBonus().modifyMult(id, OFFICER_SHIP_ARMOR);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getHullBonus().unmodifyMult(id);
+        stats.getAcceleration().unmodifyMult(id);
+        stats.getDeceleration().unmodifyMult(id);
+        stats.getTurnAcceleration().unmodifyMult(id);
+        stats.getMaxTurnRate().unmodifyMult(id);
+        stats.getArmorBonus().unmodifyMult(id);
     }
 
     @Override
@@ -69,12 +83,14 @@ public class ba_harmony_heart_effect implements ba_bioniceffect {
 
     @Override
     public void applyEffectAdminMarket(MarketAPI market, String id, float level, ba_bionicitemplugin bionic) {
-
+        market.getAccessibilityMod().modifyFlat(id, ADMIN_ACCESS_FLAT, bionic.getName() + " (Admins bionic)");
+        market.getUpkeepMult().modifyMult(id, ADMIN_UPKEEP_MULT,  bionic.getName() + " (Admins bionic)");
     }
 
     @Override
     public void unapplyEffectAdminMarket(MarketAPI market, String id) {
-
+        market.getAccessibilityMod().unmodifyFlat(id);
+        market.getUpkeepMult().unmodifyMult(id);
     }
 
     @Override
