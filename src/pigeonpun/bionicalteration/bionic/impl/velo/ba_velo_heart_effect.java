@@ -38,12 +38,17 @@ public class ba_velo_heart_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Increase piloting ship's phase cloak activation time by " + Math.round(100 - SHIP_PHASE_ACTIVATION * 100) + "% and shield folding rate by " + Math.round(SHIP_SHIELD_FOLDING_TIME * 100 - 100);
-        String negativeText = ", but increase ship's phase cloak upkeep cost by " + Math.round(SHIP_PHASE_COST * 100 - 100) + "% and shield upkeep cost by " + Math.round(SHIP_SHIELD_UPKEEP * 100 - 100) + "%" ;
-        String name = isItem? "Effect:": bionic.getName() + ":";
-        LabelAPI descriptions = tooltip.addPara("%s %s %s", pad, t, name, text, negativeText);
-        descriptions.setHighlight(name, text, negativeText);
-        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t, bad);
+        String text = "Increase piloting ship's phase cloak activation time by";
+        String textNum = Math.round(100 - SHIP_PHASE_ACTIVATION * 100) + "%";
+        String text2 = "and shield folding rate by";
+        String text2Num = Math.round(SHIP_SHIELD_FOLDING_TIME * 100 - 100) + "%";
+        String negativeText = "but increase ship's phase cloak upkeep cost by";
+        String negativeTextNum = Math.round(SHIP_PHASE_COST * 100 - 100) + "%";
+        String negativeText2 = "and shield upkeep cost by";
+        String negativeText2Num = Math.round(SHIP_SHIELD_UPKEEP * 100 - 100) + "%";
+        String name = isItem ? "Effect:" : bionic.getName() + ":";
+        LabelAPI descriptions = tooltip.addPara("%s %s %s %s %s %s %s %s %s", pad, t, name, text, textNum, text2, text2Num, negativeText, negativeTextNum, negativeText2, negativeText2Num);
+        descriptions.setHighlightColors(isItem ? g.brighter().brighter() : bionic.displayColor, t, h, t, h, t, bad, t, bad);
     }
 
     @Override

@@ -35,11 +35,11 @@ public class ba_harmony_leg_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Reduces the rate at which combat readiness degrades by " + Math.round(100 - SHIP_CR_DECREASE_MULT * 100) + "%";
-        String name = isItem? "Effect:": bionic.getName() + ":";
-        LabelAPI descriptions = tooltip.addPara("%s %s", pad, t, name, text);
-        descriptions.setHighlight(name, text);
-        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t);
+        String text = "Reduces the rate at which combat readiness degrades by";
+        String textNum = Math.round(100 - SHIP_CR_DECREASE_MULT * 100) + "%";
+        String name = isItem ? "Effect:" : bionic.getName() + ":";
+        LabelAPI descriptions = tooltip.addPara("%s %s %s", pad, t, name, text, textNum);
+        descriptions.setHighlightColors(isItem ? g.brighter().brighter() : bionic.displayColor, t, h);
     }
 
     @Override

@@ -38,14 +38,17 @@ public class ba_guardian_heart_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "For captain, increase piloting ship's armor by " + Math.round(OFFICER_SHIP_ARMOR * 100 - 100) + "%";
-        String negativeText = "but decrease ship's maneuverability by " + Math.round(100 - OFFICER_SHIP_MANEUVERABILITY * 100) + "%";
-        String textAdmin = "For admin, increase market accessibility by " + Math.round(ADMIN_ACCESS_FLAT * 100) + "%";
-        String negativeTextAdmin = "but also increase upkeep cost by " + Math.round(ADMIN_UPKEEP_MULT * 100 - 100) + "%";
-        String name = isItem? "Effect:": bionic.getName() + ":";
-        LabelAPI descriptions = tooltip.addPara("%s %s %s. %s %s", pad, t, name, text, negativeText, textAdmin, negativeTextAdmin);
-        descriptions.setHighlight(name, text, negativeText, textAdmin, negativeTextAdmin);
-        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t, bad, t, bad);
+        String text = "For captain, increase piloting ship's armor by";
+        String textNum = Math.round(OFFICER_SHIP_ARMOR * 100 - 100) + "%";
+        String negativeText = "but decrease ship's maneuverability by";
+        String negativeTextNum = Math.round(100 - OFFICER_SHIP_MANEUVERABILITY * 100) + "%";
+        String textAdmin = "For admin, increase market accessibility by";
+        String textAdminNum = Math.round(ADMIN_ACCESS_FLAT * 100) + "%";
+        String negativeTextAdmin = "but also increase upkeep cost by";
+        String negativeTextAdminNum = Math.round(ADMIN_UPKEEP_MULT * 100 - 100) + "%";
+        String name = isItem ? "Effect:" : bionic.getName() + ":";
+        LabelAPI descriptions = tooltip.addPara("%s %s %s %s %s. %s %s %s %s", pad, t, name, text, textNum, negativeText, negativeTextNum, textAdmin, textAdminNum, negativeTextAdmin, negativeTextAdminNum);
+        descriptions.setHighlightColors(isItem ? g.brighter().brighter() : bionic.displayColor, t, h, t, bad, t, h, t, bad);
     }
 
     @Override

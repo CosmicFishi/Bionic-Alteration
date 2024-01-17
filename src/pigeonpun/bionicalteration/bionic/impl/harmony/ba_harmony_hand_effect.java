@@ -35,11 +35,11 @@ public class ba_harmony_hand_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Increase ship's shield raising rate by " + Math.round(SHIP_SHIELD_RAISE_MULT * 100 - 100) + "%";
-        String name = isItem? "Effect:": bionic.getName() + ":";
-        LabelAPI descriptions = tooltip.addPara("%s %s", pad, t, name, text);
-        descriptions.setHighlight(name, text);
-        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t);
+        String text = "Increase ship's shield raising rate by";
+        String textNum = Math.round(SHIP_SHIELD_RAISE_MULT * 100 - 100) + "%";
+        String name = isItem ? "Effect:" : bionic.getName() + ":";
+        LabelAPI descriptions = tooltip.addPara("%s %s %s", pad, t, name, text, textNum);
+        descriptions.setHighlightColors(isItem ? g.brighter().brighter() : bionic.displayColor, t, h);
     }
 
     @Override

@@ -1038,11 +1038,15 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                                 currentHoveredBionic.effectScript.displayEffectDescription(tooltip, currentPerson, currentHoveredBionic, true);
                                 //---------Install type
                                 StringBuilder effectType = new StringBuilder();
-                                if(currentHoveredBionic.isApplyCaptainEffect) effectType.append("Captain");
+                                if(currentHoveredBionic.isApplyAdminEffect) {
+                                    effectType.append("Administrator");
+                                }
+                                if(currentHoveredBionic.isApplyCaptainEffect) {
+                                    effectType.setLength(0);
+                                    effectType.append("Captain");
+                                }
                                 if(currentHoveredBionic.isApplyAdminEffect && currentHoveredBionic.isApplyCaptainEffect) {
                                     effectType.append(" and Administrator");
-                                } else {
-                                    effectType.append("Administrator");
                                 }
                                 LabelAPI installTypeLabel = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Install type:", effectType.toString());
                                 installTypeLabel.setHighlight("Apply effect type:", effectType.toString());

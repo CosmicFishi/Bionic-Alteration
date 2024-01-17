@@ -37,12 +37,15 @@ public class ba_stellar_torso_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Increase piloting ship's max peak CR by " + Math.round(SHIP_PEAK_CR * 100 - 100) + "% and reduce damage taken by the ship engine by " + Math.round(100 - SHIP_ENGINE_DAMAGE * 100) + "%";
-        String negativeText = "but increase ship's min crew requirement by " + Math.round(SHIP_MIN_CREW_REQUIRE * 100 - 100) + "%";
-        String name = isItem? "Effect:": bionic.getName() + ":";
-        LabelAPI descriptions = tooltip.addPara("%s %s %s", pad, t, name, text, negativeText);
-        descriptions.setHighlight(name, text, negativeText);
-        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t, bad);
+        String text = "Increase piloting ship's max peak CR by";
+        String textNum = Math.round(SHIP_PEAK_CR * 100 - 100) + "%";
+        String text2 = "and reduce damage taken by the ship engine by";
+        String text2Num = Math.round(100 - SHIP_ENGINE_DAMAGE * 100) + "%";
+        String negativeText = "but increase ship's min crew requirement by";
+        String negativeTextNum = Math.round(SHIP_MIN_CREW_REQUIRE * 100 - 100) + "%";
+        String name = isItem ? "Effect:" : bionic.getName() + ":";
+        LabelAPI descriptions = tooltip.addPara("%s %s %s %s %s %s %s", pad, t, name, text, textNum, text2, text2Num, negativeText, negativeTextNum);
+        descriptions.setHighlightColors(isItem ? g.brighter().brighter() : bionic.displayColor, t, h, t, h, t, bad);
     }
 
     @Override

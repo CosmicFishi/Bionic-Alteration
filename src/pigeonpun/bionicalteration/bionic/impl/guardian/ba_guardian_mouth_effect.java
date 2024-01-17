@@ -38,14 +38,17 @@ public class ba_guardian_mouth_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "For captain, reduce piloting ship's turret damage taken by " + Math.round(100 - OFFICER_TURRET_DAMAGE * 100) + "%";
-        String negativeText = "but reduce ship's turret turn rate by " + Math.round(100 - OFFICER_TURRET_SPIN * 100) + "%";
-        String textAdmin = "For admin, increase market stability by " + Math.round(ADMIN_STABILITY_FLAT) + "";
-        String negativeTextAdmin = "but also reduce accessibility by " + Math.round(ADMIN_ACCESS_FLAT) + "%";
-        String name = isItem? "Effect:": bionic.getName() + ":";
-        LabelAPI descriptions = tooltip.addPara("%s %s %s. %s %s", pad, t, name, text, negativeText, textAdmin, negativeTextAdmin);
-        descriptions.setHighlight(name, text, negativeText, textAdmin, negativeTextAdmin);
-        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t, bad, t, bad);
+        String text = "For captain, reduce piloting ship's turret damage taken by";
+        String textNum = Math.round(100 - OFFICER_TURRET_DAMAGE * 100) + "%";
+        String negativeText = "but reduce ship's turret turn rate by";
+        String negativeTextNum = Math.round(100 - OFFICER_TURRET_SPIN * 100) + "%";
+        String textAdmin = "For admin, increase market stability by";
+        String textAdminNum = Math.round(ADMIN_STABILITY_FLAT) + "";
+        String negativeTextAdmin = "but also reduce accessibility by";
+        String negativeTextAdminNum = Math.round(ADMIN_ACCESS_FLAT) + "%";
+        String name = isItem ? "Effect:" : bionic.getName() + ":";
+        LabelAPI descriptions = tooltip.addPara("%s %s %s %s %s. %s %s %s %s", pad, t, name, text, textNum, negativeText, negativeTextNum, textAdmin, textAdminNum, negativeTextAdmin, negativeTextAdminNum);
+        descriptions.setHighlightColors(isItem ? g.brighter().brighter() : bionic.displayColor, t, h, t, bad, t, h, t, bad);
     }
 
     @Override

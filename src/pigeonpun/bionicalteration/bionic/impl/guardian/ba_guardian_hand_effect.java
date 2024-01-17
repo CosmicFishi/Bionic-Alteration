@@ -37,12 +37,15 @@ public class ba_guardian_hand_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Increase piloting ship's shield unfolding speed by " + Math.round(SHIP_SHIELD_RAISE * 100 - 100) + "%";
-        String negativeText = "but increase ship's shield upkeep by " + Math.round(SHIP_SHIELD_UPKEEP * 100 - 100) + "% and ship's maneuverability by " + Math.round(100 - SHIP_MANEUVERABILITY * 100) + "%";
-        String name = isItem? "Effect:": bionic.getName() + ":";
-        LabelAPI descriptions = tooltip.addPara("%s %s %s", pad, t, name, text, negativeText);
-        descriptions.setHighlight(name, text, negativeText);
-        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t, bad);
+        String text = "Increase piloting ship's shield unfolding speed by";
+        String textNum = Math.round(SHIP_SHIELD_RAISE * 100 - 100) + "%";
+        String negativeText = "but increase ship's shield upkeep by";
+        String negativeTextNum = Math.round(SHIP_SHIELD_UPKEEP * 100 - 100) + "%";
+        String negativeText2 = "and ship's maneuverability by";
+        String negativeText2Num = Math.round(100 - SHIP_MANEUVERABILITY * 100) + "%";
+        String name = isItem ? "Effect:" : bionic.getName() + ":";
+        LabelAPI descriptions = tooltip.addPara("%s %s %s %s %s %s %s", pad, t, name, text, textNum, negativeText, negativeTextNum, negativeText2, negativeText2Num);
+        descriptions.setHighlightColors(isItem ? g.brighter().brighter() : bionic.displayColor, t, h, t, bad, t, bad);
     }
 
     @Override

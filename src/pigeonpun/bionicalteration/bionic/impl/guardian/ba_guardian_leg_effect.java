@@ -37,12 +37,15 @@ public class ba_guardian_leg_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Reduce piloting ship's combat readiness degrade speed by " + Math.round(100 - SHIP_CR_DECREASE_MULT * 100) + "% and reduce ship's engine damage taken by " + Math.round(100 - SHIP_ENGINE_DAMAGE_TAKEN_MULT * 100) + "%";
-        String negativeText = "but increase ship's hull damage taken by " + Math.round(SHIP_HULL_DAMAGE_TAKEN_MULT * 100 - 100) + "%";
-        String name = isItem? "Effect:": bionic.getName() + ":";
-        LabelAPI descriptions = tooltip.addPara("%s %s %s", pad, t, name, text, negativeText);
-        descriptions.setHighlight(name, text, negativeText);
-        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t, bad);
+        String text = "Reduce piloting ship's combat readiness degrade speed by";
+        String textNum = Math.round(100 - SHIP_CR_DECREASE_MULT * 100) + "%";
+        String text2 = "and reduce ship's engine damage taken by";
+        String text2Num = Math.round(100 - SHIP_ENGINE_DAMAGE_TAKEN_MULT * 100) + "%";
+        String negativeText = "but increase ship's hull damage taken by";
+        String negativeTextNum = Math.round(SHIP_HULL_DAMAGE_TAKEN_MULT * 100 - 100) + "%";
+        String name = isItem ? "Effect:" : bionic.getName() + ":";
+        LabelAPI descriptions = tooltip.addPara("%s %s %s %s %s %s %s", pad, t, name, text, textNum, text2, text2Num, negativeText, negativeTextNum);
+        descriptions.setHighlightColors(isItem ? g.brighter().brighter() : bionic.displayColor, t, h, t, h, t, bad);
     }
 
     @Override

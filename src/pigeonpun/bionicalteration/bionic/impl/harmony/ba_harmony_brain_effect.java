@@ -38,11 +38,13 @@ public class ba_harmony_brain_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Increase market fleet size by " + Math.round(MARKET_FLEET_SIZE_FLAT) + "% and increase defend by " + Math.round(MARKET_DEFEND_MULT * 100 - 100) + "%";
-        String name = isItem? "Effect:": bionic.getName() + ":";
-        LabelAPI descriptions = tooltip.addPara("%s %s", pad, t, name, text);
-        descriptions.setHighlight(name, text);
-        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t);
+        String text = "Increase market fleet size by";
+        String textNum = Math.round(MARKET_FLEET_SIZE_FLAT) + "%";
+        String text2 = "and increase defend by";
+        String text2Num = Math.round(MARKET_DEFEND_MULT * 100 - 100) + "%";
+        String name = isItem ? "Effect:" : bionic.getName() + ":";
+        LabelAPI descriptions = tooltip.addPara("%s %s %s %s %s", pad, t, name, text, textNum, text2, text2Num);
+        descriptions.setHighlightColors(isItem ? g.brighter().brighter() : bionic.displayColor, t, h, t, h);
     }
 
     @Override

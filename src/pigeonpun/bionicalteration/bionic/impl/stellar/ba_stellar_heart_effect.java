@@ -37,12 +37,15 @@ public class ba_stellar_heart_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "For captain, increase piloting ship's hull by " + Math.round(SHIP_HULL * 100 - 100) + "% and ship's maneuverability by " + Math.round(SHIP_MANEUVERABILITY * 100 - 100) + "%";
-        String negativeText = "but decrease ship's armor by " + Math.round(100 - SHIP_ARMOR * 100) + "%";
-        String name = isItem? "Effect:": bionic.getName() + ":";
-        LabelAPI descriptions = tooltip.addPara("%s %s %s", pad, t, name, text, negativeText);
-        descriptions.setHighlight(name, text, negativeText);
-        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t, bad);
+        String text = "For captain, increase piloting ship's hull by";
+        String textNum = Math.round(SHIP_HULL * 100 - 100) + "%";
+        String text2 = "and ship's maneuverability by";
+        String text2Num = Math.round(SHIP_MANEUVERABILITY * 100 - 100) + "%";
+        String negativeText = "but decrease ship's armor by";
+        String negativeTextNum = Math.round(100 - SHIP_ARMOR * 100) + "%";
+        String name = isItem ? "Effect:" : bionic.getName() + ":";
+        LabelAPI descriptions = tooltip.addPara("%s %s %s %s %s %s %s", pad, t, name, text, textNum, text2, text2Num, negativeText, negativeTextNum);
+        descriptions.setHighlightColors(isItem ? g.brighter().brighter() : bionic.displayColor, t, h, t, h, t, bad);
     }
 
     @Override

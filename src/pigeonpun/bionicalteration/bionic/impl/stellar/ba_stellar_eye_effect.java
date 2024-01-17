@@ -38,14 +38,17 @@ public class ba_stellar_eye_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "For captain, increase piloting ship's flux dissipation by " + Math.round(OFFICER_FLUX_DISSIPATION_FLAT) + "";
-        String negativeText = "but increase ship's combat readiness degradation rate after peak performance by " + Math.round(OFFICER_CR_LOST_PER_SECOND_MULT * 100 - 100) + "%";
-        String textAdmin = "For admin, increase market income by " + Math.round(ADMIN_INCOME_MULT * 100 - 100) + "%";
-        String negativeTextAdmin = "but also increase upkeep cost by " + Math.round(ADMIN_UPKEEP_MULT * 100 - 100) + "%";
-        String name = isItem? "Effect:": bionic.getName() + ":";
-        LabelAPI descriptions = tooltip.addPara("%s %s %s. %s %s", pad, t, name, text, negativeText, textAdmin, negativeTextAdmin);
-        descriptions.setHighlight(name, text, negativeText, textAdmin, negativeTextAdmin);
-        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t, bad, t, bad);
+        String text = "For captain, increase piloting ship's flux dissipation by";
+        String textNum = Math.round(OFFICER_FLUX_DISSIPATION_FLAT) + "";
+        String negativeText = "but increase ship's combat readiness degradation rate after peak performance by";
+        String negativeTextNum = Math.round(OFFICER_CR_LOST_PER_SECOND_MULT * 100 - 100) + "%";
+        String textAdmin = "For admin, increase market income by";
+        String textAdminNum = Math.round(ADMIN_INCOME_MULT * 100 - 100) + "%";
+        String negativeTextAdmin = "but also increase upkeep cost by";
+        String negativeTextAdminNum = Math.round(ADMIN_UPKEEP_MULT * 100 - 100) + "%";
+        String name = isItem ? "Effect:" : bionic.getName() + ":";
+        LabelAPI descriptions = tooltip.addPara("%s %s %s %s %s. %s %s %s %s", pad, t, name, text, textNum, negativeText, negativeTextNum, textAdmin, textAdminNum, negativeTextAdmin, negativeTextAdminNum);
+        descriptions.setHighlightColors(isItem ? g.brighter().brighter() : bionic.displayColor, t, h, t, bad, t, h, t, bad);
     }
 
     @Override

@@ -115,6 +115,7 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
         createTooltip(tooltip, expanded, transferHandler, stackSource, false);
     }
     public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, CargoTransferHandlerAPI transferHandler, Object stackSource, boolean useGray) {
+        //todo: make tooltip the same as in bionic workshop inventory item tooltip
         float opad = 10f;
 
         tooltip.addTitle(getName());

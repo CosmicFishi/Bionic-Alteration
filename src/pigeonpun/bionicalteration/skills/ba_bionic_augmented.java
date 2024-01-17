@@ -126,7 +126,7 @@ public class ba_bionic_augmented {
                 List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(captain);
                 for(ba_bionicitemplugin bionic: listBionic) {
                     if(bionic.effectScript != null && bionic.isApplyCaptainEffect) {
-                        bionic.effectScript.applyOfficerEffect(stats, hullSize, id);
+                            bionic.effectScript.applyOfficerEffect(stats, hullSize, id);
                     }
                 }
                 ba_consciousmanager.getConsciousnessLevel(captain).applyEffectOfficer(stats, id);

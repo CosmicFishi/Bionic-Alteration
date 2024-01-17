@@ -36,12 +36,13 @@ public class ba_stellar_leg_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Increase piloting ship's max combat readiness by " + Math.round(SHIP_MAX_CR_MULT * 100 - 100) + "%";
-        String negativeText = "but decrease ship's flux capacity by " + Math.round(100 - SHIP_FLUX_CAP_MULT * 100) + "%";
-        String name = isItem? "Effect:": bionic.getName() + ":";
-        LabelAPI descriptions = tooltip.addPara("%s %s %s", pad, t, name, text, negativeText);
-        descriptions.setHighlight(name, text, negativeText);
-        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t, bad);
+        String text = "Increase piloting ship's max combat readiness by";
+        String textNum = Math.round(SHIP_MAX_CR_MULT * 100 - 100) + "%";
+        String negativeText = "but decrease ship's flux capacity by";
+        String negativeTextNum = Math.round(100 - SHIP_FLUX_CAP_MULT * 100) + "%";
+        String name = isItem ? "Effect:" : bionic.getName() + ":";
+        LabelAPI descriptions = tooltip.addPara("%s %s %s %s %s", pad, t, name, text, textNum, negativeText, negativeTextNum);
+        descriptions.setHighlightColors(isItem ? g.brighter().brighter() : bionic.displayColor, t, h, t, bad);
     }
 
     @Override

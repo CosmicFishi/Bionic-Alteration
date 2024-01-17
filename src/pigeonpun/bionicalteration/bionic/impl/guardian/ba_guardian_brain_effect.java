@@ -38,12 +38,15 @@ public class ba_guardian_brain_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Increase piloting ship's max speed by " + Math.round(MAX_SPEED_MULT * 100 - 100) + "% and turn rate by " + Math.round(TURN_RATE_MULT * 100 - 100) + "%";
-        String negativeText = "but reduce ship's shield efficiency by " + Math.round(SHIELD_EFF_MULT * 100 - 100) + "%";
-        String name = isItem? "Effect:": bionic.getName() + ":";
-        LabelAPI descriptions = tooltip.addPara("%s %s %s", pad, t, name, text, negativeText);
-        descriptions.setHighlight(name, text, negativeText);
-        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t, bad);
+        String text = "Increase piloting ship's max speed by";
+        String textNum = Math.round(MAX_SPEED_MULT * 100 - 100) + "%";
+        String text2 = "and turn rate by";
+        String text2Num = Math.round(TURN_RATE_MULT * 100 - 100) + "%";
+        String negativeText = "but reduce ship's shield efficiency by";
+        String negativeTextNum = Math.round(SHIELD_EFF_MULT * 100 - 100) + "%";
+        String name = isItem ? "Effect:" : bionic.getName() + ":";
+        LabelAPI descriptions = tooltip.addPara("%s %s %s %s %s %s %s", pad, t, name, text, textNum, text2, text2Num, negativeText, negativeTextNum);
+        descriptions.setHighlightColors(isItem ? g.brighter().brighter() : bionic.displayColor, t, h, t, h, t, bad);
     }
 
     @Override

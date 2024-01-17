@@ -35,11 +35,11 @@ public class ba_harmony_mouth_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Increase turret rotate rate by " + Math.round(SHIP_TURRET_SPIN) + "%";
-        String name = isItem? "Effect:": bionic.getName() + ":";
-        LabelAPI descriptions = tooltip.addPara("%s %s", pad, t, name, text);
-        descriptions.setHighlight(name, text);
-        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t);
+        String text = "Increase turret rotate rate by";
+        String textNum = Math.round(SHIP_TURRET_SPIN) + "%";
+        String name = isItem ? "Effect:" : bionic.getName() + ":";
+        LabelAPI descriptions = tooltip.addPara("%s %s %s", pad, t, name, text, textNum);
+        descriptions.setHighlightColors(isItem ? g.brighter().brighter() : bionic.displayColor, t, h);
     }
 
     @Override

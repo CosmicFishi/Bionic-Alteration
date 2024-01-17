@@ -37,11 +37,13 @@ public class ba_serenity_heart_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Increase market accessibility by " + Math.round(MARKET_ACCESS_FLAT) + "% and decrease upkeep by " + Math.round(100 - MARKET_UPKEEP_MULT * 100) + "%";
-        String name = isItem? "Effect:": bionic.getName() + ":";
-        LabelAPI descriptions = tooltip.addPara("%s %s", pad, t, name, text);
-        descriptions.setHighlight(name, text);
-        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t);
+        String text = "Increase market accessibility by";
+        String textNum = Math.round(MARKET_ACCESS_FLAT) + "%";
+        String text2 = "and decrease upkeep by";
+        String text2Num = Math.round(100 - MARKET_UPKEEP_MULT * 100) + "%";
+        String name = isItem ? "Effect:" : bionic.getName() + ":";
+        LabelAPI descriptions = tooltip.addPara("%s %s %s %s %s", pad, t, name, text, textNum, text2, text2Num);
+        descriptions.setHighlightColors(isItem ? g.brighter().brighter() : bionic.displayColor, t, h, t, h);
     }
 
     @Override

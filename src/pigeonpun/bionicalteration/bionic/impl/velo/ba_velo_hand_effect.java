@@ -36,12 +36,13 @@ public class ba_velo_hand_effect implements ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Increase piloting ship's shield efficiency by " + Math.round((1 - SHIP_SHIELD_EFF) * 100) + "%";
-        String negativeText = "but increase ship's maintenance by " + Math.round(SHIP_MAINT * 100 - 100) + "%";
-        String name = isItem? "Effect:": bionic.getName() + ":";
-        LabelAPI descriptions = tooltip.addPara("%s %s %s", pad, t, name, text, negativeText);
-        descriptions.setHighlight(name, text, negativeText);
-        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t, bad);
+        String text = "Increase piloting ship's shield efficiency by";
+        String textNum = Math.round((1 - SHIP_SHIELD_EFF) * 100) + "%";
+        String negativeText = "but increase ship's maintenance by";
+        String negativeTextNum = Math.round(SHIP_MAINT * 100 - 100) + "%";
+        String name = isItem ? "Effect:" : bionic.getName() + ":";
+        LabelAPI descriptions = tooltip.addPara("%s %s %s %s %s", pad, t, name, text, textNum, negativeText, negativeTextNum);
+        descriptions.setHighlightColors(isItem ? g.brighter().brighter() : bionic.displayColor, t, h, t, bad);
     }
 
     @Override
