@@ -1,5 +1,7 @@
 package pigeonpun.bionicalteration.utils;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -67,5 +69,19 @@ public class ba_utils {
         }
         if(returnString.length() > 1) returnString.setLength(returnString.length() - 1);
         return returnString.toString();
+    }
+
+    /**
+     * Get list string from jsonArray
+     * @param jsonArray
+     * @return
+     * @throws JSONException
+     */
+    public static List<String> getListStringFromJsonArray(JSONArray jsonArray) throws JSONException {
+        List<String> result = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            result.add(jsonArray.getString(i));
+        }
+        return result;
     }
 }

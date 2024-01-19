@@ -2,7 +2,7 @@
   "messages": "Faction id as key to generate bionic on encounter",
   "messageVariantUse": "variantUse use for encountering in fight to generate the opponent bionics/person variant/etc",
   "messageBionicOverride": "bionicUseOverride Use for generate bionic in fight, will override bionicUse if the tags and ids list is not empty",
-  "default": {
+  "ba_default": {
     "variantUse": [
       {
         "variantId": "GENERIC_HUMAN",
@@ -18,7 +18,7 @@
       }
     ],
     "bionicUse": {
-      "tags": ["ba_bionic_t1"],
+      "tags": ["ba_bionic_t1", "ba_bionic_t2"],
       "ids": []
     },
     "targetBRMLevel": 1,
@@ -36,7 +36,7 @@
       }
     ],
     "bionicUse": {
-      "tags": ["ba_bionic_t1"],
+      "tags": ["ba_bionic_t1", "ba_bionic_t2"],
       "ids": []
     },
     "targetBRMLevel": 1,

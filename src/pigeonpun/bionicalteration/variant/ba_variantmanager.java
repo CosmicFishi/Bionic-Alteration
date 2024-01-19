@@ -9,6 +9,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.magiclib.util.MagicSettings;
 import pigeonpun.bionicalteration.ba_variablemanager;
+import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
+import pigeonpun.bionicalteration.faction.ba_factiondata;
+import pigeonpun.bionicalteration.faction.ba_factionmanager;
 import pigeonpun.bionicalteration.utils.ba_utils;
 
 import java.io.IOException;
@@ -22,8 +25,7 @@ import java.util.*;
 //todo: change variant manager so it can control which faction have what type of variant, what kind of bionic do they have. Have a selection of what kind of variant do they want to be as well.
 public class ba_variantmanager {
     static Logger log = Global.getLogger(ba_variantmanager.class);
-    public static HashMap<String, List<String>> variantList = new HashMap<>();
-    static HashMap<String, ba_factionvariant> factionVariantMap = new HashMap<>();
+    public static HashMap<String, ba_variant> variantList = new HashMap<>();
 //    protected static HashMap<String, ba_limb> limbMap = new HashMap<>();
     public static void onApplicationLoad() {
         loadAnatomyVariantList();
@@ -45,7 +47,11 @@ public class ba_variantmanager {
                     String variantId = row.getString("variantId");
                     if(!Objects.equals(variantId, "")) {
                         List<String> limbIdList = ba_utils.trimAndSplitString(row.getString("limbIdList"));
-                        variantList.put(variantId, new ArrayList<>(limbIdList));
+                        variantList.put(variantId, new ba_variant(
+                                row.getString("variantName"),
+                                limbIdList,
+                                row.getBoolean("allowPlayerChangeTo")
+                            ));
                     }
                 } catch (JSONException ex) {
                     log.error("Invalid line, skipping");
@@ -56,10 +62,17 @@ public class ba_variantmanager {
 //            System.out.println(entry.getKey() + " " + Arrays.toString(entry.getValue().toArray()));
 //        }
     }
+    public static ba_variant getVariant(String variantId) {
+        ba_variant variant = variantList.get(variantId);
+        if(variant == null) {
+            log.error("Can not find variant of id: "+ variantId);
+        }
+        return variant;
+    }
     public static List<String> getListLimbFromVariant(String variantId) {
         List<String> limbList = new ArrayList<>();
         if (!variantList.isEmpty() &&  variantList.get(variantId) != null) {
-            limbList = variantList.get(variantId);
+            limbList = variantList.get(variantId).limbIdList;
         } else {
             log.error("variant list is empty or can't find limb list from variant Id of: " + variantId);
         }
@@ -87,7 +100,20 @@ public class ba_variantmanager {
         }
         return personVariant;
     }
-    //todo: change this so it will select from faction's random list
+
+    /**
+     * Get a random variant based on faction. Defined in faction_data.json
+     * @param factionId
+     * @return
+     */
+    public static String getRandomVariant(String factionId) {
+        return ba_factionmanager.getRandomFactionVariant(factionId);
+    }
+
+    /**
+     * Get a random variant
+     * @return
+     */
     public static String getRandomVariant() {
         WeightedRandomPicker<String> randomPicker = new WeightedRandomPicker<>();
         randomPicker.addAll(getListAnatomyKeys());
