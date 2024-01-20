@@ -6,7 +6,7 @@
     "variantUse": [
       {
         "variantId": "GENERIC_HUMAN",
-        "spawnChance": "0.9f",
+        "spawnWeight": "10f",
         "bionicUseOverride": {
           "tags": [],
           "ids": []
@@ -14,11 +14,20 @@
       },
       {
         "variantId": "GENERIC_HALF_BORN",
-        "spawnChance": "0.1f"
+        "spawnWeight": "1f"
       }
     ],
     "bionicUse": {
-      "tags": ["ba_bionic_t1", "ba_bionic_t2"],
+      "tags": [
+        {
+          "tag": "ba_bionic_t1",
+          "spawnWeight": "2f"
+        },
+        {
+          "tag": "ba_bionic_t2",
+          "spawnWeight": "1f"
+        }
+      ],
       "ids": []
     },
     "targetBRMLevel": 1,
@@ -28,16 +37,29 @@
     "variantUse": [
       {
         "variantId": "GENERIC_HUMAN",
-        "spawnChance": "0.9f"
+        "spawnWeight": "0.9f"
       },
       {
         "variantId": "GENERIC_HALF_BORN",
-        "spawnChance": "0.1f"
+        "spawnWeight": "0.1f"
       }
     ],
     "bionicUse": {
-      "tags": ["ba_bionic_t1", "ba_bionic_t2"],
-      "ids": []
+      "tags": [{
+        "tag": "ba_bionic_t1",
+        "spawnWeight": "2f"
+      },
+        {
+          "tag": "ba_bionic_t2",
+          "spawnWeight": "1f"
+        }
+      ],
+      "ids": [
+        {
+          "id": "ba_bionic_leg_guardian",
+          "spawnWeight": "10f"
+        }
+      ]
     },
     "targetBRMLevel": 1,
     "targetConsciousLevel": 0.6

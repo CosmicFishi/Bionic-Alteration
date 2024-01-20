@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import pigeonpun.bionicalteration.ba_variablemanager;
+import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.utils.ba_utils;
 import pigeonpun.bionicalteration.variant.ba_variantmanager;
 
@@ -49,7 +50,7 @@ public class ba_factionmanager {
                             try {
                                 detail = new ba_factiondata.ba_factionVariantDetails(
                                         ba_variantmanager.getVariant(variantData.getString("variantId")),
-                                        (float) variantData.getDouble("spawnChance"),
+                                        (float) variantData.getDouble("spawnWeight"),
                                         ba_utils.getListStringFromJsonArray(factionJsonData.getJSONObject("bionicUseOverride").getJSONArray("tags")),
                                         ba_utils.getListStringFromJsonArray(factionJsonData.getJSONObject("bionicUseOverride").getJSONArray("ids"))
                                 );
@@ -57,7 +58,7 @@ public class ba_factionmanager {
                                 log.info("Can not find bionicUseOverride for " + factionId + " variant " + variantData.getString("variantId") + ". Creating empty list for bionic override");
                                 detail = new ba_factiondata.ba_factionVariantDetails(
                                         ba_variantmanager.getVariant(variantData.getString("variantId")),
-                                        (float) variantData.getDouble("spawnChance"),
+                                        (float) variantData.getDouble("spawnWeight"),
                                         null,
                                         null
                                 );
@@ -65,11 +66,36 @@ public class ba_factionmanager {
                             listVariantDetails.add(detail);
                         }
                     }
+                    JSONArray bionicTagsUse = factionJsonData.getJSONObject("bionicUse").getJSONArray("tags");
+                    List<ba_factiondata.ba_bionicUseTagDetails> listBionicTagDetails = new ArrayList<>();
+                    for (int i = 0; i < bionicTagsUse.length(); i++) {
+                        JSONObject tagData = bionicTagsUse.getJSONObject(i);
+                        ba_factiondata.ba_bionicUseTagDetails detail = new ba_factiondata.ba_bionicUseTagDetails(
+                                tagData.getString("tag"),
+                                (float) tagData.getDouble("spawnWeight")
+                        );
+                        listBionicTagDetails.add(detail);
+                    }
+                    JSONArray bionicIdsUse = factionJsonData.getJSONObject("bionicUse").getJSONArray("ids");
+                    List<ba_factiondata.ba_bionicUseIdDetails> listBionicIdDetails = new ArrayList<>();
+                    for (int i = 0; i < bionicIdsUse.length(); i++) {
+                        JSONObject idData = bionicIdsUse.getJSONObject(i);
+                        ba_factiondata.ba_bionicUseIdDetails detail = null;
+                        if(ba_bionicmanager.getBionic(idData.getString("id")) != null) {
+                            detail = new ba_factiondata.ba_bionicUseIdDetails(
+                                    ba_bionicmanager.getBionic(idData.getString("id")),
+                                    (float) idData.getDouble("spawnWeight")
+                            );
+                            listBionicIdDetails.add(detail);
+                        } else {
+                            log.info("Can not find bionic ID for " + factionId + " in bionicUse with bionic ID: " + idData.getString("id") + " Skipping.");
+                        }
+                    }
                     factionData = new ba_factiondata(
                             factionId,
                             listVariantDetails,
-                            ba_utils.getListStringFromJsonArray(factionJsonData.getJSONObject("bionicUse").getJSONArray("tags")),
-                            ba_utils.getListStringFromJsonArray(factionJsonData.getJSONObject("bionicUse").getJSONArray("ids")),
+                            listBionicTagDetails,
+                            listBionicIdDetails,
                             (float) factionJsonData.getDouble("targetBRMLevel"),
                             (float) factionJsonData.getDouble("targetConsciousLevel")
                     );
