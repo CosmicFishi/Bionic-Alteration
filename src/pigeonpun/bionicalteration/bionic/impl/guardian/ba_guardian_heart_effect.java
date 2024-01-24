@@ -43,7 +43,7 @@ public class ba_guardian_heart_effect implements ba_bioniceffect {
         String negativeText = "but decrease ship's maneuverability by";
         String negativeTextNum = Math.round(100 - OFFICER_SHIP_MANEUVERABILITY * 100) + "%";
         String textAdmin = "For admin, increase market accessibility by";
-        String textAdminNum = Math.round(ADMIN_ACCESS_FLAT * 100) + "%";
+        String textAdminNum = Math.round(ADMIN_ACCESS_FLAT) + "%";
         String negativeTextAdmin = "but also increase upkeep cost by";
         String negativeTextAdminNum = Math.round(ADMIN_UPKEEP_MULT * 100 - 100) + "%";
         String name = isItem ? "Effect:" : bionic.getName() + ":";

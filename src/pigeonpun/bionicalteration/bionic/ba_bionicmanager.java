@@ -304,6 +304,39 @@ public class ba_bionicmanager {
         }
         return randomBionic;
     }
+    public static List<String> getBionicFromTag(String tag) {
+        List<String> bionics = new ArrayList<>();
+        for(ba_bionicitemplugin item: bionicItemMap.values()) {
+            for(String t: item.getSpec().getTags()) {
+                if(t.equals(tag)) {
+                    bionics.add(item.bionicId);
+                }
+            }
+        }
+        return bionics;
+    }
+    public static List<String> getBionicFromListTag(List<String> tags) {
+        List<String> randomBionic = new ArrayList<>();
+        for(String tag: tags) {
+            for(ba_bionicitemplugin item: bionicItemMap.values()) {
+                for(String t: item.getSpec().getTags()) {
+                    if(t.equals(tag)) {
+                        randomBionic.add(item.bionicId);
+                    }
+                }
+            }
+        }
+        return randomBionic;
+    }
+    public static List<String> getRandomBionicFromListId(List<String> ids) {
+        List<String> randomBionic = new ArrayList<>();
+        for(String id: ids) {
+            if(getBionic(id) != null) {
+                randomBionic.add(id);
+            }
+        }
+        return randomBionic;
+    }
     public static List<String> getListBionicKeys() {
         return new ArrayList<>(bionicItemMap.keySet());
     }

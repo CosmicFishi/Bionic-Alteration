@@ -54,11 +54,12 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
     public ba_bionicitemplugin currentRemovingBionic; //selected for removing
     HashMap<String, ba_component> tabMap = new HashMap<>();
     String currentTabId = OVERVIEW;
+    public static boolean isDisplayingOtherFleets = false;
     public static ba_uiplugin createDefault() {
         return new ba_uiplugin();
     }
     public void init(CustomPanelAPI panel, CustomVisualDialogDelegate.DialogCallbacks callbacks, InteractionDialogAPI dialog) {
-        init(panel, callbacks, dialog, "");
+        init(panel, callbacks, dialog, "", null);
     }
 
     /**
@@ -67,7 +68,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
      * @param dialog dialog
      * @param moveToTabId tab id, get from uiPlugin class
      */
-    public void init(CustomPanelAPI panel, CustomVisualDialogDelegate.DialogCallbacks callbacks, InteractionDialogAPI dialog, String moveToTabId) {
+    public void init(CustomPanelAPI panel, CustomVisualDialogDelegate.DialogCallbacks callbacks, InteractionDialogAPI dialog, String moveToTabId, List<PersonAPI> personList) {
         this.callbacks = callbacks;
         this.containerPanel = panel;
         this.dialog = dialog;
@@ -77,7 +78,12 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         pW = (int) this.containerPanel.getPosition().getWidth();
         pH = (int) this.containerPanel.getPosition().getHeight();
         initialUICreation();
-        ba_officermanager.refresh();
+        ba_officermanager.refresh(personList);
+        if(personList != null) {
+            isDisplayingOtherFleets = true;
+        } else {
+            isDisplayingOtherFleets = false;
+        }
         //change the current tab id and "focus" on it
         focusContent(moveToTabId);
     }
@@ -234,7 +240,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             int profY = (int) (currentStartY + brmH + nameH);
             TooltipMakerAPI personProfTooltip = personDisplayContainer.createTooltip("PERSON_PROF", profW, profH, false, 9, 0);
             personProfTooltip.getPosition().inTL(profX, profY);
-            String profString = ba_officermanager.getProfessionText(member);
+            String profString = ba_officermanager.getProfessionText(member, isDisplayingOtherFleets);
             LabelAPI prof = personProfTooltip.addPara("Profession: " + profString, pad);
             prof.setHighlight("Profession: ", profString);
             prof.setHighlightColors(g,h);
@@ -311,9 +317,13 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             //>Occupation
             String occupation = "Idle";
             if(this.currentPerson.getFleet() != null || this.currentPerson.isPlayer()) {
-                if(Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentPerson) != null) {
+                if(this.currentPerson.isPlayer()) {
                     String shipName = Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentPerson).getShipName();
                     String shipClass = Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentPerson).getHullSpec().getNameWithDesignationWithDashClass();
+                    occupation = "Piloting "+ shipName + " of " + shipClass;
+                } else if(this.currentPerson.getFleet().getFleetData().getMemberWithCaptain(this.currentPerson) != null) {
+                    String shipName = this.currentPerson.getFleet().getFleetData().getMemberWithCaptain(this.currentPerson).getShipName();
+                    String shipClass = this.currentPerson.getFleet().getFleetData().getMemberWithCaptain(this.currentPerson).getHullSpec().getNameWithDesignationWithDashClass();
                     occupation = "Piloting "+ shipName + " of " + shipClass;
                 }
             } else if (this.currentPerson.getMarket() != null) {
@@ -381,16 +391,17 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                     ba_consciousmanager.displayConsciousEffects(tooltip, currentPerson, expanded);
                 }
             }, consciousAreaChecker, TooltipMakerAPI.TooltipLocation.ABOVE);
-            //Button switch page
-            float upgradeBtnH = 80;
-            float upgradeBtnW = 200;
-            int upgradeX = (int) (personInfoW - upgradeBtnW - pad - 5);
-            int upgradeY = (int) headerH;
-            TooltipMakerAPI personUpgradeTooltip = infoPersonContainer.createTooltip("PERSON_INFO_UPGRADE", statsW, statsH, false, 0, 0);
-            personUpgradeTooltip.getPosition().inTL(upgradeX,upgradeY);
-            ButtonAPI upgradeButton = personUpgradeTooltip.addButton("Upgrade/Change", null, upgradeBtnW, upgradeBtnH, 0);
-            addButtonToList(upgradeButton, "tab:" + WORKSHOP);
-
+            if(!isDisplayingOtherFleets) {
+                //Button switch page
+                float upgradeBtnH = 80;
+                float upgradeBtnW = 200;
+                int upgradeX = (int) (personInfoW - upgradeBtnW - pad - 5);
+                int upgradeY = (int) headerH;
+                TooltipMakerAPI personUpgradeTooltip = infoPersonContainer.createTooltip("PERSON_INFO_UPGRADE", statsW, statsH, false, 0, 0);
+                personUpgradeTooltip.getPosition().inTL(upgradeX,upgradeY);
+                ButtonAPI upgradeButton = personUpgradeTooltip.addButton("Upgrade/Change", null, upgradeBtnW, upgradeBtnH, 0);
+                addButtonToList(upgradeButton, "tab:" + WORKSHOP);
+            }
             //--------Bionic table
             int tableX = (int) (skillX + skillW + pad);
             int tableY = (int) (imageY + imageH + pad);
@@ -1326,7 +1337,8 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         }
     }
     public void getNewListPerson() {
-        ba_officermanager.refreshListPerson();
+        List<PersonAPI> tempList = new ArrayList<>((ba_officermanager.listPersons));
+        ba_officermanager.refreshListPerson(tempList);
     }
     @Override
     public void positionChanged(PositionAPI position) {

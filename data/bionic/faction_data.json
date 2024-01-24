@@ -6,11 +6,7 @@
     "variantUse": [
       {
         "variantId": "GENERIC_HUMAN",
-        "spawnWeight": "10f",
-        "bionicUseOverride": {
-          "tags": [],
-          "ids": []
-        }
+        "spawnWeight": "10f"
       },
       {
         "variantId": "GENERIC_HALF_BORN",
@@ -21,11 +17,11 @@
       "tags": [
         {
           "tag": "ba_bionic_t1",
-          "spawnWeight": "2f"
+          "spawnWeight": "1f"
         },
         {
           "tag": "ba_bionic_t2",
-          "spawnWeight": "1f"
+          "spawnWeight": "2f"
         }
       ],
       "ids": []
@@ -37,31 +33,437 @@
     "variantUse": [
       {
         "variantId": "GENERIC_HUMAN",
-        "spawnWeight": "0.9f"
+        "spawnWeight": "10f"
       },
       {
         "variantId": "GENERIC_HALF_BORN",
-        "spawnWeight": "0.1f"
+        "spawnWeight": "1f"
       }
     ],
     "bionicUse": {
-      "tags": [{
-        "tag": "ba_bionic_t1",
-        "spawnWeight": "2f"
-      },
+      "tags": [
         {
           "tag": "ba_bionic_t2",
           "spawnWeight": "1f"
         }
       ],
-      "ids": [
+      "ids": []
+    },
+    "targetBRMLevel": 1,
+    "targetConsciousLevel": 0.4
+  },
+  "neutral": {
+    "variantUse": [
+      {
+        "variantId": "GENERIC_HUMAN",
+        "spawnWeight": "10f"
+      },
+      {
+        "variantId": "GENERIC_HALF_BORN",
+        "spawnWeight": "1f"
+      }
+    ],
+    "bionicUse": {
+      "tags": [
         {
-          "id": "ba_bionic_leg_guardian",
-          "spawnWeight": "10f"
+          "tag": "ba_bionic_t1",
+          "spawnWeight": "1f"
         }
-      ]
+      ],
+      "ids": []
+    },
+    "targetBRMLevel": 1,
+    "targetConsciousLevel": 0.7,
+    "maxBionicUseCount": 3
+  },
+  "player": {
+    "variantUse": [
+      {
+        "variantId": "GENERIC_HUMAN",
+        "spawnWeight": "10f"
+      },
+      {
+        "variantId": "GENERIC_HALF_BORN",
+        "spawnWeight": "1f",
+        "bionicUseOverride": {
+          "tags": [],
+          "ids": []
+        }
+      }
+    ],
+    "bionicUse": {
+      "tags": [
+        {
+          "tag": "ba_bionic_t1",
+          "spawnWeight": "3f"
+        },
+        {
+          "tag": "ba_bionic_t2",
+          "spawnWeight": "4f"
+        }
+      ],
+      "ids": []
+    },
+    "targetBRMLevel": 1,
+    "targetConsciousLevel": 0.3
+  },
+  "pirates": {
+    "variantUse": [
+      {
+        "variantId": "GENERIC_HUMAN",
+        "spawnWeight": "10f"
+      },
+      {
+        "variantId": "GENERIC_HALF_BORN",
+        "spawnWeight": "1f"
+      }
+    ],
+    "bionicUse": {
+      "tags": [
+        {
+          "tag": "ba_bionic_t1",
+          "spawnWeight": "3f"
+        },
+        {
+          "tag": "ba_bionic_t2",
+          "spawnWeight": "2f"
+        }
+      ],
+      "ids": []
+    },
+    "targetBRMLevel": 1,
+    "targetConsciousLevel": 0.1
+  },
+  "independent": {
+    "variantUse": [
+      {
+        "variantId": "GENERIC_HUMAN",
+        "spawnWeight": "10f"
+      },
+      {
+        "variantId": "GENERIC_HALF_BORN",
+        "spawnWeight": "1f"
+      }
+    ],
+    "bionicUse": {
+      "tags": [
+        {
+          "tag": "ba_bionic_t1",
+          "spawnWeight": "3f"
+        },
+        {
+          "tag": "ba_bionic_t2",
+          "spawnWeight": "1f"
+        }
+      ],
+      "ids": []
+    },
+    "targetBRMLevel": 0.7,
+    "targetConsciousLevel": 0.6,
+    "maxBionicUseCount": 4
+  },
+  "tritachyon": {
+    "variantUse": [
+      {
+        "variantId": "GENERIC_HUMAN",
+        "spawnWeight": "10f"
+      },
+      {
+        "variantId": "GENERIC_HALF_BORN",
+        "spawnWeight": "1f"
+      }
+    ],
+    "bionicUse": {
+      "tags": [
+        {
+          "tag": "ba_bionic_t1",
+          "spawnWeight": "1f"
+        },
+        {
+          "tag": "ba_bionic_t2",
+          "spawnWeight": "5f"
+        }
+      ],
+      "ids": []
+    },
+    "targetBRMLevel": 1,
+    "targetConsciousLevel": 0.3
+  },
+  "sindrian_diktat": {
+    "variantUse": [
+      {
+        "variantId": "GENERIC_HUMAN",
+        "spawnWeight": "10f"
+      },
+      {
+        "variantId": "GENERIC_HALF_BORN",
+        "spawnWeight": "1f"
+      }
+    ],
+    "bionicUse": {
+      "tags": [
+        {
+          "tag": "ba_bionic_t1",
+          "spawnWeight": "1f"
+        },
+        {
+          "tag": "ba_bionic_t2",
+          "spawnWeight": "5f"
+        }
+      ],
+      "ids": []
+    },
+    "targetBRMLevel": 1,
+    "targetConsciousLevel": 0.3
+  },
+  "lions_guard": {
+    "variantUse": [
+      {
+        "variantId": "GENERIC_HUMAN",
+        "spawnWeight": "10f"
+      },
+      {
+        "variantId": "GENERIC_HALF_BORN",
+        "spawnWeight": "1f"
+      }
+    ],
+    "bionicUse": {
+      "tags": [
+        {
+          "tag": "ba_bionic_t1",
+          "spawnWeight": "1f"
+        },
+        {
+          "tag": "ba_bionic_t2",
+          "spawnWeight": "5f"
+        }
+      ],
+      "ids": []
+    },
+    "targetBRMLevel": 1,
+    "targetConsciousLevel": 0.3
+  },
+  "knights_of_ludd": {
+    "variantUse": [
+      {
+        "variantId": "GENERIC_HUMAN",
+        "spawnWeight": "10f"
+      },
+      {
+        "variantId": "GENERIC_HALF_BORN",
+        "spawnWeight": "1f"
+      }
+    ],
+    "bionicUse": {
+      "tags": [
+        {
+          "tag": "ba_bionic_t2",
+          "spawnWeight": "2f"
+        }
+      ],
+      "ids": []
+    },
+    "targetBRMLevel": 1,
+    "targetConsciousLevel": 0.3
+  },
+  "luddic_church": {
+    "variantUse": [
+      {
+        "variantId": "GENERIC_HUMAN",
+        "spawnWeight": "10f"
+      },
+      {
+        "variantId": "GENERIC_HALF_BORN",
+        "spawnWeight": "1f"
+      }
+    ],
+    "bionicUse": {
+      "tags": [
+        {
+          "tag": "ba_bionic_t1",
+          "spawnWeight": "1f"
+        },
+        {
+          "tag": "ba_bionic_t2",
+          "spawnWeight": "4f"
+        }
+      ],
+      "ids": []
+    },
+    "targetBRMLevel": 1,
+    "targetConsciousLevel": 0.5
+  },
+  "luddic_path": {
+    "variantUse": [
+      {
+        "variantId": "GENERIC_HUMAN",
+        "spawnWeight": "10f"
+      },
+      {
+        "variantId": "GENERIC_HALF_BORN",
+        "spawnWeight": "1f"
+      }
+    ],
+    "bionicUse": {
+      "tags": [
+        {
+          "tag": "ba_bionic_t1",
+          "spawnWeight": "1f"
+        },
+        {
+          "tag": "ba_bionic_t2",
+          "spawnWeight": "2f"
+        }
+      ],
+      "ids": []
+    },
+    "targetBRMLevel": 1,
+    "targetConsciousLevel": 0.2
+  },
+  "persean_league": {
+    "variantUse": [
+      {
+        "variantId": "GENERIC_HUMAN",
+        "spawnWeight": "10f"
+      },
+      {
+        "variantId": "GENERIC_HALF_BORN",
+        "spawnWeight": "1f"
+      }
+    ],
+    "bionicUse": {
+      "tags": [
+        {
+          "tag": "ba_bionic_t1",
+          "spawnWeight": "1f"
+        },
+        {
+          "tag": "ba_bionic_t2",
+          "spawnWeight": "2f"
+        }
+      ],
+      "ids": []
+    },
+    "targetBRMLevel": 1,
+    "targetConsciousLevel": 0.4
+  },
+  "derelict": {
+    "variantUse": [
+
+    ],
+    "bionicUse": {
+      "tags": [
+
+      ],
+      "ids": []
+    },
+    "targetBRMLevel": 1,
+    "targetConsciousLevel": 0.4
+  },
+  "remnants": {
+    "variantUse": [
+
+    ],
+    "bionicUse": {
+      "tags": [
+
+      ],
+      "ids": []
+    },
+    "targetBRMLevel": 1,
+    "targetConsciousLevel": 0.4
+  },
+  "omega": {
+    "variantUse": [
+
+    ],
+    "bionicUse": {
+      "tags": [
+
+      ],
+      "ids": []
+    },
+    "targetBRMLevel": 1,
+    "targetConsciousLevel": 0.4
+  },
+  "scavengers": {
+    "variantUse": [
+      {
+        "variantId": "GENERIC_HUMAN",
+        "spawnWeight": "10f"
+      },
+      {
+        "variantId": "GENERIC_HALF_BORN",
+        "spawnWeight": "1f"
+      }
+    ],
+    "bionicUse": {
+      "tags": [
+        {
+          "tag": "ba_bionic_t1",
+          "spawnWeight": "1f"
+        },
+        {
+          "tag": "ba_bionic_t2",
+          "spawnWeight": "1f"
+        }
+      ],
+      "ids": []
     },
     "targetBRMLevel": 1,
     "targetConsciousLevel": 0.6
+  },
+  "sleeper": {
+    "variantUse": [
+
+    ],
+    "bionicUse": {
+      "tags": [
+
+      ],
+      "ids": []
+    },
+    "targetBRMLevel": 1,
+    "targetConsciousLevel": 0.6
+  },
+  "poor": {
+    "variantUse": [
+
+    ],
+    "bionicUse": {
+      "tags": [
+
+      ],
+      "ids": []
+    },
+    "targetBRMLevel": 1,
+    "targetConsciousLevel": 0.6
+  },
+  "mercenary": {
+    "variantUse": [
+      {
+        "variantId": "GENERIC_HUMAN",
+        "spawnWeight": "10f"
+      },
+      {
+        "variantId": "GENERIC_HALF_BORN",
+        "spawnWeight": "1f"
+      }
+    ],
+    "bionicUse": {
+      "tags": [
+        {
+          "tag": "ba_bionic_t1",
+          "spawnWeight": "1f"
+        },
+        {
+          "tag": "ba_bionic_t2",
+          "spawnWeight": "1f"
+        }
+      ],
+      "ids": []
+    },
+    "targetBRMLevel": 1,
+    "targetConsciousLevel": 0.5
   }
 }

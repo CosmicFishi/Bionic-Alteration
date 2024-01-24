@@ -100,7 +100,7 @@ public class ba_limbmanager {
     }
     public static List<ba_limb> getLimbListFromGroupOnPerson(String groupId, PersonAPI person) {
         List<ba_limb> personLimbList = new ArrayList<>();
-        String personVariant = ba_variantmanager.getAnatomyVariantTag(person);
+        String personVariant = ba_variantmanager.getPersonVariantTag(person);
         if(personVariant != null) {
             for (ba_limbmanager.ba_limb limb: ba_limbmanager.getListLimbFromGroup(groupId)) {
                 for(String limbId: ba_variantmanager.getListLimbFromVariant(personVariant)) {

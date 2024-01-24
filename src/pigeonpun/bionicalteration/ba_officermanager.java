@@ -12,12 +12,15 @@ import com.fs.starfarer.api.util.WeightedRandomPicker;
 import org.apache.log4j.Logger;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
+import pigeonpun.bionicalteration.faction.ba_factiondata;
+import pigeonpun.bionicalteration.faction.ba_factionmanager;
+import pigeonpun.bionicalteration.variant.ba_variant;
 import pigeonpun.bionicalteration.variant.ba_variantmanager;
 
 import java.util.*;
 import java.util.List;
 
-import static pigeonpun.bionicalteration.variant.ba_variantmanager.getAnatomyVariantTag;
+import static pigeonpun.bionicalteration.variant.ba_variantmanager.getPersonVariantTag;
 
 /**
  * Handle how many bionic available on an officer
@@ -28,34 +31,36 @@ public class ba_officermanager {
     static Logger log = Global.getLogger(ba_officermanager.class);
     public static void onSaveLoad() {
         //install random bionic on start
-        refresh();
-        for (PersonAPI person: listPersons) {
-            installRandomBionic(person);
-        }
+        refresh(null);
+        setUpBionic();
     }
 
     /**
      * Refresh the entire list person pls all the other stats set up needed
      */
     //todo: check if refresh on save/game load run this
-    public static void refresh() {
-        refreshListPerson();
+    public static void refresh(List<PersonAPI> listOfficer) {
+        refreshListPerson(listOfficer);
         setUpVariant();
         setUpDynamicStats();
         setUpSkill();
     }
     //create new admin
     //runcode import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent; import com.fs.starfarer.api.impl.campaign.ids.Factions; PersonAPI person = OfficerManagerEvent.createAdmin(Global.getSector().getFaction(Factions.MERCENARY), 1, new Random()); Global.getSector().getCharacterData().addAdmin(person);
-    public static List<PersonAPI> refreshListPerson() {
+    public static List<PersonAPI> refreshListPerson(List<PersonAPI> listOfficers) {
         listPersons.clear();
         List<PersonAPI> listP = new ArrayList<>();
-        listP.add(Global.getSector().getPlayerPerson());
-        List<OfficerDataAPI> listPlayerMember = Global.getSector().getPlayerFleet().getFleetData().getOfficersCopy();
-        for (OfficerDataAPI officer: listPlayerMember) {
-            listP.add(officer.getPerson());
-        }
-        for (AdminData admin: Global.getSector().getCharacterData().getAdmins()) {
-            listP.add(admin.getPerson());
+        if(listOfficers == null) {
+            listP.add(Global.getSector().getPlayerPerson());
+            List<OfficerDataAPI> listPlayerMember = Global.getSector().getPlayerFleet().getFleetData().getOfficersCopy();
+            for (OfficerDataAPI officer: listPlayerMember) {
+                listP.add(officer.getPerson());
+            }
+            for (AdminData admin: Global.getSector().getCharacterData().getAdmins()) {
+                listP.add(admin.getPerson());
+            }
+        } else {
+            listP.addAll(listOfficers);
         }
         listPersons.addAll(listP);
         return listPersons;
@@ -63,17 +68,13 @@ public class ba_officermanager {
     public static void setUpVariant() {
         //todo: set up variant per faction
         for(PersonAPI person: listPersons) {
-            if(getAnatomyVariantTag(person) == null) {
-                String randomVariant = ba_variantmanager.getRandomVariant();
+            if(getPersonVariantTag(person) == null) {
+                String randomVariant = ba_variantmanager.getRandomVariantFromFaction(person.getFaction().getId());
                 person.addTag(randomVariant);
             }
         }
     }
     public static void setUpDynamicStats() {
-        /*
-         * The idea is to have the lower the consciousness is the higher the DP cost, the CR cost is, the maintenance is
-         * Have to a chance to change personality in combat to a different one like aggressive/reckless/fearless
-         */
         for(PersonAPI person: listPersons) {
             //consciousness
             person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).modifyFlat(ba_variablemanager.BA_CONSCIOUSNESS_SOURCE_KEY, setUpConsciousness(person));
@@ -100,6 +101,81 @@ public class ba_officermanager {
                 }
             }
         }
+    }
+
+    /**
+     * Bionics choosing will be base on faction_data.json
+     * Note: If bionicUseOverride array length is 0 even when defined in the faction_data.json will be ignored and use the bionicUse from the faction instead.
+     */
+    public static void setUpBionic() {
+        for(PersonAPI person : ba_officermanager.listPersons) {
+            int currentTry = 0;
+            int maxTotalTries = 50;
+            int installedBionicCount = 0;
+            ba_factiondata factionData = ba_factionmanager.getFactionData(person.getFaction().getId());
+            ba_factiondata.ba_factionVariantDetails personVariant = null;
+            for(ba_factiondata.ba_factionVariantDetails detail: factionData.variantDetails) {
+                if(detail.variant.variantId.equals(ba_variantmanager.getPersonVariantTag(person))) {
+                    personVariant = detail;
+                }
+            }
+            if(!person.hasTag(ba_variablemanager.BA_RANDOM_BIONIC_GENERATED_TAG) && personVariant != null) {
+                WeightedRandomPicker<String> randomBionics = new WeightedRandomPicker<>();
+                if(personVariant.bionicUseIdsOverride != null && personVariant.bionicUseIdsOverride.size() != 0) {
+                    for(ba_factiondata.ba_bionicUseIdDetails idDetails: personVariant.bionicUseIdsOverride) {
+                        if(ba_bionicmanager.getBionic(idDetails.bionic.bionicId) != null) {
+                            randomBionics.add(idDetails.bionic.bionicId, idDetails.spawnWeight);
+                        }
+                    }
+                }
+                if(personVariant.bionicUseTagsOverride != null && personVariant.bionicUseTagsOverride.size() != 0) {
+                    for(ba_factiondata.ba_bionicUseTagDetails tagDetails: personVariant.bionicUseTagsOverride) {
+                        for(String bionicId: ba_bionicmanager.getBionicFromTag(tagDetails.tag)) {
+                            randomBionics.add(bionicId, tagDetails.spawnWeight);
+                        }
+                    }
+                }
+                //if cant find any overriding bionics
+                if(randomBionics.getTotal() == 0) {
+                    for(ba_factiondata.ba_bionicUseIdDetails idDetails: factionData.bionicUseIdsList) {
+                        if(ba_bionicmanager.getBionic(idDetails.bionic.bionicId) != null) {
+                            randomBionics.add(idDetails.bionic.bionicId, idDetails.spawnWeight);
+                        }
+                    }
+                    for(ba_factiondata.ba_bionicUseTagDetails tagDetails: factionData.bionicUseTagsList) {
+                        for(String bionicId: ba_bionicmanager.getBionicFromTag(tagDetails.tag)) {
+                            randomBionics.add(bionicId, tagDetails.spawnWeight);
+                        }
+                    }
+                }
+                while(currentTry < maxTotalTries && setUpBionicConditions(person, factionData)) {
+                    String bionicId = randomBionics.pick(new Random());
+                    ba_bionicitemplugin bionic = ba_bionicmanager.getBionic(bionicId);
+                    WeightedRandomPicker<ba_limbmanager.ba_limb> randomLimbPicker = new WeightedRandomPicker<>();
+                    randomLimbPicker.addAll(ba_limbmanager.getLimbListFromGroupOnPerson(bionic.bionicLimbGroupId, person));
+                    ba_limbmanager.ba_limb selectedLimb = randomLimbPicker.pick();
+                    boolean success = installBionic(bionic, selectedLimb, person);
+                    if(success) {
+                        randomBionics.remove(bionicId);
+                        installedBionicCount++;
+                    }
+                    currentTry++;
+                }
+                person.addTag(ba_variablemanager.BA_RANDOM_BIONIC_GENERATED_TAG);
+            }
+        }
+    }
+    protected static boolean setUpBionicConditions(PersonAPI person, ba_factiondata factionData) {
+        if(factionData.maxBionicUseCount > 0 && ba_bionicmanager.getListStringBionicInstalled(person).size() > factionData.maxBionicUseCount) {
+            return false;
+        }
+        if(!checkIfCurrentBRMLowerThanLimit(person, factionData.targetBRMLevel)) {
+            return false;
+        }
+        if(!checkIfCurrentConsciousLowerThanLimit(person, factionData.targetConsciousLevel)) {
+            return false;
+        }
+        return true;
     }
     protected static int setUpBRMLimit(PersonAPI person) {
         //todo: add extra tags for person to calculate BRM/Consciousness mult ?
@@ -172,7 +248,7 @@ public class ba_officermanager {
         //return list with full limb details
         List<ba_bionicAugmentedData> anatomyList = new ArrayList<>();
         HashMap<ba_limbmanager.ba_limb, List<ba_bionicitemplugin>> bionicsInstalledList = ba_bionicmanager.getListLimbAndBionicInstalled(person);
-        String personGenericVariant = getAnatomyVariantTag(person);
+        String personGenericVariant = getPersonVariantTag(person);
         List<String> variantAnatomy = ba_variantmanager.variantList.get(personGenericVariant).limbIdList;
         for (String limbString: variantAnatomy) {
             ba_limbmanager.ba_limb limb = ba_limbmanager.getLimb(limbString);
@@ -224,7 +300,7 @@ public class ba_officermanager {
      */
     public static boolean checkIfBionicInstallableBaseOnPersonType(ba_bionicitemplugin bionic, PersonAPI person) {
         if(person.isPlayer() || (bionic.isApplyCaptainEffect && bionic.isApplyAdminEffect)) return true;
-        return (isOfficer(person) && bionic.isApplyCaptainEffect) || (!isOfficer(person) && bionic.isApplyAdminEffect);
+        return (isOfficer(person, false) && bionic.isApplyCaptainEffect) || (!isOfficer(person, false) && bionic.isApplyAdminEffect);
     }
     public static boolean checkIfCurrentBRMLowerThanLimitOnInstall(ba_bionicitemplugin bionic, PersonAPI person) {
         float currentBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
@@ -234,6 +310,21 @@ public class ba_officermanager {
     public static boolean checkIfConsciousnessReduceAboveZeroOnInstall(ba_bionicitemplugin bionic, PersonAPI person) {
         float conscious = person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
         return conscious - bionic.consciousnessCost > 0;
+    }
+
+    /**
+     * @param person
+     * @param limit percentage. Will be calculated with the BRM limit to get the final comparing float
+     * @return
+     */
+    public static boolean checkIfCurrentBRMLowerThanLimit(PersonAPI person, float limit) {
+        float currentBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
+        float limitBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);
+        return currentBrm < limit * limitBrm;
+    }
+    public static boolean checkIfCurrentConsciousLowerThanLimit(PersonAPI person, float limit) {
+        float current = person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
+        return current > limit;
     }
     /**
      * @param bionic the bionic going to be removed
@@ -314,18 +405,21 @@ public class ba_officermanager {
             person.addTag(ba_variablemanager.BA_RANDOM_BIONIC_GENERATED_TAG);
         }
     }
-    public static String getProfessionText(PersonAPI person) {
+    public static String getProfessionText(PersonAPI person, boolean isDisplayingOtherFleets) {
+        if(isDisplayingOtherFleets) {
+            return "Captain";
+        }
         String profString = "";
         if(person.isPlayer()) {
             return "Captain/Admin";
         }
         if(person.getFleet() != null) {
-            if(isOfficer(person)) profString = "Captain (Idle)";
+            if(isOfficer(person, false)) profString = "Captain (Idle)";
             if(Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(person) != null) {
                 profString = "Captain";
             }
         } else {
-            if(!isOfficer(person)) profString = "Admin (Idle)";
+            if(!isOfficer(person, false)) profString = "Admin (Idle)";
             if (person.getMarket() != null) {
                 MarketAPI market = person.getMarket();
                 if(market.getAdmin() == person) {
@@ -335,7 +429,9 @@ public class ba_officermanager {
         }
         return profString;
     }
-    public static boolean isOfficer(PersonAPI person) {
+    public static boolean isOfficer(PersonAPI person, boolean isDisplayingOtherFleets) {
+        //if is displaying other fleet => its always captain
+        if(isDisplayingOtherFleets) return true;
         for (AdminData admin: Global.getSector().getCharacterData().getAdmins()) {
             if(admin.getPerson().getId().equals(person.getId())) return false;
         }

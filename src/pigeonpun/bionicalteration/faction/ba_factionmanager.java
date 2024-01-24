@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.utils.ba_utils;
+import pigeonpun.bionicalteration.variant.ba_variant;
 import pigeonpun.bionicalteration.variant.ba_variantmanager;
 
 import java.io.IOException;
@@ -48,11 +49,35 @@ public class ba_factionmanager {
                         ba_factiondata.ba_factionVariantDetails detail = null;
                         if(ba_variantmanager.getVariant(variantData.getString("variantId")) != null) {
                             try {
+                                JSONArray bionicTagsUse = variantData.getJSONObject("bionicUseOverride").getJSONArray("tags");
+                                List<ba_factiondata.ba_bionicUseTagDetails> listBionicTagDetails = new ArrayList<>();
+                                for (int j = 0; j < bionicTagsUse.length(); j++) {
+                                    JSONObject tagData = bionicTagsUse.getJSONObject(i);
+                                    ba_factiondata.ba_bionicUseTagDetails tagDetail = new ba_factiondata.ba_bionicUseTagDetails(
+                                            tagData.getString("tag"),
+                                            (float) tagData.getDouble("spawnWeight")
+                                    );
+                                    listBionicTagDetails.add(tagDetail);
+                                }
+                                JSONArray bionicIdsUse = variantData.getJSONObject("bionicUseOverride").getJSONArray("ids");
+                                List<ba_factiondata.ba_bionicUseIdDetails> listBionicIdDetails = new ArrayList<>();
+                                for (int j = 0; j < bionicIdsUse.length(); j++) {
+                                    JSONObject idData = bionicIdsUse.getJSONObject(i);
+                                    if(ba_bionicmanager.getBionic(idData.getString("id")) != null) {
+                                        ba_factiondata.ba_bionicUseIdDetails idDetail = new ba_factiondata.ba_bionicUseIdDetails(
+                                                ba_bionicmanager.getBionic(idData.getString("id")),
+                                                (float) idData.getDouble("spawnWeight")
+                                        );
+                                        listBionicIdDetails.add(idDetail);
+                                    } else {
+                                        log.info("Can not find bionic ID for " + factionId + " in bionicUse with bionic ID: " + idData.getString("id") + " Skipping.");
+                                    }
+                                }
                                 detail = new ba_factiondata.ba_factionVariantDetails(
                                         ba_variantmanager.getVariant(variantData.getString("variantId")),
                                         (float) variantData.getDouble("spawnWeight"),
-                                        ba_utils.getListStringFromJsonArray(factionJsonData.getJSONObject("bionicUseOverride").getJSONArray("tags")),
-                                        ba_utils.getListStringFromJsonArray(factionJsonData.getJSONObject("bionicUseOverride").getJSONArray("ids"))
+                                        listBionicTagDetails,
+                                        listBionicIdDetails
                                 );
                             } catch (Exception e) {
                                 log.info("Can not find bionicUseOverride for " + factionId + " variant " + variantData.getString("variantId") + ". Creating empty list for bionic override");
@@ -91,16 +116,30 @@ public class ba_factionmanager {
                             log.info("Can not find bionic ID for " + factionId + " in bionicUse with bionic ID: " + idData.getString("id") + " Skipping.");
                         }
                     }
-                    factionData = new ba_factiondata(
-                            factionId,
-                            listVariantDetails,
-                            listBionicTagDetails,
-                            listBionicIdDetails,
-                            (float) factionJsonData.getDouble("targetBRMLevel"),
-                            (float) factionJsonData.getDouble("targetConsciousLevel")
-                    );
+                    try {
+                        factionData = new ba_factiondata(
+                                factionId,
+                                listVariantDetails,
+                                listBionicTagDetails,
+                                listBionicIdDetails,
+                                (float) factionJsonData.getDouble("targetBRMLevel"),
+                                (float) factionJsonData.getDouble("targetConsciousLevel"),
+                                (float) factionJsonData.getDouble("maxBionicUseCount")
+                        );
+                    } catch (Exception e) {
+                        factionData = new ba_factiondata(
+                                factionId,
+                                listVariantDetails,
+                                listBionicTagDetails,
+                                listBionicIdDetails,
+                                (float) factionJsonData.getDouble("targetBRMLevel"),
+                                (float) factionJsonData.getDouble("targetConsciousLevel"),
+                                -1
+                        );
+                    }
                     factionVariantMap.put(factionId, factionData);
                 } catch (Exception e) {
+                    log.info(e);
                     log.error("Unable to find faction bionic data for " + factionId + ". Skipping");
                 }
             }
@@ -108,15 +147,26 @@ public class ba_factionmanager {
             throw new RuntimeException("Failed loading ", e);
         }
     }
+    public static ba_factiondata getFactionData(String factionId) {
+        ba_factiondata data = factionVariantMap.get(factionId);
+        if(data == null) {
+            log.error("Can not find faction data of faction id: "+ factionId);
+        }
+        return data;
+    }
     /**
      * Get a random variant based on faction. Defined in faction_data.json
      * @param factionId
      * @return
      */
-    //todo: change this so it will select from faction's random list
     public static String getRandomFactionVariant(String factionId) {
         WeightedRandomPicker<String> randomPicker = new WeightedRandomPicker<>();
-
+        ba_factiondata data = getFactionData(factionId);
+        if(data != null) {
+            for(ba_factiondata.ba_factionVariantDetails detail: data.variantDetails) {
+                randomPicker.add(detail.variant.variantId);
+            }
+        }
         return randomPicker.pick();
     }
 }

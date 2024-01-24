@@ -48,6 +48,7 @@ public class ba_variantmanager {
                     if(!Objects.equals(variantId, "")) {
                         List<String> limbIdList = ba_utils.trimAndSplitString(row.getString("limbIdList"));
                         variantList.put(variantId, new ba_variant(
+                                row.getString("variantId"),
                                 row.getString("variantName"),
                                 limbIdList,
                                 row.getBoolean("allowPlayerChangeTo")
@@ -85,7 +86,7 @@ public class ba_variantmanager {
      * @param person Person
      * @return the Generic Variant tag of a person. A person must only have 1 variant
      */
-    public static String getAnatomyVariantTag(PersonAPI person) {
+    public static String getPersonVariantTag(PersonAPI person) {
         List<String> anatomyVariantList = getListAnatomyKeys();
         String personVariant = null;
         Set<String> tags = person.getTags();
@@ -117,6 +118,20 @@ public class ba_variantmanager {
     public static String getRandomVariant() {
         WeightedRandomPicker<String> randomPicker = new WeightedRandomPicker<>();
         randomPicker.addAll(getListAnatomyKeys());
+        return randomPicker.pick();
+    }
+
+    /**
+     * Get random variant from faction id
+     * @param factionId
+     * @return
+     */
+    public static String getRandomVariantFromFaction(String factionId) {
+        WeightedRandomPicker<String> randomPicker = new WeightedRandomPicker<>();
+        ba_factiondata factionData = ba_factionmanager.getFactionData(factionId);
+        for(ba_factiondata.ba_factionVariantDetails details:  factionData.variantDetails) {
+            randomPicker.add(details.variant.variantId, details.variantSpawnWeight);
+        }
         return randomPicker.pick();
     }
 }

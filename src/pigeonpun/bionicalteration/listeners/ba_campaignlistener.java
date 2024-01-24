@@ -2,8 +2,12 @@ package pigeonpun.bionicalteration.listeners;
 
 import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.campaign.*;
+import com.fs.starfarer.api.characters.OfficerDataAPI;
+import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.impl.campaign.FleetEncounterContext;
 import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl;
+import pigeonpun.bionicalteration.faction.ba_factiondata;
+import pigeonpun.bionicalteration.faction.ba_factionmanager;
 
 import java.util.List;
 
@@ -24,6 +28,9 @@ public class ba_campaignlistener extends BaseCampaignEventListener implements Ev
                 if(!fleet.isPlayerFleet()) {
                     //generate bionic here
                     //todo: generate bionic base on faction on fleet interact
+                    for(OfficerDataAPI person: fleet.getFleetData().getOfficersCopy()) {
+                        ba_factionmanager.getRandomFactionVariant(fleet.getFleetData().getCommander().getFaction().getId());
+                    }
                 }
             }
         }

@@ -14,6 +14,7 @@ import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.conscious.ba_conscious;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
+import pigeonpun.bionicalteration.ui.ba_uiplugin;
 import pigeonpun.bionicalteration.utils.ba_stringhelper;
 
 import java.awt.*;
@@ -58,7 +59,7 @@ public class ba_conscious_fragile implements ba_conscious {
         if(person.isPlayer()) {
             showBoth = true;
         } else {
-            if(ba_officermanager.isOfficer(person)) {
+            if(ba_officermanager.isOfficer(person, ba_uiplugin.isDisplayingOtherFleets)) {
                 showOfficer = true;
             }
         }
