@@ -150,7 +150,9 @@ public class ba_factionmanager {
     public static ba_factiondata getFactionData(String factionId) {
         ba_factiondata data = factionVariantMap.get(factionId);
         if(data == null) {
-            log.error("Can not find faction data of faction id: "+ factionId);
+            //fallback on faction that haven't been defined in faction_data.json
+            data = factionVariantMap.get("ba_default");
+            log.error("Can not find faction data of faction id: "+ factionId + ". Replacing with default faction profile.");
         }
         return data;
     }

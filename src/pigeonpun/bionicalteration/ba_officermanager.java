@@ -1,6 +1,7 @@
 package pigeonpun.bionicalteration;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.CargoAPI;
 import com.fs.starfarer.api.campaign.SpecialItemData;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
@@ -8,6 +9,7 @@ import com.fs.starfarer.api.characters.AdminData;
 import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import com.fs.starfarer.api.characters.OfficerDataAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import org.apache.log4j.Logger;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
@@ -30,20 +32,28 @@ public class ba_officermanager {
     public static List<PersonAPI> listPersons = new ArrayList<>();
     static Logger log = Global.getLogger(ba_officermanager.class);
     public static void onSaveLoad() {
-        //install random bionic on start
         refresh(null);
-        setUpBionic();
     }
 
     /**
-     * Refresh the entire list person pls all the other stats set up needed
+     * Refresh the entire list person plus all the other stats set up needed
      */
-    //todo: check if refresh on save/game load run this
     public static void refresh(List<PersonAPI> listOfficer) {
         refreshListPerson(listOfficer);
-        setUpVariant();
-        setUpDynamicStats();
-        setUpSkill();
+        setUpVariant(listPersons);
+        setUpDynamicStats(listPersons);
+        setUpSkill(listPersons);
+        setUpBionic(listPersons);
+    }
+    /**
+     * Set up all the needed stats/bionic/skill for officer to display bionics
+     * @param listOfficers
+     */
+    public static void setUpListOfficers(List<PersonAPI> listOfficers) {
+        setUpVariant(listOfficers);
+        setUpDynamicStats(listOfficers);
+        setUpSkill(listOfficers);
+        setUpBionic(listOfficers);
     }
     //create new admin
     //runcode import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent; import com.fs.starfarer.api.impl.campaign.ids.Factions; PersonAPI person = OfficerManagerEvent.createAdmin(Global.getSector().getFaction(Factions.MERCENARY), 1, new Random()); Global.getSector().getCharacterData().addAdmin(person);
@@ -51,31 +61,24 @@ public class ba_officermanager {
         listPersons.clear();
         List<PersonAPI> listP = new ArrayList<>();
         if(listOfficers == null) {
-            listP.add(Global.getSector().getPlayerPerson());
-            List<OfficerDataAPI> listPlayerMember = Global.getSector().getPlayerFleet().getFleetData().getOfficersCopy();
-            for (OfficerDataAPI officer: listPlayerMember) {
-                listP.add(officer.getPerson());
-            }
-            for (AdminData admin: Global.getSector().getCharacterData().getAdmins()) {
-                listP.add(admin.getPerson());
-            }
+            listP.addAll(getListOfficerFromFleet(null, true));
         } else {
             listP.addAll(listOfficers);
         }
         listPersons.addAll(listP);
         return listPersons;
     }
-    public static void setUpVariant() {
+    public static void setUpVariant(List<PersonAPI> listOfficers) {
         //todo: set up variant per faction
-        for(PersonAPI person: listPersons) {
+        for(PersonAPI person: listOfficers) {
             if(getPersonVariantTag(person) == null) {
                 String randomVariant = ba_variantmanager.getRandomVariantFromFaction(person.getFaction().getId());
                 person.addTag(randomVariant);
             }
         }
     }
-    public static void setUpDynamicStats() {
-        for(PersonAPI person: listPersons) {
+    public static void setUpDynamicStats(List<PersonAPI> listOfficers) {
+        for(PersonAPI person: listOfficers) {
             //consciousness
             person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).modifyFlat(ba_variablemanager.BA_CONSCIOUSNESS_SOURCE_KEY, setUpConsciousness(person));
             //BRM limit
@@ -93,8 +96,8 @@ public class ba_officermanager {
             }
         }
     }
-    public static void setUpSkill() {
-        for(PersonAPI person: ba_officermanager.listPersons) {
+    public static void setUpSkill(List<PersonAPI> listOfficers) {
+        for(PersonAPI person: listOfficers) {
             for (MutableCharacterStatsAPI.SkillLevelAPI skill: person.getStats().getSkillsCopy()) {
                 if (!skill.getSkill().getId().equals(ba_variablemanager.BA_BIONIC_SKILL_ID) && ba_bionicmanager.checkIfHaveBionicInstalled(person)) {
                     person.getStats().setSkillLevel(ba_variablemanager.BA_BIONIC_SKILL_ID, 1);
@@ -107,11 +110,10 @@ public class ba_officermanager {
      * Bionics choosing will be base on faction_data.json
      * Note: If bionicUseOverride array length is 0 even when defined in the faction_data.json will be ignored and use the bionicUse from the faction instead.
      */
-    public static void setUpBionic() {
-        for(PersonAPI person : ba_officermanager.listPersons) {
+    public static void setUpBionic(List<PersonAPI> listOfficer) {
+        for(PersonAPI person : listOfficer) {
             int currentTry = 0;
             int maxTotalTries = 50;
-            int installedBionicCount = 0;
             ba_factiondata factionData = ba_factionmanager.getFactionData(person.getFaction().getId());
             ba_factiondata.ba_factionVariantDetails personVariant = null;
             for(ba_factiondata.ba_factionVariantDetails detail: factionData.variantDetails) {
@@ -157,7 +159,6 @@ public class ba_officermanager {
                     boolean success = installBionic(bionic, selectedLimb, person);
                     if(success) {
                         randomBionics.remove(bionicId);
-                        installedBionicCount++;
                     }
                     currentTry++;
                 }
@@ -190,7 +191,40 @@ public class ba_officermanager {
         float currentConsciousness = ba_variablemanager.BA_CONSCIOUSNESS_DEFAULT;
         return currentConsciousness;
     }
+    /**
+     * @param fleets fleets that will get the list officer from
+     * @param isPlayer If true, only get from player fleet
+     */
+    public static List<PersonAPI> getListOfficerFromFleet(List<CampaignFleetAPI> fleets, boolean isPlayer) {
+        List<PersonAPI> listP = new ArrayList<>();
+        if(!isPlayer) {
+            for (CampaignFleetAPI fleet : fleets) {
+                if(!fleet.isPlayerFleet()) {
+                    for (FleetMemberAPI member : fleet.getMembersWithFightersCopy()) {
+                        if (member.isFighterWing()) continue;
+                        if (!member.getCaptain().isDefault() && !member.getCaptain().isAICore()) {
+                            listP.add(member.getCaptain());
+                        }
+                    }
+                }
+            }
+        } else {
+            listP.add(Global.getSector().getPlayerPerson());
+            List<OfficerDataAPI> listPlayerMember = Global.getSector().getPlayerFleet().getFleetData().getOfficersCopy();
+            for (OfficerDataAPI officer: listPlayerMember) {
+                if(!officer.getPerson().isAICore() && !officer.getPerson().isDefault()) {
+                    listP.add(officer.getPerson());
+                }
+            }
+            for (AdminData admin: Global.getSector().getCharacterData().getAdmins()) {
+                if(!admin.getPerson().isDefault() && !admin.getPerson().isAICore()) {
+                    listP.add(admin.getPerson());
+                }
+            }
+        }
 
+        return listP;
+    }
     /**
      * Update necessary stats on a person
      * @param bionic
@@ -404,6 +438,18 @@ public class ba_officermanager {
             }
             person.addTag(ba_variablemanager.BA_RANDOM_BIONIC_GENERATED_TAG);
         }
+    }
+    public static List<PersonAPI> getListPersonsHaveBionic(CampaignFleetAPI fleet) {
+        List<PersonAPI> list = new ArrayList<>();
+        for(FleetMemberAPI member: fleet.getMembersWithFightersCopy()) {
+            if(member.isFighterWing()) continue;
+            if(!member.getCaptain().isDefault()) {
+                if(!ba_bionicmanager.getListStringBionicInstalled(member.getCaptain()).isEmpty()) {
+                    list.add(member.getCaptain());
+                }
+            }
+        }
+        return list;
     }
     public static String getProfessionText(PersonAPI person, boolean isDisplayingOtherFleets) {
         if(isDisplayingOtherFleets) {

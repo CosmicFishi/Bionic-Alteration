@@ -55,6 +55,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
     HashMap<String, ba_component> tabMap = new HashMap<>();
     String currentTabId = OVERVIEW;
     public static boolean isDisplayingOtherFleets = false;
+    public static float currentScrollPosition = 0;
     public static ba_uiplugin createDefault() {
         return new ba_uiplugin();
     }
@@ -69,6 +70,12 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
      * @param moveToTabId tab id, get from uiPlugin class
      */
     public void init(CustomPanelAPI panel, CustomVisualDialogDelegate.DialogCallbacks callbacks, InteractionDialogAPI dialog, String moveToTabId, List<PersonAPI> personList) {
+        if(personList != null) {
+            isDisplayingOtherFleets = true;
+        } else {
+            isDisplayingOtherFleets = false;
+        }
+        ba_officermanager.refresh(personList);
         this.callbacks = callbacks;
         this.containerPanel = panel;
         this.dialog = dialog;
@@ -78,12 +85,6 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         pW = (int) this.containerPanel.getPosition().getWidth();
         pH = (int) this.containerPanel.getPosition().getHeight();
         initialUICreation();
-        ba_officermanager.refresh(personList);
-        if(personList != null) {
-            isDisplayingOtherFleets = true;
-        } else {
-            isDisplayingOtherFleets = false;
-        }
         //change the current tab id and "focus" on it
         focusContent(moveToTabId);
     }
@@ -253,6 +254,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         overviewPersonContainer.subComponentListMap.put("SUB_PERSON_LIST", subComponentPersonList);
         //do the adding late so the scroll work (thanks Lukas04)
         overviewPersonContainer.mainPanel.addUIElement(overviewPersonTooltipContainer);
+        overviewPersonTooltipContainer.getExternalScroller().setYOffset(currentScrollPosition);
     }
     protected void displayPersonInfoList(ba_component creatorComponent, String creatorComponentTooltip, float personInfoW, float personInfoH, float personInfoX, float personInfoY) {
         float pad = 10f;
@@ -1340,6 +1342,14 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         List<PersonAPI> tempList = new ArrayList<>((ba_officermanager.listPersons));
         ba_officermanager.refreshListPerson(tempList);
     }
+    public void saveScrollPosition() {
+        if(currentTabId.equals(OVERVIEW)) {
+            ba_component component = componentMap.get("OVERVIEW_PERSON_LIST_PANEL");
+            if(component != null && component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP") != null) {
+                currentScrollPosition = component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller().getYOffset();
+            }
+        }
+    }
     @Override
     public void positionChanged(PositionAPI position) {
 
@@ -1471,6 +1481,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                                 for(PersonAPI person: ba_officermanager.listPersons) {
                                     if(tokens[1].equals(person.getId())) {
                                         this.currentPerson = person;
+                                        saveScrollPosition();
                                         shouldRefresh = true;
                                     }
                                 }
@@ -1490,7 +1501,10 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             if (event.isKeyDownEvent() && event.getEventValue() == Keyboard.KEY_ESCAPE) {
                 event.consume();
                 callbacks.dismissDialog();
-                dialog.dismiss();
+                if(!isDisplayingOtherFleets) {
+                    dialog.dismiss();
+                    //todo: find a better way to go out of dialog
+                }
                 return;
             }
         }

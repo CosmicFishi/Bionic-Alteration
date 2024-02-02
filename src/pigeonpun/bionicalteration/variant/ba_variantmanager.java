@@ -22,7 +22,6 @@ import java.util.*;
  * A person always have their ANATOMY VARIANT, which is defined in a csv along with their generic's limbs
  * @author PigeonPun
  */
-//todo: change variant manager so it can control which faction have what type of variant, what kind of bionic do they have. Have a selection of what kind of variant do they want to be as well.
 public class ba_variantmanager {
     static Logger log = Global.getLogger(ba_variantmanager.class);
     public static HashMap<String, ba_variant> variantList = new HashMap<>();
@@ -129,8 +128,10 @@ public class ba_variantmanager {
     public static String getRandomVariantFromFaction(String factionId) {
         WeightedRandomPicker<String> randomPicker = new WeightedRandomPicker<>();
         ba_factiondata factionData = ba_factionmanager.getFactionData(factionId);
-        for(ba_factiondata.ba_factionVariantDetails details:  factionData.variantDetails) {
-            randomPicker.add(details.variant.variantId, details.variantSpawnWeight);
+        if(factionData != null) {
+            for(ba_factiondata.ba_factionVariantDetails details:  factionData.variantDetails) {
+                randomPicker.add(details.variant.variantId, details.variantSpawnWeight);
+            }
         }
         return randomPicker.pick();
     }

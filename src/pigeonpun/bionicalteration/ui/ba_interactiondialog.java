@@ -30,7 +30,7 @@ public class ba_interactiondialog implements InteractionDialogPlugin {
         if(optionData == OptionID.INIT) {
             dialog.showCustomVisualDialog(ba_uiplugin.MAIN_CONTAINER_WIDTH,
                     ba_uiplugin.MAIN_CONTAINER_HEIGHT,
-                    new ba_delegate(ba_uiplugin.createDefault(), dialog)
+                    new ba_delegate(ba_uiplugin.createDefault(), dialog, null)
                     );
         }
     }

@@ -1,0 +1,8 @@
+{
+  "plugins":{
+
+  },
+  "ruleCommandPackages":[
+    "pigeonpun.bionicalteration.rulecmd"
+  ],
+}
