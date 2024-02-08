@@ -2,7 +2,9 @@ package pigeonpun.bionicalteration.plugin;
 
 import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
+import org.lazywizard.lazylib.MathUtils;
 import pigeonpun.bionicalteration.ba_officermanager;
+import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.faction.ba_factionmanager;
 import pigeonpun.bionicalteration.listeners.ba_campaignlistener;
 import pigeonpun.bionicalteration.listeners.ba_salvagelistener;
@@ -57,6 +59,12 @@ public class bionicalterationplugin extends BaseModPlugin {
         Global.getSector().getListenerManager().removeListener(salvageListener);
         Global.getSector().removeTransientScript(campaignListener);
         Global.getSector().removeListener(campaignListener);
+    }
+    public static String getSectorSeed() {
+        if(!Global.getSector().getPersistentData().containsKey(ba_variablemanager.BA_SEED_KEY)) {
+            Global.getSector().getPersistentData().put(ba_variablemanager.BA_SEED_KEY, String.valueOf(MathUtils.getRandomNumberInRange(1000, 10000)).hashCode());
+        }
+        return String.valueOf(Global.getSector().getPersistentData().get(ba_variablemanager.BA_SEED_KEY));
     }
 //
 //    @Override

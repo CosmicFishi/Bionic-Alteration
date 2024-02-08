@@ -5,7 +5,7 @@
     "utility":"false",
     "version": { "major":"0", "minor": "0", "patch": "1" },
 	"description":"Modify and fight against foe with bionics",
-    "gameVersion": "0.96a-RC10", 
+    "gameVersion": "0.97a-RC6",
   	"jars":["jars/bionicalteration.jar"],
   	"modPlugin":"pigeonpun.bionicalteration.plugin.bionicalterationplugin",
 	  	"dependencies": [

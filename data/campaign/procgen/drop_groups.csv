@@ -1,0 +1,7 @@
+commodity,group,freq
+nothing,ba_bionic_civil,100
+"item_:{tags:[ba_bionic_t1, !no_drop]}",ba_bionic_civil,10
+,,
+nothing,ba_bionic_military,100
+"item_:{tags:[ba_bionic_t2, !no_drop]}",ba_bionic_military,5
+"item_:{tags:[ba_bionic_t1, !no_drop]}",ba_bionic_military,15

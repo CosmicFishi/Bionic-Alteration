@@ -5,6 +5,7 @@ import com.fs.starfarer.api.util.Misc;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class ba_variablemanager {
     public static final String BIONIC_ALTERATION = "pigeonpun_bionicalteration";
@@ -60,4 +61,10 @@ public class ba_variablemanager {
     }
     public static final String BA_BIONIC_SKILL_ID = "ba_bionic_augmented";
     public static final String BA_RANDOM_BIONIC_GENERATED_TAG = "ba_random_bionic_generated";
+    public static final String BA_SEED_KEY = "ba_sector_seed";
+    //todo: integrate these into existing bionic generating for NPC
+    public static class BIONIC_TAGS {
+        public static final String NO_DROP = "no_drop";
+        public static final String NO_GENERATE = "no_generate";
+    }
 }
