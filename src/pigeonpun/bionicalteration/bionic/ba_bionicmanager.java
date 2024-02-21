@@ -73,6 +73,7 @@ public class ba_bionicmanager {
                             MagicSettings.toColor3(row.getString("colorDisplay")),
                             row.getInt("brmCost"),
                             (float) row.getDouble("consciousnessCost"),
+                            (float) row.getDouble("dropChance"),
                             row.getBoolean("isApplyCaptainEffect"),
                             row.getBoolean("isApplyAdminEffect"),
                             row.getBoolean("isAICoreBionic"),

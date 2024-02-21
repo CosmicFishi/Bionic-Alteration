@@ -9,6 +9,7 @@ import com.fs.starfarer.api.impl.campaign.procgen.themes.SalvageEntityGeneratorO
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.SalvageEntity;
 import com.fs.starfarer.api.util.Misc;
 import pigeonpun.bionicalteration.ba_officermanager;
+import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
 
@@ -23,24 +24,30 @@ public class ba_salvagelistener implements ShowLootListener {
         if(dialog.getInteractionTarget() == null) return;
         if(dialog.getInteractionTarget() instanceof CampaignFleetAPI) {
             CampaignFleetAPI fleet = (CampaignFleetAPI) dialog.getInteractionTarget();
-            List<ba_officermanager.ba_bionicDropPotentialData> bionicDrop = ba_officermanager.getListPotentialBionicDrop(fleet);
-            Random rand = Misc.getRandom(bionicalterationplugin.getSectorSeed().hashCode(), 100);
-            //todo: get the officer bionics and somehow setup the bionic salvage
-
-            //todo: test this
-            List<SalvageEntityGenDataSpec.DropData> dropData = getDropDataFromEntity(dialog.getInteractionTarget());
-
-            MemoryAPI memory = dialog.getInteractionTarget().getMemoryWithoutUpdate();
-            long randomSeed = memory.getLong(MemFlags.SALVAGE_SEED);
-            Random random = Misc.getRandom(randomSeed, 100);
-
-            List<SalvageEntityGenDataSpec.DropData> dropValue = generateDropValueList(dropData);
-            List<SalvageEntityGenDataSpec.DropData> dropRandom = generateDropRandomList(dropData);
-
-            CargoAPI salvage = SalvageEntity.generateSalvage(random,
-                    1f, 1f, 1f, 1f, dropValue, dropRandom);
-            loot.addAll(salvage);
+            if(fleet.getMemoryWithoutUpdate().contains("$ba_bionic_dropList")) {
+                List<ba_bionicitemplugin> bionicDrop = (List<ba_bionicitemplugin>) fleet.getMemoryWithoutUpdate().get("$ba_bionic_dropList");
+                Random rand = Misc.getRandom(bionicalterationplugin.getSectorSeed().hashCode(), 100);
+                //todo: get the officer bionics and somehow setup the bionic salvage
+                for (ba_bionicitemplugin bionic: bionicDrop) {
+                    if(bionic.dropChance > 0 && rand.nextFloat() <= bionic.dropChance) {
+                        loot.addSpecial(new SpecialItemData(bionic.bionicId, null), 1);
+                    }
+                }
+            }
         }
+        //todo: test this
+        List<SalvageEntityGenDataSpec.DropData> dropData = getDropDataFromEntity(dialog.getInteractionTarget());
+
+        MemoryAPI memory = dialog.getInteractionTarget().getMemoryWithoutUpdate();
+        long randomSeed = memory.getLong(MemFlags.SALVAGE_SEED);
+        Random random = Misc.getRandom(randomSeed, 100);
+
+        List<SalvageEntityGenDataSpec.DropData> dropValue = generateDropValueList(dropData);
+        List<SalvageEntityGenDataSpec.DropData> dropRandom = generateDropRandomList(dropData);
+
+        CargoAPI salvage = SalvageEntity.generateSalvage(random,
+                1f, 1f, 1f, 1f, dropValue, dropRandom);
+        loot.addAll(salvage);
     }
 
     /**
@@ -54,8 +61,20 @@ public class ba_salvagelistener implements ShowLootListener {
             if(d.group == null) continue;
             if(d.value == -1) continue;
             int value = -1;
-            if(d.group.equals("rare_tech")) {
+            if(d.group.contains("rare_tech")) {
                 value = (int) (d.value * 0.2f);
+            }
+            if(d.group.contains("goods")) {
+                value = (int) (d.value * 0.05f);
+            }
+            if(d.group.contains("supply")) {
+                value = (int) (d.value * 0.08f);
+            }
+            if(d.group.contains("machinery")) {
+                value = (int) (d.value * 0.14f);
+            }
+            if(d.group.contains("freighter_cargo")) {
+                value = (int) (d.value * 0.1f);
             }
             if(value != -1) {
                 SalvageEntityGenDataSpec.DropData civilDropValue = new SalvageEntityGenDataSpec.DropData();
@@ -85,8 +104,20 @@ public class ba_salvagelistener implements ShowLootListener {
             if(d.group == null) continue;
             if(d.chances == -1) continue;
             int chances = -1;
-            if(d.group.equals("rare_tech")) {
+            if(d.group.contains("rare_tech")) {
                 chances = (int) (d.chances * 1f);
+            }
+            if(d.group.contains("goods")) {
+                chances = (int) (d.chances * 0.2f);
+            }
+            if(d.group.contains("supply")) {
+                chances = (int) (d.chances * 0.6f);
+            }
+            if(d.group.contains("machinery")) {
+                chances = (int) (d.chances * 0.8f);
+            }
+            if(d.group.contains("freighter_cargo")) {
+                chances = (int) (d.chances * 0.4f);
             }
             if(chances != -1) {
                 SalvageEntityGenDataSpec.DropData civilDropValue = new SalvageEntityGenDataSpec.DropData();

@@ -451,25 +451,15 @@ public class ba_officermanager {
         }
         return list;
     }
-    public static List<ba_bionicDropPotentialData> getListPotentialBionicDrop(CampaignFleetAPI fleet) {
+    public static List<ba_bionicitemplugin> getListPotentialBionicDrop(CampaignFleetAPI fleet) {
         List<ba_bionicitemplugin> listBionic = new ArrayList<>();
-        List<ba_bionicDropPotentialData> listDrops = new ArrayList<>();
         List<PersonAPI> listPerson = getListPersonsHaveBionic(fleet);
         if(!listPerson.isEmpty()) {
             for(PersonAPI person: listPerson) {
                 listBionic.addAll(ba_bionicmanager.getListBionicInstalled(person));
             }
-            for(ba_bionicitemplugin bionic: listBionic) {
-                for(ba_bionicDropPotentialData drop: listDrops) {
-                    if(!listDrops.isEmpty() && drop.bionic.bionicId.equals(bionic.bionicId)) {
-                        drop.count += 1;
-                    } else {
-                        listDrops.add(new ba_bionicDropPotentialData(bionic));
-                    }
-                }
-            }
         }
-        return listDrops;
+        return listBionic;
     }
     public static String getProfessionText(PersonAPI person, boolean isDisplayingOtherFleets) {
         if(isDisplayingOtherFleets) {
@@ -517,13 +507,6 @@ public class ba_officermanager {
         ba_bionicAugmentedData(ba_limbmanager.ba_limb limb, List<ba_bionicitemplugin> bionic) {
             this.limb = limb;
             this.bionicInstalled = bionic;
-        }
-    }
-    public static class ba_bionicDropPotentialData {
-        public ba_bionicitemplugin bionic;
-        public int count = 1;
-        public ba_bionicDropPotentialData(ba_bionicitemplugin bionic) {
-            this.bionic = bionic;
         }
     }
 }

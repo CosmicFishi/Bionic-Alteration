@@ -36,6 +36,8 @@ public class ba_campaignlistener extends BaseCampaignEventListener implements Ev
             List<CampaignFleetAPI> fleets = context.getBattle().getBothSides();
             List<PersonAPI> listPerson = new ArrayList<>(ba_officermanager.getListOfficerFromFleet(fleets, false));
             ba_officermanager.setUpListOfficers(listPerson);
+            CampaignFleetAPI otherFleet = context.getBattle().getCombinedTwo();
+            otherFleet.getMemoryWithoutUpdate().set("$ba_bionic_dropList", ba_officermanager.getListPotentialBionicDrop(otherFleet));
             //todo: add the bionic dialog thingy up here if possible ? remove it from rules.csv
             log.info("Set up for officers completed");
         }
