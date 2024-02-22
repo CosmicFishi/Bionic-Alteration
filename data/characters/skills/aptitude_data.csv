@@ -1,0 +1,2 @@
+id,name,color,description,order,effect_skill_id,sound1,sound2,sound3,sound4,sound5,sound_story,elite_overlay,elite_overlay_medium,elite_overlay_small
+ba_bionic,Bionic,"96,255,0,255",Skills representing bionics installed on the person,5,ba_aptitude_bionic,leadership1,leadership2,leadership3,leadership4,leadership5,ui_char_spent_story_point_leadership,graphics/icons/skills/elite_generic.png,graphics/icons/skills/elite_generic48.png,graphics/icons/skills/elite_generic32.png

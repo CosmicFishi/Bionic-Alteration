@@ -132,9 +132,4 @@ public class ba_conscious_weaken implements ba_conscious {
     public void advanceInCombat(ShipAPI ship, float amount) {
 
     }
-
-    @Override
-    public void advanceInCampaign() {
-
-    }
 }

@@ -20,14 +20,12 @@ import java.util.Random;
 public class ba_salvagelistener implements ShowLootListener {
     @Override
     public void reportAboutToShowLootToPlayer(CargoAPI loot, InteractionDialogAPI dialog) {
-        //todo: salvage spawning
         if(dialog.getInteractionTarget() == null) return;
         if(dialog.getInteractionTarget() instanceof CampaignFleetAPI) {
             CampaignFleetAPI fleet = (CampaignFleetAPI) dialog.getInteractionTarget();
             if(fleet.getMemoryWithoutUpdate().contains("$ba_bionic_dropList")) {
                 List<ba_bionicitemplugin> bionicDrop = (List<ba_bionicitemplugin>) fleet.getMemoryWithoutUpdate().get("$ba_bionic_dropList");
                 Random rand = Misc.getRandom(bionicalterationplugin.getSectorSeed().hashCode(), 100);
-                //todo: get the officer bionics and somehow setup the bionic salvage
                 for (ba_bionicitemplugin bionic: bionicDrop) {
                     if(bionic.dropChance > 0 && rand.nextFloat() <= bionic.dropChance) {
                         loot.addSpecial(new SpecialItemData(bionic.bionicId, null), 1);
@@ -35,7 +33,7 @@ public class ba_salvagelistener implements ShowLootListener {
                 }
             }
         }
-        //todo: test this
+        //todo: test this further
         List<SalvageEntityGenDataSpec.DropData> dropData = getDropDataFromEntity(dialog.getInteractionTarget());
 
         MemoryAPI memory = dialog.getInteractionTarget().getMemoryWithoutUpdate();

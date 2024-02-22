@@ -102,15 +102,7 @@ public class ba_guardian_mouth_effect implements ba_bioniceffect {
 
     }
 
-    @Override
-    public boolean isAdvanceInCampaign() {
-        return false;
-    }
 
-    @Override
-    public void advanceInCampaign() {
-
-    }
 
     @Override
     public void onRemove(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {

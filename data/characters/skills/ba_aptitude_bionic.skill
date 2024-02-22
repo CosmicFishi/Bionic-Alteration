@@ -1,0 +1,12 @@
+{
+	"id":"ba_aptitude_bionic",
+	"governingAptitude":"ba_bionic",
+	"effectGroups":[
+		{
+			"requiredSkillLevel":0,
+			"effects":[
+				{"type":"DESCRIPTION", "script":"pigeonpun.bionicalteration.skills.ba_aptitude_bionic$Level0"},
+			]
+		},
+	],
+}

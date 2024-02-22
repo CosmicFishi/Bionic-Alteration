@@ -298,8 +298,6 @@ public class ba_bionicmanager {
         while(i < count && !random.isEmpty()) {
             String picked = random.pick();
             random.remove(picked);
-//            ba_bionicitemplugin bionic = getBionic(picked);
-//            WeightedRandomPicker<String> randomSectionPicker = new WeightedRandomPicker<>();
             randomBionic.add(picked);
             i++;
         }
@@ -340,9 +338,5 @@ public class ba_bionicmanager {
     }
     public static List<String> getListBionicKeys() {
         return new ArrayList<>(bionicItemMap.keySet());
-    }
-    //todo: Render the stars
-    public static TooltipMakerAPI renderExtraOnItem() {
-        return null;
     }
 }

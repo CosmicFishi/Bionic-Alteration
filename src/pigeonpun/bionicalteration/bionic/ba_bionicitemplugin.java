@@ -37,7 +37,6 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
     public boolean isApplyAdminEffect;
     public boolean isAICoreBionic;
     public boolean isAdvanceInCombat;
-    public boolean isAdvanceInCampaign;
     public boolean isAllowedRemoveAfterInstall;
     public List<String> conflictedBionicIdList = new ArrayList<>();
     protected SpecialItemSpecAPI spec;

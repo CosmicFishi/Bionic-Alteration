@@ -97,18 +97,10 @@ public class ba_stellar_eye_effect implements ba_bioniceffect {
 
     @Override
     public void advanceInCombat(ShipAPI ship, float amount) {
-//        log.info("working");
-    }
-
-    @Override
-    public boolean isAdvanceInCampaign() {
-        return false;
-    }
-
-    @Override
-    public void advanceInCampaign() {
 
     }
+
+
 
     @Override
     public void onRemove(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {

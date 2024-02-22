@@ -1,11 +1,7 @@
 id,trigger,conditions,script,text,options,notes
 "#RULESET_NAME Bionic Alteration",,,,,,
-ba_fleetEncounter_Dialog,BeginFleetEncounter,,"FireBest BeginFleetEncounter
-FireAll ba_generatedBionics",,,
-ba_fleetEncounter_BionicGenerated,ba_generatedBionics,"$customType != coronal_tap
-ba_hasBionics score:9999997","Highlight ""bionics""","Bioscanner indicates multiple usage of bionics on the other fleet. Reports about them can be displayed with some adjustment to our comms.",,
 ba_fleetEncoutner_BionicScan,PopulateOptions,"$isPerson
-ba_hasBionics score:9999997",,,"0:ba_fleetEncoutner_BionicScanDisplay:Display bionics on fleet",
+ba_hasBionics score:9999997","Highlight ""bionics""","Bioscanner indicates multiple usage of bionics on the other fleet. Reports about them can be displayed with some adjustment to our comms.","0:ba_fleetEncoutner_BionicScanDisplay:Display bionics on fleet",
 ba_fleetEncoutner_BionicScanDisplay,DialogOptionSelected,"$option == ba_fleetEncoutner_BionicScanDisplay
 ba_hasBionics score:9999997","ba_displayBionicUI",,,
 

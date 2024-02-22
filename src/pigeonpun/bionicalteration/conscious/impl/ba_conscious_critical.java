@@ -145,9 +145,4 @@ public class ba_conscious_critical implements ba_conscious {
             ship.getCaptain().setPersonality(SHIP_PERSONALITY);
         }
     }
-
-    @Override
-    public void advanceInCampaign() {
-
-    }
 }

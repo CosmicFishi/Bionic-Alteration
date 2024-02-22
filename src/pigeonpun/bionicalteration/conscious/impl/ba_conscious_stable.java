@@ -90,8 +90,4 @@ public class ba_conscious_stable implements ba_conscious {
 
     }
 
-    @Override
-    public void advanceInCampaign() {
-
-    }
 }

@@ -87,6 +87,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         initialUICreation();
         //change the current tab id and "focus" on it
         focusContent(moveToTabId);
+        currentScrollPosition = 0;
     }
     public void initialUICreation()
     {
@@ -846,7 +847,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                     if(ba_bionicmanager.checkIfBionicConflicted(currentSelectedBionic, currentPerson)) isBionicConflicted = true;
                 }
                 tooltip.setParaFontVictor14();
-                tooltip.addPara("Button is still disabled ? Hover on selected bionic/limb for more information.", pad);
+                tooltip.addPara("Button is still disabled ? Hover on selected bionic / limb for more information.", pad);
                 tooltip.setParaFontDefault();
                 tooltip.addPara("Make sure that: ", pad);
                 LabelAPI bionicInstallableLabel = tooltip.addPara("[ %s ] %s on selected limb.", pad/2, Misc.getHighlightColor(), isBionicInstallableOnLimb? "O": "X","Selected bionic can be installed");
@@ -1467,6 +1468,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             if (event.isConsumed()) continue;
             if(event.isMouseMoveEvent()) {
                 //hover check
+                //todo: add debounce to this somehow when scrolling
                 for (ButtonAPI button: buttons) {
                     float buttonX = button.getPosition().getX();
                     float buttonY = button.getPosition().getY();
@@ -1503,7 +1505,6 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                 callbacks.dismissDialog();
                 if(!isDisplayingOtherFleets) {
                     dialog.dismiss();
-                    //todo: find a better way to go out of dialog
                 }
                 return;
             }

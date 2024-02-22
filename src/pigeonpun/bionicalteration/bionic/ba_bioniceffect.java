@@ -78,12 +78,6 @@ public interface ba_bioniceffect{
      * Note: This also run in refit :D. Magic I know
      */
     public void advanceInCombat(ShipAPI ship, float amount);
-    public boolean isAdvanceInCampaign();
-    /**
-     * isAdvanceInCampaign() needed to be set to true
-     */
-    //todo: look into advanceInCampaign
-    public void advanceInCampaign();
     public void onRemove(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic);
     public void onInstall(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic);
 

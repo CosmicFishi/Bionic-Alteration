@@ -141,8 +141,4 @@ public class ba_conscious_fragile implements ba_conscious {
 
     }
 
-    @Override
-    public void advanceInCampaign() {
-
-    }
 }

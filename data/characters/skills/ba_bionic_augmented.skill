@@ -1,6 +1,6 @@
 {
 	"id":"ba_bionic_augmented",
-	"governingAptitude":"technology",
+	"governingAptitude":"ba_bionic",
     "compressHullmods":false,
 	"scope":"CUSTOM",
     "scopeStr":"Piloted Ship/Governed Planet",

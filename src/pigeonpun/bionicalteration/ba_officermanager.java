@@ -24,7 +24,7 @@ import java.util.List;
 import static pigeonpun.bionicalteration.variant.ba_variantmanager.getPersonVariantTag;
 
 /**
- * Handle how many bionic available on an officer
+ * Handle bionic related stuffs
  * @author PigeonPun
  */
 public class ba_officermanager {
@@ -68,7 +68,6 @@ public class ba_officermanager {
         return listPersons;
     }
     public static void setUpVariant(List<PersonAPI> listOfficers) {
-        //todo: set up variant per faction
         for(PersonAPI person: listOfficers) {
             if(getPersonVariantTag(person) == null) {
                 String randomVariant = ba_variantmanager.getRandomVariantFromFaction(person.getFaction().getId());
@@ -110,6 +109,7 @@ public class ba_officermanager {
      * Note: If bionicUseOverride array length is 0 even when defined in the faction_data.json will be ignored and use the bionicUse from the faction instead.
      */
     public static void setUpBionic(List<PersonAPI> listOfficer) {
+        //todo: add a setting that control whether when player init a new save that will generate bionic or not
         for(PersonAPI person : listOfficer) {
             int currentTry = 0;
             int maxTotalTries = 50;
@@ -275,9 +275,6 @@ public class ba_officermanager {
      * @return
      */
     public static List<ba_bionicAugmentedData> getBionicAnatomyList(PersonAPI person) {
-        //create random bionic
-//        installRandomBionic(person);
-
         //return list with full limb details
         List<ba_bionicAugmentedData> anatomyList = new ArrayList<>();
         HashMap<ba_limbmanager.ba_limb, List<ba_bionicitemplugin>> bionicsInstalledList = ba_bionicmanager.getListLimbAndBionicInstalled(person);
@@ -414,30 +411,6 @@ public class ba_officermanager {
             log.error("Can't remove "+ bionic.bionicId + " on " + limb.limbId);
         }
         return false;
-    }
-    protected static void installRandomBionic(PersonAPI person) {
-        //todo: setting.json that control random installment
-        int installedBionicCount = 0;
-        int totalBionicInstall = 10;
-        int currentTry = 0;
-        int maxTotalTries = 50;
-        if(!person.hasTag(ba_variablemanager.BA_RANDOM_BIONIC_GENERATED_TAG)) {
-            while(currentTry < maxTotalTries && installedBionicCount < totalBionicInstall){
-                List<String> randomBionics = ba_bionicmanager.getRandomBionic(2);
-                for (String random: randomBionics) {
-                    ba_bionicitemplugin bionic = ba_bionicmanager.getBionic(random);
-                    WeightedRandomPicker<ba_limbmanager.ba_limb> randomLimbPicker = new WeightedRandomPicker<>();
-                    randomLimbPicker.addAll(ba_limbmanager.getLimbListFromGroupOnPerson(bionic.bionicLimbGroupId, person));
-                    ba_limbmanager.ba_limb selectedLimb = randomLimbPicker.pick();
-                    boolean success = installBionic(bionic, selectedLimb, person);
-                    if(success) {
-                        installedBionicCount++;
-                    }
-                    currentTry++;
-                }
-            }
-            person.addTag(ba_variablemanager.BA_RANDOM_BIONIC_GENERATED_TAG);
-        }
     }
     public static List<PersonAPI> getListPersonsHaveBionic(CampaignFleetAPI fleet) {
         List<PersonAPI> list = new ArrayList<>();
