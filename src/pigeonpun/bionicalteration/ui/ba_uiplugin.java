@@ -20,6 +20,7 @@ import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.conscious.ba_conscious;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
+import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
 import pigeonpun.bionicalteration.utils.ba_utils;
 
 import java.awt.*;
@@ -700,28 +701,30 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         TooltipMakerAPI personImageTooltip = infoPersonContainer.createTooltip("WORKSHOP_PERSON_IMAGE", imageW, imageH, false, 0, 0);
         personImageTooltip.getPosition().inTL(imageX, imageY);
         personImageTooltip.addImage(spriteName, imageW, imageH, 0);
-        //todo: hide this in dev mode from settings.json
-        infoPersonTooltipContainer.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
-            @Override
-            public boolean isTooltipExpandable(Object tooltipParam) {
-                return false;
-            }
 
-            @Override
-            public float getTooltipWidth(Object tooltipParam) {
-                return 400;
-            }
+        if(bionicalterationplugin.isDevmode) {
+            infoPersonTooltipContainer.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
+                @Override
+                public boolean isTooltipExpandable(Object tooltipParam) {
+                    return false;
+                }
 
-            @Override
-            public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
-                tooltip.addSectionHeading("BRM MODIFY ID", Alignment.MID, 0);
-                HashMap<String, MutableStat.StatMod> brmIds = currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).getFlatBonuses();
-                tooltip.addPara(brmIds.keySet().toString(), pad);
-                tooltip.addSectionHeading("CONSCIOUSNESS MODIFY ID", Alignment.MID, pad);
-                HashMap<String, MutableStat.StatMod> consciousIds = currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).getFlatBonuses();
-                tooltip.addPara(consciousIds.keySet().toString(), pad);
-            }
-        }, personImageTooltip, TooltipMakerAPI.TooltipLocation.RIGHT);
+                @Override
+                public float getTooltipWidth(Object tooltipParam) {
+                    return 400;
+                }
+
+                @Override
+                public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                    tooltip.addSectionHeading("BRM MODIFY ID", Alignment.MID, 0);
+                    HashMap<String, MutableStat.StatMod> brmIds = currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).getFlatBonuses();
+                    tooltip.addPara(brmIds.keySet().toString(), pad);
+                    tooltip.addSectionHeading("CONSCIOUSNESS MODIFY ID", Alignment.MID, pad);
+                    HashMap<String, MutableStat.StatMod> consciousIds = currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).getFlatBonuses();
+                    tooltip.addPara(consciousIds.keySet().toString(), pad);
+                }
+            }, personImageTooltip, TooltipMakerAPI.TooltipLocation.RIGHT);
+        }
         //---------Name
         int nameH = 30;
         int nameW = (int) infoLeftW;

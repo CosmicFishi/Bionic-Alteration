@@ -141,6 +141,7 @@ public class ba_conscious_critical implements ba_conscious {
 
     @Override
     public void advanceInCombat(ShipAPI ship, float amount) {
+        //add incompatibility with Automated Command that change personality
         if(ship.getCaptain() != null) {
             ship.getCaptain().setPersonality(SHIP_PERSONALITY);
         }

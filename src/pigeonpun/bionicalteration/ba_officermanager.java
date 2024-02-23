@@ -16,6 +16,7 @@ import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.faction.ba_factiondata;
 import pigeonpun.bionicalteration.faction.ba_factionmanager;
+import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
 import pigeonpun.bionicalteration.variant.ba_variantmanager;
 
 import java.util.*;
@@ -31,6 +32,13 @@ public class ba_officermanager {
     public static List<PersonAPI> listPersons = new ArrayList<>();
     static Logger log = Global.getLogger(ba_officermanager.class);
     public static void onSaveLoad() {
+        //disable random bionic generation on new game
+        if(!bionicalterationplugin.isAllowBionicsToSpawnInPlayerFleetOnNewSave && !Global.getSector().getMemoryWithoutUpdate().contains(ba_variablemanager.BA_BIONIC_ON_NEW_GAME_KEY)) {
+            for(PersonAPI person: getListOfficerFromFleet(null, true)) {
+                person.addTag(ba_variablemanager.BA_RANDOM_BIONIC_GENERATED_TAG);
+            }
+            Global.getSector().getMemoryWithoutUpdate().set(ba_variablemanager.BA_BIONIC_ON_NEW_GAME_KEY, true);
+        }
         refresh(null);
     }
 
@@ -109,7 +117,9 @@ public class ba_officermanager {
      * Note: If bionicUseOverride array length is 0 even when defined in the faction_data.json will be ignored and use the bionicUse from the faction instead.
      */
     public static void setUpBionic(List<PersonAPI> listOfficer) {
-        //todo: add a setting that control whether when player init a new save that will generate bionic or not
+        //todo: Make compatible with newly obtain officer/admin. Depend on their level that they will have different bionic equip on them
+        //todo: If officer have level from 5 -> 7 -> they are cryopod officer
+        //todo: if admin have tier 2 skill -> they are cryopod officer (which mean in the future they will use domain era bionics.
         for(PersonAPI person : listOfficer) {
             int currentTry = 0;
             int maxTotalTries = 50;
@@ -384,7 +394,6 @@ public class ba_officermanager {
     public static boolean installBionic(ba_bionicitemplugin bionic, ba_limbmanager.ba_limb limb, PersonAPI person) {
         if(checkIfCanInstallBionic(bionic, limb, person)) {
             person.addTag(bionic.bionicId+":"+limb.limbId);
-            //todo: add class to handle interaction with player inventory
             SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
             Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, 1);
             updatePersonStatsOnInteract(bionic, limb, person, true);

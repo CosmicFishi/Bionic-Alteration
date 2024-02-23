@@ -62,6 +62,7 @@ public class ba_variablemanager {
     public static final String BA_BIONIC_SKILL_ID = "ba_bionic_augmented";
     public static final String BA_RANDOM_BIONIC_GENERATED_TAG = "ba_random_bionic_generated";
     public static final String BA_SEED_KEY = "ba_sector_seed";
+    public static final String BA_BIONIC_ON_NEW_GAME_KEY = "$ba_bionic_on_new_game";
     //todo: integrate these into existing bionic generating for NPC
     public static class BIONIC_TAGS {
         public static final String NO_DROP = "no_drop";

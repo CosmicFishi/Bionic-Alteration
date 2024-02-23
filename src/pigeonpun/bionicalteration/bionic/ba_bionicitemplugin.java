@@ -16,6 +16,7 @@ import com.fs.starfarer.api.util.Highlights;
 import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
+import pigeonpun.bionicalteration.ba_limbmanager;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
     protected CargoStackAPI stack;
     public float dropChance;
     public HashMap<String, Object> customData = new HashMap<>();
+    protected boolean isInitFully = false;
     public ba_bionicitemplugin() {}
     public ba_bionicitemplugin(String bionicId, SpecialItemSpecAPI spec ,String bionicLimbGroupId, String namePrefix, Color displayColor, int brmCost,
                                float consciousnessCost, float dropChance, boolean isApplyCaptainEffect, boolean isApplyAdminEffect, boolean isAICoreBionic, ba_bioniceffect effectScript,
@@ -63,6 +65,7 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
             this.conflictedBionicIdList = conflictedBionicIdList;
         }
         this.isAllowedRemoveAfterInstall = isAllowedRemoveAfterInstall;
+        this.isInitFully = true;
     }
     public String getId() {
         return bionicId;
@@ -75,6 +78,25 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
 
     public void init(CargoStackAPI stack) {
         this.stack = stack;
+        if(!ba_bionicmanager.bionicItemMap.isEmpty() && !this.isInitFully && ba_bionicmanager.bionicItemMap.containsKey(getSpec().getId())) {
+            ba_bionicitemplugin bionicInMap = ba_bionicmanager.getBionic(getSpec().getId());
+            this.bionicId = bionicInMap.bionicId;
+            this.spec = bionicInMap.spec;
+            this.bionicLimbGroupId = bionicInMap.bionicLimbGroupId;
+            this.namePrefix = bionicInMap.namePrefix;
+            this.displayColor = bionicInMap.displayColor;
+            this.brmCost = bionicInMap.brmCost;
+            this.consciousnessCost = bionicInMap.consciousnessCost;
+            this.dropChance = bionicInMap.dropChance;
+            this.isAICoreBionic = bionicInMap.isAICoreBionic;
+            this.isApplyAdminEffect = bionicInMap.isApplyAdminEffect;
+            this.isApplyCaptainEffect = bionicInMap.isApplyCaptainEffect;
+            this.effectScript = bionicInMap.effectScript;
+            if(bionicInMap.conflictedBionicIdList != null) {
+                this.conflictedBionicIdList = bionicInMap.conflictedBionicIdList;
+            }
+            this.isAllowedRemoveAfterInstall = bionicInMap.isAllowedRemoveAfterInstall;
+        }
     }
 
     @Override
@@ -116,18 +138,66 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
         createTooltip(tooltip, expanded, transferHandler, stackSource, false);
     }
     public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, CargoTransferHandlerAPI transferHandler, Object stackSource, boolean useGray) {
-        //todo: make tooltip the same as in bionic workshop inventory item tooltip
+        final float pad = 10f;
         float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        final Color t = Misc.getTextColor();
+        final Color g = Misc.getGrayColor();
 
         tooltip.addTitle(getName());
 
         String design = getDesignType();
         Misc.addDesignTypePara(tooltip, design, opad);
-
-        if (!spec.getDesc().isEmpty()) {
-            Color c = Misc.getTextColor();
-            tooltip.addPara(spec.getDesc(), c, opad);
+        //---------effect
+        this.effectScript.displayEffectDescription(tooltip, null, null, true);
+        //---------Install type
+        StringBuilder effectType = new StringBuilder();
+        if(this.isApplyAdminEffect) {
+            effectType.append("Administrator");
         }
+        if(this.isApplyCaptainEffect) {
+            effectType.setLength(0);
+            effectType.append("Captain");
+        }
+        if(this.isApplyAdminEffect && this.isApplyCaptainEffect) {
+            effectType.append(" and Administrator");
+        }
+        LabelAPI installTypeLabel = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Install type:", effectType.toString());
+        installTypeLabel.setHighlight("Apply effect type:", effectType.toString());
+        installTypeLabel.setHighlightColors(g.brighter().brighter(), Misc.getPositiveHighlightColor());
+        //---------BRM + conscious
+        LabelAPI brmConsciousLabel = tooltip.addPara("%s %s     %s %s", pad, Misc.getBasePlayerColor(), "BRM:", "" + Math.round(this.brmCost), "Conscious:", "" + Math.round(this.consciousnessCost * 100) + "%");
+        brmConsciousLabel.setHighlight("BRM:", "" + Math.round(this.brmCost), "Conscious:", "" + Math.round(this.consciousnessCost * 100) + "%");
+        brmConsciousLabel.setHighlightColors(g.brighter().brighter(), Color.red, g.brighter().brighter(), Color.red);
+        //---------limb list
+        StringBuilder limbNameList = new StringBuilder();
+        for (ba_limbmanager.ba_limb limb: ba_limbmanager.getListLimbFromGroup(this.bionicLimbGroupId)) {
+            limbNameList.append(limb.name).append(", ");
+        }
+        if(limbNameList.length() > 0) limbNameList.setLength(limbNameList.length()-2);
+        LabelAPI limbListLabel = tooltip.addPara("%s %s", pad, t,"Install on:", limbNameList.toString());
+        limbListLabel.setHighlight("Install on:", limbNameList.toString());
+        limbListLabel.setHighlightColors(g.brighter().brighter(), Misc.getBrightPlayerColor());
+        //---------Conflicts
+        StringBuilder conflictsList = new StringBuilder();
+        for (ba_bionicitemplugin bionic: ba_bionicmanager.getListBionicConflicts(this)) {
+            conflictsList.append(bionic.getName()).append(", ");
+        }
+        if(conflictsList.length() > 0) {
+            conflictsList.setLength(conflictsList.length() - 2);
+        } else {
+            conflictsList.append("None");
+        }
+        LabelAPI conflictListLabel = tooltip.addPara("%s %s", pad, t,"Conflicts:", conflictsList.toString());
+        conflictListLabel.setHighlight("Conflicts:", conflictsList.toString());
+        conflictListLabel.setHighlightColors(g.brighter().brighter(), conflictsList.toString().equals("None")? g: Misc.getNegativeHighlightColor());
+        //----------desc
+        String desc = this.getSpec().getDesc();
+        LabelAPI descLabel = tooltip.addPara("%s %s", pad, t, "Description:", desc);
+        descLabel.setHighlight("Description:", desc);
+        descLabel.setHighlightColors(g.brighter().brighter(), t);
+
         addCostLabel(tooltip, opad, transferHandler, stackSource);
     }
     protected void addCostLabel(TooltipMakerAPI tooltip, float pad, CargoTransferHandlerAPI transferHandler, Object stackSource) {

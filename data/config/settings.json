@@ -1,8 +1,10 @@
 {
+  "isDevmode": false,
+  "isAllowBionicsToSpawnInPlayerFleetOnNewSave": true,
   "plugins":{
 
   },
   "ruleCommandPackages":[
     "pigeonpun.bionicalteration.rulecmd"
-  ],
+  ]
 }

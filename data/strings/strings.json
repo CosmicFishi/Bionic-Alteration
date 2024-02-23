@@ -5,5 +5,11 @@
     "ba_weaken_person": "My head, my hand, my body.. Everything feels wrong, hallucination and agonizing pain start then end abruptly.",
     "ba_fragile_person": "Pain and suffering have become a normal thing, it just doesn’t feel like agony anymore. Days after days.",
     "ba_critical_person": "I..I’m starting to enjoy it."
+  },
+  "ps_lunasettings": {
+    "header_generate": "Generate",
+    "name_isAllowBionicsToSpawnInPlayerFleetOnNewSave": "Allow bionics to spawn on player's fleet on new game",
+    "header_debug": "Debug",
+    "name_isDevmode": "Dev mode"
   }
 }

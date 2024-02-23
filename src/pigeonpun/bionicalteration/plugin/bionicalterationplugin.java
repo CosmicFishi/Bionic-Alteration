@@ -8,6 +8,7 @@ import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.faction.ba_factionmanager;
 import pigeonpun.bionicalteration.listeners.ba_campaignlistener;
 import pigeonpun.bionicalteration.listeners.ba_salvagelistener;
+import pigeonpun.bionicalteration.lunalib.lunaconfighelper;
 import pigeonpun.bionicalteration.variant.ba_variantmanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.ba_limbmanager;
@@ -16,6 +17,9 @@ import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
 public class bionicalterationplugin extends BaseModPlugin {
     ba_campaignlistener campaignListener = null;
     ba_salvagelistener salvageListener = null;
+    public static boolean isLunalibEnabled = false;
+    public static boolean isAllowBionicsToSpawnInPlayerFleetOnNewSave = false;
+    public static boolean isDevmode = false;
     @Override
     public void onApplicationLoad() throws Exception {
 //        ba_manager.getInstance();
@@ -24,6 +28,14 @@ public class bionicalterationplugin extends BaseModPlugin {
         ba_limbmanager.onApplicationLoad();
         ba_consciousmanager.onApplicationLoad();
         ba_factionmanager.onApplicationLoad();
+
+        isLunalibEnabled = Global.getSettings().getModManager().isModEnabled("lunalib");
+        isAllowBionicsToSpawnInPlayerFleetOnNewSave = Global.getSettings().getBoolean("isAllowBionicsToSpawnInPlayerFleetOnNewSave");
+        isDevmode = Global.getSettings().getBoolean("isDevmode");
+
+        if(isLunalibEnabled) {
+            lunaconfighelper.initLunaConfig();
+        }
     }
 
     @Override
