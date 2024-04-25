@@ -10,6 +10,7 @@ import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import com.fs.starfarer.api.characters.OfficerDataAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
+import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import org.apache.log4j.Logger;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
@@ -118,8 +119,6 @@ public class ba_officermanager {
      */
     public static void setUpBionic(List<PersonAPI> listOfficer) {
         //todo: Make compatible with newly obtain officer/admin. Depend on their level that they will have different bionic equip on them
-        //todo: If officer have level from 5 -> 7 -> they are cryopod officer
-        //todo: if admin have tier 2 skill -> they are cryopod officer (which mean in the future they will use domain era bionics.
         for(PersonAPI person : listOfficer) {
             int currentTry = 0;
             int maxTotalTries = 50;
@@ -141,7 +140,7 @@ public class ba_officermanager {
                 }
                 if(personVariant.bionicUseTagsOverride != null && personVariant.bionicUseTagsOverride.size() != 0) {
                     for(ba_factiondata.ba_bionicUseTagDetails tagDetails: personVariant.bionicUseTagsOverride) {
-                        for(String bionicId: ba_bionicmanager.getBionicFromTag(tagDetails.tag)) {
+                        for(String bionicId: ba_bionicmanager.getListBionicsIdFromTag(tagDetails.tag)) {
                             randomBionics.add(bionicId, tagDetails.spawnWeight);
                         }
                     }
@@ -154,10 +153,14 @@ public class ba_officermanager {
                         }
                     }
                     for(ba_factiondata.ba_bionicUseTagDetails tagDetails: factionData.bionicUseTagsList) {
-                        for(String bionicId: ba_bionicmanager.getBionicFromTag(tagDetails.tag)) {
+                        for(String bionicId: ba_bionicmanager.getListBionicsIdFromTag(tagDetails.tag)) {
                             randomBionics.add(bionicId, tagDetails.spawnWeight);
                         }
                     }
+                }
+                //cryopod officer
+                if(checkIfCryopodOfficer(person)) {
+                    randomBionics.addAll(getListPreferBionicsForCryopodOfficer());
                 }
                 while(currentTry < maxTotalTries && setUpBionicConditions(person, factionData)) {
                     String bionicId = randomBionics.pick(new Random());
@@ -174,6 +177,23 @@ public class ba_officermanager {
                 person.addTag(ba_variablemanager.BA_RANDOM_BIONIC_GENERATED_TAG);
             }
         }
+    }
+    protected static boolean checkIfCryopodOfficer(PersonAPI person) {
+        if(person.isAICore()) return false;
+        if(person.getMemoryWithoutUpdate().get("$ome_adminTier") != null) {
+            return true;
+        }
+        if(person.getMemoryWithoutUpdate().get(MemFlags.EXCEPTIONAL_SLEEPER_POD_OFFICER) != null) {
+            return true;
+        }
+        return false;
+    }
+    protected static WeightedRandomPicker<String> getListPreferBionicsForCryopodOfficer() {
+        WeightedRandomPicker<String> listBionic = new WeightedRandomPicker<>();
+        for(String bionic: ba_bionicmanager.getListBionicsIdFromTag("ba_bionic_t2")) {
+            listBionic.add(bionic, 10f);
+        }
+        return listBionic;
     }
     protected static boolean setUpBionicConditions(PersonAPI person, ba_factiondata factionData) {
         if(factionData.maxBionicUseCount > 0 && ba_bionicmanager.getListStringBionicInstalled(person).size() > factionData.maxBionicUseCount) {

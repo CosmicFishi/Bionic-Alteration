@@ -147,6 +147,12 @@ public class ba_factionmanager {
             throw new RuntimeException("Failed loading ", e);
         }
     }
+
+    /**
+     * @param factionId
+     * @return 
+     * Note: Return default faction data from faction_data.json if can't find the faction data
+     */
     public static ba_factiondata getFactionData(String factionId) {
         ba_factiondata data = factionVariantMap.get(factionId);
         if(data == null) {

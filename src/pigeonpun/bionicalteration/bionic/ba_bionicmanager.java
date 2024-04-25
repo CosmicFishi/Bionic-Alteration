@@ -303,12 +303,23 @@ public class ba_bionicmanager {
         }
         return randomBionic;
     }
-    public static List<String> getBionicFromTag(String tag) {
+    public static List<String> getListBionicsIdFromTag(String tag) {
         List<String> bionics = new ArrayList<>();
         for(ba_bionicitemplugin item: bionicItemMap.values()) {
             for(String t: item.getSpec().getTags()) {
                 if(t.equals(tag)) {
                     bionics.add(item.bionicId);
+                }
+            }
+        }
+        return bionics;
+    }
+    public static List<ba_bionicitemplugin> getListBionicsFromTag(String tag) {
+        List<ba_bionicitemplugin> bionics = new ArrayList<>();
+        for(ba_bionicitemplugin item: bionicItemMap.values()) {
+            for(String t: item.getSpec().getTags()) {
+                if(t.equals(tag)) {
+                    bionics.add(item);
                 }
             }
         }
