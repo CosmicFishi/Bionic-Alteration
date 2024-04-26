@@ -116,7 +116,6 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
 
     @Override
     public void performRightClickAction() {
-        //todo: add open INSTALL UI
     }
 
     @Override
@@ -199,6 +198,8 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
         descLabel.setHighlightColors(g.brighter().brighter(), t);
 
         addCostLabel(tooltip, opad, transferHandler, stackSource);
+
+        tooltip.addPara("Interaction with this item can be found in the upgrade/change tab in the bionic augment menu (A skill)", opad, Misc.getGrayColor());
     }
     protected void addCostLabel(TooltipMakerAPI tooltip, float pad, CargoTransferHandlerAPI transferHandler, Object stackSource) {
         BaseSpecialItemPlugin.ItemCostLabelData data = getCostLabelData(stack, transferHandler, stackSource);

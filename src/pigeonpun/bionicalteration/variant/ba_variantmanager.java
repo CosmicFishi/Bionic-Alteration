@@ -126,7 +126,7 @@ public class ba_variantmanager {
      * @return
      */
     public static String getRandomVariantFromFaction(String factionId) {
-        WeightedRandomPicker<String> randomPicker = new WeightedRandomPicker<>();
+        WeightedRandomPicker<String> randomPicker = new WeightedRandomPicker<>(ba_utils.getRandom());
         ba_factiondata factionData = ba_factionmanager.getFactionData(factionId);
         if(factionData != null) {
             for(ba_factiondata.ba_factionVariantDetails details:  factionData.variantDetails) {

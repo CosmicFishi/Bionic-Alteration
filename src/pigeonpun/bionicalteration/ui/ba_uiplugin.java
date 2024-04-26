@@ -99,6 +99,12 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         mainTooltip.setForceProcessInput(true);
         containerPanel.addUIElement(mainTooltip).inTL(0,0);
         refresh();
+        if(currentTabId.equals(OVERVIEW)) {
+            ba_component component = componentMap.get("OVERVIEW_PERSON_LIST_PANEL");
+            if(component != null && component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP") != null) {
+                component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller().setYOffset(0);
+            }
+        }
     }
     protected void refresh() {
 //        log.info("refreshing");
