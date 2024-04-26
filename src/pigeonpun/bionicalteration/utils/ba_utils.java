@@ -1,12 +1,13 @@
 package pigeonpun.bionicalteration.utils;
 
+import com.fs.starfarer.api.Global;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.lwjgl.opengl.GL11;
+import pigeonpun.bionicalteration.ba_variablemanager;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
 
 public class ba_utils {
@@ -83,5 +84,18 @@ public class ba_utils {
             result.add(jsonArray.getString(i));
         }
         return result;
+    }
+    public static Random getRandom() {
+        Map<String, Object> data = Global.getSector().getPersistentData();
+        if (!data.containsKey(ba_variablemanager.PERSISTENT_RANDOM_KEY)) {
+            String seed = "" + Global.getSector().getClock().getCycle()
+                    + Global.getSector().getClock().getMonth()
+                    + Global.getSector().getClock().getDay();
+
+            data.put(ba_variablemanager.PERSISTENT_RANDOM_KEY, new Random(Long.parseLong(seed)));
+        }
+
+
+        return (Random)data.get(ba_variablemanager.PERSISTENT_RANDOM_KEY);
     }
 }

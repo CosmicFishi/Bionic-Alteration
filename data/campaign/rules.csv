@@ -4,4 +4,8 @@ ba_fleetEncoutner_BionicScan,PopulateOptions,"$isPerson
 ba_hasBionics score:9999997","Highlight ""bionics""","Bioscanner indicates multiple usage of bionics on the other fleet. Reports about them can be displayed with some adjustment to our comms.","0:ba_fleetEncoutner_BionicScanDisplay:Display bionics on fleet",
 ba_fleetEncoutner_BionicScanDisplay,DialogOptionSelected,"$option == ba_fleetEncoutner_BionicScanDisplay
 ba_hasBionics score:9999997","ba_displayBionicUI",,,
+,,,,,,
+# officer hiring,,,,,,
+ba_officer_viewBionic,DialogOptionSelected,"$option == ome_askSkills score:100","ba_displayBionicUI $id","Your tripad light up as the person information displayed.",,
+"#END officer hiring",,,,,,
 

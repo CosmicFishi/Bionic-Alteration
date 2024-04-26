@@ -10,6 +10,7 @@ import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.FleetEncounterContext;
 import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl;
+import com.fs.starfarer.api.impl.campaign.RuleBasedInteractionDialogPluginImpl;
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin;
 import com.fs.starfarer.api.util.Misc;
 import pigeonpun.bionicalteration.ba_officermanager;
@@ -29,6 +30,7 @@ public class ba_displayBionicUI extends BaseCommandPlugin {
         SectorEntityToken target = dialog.getInteractionTarget();
         if (target == null) return false;
         InteractionDialogPlugin plugin = dialog.getPlugin();
+        //Fleet interaction
         if (plugin instanceof FleetInteractionDialogPluginImpl) {
             FleetEncounterContext context = (FleetEncounterContext) plugin.getContext();
             List<CampaignFleetAPI> fleets = context.getBattle().getBothSides();
@@ -37,6 +39,24 @@ public class ba_displayBionicUI extends BaseCommandPlugin {
                     ba_uiplugin.MAIN_CONTAINER_HEIGHT,
                     new ba_delegate(ba_uiplugin.createDefault(), dialog, listPerson)
             );
+            return true;
+        }
+        //hiring UI
+        if (plugin instanceof RuleBasedInteractionDialogPluginImpl) {
+            List<PersonAPI> listPerson = new ArrayList<>();
+            for(PersonAPI person: target.getMarket().getPeopleCopy()) {
+                if(person.getId().equals(params.get(0).getString(memoryMap))) {
+                    listPerson.add(person);
+                    break;
+                }
+            }
+            if(!listPerson.isEmpty()) {
+                dialog.showCustomVisualDialog(ba_uiplugin.MAIN_CONTAINER_WIDTH,
+                        ba_uiplugin.MAIN_CONTAINER_HEIGHT,
+                        new ba_delegate(ba_uiplugin.createDefault(), dialog, listPerson)
+                );
+            }
+            return true;
         }
         return false;
     }

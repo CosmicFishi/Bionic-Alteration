@@ -63,9 +63,6 @@ public class ba_variablemanager {
     public static final String BA_RANDOM_BIONIC_GENERATED_TAG = "ba_random_bionic_generated";
     public static final String BA_SEED_KEY = "ba_sector_seed";
     public static final String BA_BIONIC_ON_NEW_GAME_KEY = "$ba_bionic_on_new_game";
-    //todo: integrate these into existing bionic generating for NPC
-    public static class BIONIC_TAGS {
-        public static final String NO_DROP = "no_drop";
-        public static final String NO_GENERATE = "no_generate";
-    }
+    public static final String BIONIC_NO_DROP_TAG = "no_drop_bionic";
+    public static final String PERSISTENT_RANDOM_KEY = "$ba_bionic_random_generation";
 }

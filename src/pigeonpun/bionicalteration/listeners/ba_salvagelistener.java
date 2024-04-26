@@ -9,6 +9,7 @@ import com.fs.starfarer.api.impl.campaign.procgen.themes.SalvageEntityGeneratorO
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.SalvageEntity;
 import com.fs.starfarer.api.util.Misc;
 import pigeonpun.bionicalteration.ba_officermanager;
+import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
@@ -27,13 +28,15 @@ public class ba_salvagelistener implements ShowLootListener {
                 List<ba_bionicitemplugin> bionicDrop = (List<ba_bionicitemplugin>) fleet.getMemoryWithoutUpdate().get("$ba_bionic_dropList");
                 Random rand = Misc.getRandom(bionicalterationplugin.getSectorSeed().hashCode(), 100);
                 for (ba_bionicitemplugin bionic: bionicDrop) {
+                    if(bionic.getSpec().hasTag(ba_variablemanager.BIONIC_NO_DROP_TAG)) {
+                        continue;
+                    }
                     if(bionic.dropChance > 0 && rand.nextFloat() <= bionic.dropChance) {
                         loot.addSpecial(new SpecialItemData(bionic.bionicId, null), 1);
                     }
                 }
             }
         }
-        //todo: test this further
         List<SalvageEntityGenDataSpec.DropData> dropData = getDropDataFromEntity(dialog.getInteractionTarget());
 
         MemoryAPI memory = dialog.getInteractionTarget().getMemoryWithoutUpdate();

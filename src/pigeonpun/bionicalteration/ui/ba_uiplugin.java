@@ -57,6 +57,9 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
     String currentTabId = OVERVIEW;
     public static boolean isDisplayingOtherFleets = false;
     public static float currentScrollPosition = 0;
+    public static float previousScrollPosition = 0;
+    public static final float hoverDebounceDuration = 20f;
+    public static float hoverDebounceTimer = 0;
     public static ba_uiplugin createDefault() {
         return new ba_uiplugin();
     }
@@ -1469,34 +1472,50 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         boolean shouldRefresh = false;
         for (InputEventAPI event : events) {
             if (event.isConsumed()) continue;
-            if(event.isMouseMoveEvent()) {
-                //hover check
-                //todo: add debounce to this somehow when scrolling
-                for (ButtonAPI button: buttons) {
-                    float buttonX = button.getPosition().getX();
-                    float buttonY = button.getPosition().getY();
-                    float buttonW = button.getPosition().getWidth();
-                    float buttonH = button.getPosition().getHeight();
-                    if(event.getX() >= buttonX && event.getX() < buttonX + buttonW && event.getY() >= buttonY && event.getY() < buttonY+buttonH) {
-                        String s = buttonMap.get(button);
-                        String[] tokens = s.split(":");
+
+            if(currentTabId.equals(OVERVIEW)) {
+                ba_component component = componentMap.get("OVERVIEW_PERSON_LIST_PANEL");
+                if(component != null && component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP") != null) {
+                    previousScrollPosition = currentScrollPosition;
+                    currentScrollPosition = component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller().getYOffset();
+                }
+            }
+            if(previousScrollPosition != currentScrollPosition) {
+                hoverDebounceTimer = 0;
+            } else {
+                if(hoverDebounceTimer < hoverDebounceDuration) {
+                    hoverDebounceTimer += 1;
+                }
+            }
+            if(!currentTabId.equals(OVERVIEW) || hoverDebounceTimer == hoverDebounceDuration) {
+//                log.info("debounce over");
+                if(event.isMouseMoveEvent()) {
+                    for (ButtonAPI button: buttons) {
+                        float buttonX = button.getPosition().getX();
+                        float buttonY = button.getPosition().getY();
+                        float buttonW = button.getPosition().getWidth();
+                        float buttonH = button.getPosition().getHeight();
+                        if(event.getX() >= buttonX && event.getX() < buttonX + buttonW && event.getY() >= buttonY && event.getY() < buttonY+buttonH) {
+                            String s = buttonMap.get(button);
+                            String[] tokens = s.split(":");
 //                        log.info("hover " + s);
-                        if(tokens[0].equals("hover")) {
-                            if(!this.currentPerson.getId().equals(tokens[1])) {
-                                for(PersonAPI person: ba_officermanager.listPersons) {
-                                    if(tokens[1].equals(person.getId())) {
-                                        this.currentPerson = person;
-                                        saveScrollPosition();
-                                        shouldRefresh = true;
+                            if(tokens[0].equals("hover")) {
+                                if(!this.currentPerson.getId().equals(tokens[1])) {
+                                    for(PersonAPI person: ba_officermanager.listPersons) {
+                                        if(tokens[1].equals(person.getId())) {
+                                            this.currentPerson = person;
+                                            saveScrollPosition();
+                                            shouldRefresh = true;
+                                        }
                                     }
                                 }
                             }
-                        }
-                        //hover bionic item in inventory
-                        if(tokens[0].equals("hover_bionic_item")) {
-                            if(ba_bionicmanager.bionicItemMap.get(tokens[1]) != null && (this.currentHoveredBionic == null || !this.currentHoveredBionic.bionicId.equals(tokens[1]))) {
-                                this.currentHoveredBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
-                                shouldRefresh = true;
+                            //hover bionic item in inventory
+                            if(tokens[0].equals("hover_bionic_item")) {
+                                if(ba_bionicmanager.bionicItemMap.get(tokens[1]) != null && (this.currentHoveredBionic == null || !this.currentHoveredBionic.bionicId.equals(tokens[1]))) {
+                                    this.currentHoveredBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
+                                    shouldRefresh = true;
+                                }
                             }
                         }
                     }

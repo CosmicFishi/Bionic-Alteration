@@ -18,6 +18,7 @@ import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.faction.ba_factiondata;
 import pigeonpun.bionicalteration.faction.ba_factionmanager;
 import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
+import pigeonpun.bionicalteration.utils.ba_utils;
 import pigeonpun.bionicalteration.variant.ba_variantmanager;
 
 import java.util.*;
@@ -118,7 +119,6 @@ public class ba_officermanager {
      * Note: If bionicUseOverride array length is 0 even when defined in the faction_data.json will be ignored and use the bionicUse from the faction instead.
      */
     public static void setUpBionic(List<PersonAPI> listOfficer) {
-        //todo: Make compatible with newly obtain officer/admin. Depend on their level that they will have different bionic equip on them
         for(PersonAPI person : listOfficer) {
             int currentTry = 0;
             int maxTotalTries = 50;
@@ -163,7 +163,7 @@ public class ba_officermanager {
                     randomBionics.addAll(getListPreferBionicsForCryopodOfficer());
                 }
                 while(currentTry < maxTotalTries && setUpBionicConditions(person, factionData)) {
-                    String bionicId = randomBionics.pick(new Random());
+                    String bionicId = randomBionics.pick(ba_utils.getRandom());
                     ba_bionicitemplugin bionic = ba_bionicmanager.getBionic(bionicId);
                     WeightedRandomPicker<ba_limbmanager.ba_limb> randomLimbPicker = new WeightedRandomPicker<>();
                     randomLimbPicker.addAll(ba_limbmanager.getLimbListFromGroupOnPerson(bionic.bionicLimbGroupId, person));
