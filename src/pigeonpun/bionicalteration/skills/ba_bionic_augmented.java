@@ -66,8 +66,8 @@ public class ba_bionic_augmented {
                 StringBuilder description = new StringBuilder();
                 listBionicColor[0] = Misc.getBrightPlayerColor();
                 int colorIndex = 1;
+                description.append("Bionics").append(", ");
                 if(!listBionic.isEmpty()) {
-                    description.append("Bionics").append(", ");
                     for(ba_bionicitemplugin bionic: listBionic) {
                         description.append(bionic.getName()).append(", ");
                         listBionicColor[colorIndex] = bionic.displayColor;
@@ -76,6 +76,8 @@ public class ba_bionic_augmented {
                     description.setLength(description.length()-2);
                 } else {
                     description.append("No bionic...yet");
+                    listBionicColor = new Color[2];
+                    listBionicColor[0] = Misc.getBrightPlayerColor();
                     listBionicColor[1] = Misc.getGrayColor();
                 }
                 String[] stringArray = description.toString().split(", ");
