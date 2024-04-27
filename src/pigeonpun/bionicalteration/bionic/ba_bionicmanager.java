@@ -120,7 +120,7 @@ public class ba_bionicmanager {
     public static boolean checkIfHaveBionicInstalled(ba_bionicitemplugin bionic, PersonAPI person) {
         if (!person.getTags().isEmpty()) {
             for (String tag: person.getTags()) {
-                if(tag.contains(":")) {
+                if(tag != null && tag.contains(":")) {
                     String[] tokens = tag.split(":");
                     if(tokens[0].equals(bionic.bionicId)) {
                         return true;
@@ -199,9 +199,9 @@ public class ba_bionicmanager {
     }
     public static List<String> getListStringBionicInstalled(PersonAPI person) {
         List<String> bionics = new ArrayList<>();
-        if (!person.getTags().isEmpty()) {
+        if (person.getTags() != null && !person.getTags().isEmpty() ) {
             for (String tag: person.getTags()) {
-                if(tag.contains(":")) {
+                if(tag != null && tag.contains(":")) {
                     String[] tokens = tag.split(":");
                     ba_bionicitemplugin bionicInstalled = bionicItemMap.get(tokens[0]);
                     if(bionicInstalled == null) {
@@ -225,7 +225,7 @@ public class ba_bionicmanager {
         List<ba_bionicitemplugin> bionicsInstalledList = new ArrayList<>();
         if(limb != null && !person.getTags().isEmpty()) {
             for (String tag: person.getTags()) {
-                if(tag.contains(":")) {
+                if(tag != null && tag.contains(":")) {
                     String[] tokens = tag.split(":");
                     if(tokens[1].equals(limb.limbId)) {
                         ba_bionicitemplugin bionicInstalled = bionicItemMap.get(tokens[0]);
@@ -251,7 +251,7 @@ public class ba_bionicmanager {
         List<ba_bionicitemplugin> bionicsInstalledList = new ArrayList<>();
         if (!person.getTags().isEmpty()) {
             for (String tag: person.getTags()) {
-                if(tag.contains(":")) {
+                if(tag != null && tag.contains(":")) {
                     String[] tokens = tag.split(":");
                     ba_bionicitemplugin bionicInstalled = bionicItemMap.get(tokens[0]);
                     if(bionicInstalled == null) {
@@ -274,7 +274,7 @@ public class ba_bionicmanager {
         HashMap<ba_limbmanager.ba_limb, List<ba_bionicitemplugin>> bionicsInstalledList = new HashMap<>();
         if (!person.getTags().isEmpty()) {
             for (String tag: person.getTags()) {
-                if(tag.contains(":")) {
+                if(tag != null && tag.contains(":")) {
                     String[] tokens = tag.split(":");
                     ba_bionicitemplugin bionicInstalled = bionicItemMap.get(tokens[0]);
                     if(bionicInstalled == null) log.error("Can't find bionic of tag: " + tokens[0]);
