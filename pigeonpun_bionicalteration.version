@@ -20,19 +20,15 @@
   # GitHub: https://raw.githubusercontent.com/MagicLibStarsector/MagicLib/master/magiclib.version
   # Dropbox: https://www.dropbox.com/s/rnzm1m8l8ik8a6l/modname.zip?dl=1  # Note the ?dl=1
   # Google Drive: https://drive.google.com/uc?id=1dbx-oOyFxy6l2ECLHqNtWg5kBW3lXBo7&export=download  # Note the &export=download
-  "masterVersionFile": "url goes here",
+  "masterVersionFile": "https://raw.githubusercontent.com/CosmicFishi/Bionic-Alteration/main/pigeonpun_bionicalteration.version",
 
-  "modName": "IntelliJ Template Mod",
+  "modName": "Bionic Alteration",
 
-  # The current patch number
-  # Notation is major.minor.patch, trailing zeros are ignored
-  # This means version 2.1.0 shows up as v2.1, version 4.0.0 as v4, etc
-  # If you use major.minor notation you can just leave patch as 0
   "modVersion":
     {
-      "major": 1,
+      "major": 0,
       "minor": 0,
-      "patch": 0 # Can be a number, character or string (1, 2, a, b, "-RC2", etc)
+      "patch": 1 # Can be a number, character or string (1, 2, a, b, "-RC2", etc)
     },
 
   # OPTIONAL
@@ -42,14 +38,11 @@
   # For example: fractalsoftworks.com/forum/index.php?topic=8181.0 has an ID of 8181
   "modThreadId": 0, # eg 8181
 
-  # OPTIONAL
-  # A download link directly to the latest version of your mod.
-  # This is used by mod managers/version checkers (eg SMOL, MOSS, LunaLib) to let users quickly update/download without visiting your mod page.
-  "directDownloadURL": "https://github.com/MagicLibStarsector/MagicLib/releases/download/1.0.0/MagicLib-1.0.0.zip",
+  "directDownloadURL": "https://github.com/CosmicFishi/Bionic-Alteration/releases/download/0.0.1/Bionic-Alteration-0.0.1.zip",
 
   # OPTIONAL
   # A link to your changelog.
   # This is used by mod managers/version checkers (eg SMOL, MOSS, LunaLib) to display changelogs without visiting your mod page.
   # May be plain text or markdown, though plain text is more likely to be rendered correctly in all viewers.
-  "changelogURL": "https://raw.githubusercontent.com/MagicLibStarsector/MagicLib/master/CHANGELOGS.md",
+  #"changelogURL": "https://raw.githubusercontent.com/MagicLibStarsector/MagicLib/master/CHANGELOGS.md",
 }
