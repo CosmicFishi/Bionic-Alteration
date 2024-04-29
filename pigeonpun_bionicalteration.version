@@ -7,7 +7,7 @@
     {
       "major": 0,
       "minor": 0,
-      "patch": 1a # Can be a number, character or string (1, 2, a, b, "-RC2", etc)
+      "patch": 1b # Can be a number, character or string (1, 2, a, b, "-RC2", etc)
     },
   "modThreadId": 0, # eg 8181
 

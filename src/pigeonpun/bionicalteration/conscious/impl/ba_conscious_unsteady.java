@@ -65,7 +65,7 @@ public class ba_conscious_unsteady implements ba_conscious {
         if(!isSimpleMode) {
             //on hover
             tooltip.addSectionHeading("Description", Alignment.MID, 0);
-            tooltip.addPara("%s: %s", pad, Misc.getTextColor(), "Unstable", ba_stringhelper.getString("conscious", "ba_unsteady_person")).setHighlightColors(getColor(), Misc.getTextColor());
+            tooltip.addPara("%s: %s", pad, Misc.getTextColor(), "Unsteady", ba_stringhelper.getString("conscious", "ba_unsteady_person")).setHighlightColors(getColor(), Misc.getTextColor());
             tooltip.addSectionHeading("Effects", Alignment.MID, pad);
         } else {
             if(!isActive) textAlpha = 0.6f;

@@ -3,6 +3,7 @@ package pigeonpun.bionicalteration.plugin;
 import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
 import org.lazywizard.lazylib.MathUtils;
+import pigeonpun.bionicalteration.ability.ba_bionicability;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.faction.ba_factionmanager;
@@ -47,6 +48,9 @@ public class bionicalterationplugin extends BaseModPlugin {
     public void onGameLoad(boolean newGame) {
         ba_officermanager.onSaveLoad();
         addListeners();
+        if(!Global.getSector().getCharacterData().getAbilities().contains(ba_variablemanager.BA_ABILITY_KEY)) {
+            Global.getSector().getCharacterData().addAbility(ba_variablemanager.BA_ABILITY_KEY);
+        }
     }
 
     @Override

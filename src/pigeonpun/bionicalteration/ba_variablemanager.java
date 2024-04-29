@@ -65,4 +65,5 @@ public class ba_variablemanager {
     public static final String BA_BIONIC_ON_NEW_GAME_KEY = "$ba_bionic_on_new_game";
     public static final String BIONIC_NO_DROP_TAG = "no_drop_bionic";
     public static final String PERSISTENT_RANDOM_KEY = "$ba_bionic_random_generation";
+    public static final String BA_ABILITY_KEY = "ba_bionicalteration";
 }

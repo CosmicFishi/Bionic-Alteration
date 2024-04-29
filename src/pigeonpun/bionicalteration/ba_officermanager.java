@@ -115,6 +115,7 @@ public class ba_officermanager {
     }
 
     /**
+     * removeBionicOnInstall: If true, will look for bionic in player inventory and remove it.
      * Bionics choosing will be base on faction_data.json
      * Note: If bionicUseOverride array length is 0 even when defined in the faction_data.json will be ignored and use the bionicUse from the faction instead.
      */
@@ -168,7 +169,7 @@ public class ba_officermanager {
                     WeightedRandomPicker<ba_limbmanager.ba_limb> randomLimbPicker = new WeightedRandomPicker<>();
                     randomLimbPicker.addAll(ba_limbmanager.getLimbListFromGroupOnPerson(bionic.bionicLimbGroupId, person));
                     ba_limbmanager.ba_limb selectedLimb = randomLimbPicker.pick();
-                    boolean success = installBionic(bionic, selectedLimb, person);
+                    boolean success = installBionic(bionic, selectedLimb, person, false);
                     if(success) {
                         randomBionics.remove(bionicId);
                     }
@@ -411,18 +412,28 @@ public class ba_officermanager {
         }
         return false;
     }
-    public static boolean installBionic(ba_bionicitemplugin bionic, ba_limbmanager.ba_limb limb, PersonAPI person) {
+    public static boolean installBionic(ba_bionicitemplugin bionic, ba_limbmanager.ba_limb limb, PersonAPI person, boolean removeBionicOnInstall) {
         if(checkIfCanInstallBionic(bionic, limb, person)) {
-            person.addTag(bionic.bionicId+":"+limb.limbId);
-            SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
-            Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, 1);
-            updatePersonStatsOnInteract(bionic, limb, person, true);
-            if(bionic.effectScript != null) {
-                bionic.effectScript.onInstall(person, limb, bionic);
+            boolean removeSuccessful = true;
+            if(removeBionicOnInstall) {
+                SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
+                removeSuccessful = Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, 1);
             }
-            return true;
+            if(removeSuccessful) {
+                person.addTag(bionic.bionicId+":"+limb.limbId);
+                updatePersonStatsOnInteract(bionic, limb, person, true);
+                if(bionic.effectScript != null) {
+                    bionic.effectScript.onInstall(person, limb, bionic);
+                }
+            }
+            if(!removeSuccessful) {
+                log.error("Can't find bionic item in player inventory => abort installing");
+            }
+            return removeSuccessful;
         } else {
-            log.error("Can't install "+ bionic.bionicId + " on " + limb.limbId);
+            if(bionicalterationplugin.isDevmode) {
+                log.error("Can't install "+ bionic.bionicId + " on " + limb.limbId);
+            }
         }
         return false;
     }

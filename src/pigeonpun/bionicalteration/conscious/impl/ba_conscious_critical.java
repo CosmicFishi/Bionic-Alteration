@@ -81,7 +81,7 @@ public class ba_conscious_critical implements ba_conscious {
             tooltip.addPara("- Ship maneuverability reduced by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(MANEUVERABILITY_BONUS * 100) + "%").setOpacity(textAlpha);
             tooltip.addPara("- Ship overload duration increased by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(SHIP_OVERLOAD * 100) + "%").setOpacity(textAlpha);
             tooltip.addPara("- Ship peak CR reduced by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(SHIP_CR * 100) + "%").setOpacity(textAlpha);
-            tooltip.addPara("- Captain personality changed to %s", pad/2, Misc.getNegativeHighlightColor(), "" + SHIP_PERSONALITY).setOpacity(textAlpha);
+//            tooltip.addPara("- Captain personality changed to %s", pad/2, Misc.getNegativeHighlightColor(), "" + SHIP_PERSONALITY).setOpacity(textAlpha);
         }
         if(showBoth || !showOfficer) {
             tooltip.addPara("- Market upkeep increased by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(MARKET_UPKEEP * 100) + "%").setOpacity(textAlpha);
@@ -142,8 +142,8 @@ public class ba_conscious_critical implements ba_conscious {
     @Override
     public void advanceInCombat(ShipAPI ship, float amount) {
         //add incompatibility with Automated Command that change personality
-        if(ship.getCaptain() != null) {
-            ship.getCaptain().setPersonality(SHIP_PERSONALITY);
-        }
+//        if(ship.getCaptain() != null) {
+//            ship.getCaptain().setPersonality(SHIP_PERSONALITY);
+//        }
     }
 }
