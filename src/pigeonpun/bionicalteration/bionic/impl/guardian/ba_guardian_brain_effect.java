@@ -22,7 +22,7 @@ public class ba_guardian_brain_effect implements ba_bioniceffect {
     public static float TURN_RATE_MULT = 1.3f;
     public static float MAX_SPEED_MULT = 1.15f;
     public static float SHIELD_EFF_MULT = 1.10f;
-    Logger log = Global.getLogger(ba_guardian_brain_effect.class);
+    static Logger log = Global.getLogger(ba_guardian_brain_effect.class);
 
     @Override
     public void setBionicItem(ba_bionicitemplugin bionic) {
@@ -99,15 +99,16 @@ public class ba_guardian_brain_effect implements ba_bioniceffect {
     }
 
 
-
     @Override
     public void onRemove(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {
 
     }
+
     @Override
     public void onInstall(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {
 
     }
+
     @Override
     public void renderExtraOnItem(float x, float y, float w, float h, float alphaMult, float glowMult, SpecialItemPlugin.SpecialItemRendererAPI renderer) {
 

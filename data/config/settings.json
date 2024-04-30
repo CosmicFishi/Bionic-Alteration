@@ -1,6 +1,7 @@
 {
   "isDevmode": false,
   "isAllowBionicsToSpawnInPlayerFleetOnNewSave": true,
+  "isAllowBionicsToSpawnOnNewOfficerRecruited": true, # When enable, recruitment price will be bionic price added with the recruitment cost. When disable, recruitment cost will stay the same but the officer won't have any bionic preinstalled.'
   "plugins":{
 
   },

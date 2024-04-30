@@ -20,7 +20,7 @@ import java.awt.*;
 public class ba_stellar_leg_effect implements ba_bioniceffect {
     public static float SHIP_MAX_CR_MULT = 1.14f;
     public static float SHIP_FLUX_CAP_MULT = 0.94f;
-    Logger log = Global.getLogger(ba_stellar_leg_effect.class);
+    static Logger log = Global.getLogger(ba_stellar_leg_effect.class);
 
     @Override
     public void setBionicItem(ba_bionicitemplugin bionic) {
@@ -93,15 +93,16 @@ public class ba_stellar_leg_effect implements ba_bioniceffect {
     }
 
 
-
     @Override
     public void onRemove(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {
 
     }
+
     @Override
     public void onInstall(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {
 
     }
+
     @Override
     public void renderExtraOnItem(float x, float y, float w, float h, float alphaMult, float glowMult, SpecialItemPlugin.SpecialItemRendererAPI renderer) {
 

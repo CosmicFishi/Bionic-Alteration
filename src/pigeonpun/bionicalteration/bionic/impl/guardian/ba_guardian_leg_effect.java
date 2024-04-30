@@ -21,7 +21,7 @@ public class ba_guardian_leg_effect implements ba_bioniceffect {
     public static float SHIP_CR_DECREASE_MULT = 0.86f;
     public static float SHIP_ENGINE_DAMAGE_TAKEN_MULT = 0.95f;
     public static float SHIP_HULL_DAMAGE_TAKEN_MULT = 1.15f;
-    Logger log = Global.getLogger(ba_guardian_leg_effect.class);
+    static Logger log = Global.getLogger(ba_guardian_leg_effect.class);
 
     @Override
     public void setBionicItem(ba_bionicitemplugin bionic) {
@@ -98,15 +98,16 @@ public class ba_guardian_leg_effect implements ba_bioniceffect {
     }
 
 
-
     @Override
     public void onRemove(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {
 
     }
+
     @Override
     public void onInstall(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {
 
     }
+
     @Override
     public void renderExtraOnItem(float x, float y, float w, float h, float alphaMult, float glowMult, SpecialItemPlugin.SpecialItemRendererAPI renderer) {
 

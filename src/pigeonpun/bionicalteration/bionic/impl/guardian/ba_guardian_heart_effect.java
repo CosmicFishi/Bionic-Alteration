@@ -22,7 +22,7 @@ public class ba_guardian_heart_effect implements ba_bioniceffect {
     public static float OFFICER_SHIP_MANEUVERABILITY = 0.75f;
     public static float ADMIN_ACCESS_FLAT = 20f;
     public static float ADMIN_UPKEEP_MULT = 1.25f;
-    Logger log = Global.getLogger(ba_guardian_heart_effect.class);
+    static Logger log = Global.getLogger(ba_guardian_heart_effect.class);
 
     @Override
     public void setBionicItem(ba_bionicitemplugin bionic) {
@@ -87,7 +87,7 @@ public class ba_guardian_heart_effect implements ba_bioniceffect {
     @Override
     public void applyEffectAdminMarket(MarketAPI market, String id, float level, ba_bionicitemplugin bionic) {
         market.getAccessibilityMod().modifyFlat(id, ADMIN_ACCESS_FLAT, bionic.getName() + " (Admins bionic)");
-        market.getUpkeepMult().modifyMult(id, ADMIN_UPKEEP_MULT,  bionic.getName() + " (Admins bionic)");
+        market.getUpkeepMult().modifyMult(id, ADMIN_UPKEEP_MULT, bionic.getName() + " (Admins bionic)");
     }
 
     @Override
@@ -107,15 +107,16 @@ public class ba_guardian_heart_effect implements ba_bioniceffect {
     }
 
 
-
     @Override
     public void onRemove(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {
 
     }
+
     @Override
     public void onInstall(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {
 
     }
+
     @Override
     public void renderExtraOnItem(float x, float y, float w, float h, float alphaMult, float glowMult, SpecialItemPlugin.SpecialItemRendererAPI renderer) {
 

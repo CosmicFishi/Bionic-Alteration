@@ -21,7 +21,7 @@ import java.awt.*;
 public class ba_velo_mouth_effect implements ba_bioniceffect {
     public static float OFFICER_WEAPON_DAMAGE = 1.2f;
     public static float OFFICER_SHIP_DP = 4f;
-    Logger log = Global.getLogger(ba_velo_mouth_effect.class);
+    static Logger log = Global.getLogger(ba_velo_mouth_effect.class);
 
     @Override
     public void setBionicItem(ba_bionicitemplugin bionic) {
@@ -98,15 +98,16 @@ public class ba_velo_mouth_effect implements ba_bioniceffect {
     }
 
 
-
     @Override
     public void onRemove(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {
 
     }
+
     @Override
     public void onInstall(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {
 
     }
+
     @Override
     public void renderExtraOnItem(float x, float y, float w, float h, float alphaMult, float glowMult, SpecialItemPlugin.SpecialItemRendererAPI renderer) {
 

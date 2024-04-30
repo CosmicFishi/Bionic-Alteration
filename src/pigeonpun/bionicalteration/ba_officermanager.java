@@ -46,6 +46,7 @@ public class ba_officermanager {
 
     /**
      * Refresh the entire list person plus all the other stats set up needed
+     * Call when first init
      */
     public static void refresh(List<PersonAPI> listOfficer) {
         refreshListPerson(listOfficer);
@@ -55,7 +56,7 @@ public class ba_officermanager {
         setUpBionic(listPersons);
     }
     /**
-     * Set up all the needed stats/bionic/skill for officer to display bionics
+     * Set up all the needed stats/bionic/skill for encountering officer from other fleet to display bionics
      * @param listOfficers
      */
     public static void setUpListOfficers(List<PersonAPI> listOfficers) {
@@ -115,7 +116,6 @@ public class ba_officermanager {
     }
 
     /**
-     * removeBionicOnInstall: If true, will look for bionic in player inventory and remove it.
      * Bionics choosing will be base on faction_data.json
      * Note: If bionicUseOverride array length is 0 even when defined in the faction_data.json will be ignored and use the bionicUse from the faction instead.
      */
@@ -511,6 +511,9 @@ public class ba_officermanager {
                 }
                 return true;
             }
+        }
+        if(person.getMemoryWithoutUpdate().get("$ome_isAdmin") == null) {
+            return true;
         }
         return false;
     }

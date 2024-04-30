@@ -23,7 +23,7 @@ public class ba_velo_torso_effect implements ba_bioniceffect {
     public static float OFFICER_SHIP_OVERLOAD_MULT = 1.2f;
     public static float ADMIN_DEFEND_MULT = 1.1f;
     public static float ADMIN_UPKEEP_MULT = 1.1f;
-    Logger log = Global.getLogger(ba_velo_torso_effect.class);
+    static Logger log = Global.getLogger(ba_velo_torso_effect.class);
 
     @Override
     public void setBionicItem(ba_bionicitemplugin bionic) {
@@ -47,9 +47,9 @@ public class ba_velo_torso_effect implements ba_bioniceffect {
         String textAdminNum = Math.round(ADMIN_DEFEND_MULT * 100 - 100) + "%";
         String negativeTextAdmin = "but also increase upkeep cost by";
         String negativeTextAdminNum = Math.round(ADMIN_UPKEEP_MULT * 100 - 100) + "%";
-        String name = isItem? "Effect:": bionic.getName() + ":";
+        String name = isItem ? "Effect:" : bionic.getName() + ":";
         LabelAPI descriptions = tooltip.addPara("%s %s %s %s %s. %s %s %s %s", pad, t, name, text, textNum, negativeText, negativeTextNum, textAdmin, textAdminNum, negativeTextAdmin, negativeTextAdminNum);
-        descriptions.setHighlightColors(isItem? g.brighter().brighter() : bionic.displayColor, t, h, t, bad, t, h, t, bad);
+        descriptions.setHighlightColors(isItem ? g.brighter().brighter() : bionic.displayColor, t, h, t, bad, t, h, t, bad);
     }
 
     @Override
@@ -102,15 +102,16 @@ public class ba_velo_torso_effect implements ba_bioniceffect {
     }
 
 
-
     @Override
     public void onRemove(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {
 
     }
+
     @Override
     public void onInstall(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {
 
     }
+
     @Override
     public void renderExtraOnItem(float x, float y, float w, float h, float alphaMult, float glowMult, SpecialItemPlugin.SpecialItemRendererAPI renderer) {
 

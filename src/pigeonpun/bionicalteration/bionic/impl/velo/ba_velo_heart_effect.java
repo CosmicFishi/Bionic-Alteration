@@ -22,7 +22,7 @@ public class ba_velo_heart_effect implements ba_bioniceffect {
     public static float SHIP_SHIELD_FOLDING_TIME = 1.25f;
     public static float SHIP_PHASE_COST = 1.25f;
     public static float SHIP_SHIELD_UPKEEP = 1.25f;
-    Logger log = Global.getLogger(ba_velo_heart_effect.class);
+    static Logger log = Global.getLogger(ba_velo_heart_effect.class);
 
     @Override
     public void setBionicItem(ba_bionicitemplugin bionic) {
@@ -103,15 +103,16 @@ public class ba_velo_heart_effect implements ba_bioniceffect {
     }
 
 
-
     @Override
     public void onRemove(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {
 
     }
+
     @Override
     public void onInstall(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {
 
     }
+
     @Override
     public void renderExtraOnItem(float x, float y, float w, float h, float alphaMult, float glowMult, SpecialItemPlugin.SpecialItemRendererAPI renderer) {
 

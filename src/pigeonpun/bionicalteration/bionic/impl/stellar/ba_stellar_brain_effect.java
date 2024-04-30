@@ -24,7 +24,7 @@ public class ba_stellar_brain_effect implements ba_bioniceffect {
     public static float OFFICER_MAINT_MULT = 1.2f;
     public static float ADMIN_DEFENSE_MULT = 1.1f;
     public static float ADMIN_UPKEEP_MULT = 1.15f;
-    Logger log = Global.getLogger(ba_stellar_brain_effect.class);
+    static Logger log = Global.getLogger(ba_stellar_brain_effect.class);
 
     @Override
     public void setBionicItem(ba_bionicitemplugin bionic) {
@@ -83,7 +83,7 @@ public class ba_stellar_brain_effect implements ba_bioniceffect {
     @Override
     public void applyEffectAdminMarket(MarketAPI market, String id, float level, ba_bionicitemplugin bionic) {
         market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id, ADMIN_DEFENSE_MULT, bionic.getName() + " (Admins bionic)");
-        market.getUpkeepMult().modifyMult(id, ADMIN_UPKEEP_MULT,  bionic.getName() + " (Admins bionic)");
+        market.getUpkeepMult().modifyMult(id, ADMIN_UPKEEP_MULT, bionic.getName() + " (Admins bionic)");
     }
 
     @Override
@@ -103,15 +103,16 @@ public class ba_stellar_brain_effect implements ba_bioniceffect {
     }
 
 
-
     @Override
     public void onRemove(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {
 
     }
+
     @Override
     public void onInstall(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {
 
     }
+
     @Override
     public void renderExtraOnItem(float x, float y, float w, float h, float alphaMult, float glowMult, SpecialItemPlugin.SpecialItemRendererAPI renderer) {
 

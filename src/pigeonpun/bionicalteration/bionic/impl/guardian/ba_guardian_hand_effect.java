@@ -21,7 +21,7 @@ public class ba_guardian_hand_effect implements ba_bioniceffect {
     public static float SHIP_SHIELD_RAISE = 1.18f;
     public static float SHIP_SHIELD_UPKEEP = 1.05f;
     public static float SHIP_MANEUVERABILITY = 0.95f;
-    Logger log = Global.getLogger(ba_guardian_hand_effect.class);
+    static Logger log = Global.getLogger(ba_guardian_hand_effect.class);
 
     @Override
     public void setBionicItem(ba_bionicitemplugin bionic) {
@@ -104,15 +104,16 @@ public class ba_guardian_hand_effect implements ba_bioniceffect {
     }
 
 
-
     @Override
     public void onRemove(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {
 
     }
+
     @Override
     public void onInstall(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {
 
     }
+
     @Override
     public void renderExtraOnItem(float x, float y, float w, float h, float alphaMult, float glowMult, SpecialItemPlugin.SpecialItemRendererAPI renderer) {
 
