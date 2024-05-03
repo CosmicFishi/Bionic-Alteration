@@ -7,9 +7,9 @@
     {
       "major": 0,
       "minor": 0,
-      "patch": 1c # Can be a number, character or string (1, 2, a, b, "-RC2", etc)
+      "patch": 1d # Can be a number, character or string (1, 2, a, b, "-RC2", etc)
     },
   "modThreadId": 0, # eg 8181
 
-  "directDownloadURL": "https://github.com/CosmicFishi/Bionic-Alteration/releases/download/0.0.1c/Bionic-Alteration-0.0.1c.zip"
+  "directDownloadURL": "https://github.com/CosmicFishi/Bionic-Alteration/releases/download/0.0.1d/Bionic-Alteration-0.0.1d.zip"
 }

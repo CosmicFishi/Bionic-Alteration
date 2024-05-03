@@ -49,14 +49,14 @@ public class ba_harmony_mouth_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getWeaponTurnRateBonus().modifyPercent(id, SHIP_TURRET_SPIN);
-        stats.getBeamWeaponTurnRateBonus().modifyPercent(id, SHIP_TURRET_SPIN);
+        stats.getWeaponTurnRateBonus().modifyPercent(id + "ba_harmony_mouth_effect", SHIP_TURRET_SPIN);
+        stats.getBeamWeaponTurnRateBonus().modifyPercent(id + "ba_harmony_mouth_effect", SHIP_TURRET_SPIN);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getWeaponTurnRateBonus().unmodifyPercent(id);
-        stats.getBeamWeaponTurnRateBonus().unmodifyPercent(id);
+        stats.getWeaponTurnRateBonus().unmodifyPercent(id + "ba_harmony_mouth_effect");
+        stats.getBeamWeaponTurnRateBonus().unmodifyPercent(id + "ba_harmony_mouth_effect");
     }
 
     @Override

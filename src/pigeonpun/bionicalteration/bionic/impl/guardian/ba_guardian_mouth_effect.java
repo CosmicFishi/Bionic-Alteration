@@ -58,16 +58,16 @@ public class ba_guardian_mouth_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getWeaponTurnRateBonus().modifyMult(id, OFFICER_TURRET_SPIN);
-        stats.getBeamWeaponTurnRateBonus().modifyMult(id, OFFICER_TURRET_SPIN);
-        stats.getWeaponDamageTakenMult().modifyMult(id, OFFICER_TURRET_DAMAGE);
+        stats.getWeaponTurnRateBonus().modifyMult(id + "ba_guardian_mouth_effect", OFFICER_TURRET_SPIN);
+        stats.getBeamWeaponTurnRateBonus().modifyMult(id + "ba_guardian_mouth_effect", OFFICER_TURRET_SPIN);
+        stats.getWeaponDamageTakenMult().modifyMult(id + "ba_guardian_mouth_effect", OFFICER_TURRET_DAMAGE);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getWeaponTurnRateBonus().unmodifyMult(id);
-        stats.getBeamWeaponTurnRateBonus().unmodifyMult(id);
-        stats.getWeaponDamageTakenMult().unmodifyMult(id);
+        stats.getWeaponTurnRateBonus().unmodifyMult(id + "ba_guardian_mouth_effect");
+        stats.getBeamWeaponTurnRateBonus().unmodifyMult(id + "ba_guardian_mouth_effect");
+        stats.getWeaponDamageTakenMult().unmodifyMult(id + "ba_guardian_mouth_effect");
     }
 
     @Override
@@ -82,14 +82,14 @@ public class ba_guardian_mouth_effect implements ba_bioniceffect {
 
     @Override
     public void applyEffectAdminMarket(MarketAPI market, String id, float level, ba_bionicitemplugin bionic) {
-        market.getStability().modifyFlat(id, ADMIN_STABILITY_FLAT, bionic.getName() + "(Admins bionic)");
-        market.getAccessibilityMod().modifyFlat(id, -ADMIN_ACCESS_FLAT, bionic.getName() + "(Admins bionic)");
+        market.getStability().modifyFlat(id + "ba_guardian_mouth_effect", ADMIN_STABILITY_FLAT, bionic.getName() + "(Admins bionic)");
+        market.getAccessibilityMod().modifyFlat(id + "ba_guardian_mouth_effect", -ADMIN_ACCESS_FLAT, bionic.getName() + "(Admins bionic)");
     }
 
     @Override
     public void unapplyEffectAdminMarket(MarketAPI market, String id) {
-        market.getStability().unmodifyFlat(id);
-        market.getAccessibilityMod().unmodifyFlat(id);
+        market.getStability().unmodifyFlat(id + "ba_guardian_mouth_effect");
+        market.getAccessibilityMod().unmodifyFlat(id + "ba_guardian_mouth_effect");
     }
 
     @Override

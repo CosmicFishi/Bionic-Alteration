@@ -56,16 +56,16 @@ public class ba_guardian_brain_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getMaxSpeed().modifyMult(id, MAX_SPEED_MULT);
-        stats.getMaxTurnRate().modifyMult(id, TURN_RATE_MULT);
-        stats.getShieldAbsorptionMult().modifyMult(id, SHIELD_EFF_MULT);
+        stats.getMaxSpeed().modifyMult(id + "ba_guardian_brain_effect", MAX_SPEED_MULT);
+        stats.getMaxTurnRate().modifyMult(id + "ba_guardian_brain_effect", TURN_RATE_MULT);
+        stats.getShieldAbsorptionMult().modifyMult(id + "ba_guardian_brain_effect", SHIELD_EFF_MULT);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getMaxSpeed().unmodify(id);
-        stats.getMaxTurnRate().unmodify(id);
-        stats.getShieldAbsorptionMult().unmodifyMult(id);
+        stats.getMaxSpeed().unmodify(id + "ba_guardian_brain_effect");
+        stats.getMaxTurnRate().unmodify(id + "ba_guardian_brain_effect");
+        stats.getShieldAbsorptionMult().unmodifyMult(id + "ba_guardian_brain_effect");
     }
 
     @Override

@@ -52,16 +52,16 @@ public class ba_guardian_eye_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getEnergyWeaponRangeBonus().modifyMult(id, OFFICER_WEAPON_RANGE_MULT);
-        stats.getBallisticWeaponRangeBonus().modifyMult(id, OFFICER_WEAPON_RANGE_MULT);
-        stats.getPeakCRDuration().modifyMult(id, OFFICER_CR_PEAK_MULT);
+        stats.getEnergyWeaponRangeBonus().modifyMult(id + "ba_guardian_eye_effect", OFFICER_WEAPON_RANGE_MULT);
+        stats.getBallisticWeaponRangeBonus().modifyMult(id + "ba_guardian_eye_effect", OFFICER_WEAPON_RANGE_MULT);
+        stats.getPeakCRDuration().modifyMult(id + "ba_guardian_eye_effect", OFFICER_CR_PEAK_MULT);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getEnergyWeaponRangeBonus().unmodifyMult(id);
-        stats.getBallisticWeaponRangeBonus().unmodifyMult(id);
-        stats.getPeakCRDuration().unmodifyMult(id);
+        stats.getEnergyWeaponRangeBonus().unmodifyMult(id + "ba_guardian_eye_effect");
+        stats.getBallisticWeaponRangeBonus().unmodifyMult(id + "ba_guardian_eye_effect");
+        stats.getPeakCRDuration().unmodifyMult(id + "ba_guardian_eye_effect");
     }
 
     @Override

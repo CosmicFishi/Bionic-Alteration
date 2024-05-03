@@ -20,7 +20,7 @@ import java.awt.*;
 
 public class ba_serenity_heart_effect implements ba_bioniceffect {
     public static float MARKET_UPKEEP_MULT = 0.9f;
-    public static float MARKET_ACCESS_FLAT = 5f;
+    public static float MARKET_ACCESS_FLAT = 0.05f;
     static Logger log = Global.getLogger(ba_serenity_heart_effect.class);
 
     @Override
@@ -38,7 +38,7 @@ public class ba_serenity_heart_effect implements ba_bioniceffect {
         final Color g = Misc.getGrayColor();
 
         String text = "Increase market accessibility by";
-        String textNum = Math.round(MARKET_ACCESS_FLAT) + "%";
+        String textNum = Math.round(MARKET_ACCESS_FLAT * 100) + "%";
         String text2 = "and decrease upkeep by";
         String text2Num = Math.round(100 - MARKET_UPKEEP_MULT * 100) + "%";
         String name = isItem ? "Effect:" : bionic.getName() + ":";

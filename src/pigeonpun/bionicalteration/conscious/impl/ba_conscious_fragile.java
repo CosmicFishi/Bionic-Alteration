@@ -89,24 +89,24 @@ public class ba_conscious_fragile implements ba_conscious {
 
     @Override
     public void applyEffectOfficer(MutableShipStatsAPI stats, String id) {
-        stats.getAcceleration().modifyMult(id, 1 - MANEUVERABILITY_BONUS);
-        stats.getDeceleration().modifyMult(id, 1 - MANEUVERABILITY_BONUS);
-        stats.getTurnAcceleration().modifyMult(id, 1 - MANEUVERABILITY_BONUS);
-        stats.getMaxTurnRate().modifyMult(id, 1 - MANEUVERABILITY_BONUS);
-        stats.getSuppliesPerMonth().modifyPercent(id, SHIP_MAINTENANCE * 100);
-        stats.getOverloadTimeMod().modifyPercent(id, SHIP_OVERLOAD * 100);
-        stats.getPeakCRDuration().modifyMult(id, 1 - SHIP_CR);
+        stats.getAcceleration().modifyMult(id + "conscious", 1 - MANEUVERABILITY_BONUS);
+        stats.getDeceleration().modifyMult(id + "conscious", 1 - MANEUVERABILITY_BONUS);
+        stats.getTurnAcceleration().modifyMult(id + "conscious", 1 - MANEUVERABILITY_BONUS);
+        stats.getMaxTurnRate().modifyMult(id + "conscious", 1 - MANEUVERABILITY_BONUS);
+        stats.getSuppliesPerMonth().modifyPercent(id + "conscious", SHIP_MAINTENANCE * 100);
+        stats.getOverloadTimeMod().modifyPercent(id + "conscious", SHIP_OVERLOAD * 100);
+        stats.getPeakCRDuration().modifyMult(id + "conscious", 1 - SHIP_CR);
     }
 
     @Override
     public void unapplyEffectOfficer(MutableShipStatsAPI stats, String id) {
-        stats.getAcceleration().unmodifyMult(id);
-        stats.getDeceleration().unmodifyMult(id);
-        stats.getTurnAcceleration().unmodifyMult(id);
-        stats.getMaxTurnRate().unmodifyMult(id);
-        stats.getSuppliesPerMonth().unmodifyPercent(id);
-        stats.getOverloadTimeMod().unmodifyPercent(id);
-        stats.getPeakCRDuration().unmodifyMult(id);
+        stats.getAcceleration().unmodifyMult(id + "conscious");
+        stats.getDeceleration().unmodifyMult(id + "conscious");
+        stats.getTurnAcceleration().unmodifyMult(id + "conscious");
+        stats.getMaxTurnRate().unmodifyMult(id + "conscious");
+        stats.getSuppliesPerMonth().unmodifyPercent(id + "conscious");
+        stats.getOverloadTimeMod().unmodifyPercent(id + "conscious");
+        stats.getPeakCRDuration().unmodifyMult(id + "conscious");
     }
 
     @Override
@@ -122,18 +122,18 @@ public class ba_conscious_fragile implements ba_conscious {
 
     @Override
     public void applyEffectAdminMarket(MarketAPI market, String id, float level) {
-        market.getAccessibilityMod().modifyFlat(id, -MARKET_ACCESS, ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
-        market.getStability().modifyFlat(id, -MARKET_STABILITY, ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
-        market.getUpkeepMult().modifyMult(id, 1 + MARKET_UPKEEP,  ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
-        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id, 1 - MARKET_DEFEND, ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
+        market.getAccessibilityMod().modifyFlat(id + "conscious", -MARKET_ACCESS, ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
+        market.getStability().modifyFlat(id + "conscious", -MARKET_STABILITY, ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
+        market.getUpkeepMult().modifyMult(id + "conscious", 1 + MARKET_UPKEEP,  ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
+        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id + "conscious", 1 - MARKET_DEFEND, ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
     }
 
     @Override
     public void unapplyEffectAdminMarket(MarketAPI market, String id) {
-        market.getAccessibilityMod().unmodifyFlat(id);
-        market.getStability().unmodifyFlat(id);
-        market.getUpkeepMult().unmodifyMult(id);
-        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).unmodifyMult(id);
+        market.getAccessibilityMod().unmodifyFlat(id + "conscious");
+        market.getStability().unmodifyFlat(id + "conscious");
+        market.getUpkeepMult().unmodifyMult(id + "conscious");
+        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).unmodifyMult(id + "conscious");
     }
 
     @Override

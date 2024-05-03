@@ -52,14 +52,14 @@ public class ba_serenity_brain_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getMaxSpeed().modifyMult(id, MAX_SPEED_MULT);
-        stats.getMaxTurnRate().modifyMult(id, TURN_RATE_MULT);
+        stats.getMaxSpeed().modifyMult(id + "ba_serenity_brain_effect", MAX_SPEED_MULT);
+        stats.getMaxTurnRate().modifyMult(id + "ba_serenity_brain_effect", TURN_RATE_MULT);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getMaxSpeed().unmodify(id);
-        stats.getMaxTurnRate().unmodify(id);
+        stats.getMaxSpeed().unmodify(id + "ba_serenity_brain_effect");
+        stats.getMaxTurnRate().unmodify(id + "ba_serenity_brain_effect");
     }
 
     @Override

@@ -1,11 +1,17 @@
 package pigeonpun.bionicalteration.conscious;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.econ.MarketAPI;
+import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.combat.MutableShipStatsAPI;
+import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
 import pigeonpun.bionicalteration.ba_variablemanager;
+import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
+import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.conscious.impl.*;
 
 import java.awt.*;
@@ -51,6 +57,21 @@ public class ba_consciousmanager {
 
         return defaultLevel;
     }
+    public static void resetBeforeApplyEffectOfficer(MutableShipStatsAPI stats, String id) {
+        for(ba_conscious conscious: consciousMap.values() ){
+            conscious.unapplyEffectOfficer(stats, id);
+        }
+    }
+    public static void resetBeforeApplyEffectAdmin(MutableCharacterStatsAPI stats, String id) {
+        for(ba_conscious conscious: consciousMap.values() ){
+            conscious.unapplyEffectAdmin(stats, id);
+        }
+    }
+    public static void resetBeforeApplyEffectAdminMarket(MarketAPI market, String id) {
+        for(ba_conscious conscious: consciousMap.values() ){
+            conscious.unapplyEffectAdminMarket(market, id);
+        }
+    }
     /**
      * Return consciousness color
      * @param consciousnessLevel 0-1
@@ -94,6 +115,15 @@ public class ba_consciousmanager {
                     level.displayTooltipDescription(tooltip, person, false ,isSimpleMode);
                 }
                 tooltip.addSpacer(pad);
+            }
+        }
+    }
+    //todo: Store all the bionics/conscious of admin into the market and save it there, whenever the market change, use that id to "reset" all the stuffs from bionic and replace it a anew list
+    public void storeMarketOfficerEffects(MarketAPI market, PersonAPI person) {
+        List<ba_bionicitemplugin> bionicList = ba_bionicmanager.getListBionicInstalled(person);
+        for(ba_bionicitemplugin bionic: bionicList) {
+            if(bionic.isApplyAdminEffect) {
+
             }
         }
     }

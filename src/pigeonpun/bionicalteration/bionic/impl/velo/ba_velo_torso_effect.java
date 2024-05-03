@@ -59,14 +59,14 @@ public class ba_velo_torso_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getPeakCRDuration().modifyMult(id, OFFICER_SHIP_PEAK_CR);
-        stats.getOverloadTimeMod().modifyMult(id, OFFICER_SHIP_OVERLOAD_MULT);
+        stats.getPeakCRDuration().modifyMult(id + "ba_velo_torso_effect", OFFICER_SHIP_PEAK_CR);
+        stats.getOverloadTimeMod().modifyMult(id + "ba_velo_torso_effect", OFFICER_SHIP_OVERLOAD_MULT);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getPeakCRDuration().unmodifyMult(id);
-        stats.getOverloadTimeMod().unmodifyMult(id);
+        stats.getPeakCRDuration().unmodifyMult(id + "ba_velo_torso_effect");
+        stats.getOverloadTimeMod().unmodifyMult(id + "ba_velo_torso_effect");
     }
 
     @Override
@@ -81,14 +81,14 @@ public class ba_velo_torso_effect implements ba_bioniceffect {
 
     @Override
     public void applyEffectAdminMarket(MarketAPI market, String id, float level, ba_bionicitemplugin bionic) {
-        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id, ADMIN_DEFEND_MULT, bionic.getName() + "(Admins bionic)");
-        market.getUpkeepMult().modifyMult(id, ADMIN_UPKEEP_MULT, bionic.getName() + "(Admins bionic)");
+        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id + "ba_velo_torso_effect", ADMIN_DEFEND_MULT, bionic.getName() + "(Admins bionic)");
+        market.getUpkeepMult().modifyMult(id + "ba_velo_torso_effect", ADMIN_UPKEEP_MULT, bionic.getName() + "(Admins bionic)");
     }
 
     @Override
     public void unapplyEffectAdminMarket(MarketAPI market, String id) {
-        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).unmodifyMult(id);
-        market.getUpkeepMult().unmodifyMult(id);
+        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).unmodifyMult(id + "ba_velo_torso_effect");
+        market.getUpkeepMult().unmodifyMult(id + "ba_velo_torso_effect");
     }
 
     @Override

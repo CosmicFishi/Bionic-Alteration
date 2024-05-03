@@ -58,18 +58,18 @@ public class ba_velo_heart_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getPhaseCloakCooldownBonus().modifyMult(id, SHIP_PHASE_ACTIVATION);
-        stats.getShieldUnfoldRateMult().modifyMult(id, SHIP_SHIELD_FOLDING_TIME);
-        stats.getPhaseCloakUpkeepCostBonus().modifyMult(id, SHIP_PHASE_COST);
-        stats.getShieldUpkeepMult().modifyMult(id, SHIP_SHIELD_UPKEEP);
+        stats.getPhaseCloakCooldownBonus().modifyMult(id + "ba_velo_heart_effect", SHIP_PHASE_ACTIVATION);
+        stats.getShieldUnfoldRateMult().modifyMult(id + "ba_velo_heart_effect", SHIP_SHIELD_FOLDING_TIME);
+        stats.getPhaseCloakUpkeepCostBonus().modifyMult(id + "ba_velo_heart_effect", SHIP_PHASE_COST);
+        stats.getShieldUpkeepMult().modifyMult(id + "ba_velo_heart_effect", SHIP_SHIELD_UPKEEP);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getPhaseCloakCooldownBonus().unmodifyMult(id);
-        stats.getShieldUnfoldRateMult().unmodifyMult(id);
-        stats.getPhaseCloakUpkeepCostBonus().unmodifyMult(id);
-        stats.getShieldUpkeepMult().unmodifyMult(id);
+        stats.getPhaseCloakCooldownBonus().unmodifyMult(id + "ba_velo_heart_effect");
+        stats.getShieldUnfoldRateMult().unmodifyMult(id + "ba_velo_heart_effect");
+        stats.getPhaseCloakUpkeepCostBonus().unmodifyMult(id + "ba_velo_heart_effect");
+        stats.getShieldUpkeepMult().unmodifyMult(id + "ba_velo_heart_effect");
     }
 
     @Override

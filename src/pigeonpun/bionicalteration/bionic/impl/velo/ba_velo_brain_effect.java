@@ -52,20 +52,20 @@ public class ba_velo_brain_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getAcceleration().modifyMult(id, MANEUVER_MULT * 2f);
-        stats.getDeceleration().modifyMult(id, MANEUVER_MULT);
-        stats.getTurnAcceleration().modifyMult(id, MANEUVER_MULT * 2f);
-        stats.getMaxTurnRate().modifyMult(id, MANEUVER_MULT);
-        stats.getHullDamageTakenMult().modifyMult(id, SHIP_HULL_DAMAGE_MULT);
+        stats.getAcceleration().modifyMult(id + "ba_velo_brain_effect", MANEUVER_MULT * 2f);
+        stats.getDeceleration().modifyMult(id + "ba_velo_brain_effect", MANEUVER_MULT);
+        stats.getTurnAcceleration().modifyMult(id + "ba_velo_brain_effect", MANEUVER_MULT * 2f);
+        stats.getMaxTurnRate().modifyMult(id + "ba_velo_brain_effect", MANEUVER_MULT);
+        stats.getHullDamageTakenMult().modifyMult(id + "ba_velo_brain_effect", SHIP_HULL_DAMAGE_MULT);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getAcceleration().unmodifyMult(id);
-        stats.getDeceleration().unmodifyMult(id);
-        stats.getTurnAcceleration().unmodifyMult(id);
-        stats.getMaxTurnRate().unmodifyMult(id);
-        stats.getHullDamageTakenMult().unmodifyMult(id);
+        stats.getAcceleration().unmodifyMult(id + "ba_velo_brain_effect");
+        stats.getDeceleration().unmodifyMult(id + "ba_velo_brain_effect");
+        stats.getTurnAcceleration().unmodifyMult(id + "ba_velo_brain_effect");
+        stats.getMaxTurnRate().unmodifyMult(id + "ba_velo_brain_effect");
+        stats.getHullDamageTakenMult().unmodifyMult(id + "ba_velo_brain_effect");
     }
 
     @Override

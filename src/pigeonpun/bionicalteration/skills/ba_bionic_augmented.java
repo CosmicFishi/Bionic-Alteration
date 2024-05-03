@@ -131,6 +131,7 @@ public class ba_bionic_augmented {
                             bionic.effectScript.applyOfficerEffect(stats, hullSize, id);
                     }
                 }
+                ba_consciousmanager.resetBeforeApplyEffectOfficer(stats, id);
                 ba_consciousmanager.getConsciousnessLevel(captain).applyEffectOfficer(stats, id);
             }
         }
@@ -145,7 +146,7 @@ public class ba_bionic_augmented {
                         bionic.effectScript.unapplyOfficerEffect(stats, hullSize, id);
                     }
                 }
-                ba_consciousmanager.getConsciousnessLevel(captain).unapplyEffectOfficer(stats, id);
+                ba_consciousmanager.resetBeforeApplyEffectOfficer(stats, id);
             }
         }
 
@@ -176,6 +177,7 @@ public class ba_bionic_augmented {
                         bionic.effectScript.applyAdminEffect(stats, id);
                     }
                 }
+                ba_consciousmanager.resetBeforeApplyEffectAdmin(stats, id);
                 ba_consciousmanager.getConsciousnessLevel(person).applyEffectAdmin(stats, id);
             }
         }
@@ -190,7 +192,7 @@ public class ba_bionic_augmented {
                         bionic.effectScript.unapplyAdminEffect(stats, id);
                     }
                 }
-                ba_consciousmanager.getConsciousnessLevel(person).unapplyEffectAdmin(stats, id);
+                ba_consciousmanager.resetBeforeApplyEffectAdmin(stats, id);
             }
         }
 
@@ -220,6 +222,7 @@ public class ba_bionic_augmented {
                         bionic.effectScript.applyEffectAdminMarket(market, id, level, bionic);
                     }
                 }
+                ba_consciousmanager.resetBeforeApplyEffectAdminMarket(market, id);
                 ba_consciousmanager.getConsciousnessLevel(person).applyEffectAdminMarket(market, id, level);
             }
         }
@@ -234,7 +237,7 @@ public class ba_bionic_augmented {
                         bionic.effectScript.unapplyEffectAdminMarket(market, id);
                     }
                 }
-                ba_consciousmanager.getConsciousnessLevel(person).unapplyEffectAdminMarket(market, id);
+                ba_consciousmanager.resetBeforeApplyEffectAdminMarket(market, id);
             }
         }
 

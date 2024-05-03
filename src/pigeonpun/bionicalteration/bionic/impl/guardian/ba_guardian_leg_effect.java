@@ -55,16 +55,16 @@ public class ba_guardian_leg_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getCRLossPerSecondPercent().modifyMult(id, SHIP_CR_DECREASE_MULT);
-        stats.getHullDamageTakenMult().modifyMult(id, SHIP_HULL_DAMAGE_TAKEN_MULT);
-        stats.getEngineDamageTakenMult().modifyMult(id, SHIP_ENGINE_DAMAGE_TAKEN_MULT);
+        stats.getCRLossPerSecondPercent().modifyMult(id + "ba_guardian_leg_effect", SHIP_CR_DECREASE_MULT);
+        stats.getHullDamageTakenMult().modifyMult(id + "ba_guardian_leg_effect", SHIP_HULL_DAMAGE_TAKEN_MULT);
+        stats.getEngineDamageTakenMult().modifyMult(id + "ba_guardian_leg_effect", SHIP_ENGINE_DAMAGE_TAKEN_MULT);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getCRLossPerSecondPercent().unmodifyMult(id);
-        stats.getHullDamageTakenMult().unmodifyMult(id);
-        stats.getEngineDamageTakenMult().unmodifyMult(id);
+        stats.getCRLossPerSecondPercent().unmodifyMult(id + "ba_guardian_leg_effect");
+        stats.getHullDamageTakenMult().unmodifyMult(id + "ba_guardian_leg_effect");
+        stats.getEngineDamageTakenMult().unmodifyMult(id + "ba_guardian_leg_effect");
     }
 
     @Override

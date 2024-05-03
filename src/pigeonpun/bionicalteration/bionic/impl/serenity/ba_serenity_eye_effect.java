@@ -52,14 +52,14 @@ public class ba_serenity_eye_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getFluxCapacity().modifyMult(id, FLUX_CAP_MULT);
-        stats.getFluxDissipation().modifyFlat(id, FLUX_DISSIPATION_FLAT);
+        stats.getFluxCapacity().modifyMult(id + "ba_serenity_eye_effect", FLUX_CAP_MULT);
+        stats.getFluxDissipation().modifyFlat(id + "ba_serenity_eye_effect", FLUX_DISSIPATION_FLAT);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getFluxCapacity().unmodifyMult(id);
-        stats.getFluxDissipation().unmodifyFlat(id);
+        stats.getFluxCapacity().unmodifyMult(id + "ba_serenity_eye_effect");
+        stats.getFluxDissipation().unmodifyFlat(id + "ba_serenity_eye_effect");
     }
 
     @Override

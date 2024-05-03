@@ -55,16 +55,16 @@ public class ba_stellar_torso_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getPeakCRDuration().modifyMult(id, SHIP_PEAK_CR);
-        stats.getEngineDamageTakenMult().modifyMult(id, SHIP_ENGINE_DAMAGE);
-        stats.getMinCrewMod().modifyMult(id, SHIP_MIN_CREW_REQUIRE);
+        stats.getPeakCRDuration().modifyMult(id + "ba_stellar_torso_effect", SHIP_PEAK_CR);
+        stats.getEngineDamageTakenMult().modifyMult(id + "ba_stellar_torso_effect", SHIP_ENGINE_DAMAGE);
+        stats.getMinCrewMod().modifyMult(id + "ba_stellar_torso_effect", SHIP_MIN_CREW_REQUIRE);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getPeakCRDuration().unmodifyMult(id);
-        stats.getEngineDamageTakenMult().unmodifyMult(id);
-        stats.getMinCrewMod().unmodifyMult(id);
+        stats.getPeakCRDuration().unmodifyMult(id + "ba_stellar_torso_effect");
+        stats.getEngineDamageTakenMult().unmodifyMult(id + "ba_stellar_torso_effect");
+        stats.getMinCrewMod().unmodifyMult(id + "ba_stellar_torso_effect");
     }
 
     @Override
