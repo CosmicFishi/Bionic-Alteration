@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.characters.*;
 import com.fs.starfarer.api.combat.MutableShipStatsAPI;
+import com.fs.starfarer.api.combat.MutableStat;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.combat.listeners.AdvanceableListener;
 import com.fs.starfarer.api.combat.listeners.DamageTakenModifier;
@@ -16,14 +17,14 @@ import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.util.DynamicStats;
 import org.apache.log4j.Logger;
 import pigeonpun.bionicalteration.ba_officermanager;
+import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.conscious.ba_conscious;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
 
 public class ba_bionic_augmented {
@@ -194,6 +195,8 @@ public class ba_bionic_augmented {
             if(market.getAdmin() != null) {
                 PersonAPI person = market.getAdmin();
                 List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
+                //todo: find a way to remove all the bionic effect on the market on remove/install to completely reset the effect on market
+                removeAllDuplicateEffectsBeforeApplyingNew(market);
                 for(ba_bionicitemplugin bionic: listBionic) {
                     if(bionic.effectScript != null  && bionic.isApplyAdminEffect) {
                         bionic.effectScript.applyEffectAdminMarket(market, id, level, bionic);
@@ -272,6 +275,39 @@ public class ba_bionic_augmented {
             //conscious
             info.setParaFontDefault();
             ba_consciousmanager.getConsciousnessLevel(person).displayTooltipDescription(info, person, true, true);
+        }
+    }
+    //this is for save compatibility
+    public static void removeAllDuplicateEffectsBeforeApplyingNew(MarketAPI market) {
+        for(String key: new HashSet<>(market.getIncomeMult().getMultMods().keySet())) {
+            if(key.contains(ba_variablemanager.BA_BIONIC_SKILL_ID)) {
+                market.getIncomeMult().unmodify(key);
+            }
+        }
+        for(String key: new HashSet<>(market.getUpkeepMult().getMultMods().keySet())) {
+            if(key.contains(ba_variablemanager.BA_BIONIC_SKILL_ID)) {
+                market.getUpkeepMult().unmodify(key);
+            }
+        }
+        for(String key: new HashSet<>(market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).getMultBonuses().keySet())) {
+            if(key.contains(ba_variablemanager.BA_BIONIC_SKILL_ID)) {
+                market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).unmodifyMult(key);
+            }
+        }
+        for(String key: new HashSet<>(market.getStats().getDynamic().getMod(Stats.COMBAT_FLEET_SIZE_MULT).getMultBonuses().keySet())) {
+            if(key.contains(ba_variablemanager.BA_BIONIC_SKILL_ID)) {
+                market.getStats().getDynamic().getMod(Stats.COMBAT_FLEET_SIZE_MULT).unmodifyMult(key);
+            }
+        }
+        for(String key: new HashSet<>(market.getAccessibilityMod().getFlatBonuses().keySet())) {
+            if(key.contains(ba_variablemanager.BA_BIONIC_SKILL_ID)) {
+                market.getAccessibilityMod().unmodifyFlat(key);
+            }
+        }
+        for(String key: new HashSet<>(market.getStability().getFlatMods().keySet())) {
+            if(key.contains(ba_variablemanager.BA_BIONIC_SKILL_ID)) {
+                market.getStability().unmodifyFlat(key);
+            }
         }
     }
     public static class bionicInCombat implements AdvanceableListener {
