@@ -50,12 +50,12 @@ public class ba_harmony_torso_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getPeakCRDuration().modifyMult(id + "ba_harmony_torso_effect", SHIP_PEAK_CR);
+        stats.getPeakCRDuration().modifyMult(id, SHIP_PEAK_CR);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getPeakCRDuration().unmodifyMult(id + "ba_harmony_torso_effect");
+        stats.getPeakCRDuration().unmodifyMult(id);
     }
 
     @Override

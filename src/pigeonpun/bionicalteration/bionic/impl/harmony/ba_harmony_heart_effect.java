@@ -49,12 +49,12 @@ public class ba_harmony_heart_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getHullBonus().modifyMult(id + "ba_harmony_heart_effect", SHIP_HULL);
+        stats.getHullBonus().modifyMult(id, SHIP_HULL);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getHullBonus().unmodifyMult(id + "ba_harmony_heart_effect");
+        stats.getHullBonus().unmodifyMult(id);
     }
 
     @Override

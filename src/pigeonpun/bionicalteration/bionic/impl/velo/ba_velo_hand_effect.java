@@ -52,14 +52,14 @@ public class ba_velo_hand_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getShieldAbsorptionMult().modifyMult(id + "ba_velo_hand_effect", SHIP_SHIELD_EFF);
-        stats.getSuppliesPerMonth().modifyMult(id + "ba_velo_hand_effect", SHIP_MAINT);
+        stats.getShieldAbsorptionMult().modifyMult(id, SHIP_SHIELD_EFF);
+        stats.getSuppliesPerMonth().modifyMult(id, SHIP_MAINT);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getShieldAbsorptionMult().unmodifyMult(id + "ba_velo_hand_effect");
-        stats.getSuppliesPerMonth().unmodifyMult(id + "ba_velo_hand_effect");
+        stats.getShieldAbsorptionMult().unmodifyMult(id);
+        stats.getSuppliesPerMonth().unmodifyMult(id);
     }
 
     @Override

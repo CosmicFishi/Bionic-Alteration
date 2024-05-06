@@ -49,12 +49,12 @@ public class ba_harmony_hand_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getShieldUnfoldRateMult().modifyMult(id + "ba_harmony_hand_effect", SHIP_SHIELD_RAISE_MULT);
+        stats.getShieldUnfoldRateMult().modifyMult(id, SHIP_SHIELD_RAISE_MULT);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getShieldUnfoldRateMult().unmodifyMult(id + "ba_harmony_hand_effect");
+        stats.getShieldUnfoldRateMult().unmodifyMult(id);
     }
 
     @Override

@@ -55,16 +55,16 @@ public class ba_guardian_torso_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getShieldAbsorptionMult().modifyMult(id + "ba_guardian_torso_effect", SHIP_SHIELD_EFF);
-        stats.getHullBonus().modifyMult(id + "ba_guardian_torso_effect", SHIP_HULL);
-        stats.getMaxSpeed().modifyMult(id + "ba_guardian_torso_effect", SHIP_MAX_SPEED);
+        stats.getShieldAbsorptionMult().modifyMult(id, SHIP_SHIELD_EFF);
+        stats.getHullBonus().modifyMult(id, SHIP_HULL);
+        stats.getMaxSpeed().modifyMult(id, SHIP_MAX_SPEED);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getShieldAbsorptionMult().unmodifyMult(id + "ba_guardian_torso_effect");
-        stats.getHullBonus().unmodifyMult(id + "ba_guardian_torso_effect");
-        stats.getMaxSpeed().unmodifyMult(id + "ba_guardian_torso_effect");
+        stats.getShieldAbsorptionMult().unmodifyMult(id);
+        stats.getHullBonus().unmodifyMult(id);
+        stats.getMaxSpeed().unmodifyMult(id);
     }
 
     @Override

@@ -9,11 +9,13 @@ import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.combat.listeners.AdvanceableListener;
 import com.fs.starfarer.api.combat.listeners.DamageTakenModifier;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
+import com.fs.starfarer.api.fleet.MutableMarketStatsAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Stats;
 import com.fs.starfarer.api.impl.campaign.skills.BaseSkillEffectDescription;
 import com.fs.starfarer.api.ui.LabelAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
+import com.fs.starfarer.campaign.fleet.MutableMarketStats;
 import com.fs.starfarer.util.DynamicStats;
 import org.apache.log4j.Logger;
 import pigeonpun.bionicalteration.ba_officermanager;
@@ -89,7 +91,8 @@ public class ba_bionic_augmented {
                 List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(captain);
                 for(ba_bionicitemplugin bionic: listBionic) {
                     if(bionic.effectScript != null && bionic.isApplyCaptainEffect) {
-                            bionic.effectScript.applyOfficerEffect(stats, hullSize, id);
+                        String applyId = id + bionic.bionicId;
+                        bionic.effectScript.applyOfficerEffect(stats, hullSize, applyId);
                     }
                 }
                 ba_consciousmanager.resetBeforeApplyEffectOfficer(stats, id);
@@ -104,7 +107,8 @@ public class ba_bionic_augmented {
                 List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(captain);
                 for(ba_bionicitemplugin bionic: listBionic) {
                     if(bionic.effectScript != null && bionic.isApplyCaptainEffect) {
-                        bionic.effectScript.unapplyOfficerEffect(stats, hullSize, id);
+                        String applyId = id + bionic.bionicId;
+                        bionic.effectScript.unapplyOfficerEffect(stats, hullSize, applyId);
                     }
                 }
                 ba_consciousmanager.resetBeforeApplyEffectOfficer(stats, id);
@@ -143,7 +147,8 @@ public class ba_bionic_augmented {
                 List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
                 for(ba_bionicitemplugin bionic: listBionic) {
                     if(bionic.effectScript != null && bionic.isApplyAdminEffect) {
-                        bionic.effectScript.applyAdminEffect(stats, id);
+                        String applyId = id + bionic.bionicId;
+                        bionic.effectScript.applyAdminEffect(stats, applyId);
                     }
                 }
                 ba_consciousmanager.resetBeforeApplyEffectAdmin(stats, id);
@@ -158,7 +163,8 @@ public class ba_bionic_augmented {
                 List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
                 for(ba_bionicitemplugin bionic: listBionic) {
                     if(bionic.effectScript != null && bionic.isApplyAdminEffect) {
-                        bionic.effectScript.unapplyAdminEffect(stats, id);
+                        String applyId = id + bionic.bionicId;
+                        bionic.effectScript.unapplyAdminEffect(stats, applyId);
                     }
                 }
                 ba_consciousmanager.resetBeforeApplyEffectAdmin(stats, id);
@@ -194,16 +200,10 @@ public class ba_bionic_augmented {
         public void apply(MarketAPI market, String id, float level) {
             if(market.getAdmin() != null) {
                 PersonAPI person = market.getAdmin();
-                List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
-                //todo: find a way to remove all the bionic effect on the market on remove/install to completely reset the effect on market
-                removeAllDuplicateEffectsBeforeApplyingNew(market);
-                for(ba_bionicitemplugin bionic: listBionic) {
-                    if(bionic.effectScript != null  && bionic.isApplyAdminEffect) {
-                        bionic.effectScript.applyEffectAdminMarket(market, id, level, bionic);
-                    }
+                //todo: check on NPC market to see if working as intended
+                if(ba_bionicmanager.checkIfHaveBionicInstalled(person) && !market.hasCondition(ba_variablemanager.BA_MARKET_CONDITION_ID)) {
+                    market.addCondition(ba_variablemanager.BA_MARKET_CONDITION_ID);
                 }
-                ba_consciousmanager.resetBeforeApplyEffectAdminMarket(market, id);
-                ba_consciousmanager.getConsciousnessLevel(person).applyEffectAdminMarket(market, id, level);
             }
         }
 
@@ -211,13 +211,9 @@ public class ba_bionic_augmented {
         public void unapply(MarketAPI market, String id) {
             if(market.getAdmin() != null) {
                 PersonAPI person = market.getAdmin();
-                List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
-                for(ba_bionicitemplugin bionic: listBionic) {
-                    if(bionic.effectScript != null && bionic.isApplyAdminEffect) {
-                        bionic.effectScript.unapplyEffectAdminMarket(market, id);
-                    }
+                if(market.hasCondition(ba_variablemanager.BA_MARKET_CONDITION_ID)) {
+                    market.removeCondition(ba_variablemanager.BA_MARKET_CONDITION_ID);
                 }
-                ba_consciousmanager.resetBeforeApplyEffectAdminMarket(market, id);
             }
         }
 

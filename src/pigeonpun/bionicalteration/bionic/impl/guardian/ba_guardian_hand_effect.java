@@ -55,22 +55,22 @@ public class ba_guardian_hand_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getShieldUpkeepMult().modifyMult(id + "ba_guardian_hand_effect", SHIP_SHIELD_UPKEEP);
-        stats.getShieldUnfoldRateMult().modifyMult(id + "ba_guardian_hand_effect", SHIP_SHIELD_RAISE);
-        stats.getAcceleration().modifyMult(id + "ba_guardian_hand_effect", SHIP_MANEUVERABILITY);
-        stats.getDeceleration().modifyMult(id + "ba_guardian_hand_effect", SHIP_MANEUVERABILITY);
-        stats.getTurnAcceleration().modifyMult(id + "ba_guardian_hand_effect", SHIP_MANEUVERABILITY);
-        stats.getMaxTurnRate().modifyMult(id + "ba_guardian_hand_effect", SHIP_MANEUVERABILITY);
+        stats.getShieldUpkeepMult().modifyMult(id, SHIP_SHIELD_UPKEEP);
+        stats.getShieldUnfoldRateMult().modifyMult(id, SHIP_SHIELD_RAISE);
+        stats.getAcceleration().modifyMult(id, SHIP_MANEUVERABILITY);
+        stats.getDeceleration().modifyMult(id, SHIP_MANEUVERABILITY);
+        stats.getTurnAcceleration().modifyMult(id, SHIP_MANEUVERABILITY);
+        stats.getMaxTurnRate().modifyMult(id, SHIP_MANEUVERABILITY);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getShieldUpkeepMult().unmodifyMult(id + "ba_guardian_hand_effect");
-        stats.getShieldUnfoldRateMult().unmodifyMult(id + "ba_guardian_hand_effect");
-        stats.getAcceleration().unmodifyMult(id + "ba_guardian_hand_effect");
-        stats.getDeceleration().unmodifyMult(id + "ba_guardian_hand_effect");
-        stats.getTurnAcceleration().unmodifyMult(id + "ba_guardian_hand_effect");
-        stats.getMaxTurnRate().unmodifyMult(id + "ba_guardian_hand_effect");
+        stats.getShieldUpkeepMult().unmodifyMult(id);
+        stats.getShieldUnfoldRateMult().unmodifyMult(id);
+        stats.getAcceleration().unmodifyMult(id);
+        stats.getDeceleration().unmodifyMult(id);
+        stats.getTurnAcceleration().unmodifyMult(id);
+        stats.getMaxTurnRate().unmodifyMult(id);
     }
 
     @Override

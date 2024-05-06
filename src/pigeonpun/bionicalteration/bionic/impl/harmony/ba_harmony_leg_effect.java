@@ -49,12 +49,12 @@ public class ba_harmony_leg_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getCRLossPerSecondPercent().modifyMult(id + "ba_harmony_leg_effect", SHIP_CR_DECREASE_MULT);
+        stats.getCRLossPerSecondPercent().modifyMult(id, SHIP_CR_DECREASE_MULT);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getCRLossPerSecondPercent().unmodifyMult(id + "ba_harmony_leg_effect");
+        stats.getCRLossPerSecondPercent().unmodifyMult(id);
     }
 
     @Override

@@ -52,14 +52,14 @@ public class ba_stellar_leg_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getMaxCombatReadiness().modifyMult(id + "ba_stellar_heart_effect", SHIP_MAX_CR_MULT);
-        stats.getFluxCapacity().modifyMult(id + "ba_stellar_heart_effect", SHIP_FLUX_CAP_MULT);
+        stats.getMaxCombatReadiness().modifyMult(id, SHIP_MAX_CR_MULT);
+        stats.getFluxCapacity().modifyMult(id, SHIP_FLUX_CAP_MULT);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getMaxCombatReadiness().unmodifyMult(id + "ba_stellar_heart_effect");
-        stats.getFluxCapacity().unmodifyMult(id + "ba_stellar_heart_effect");
+        stats.getMaxCombatReadiness().unmodifyMult(id);
+        stats.getFluxCapacity().unmodifyMult(id);
     }
 
     @Override

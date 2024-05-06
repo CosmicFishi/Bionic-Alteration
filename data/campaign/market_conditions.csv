@@ -1,0 +1,3 @@
+name,id,planetary,decivRemove,script,desc,icon,order
+Bionic Alternation,bionic_condition,TRUE,,pigeonpun.bionicalteration.conditions.bioniccondition,Accumulation of effects that will bring forth new prospective or fatal collapse.,graphics/icons/markets/ba_bionic_condition.png,1000
+,,,,,,,

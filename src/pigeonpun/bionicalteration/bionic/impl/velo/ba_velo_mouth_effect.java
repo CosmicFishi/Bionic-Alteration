@@ -53,18 +53,18 @@ public class ba_velo_mouth_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getEnergyWeaponDamageMult().modifyMult(id + "ba_velo_mouth_effect", OFFICER_WEAPON_DAMAGE);
-        stats.getBallisticWeaponDamageMult().modifyMult(id + "ba_velo_mouth_effect", OFFICER_WEAPON_DAMAGE);
-        stats.getMissileWeaponDamageMult().modifyMult(id + "ba_velo_mouth_effect", OFFICER_WEAPON_DAMAGE);
-        stats.getDynamic().getMod(Stats.DEPLOYMENT_POINTS_MOD).modifyFlat(id + "ba_velo_mouth_effect", OFFICER_SHIP_DP);
+        stats.getEnergyWeaponDamageMult().modifyMult(id, OFFICER_WEAPON_DAMAGE);
+        stats.getBallisticWeaponDamageMult().modifyMult(id, OFFICER_WEAPON_DAMAGE);
+        stats.getMissileWeaponDamageMult().modifyMult(id, OFFICER_WEAPON_DAMAGE);
+        stats.getDynamic().getMod(Stats.DEPLOYMENT_POINTS_MOD).modifyFlat(id, OFFICER_SHIP_DP);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getEnergyWeaponDamageMult().unmodifyMult(id + "ba_velo_mouth_effect");
-        stats.getBallisticWeaponDamageMult().unmodifyMult(id + "ba_velo_mouth_effect");
-        stats.getMissileWeaponDamageMult().unmodifyMult(id + "ba_velo_mouth_effect");
-        stats.getDynamic().getMod(Stats.DEPLOYMENT_POINTS_MOD).unmodifyFlat(id + "ba_velo_mouth_effect");
+        stats.getEnergyWeaponDamageMult().unmodifyMult(id);
+        stats.getBallisticWeaponDamageMult().unmodifyMult(id);
+        stats.getMissileWeaponDamageMult().unmodifyMult(id);
+        stats.getDynamic().getMod(Stats.DEPLOYMENT_POINTS_MOD).unmodifyFlat(id);
     }
 
     @Override

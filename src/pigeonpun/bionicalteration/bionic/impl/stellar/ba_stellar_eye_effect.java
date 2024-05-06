@@ -58,14 +58,14 @@ public class ba_stellar_eye_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getFluxDissipation().modifyFlat(id + "ba_stellar_eye_effect", OFFICER_FLUX_DISSIPATION_FLAT);
-        stats.getCRLossPerSecondPercent().modifyMult(id + "ba_stellar_eye_effect", OFFICER_CR_LOST_PER_SECOND_MULT);
+        stats.getFluxDissipation().modifyFlat(id, OFFICER_FLUX_DISSIPATION_FLAT);
+        stats.getCRLossPerSecondPercent().modifyMult(id, OFFICER_CR_LOST_PER_SECOND_MULT);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getFluxCapacity().unmodifyMult(id + "ba_stellar_eye_effect");
-        stats.getFluxDissipation().unmodifyFlat(id + "ba_stellar_eye_effect");
+        stats.getFluxCapacity().unmodifyMult(id);
+        stats.getFluxDissipation().unmodifyFlat(id);
     }
 
     @Override
@@ -80,14 +80,14 @@ public class ba_stellar_eye_effect implements ba_bioniceffect {
 
     @Override
     public void applyEffectAdminMarket(MarketAPI market, String id, float level, ba_bionicitemplugin bionic) {
-        market.getIncomeMult().modifyMult(id + "ba_stellar_eye_effect", ADMIN_INCOME_MULT, bionic.getName() + "(Admins bionic)");
-        market.getUpkeepMult().modifyMult(id + "ba_stellar_eye_effect", ADMIN_UPKEEP_MULT, bionic.getName() + "(Admins bionic)");
+        market.getIncomeMult().modifyMult(id, ADMIN_INCOME_MULT, bionic.getName() + "(Admins bionic)");
+        market.getUpkeepMult().modifyMult(id, ADMIN_UPKEEP_MULT, bionic.getName() + "(Admins bionic)");
     }
 
     @Override
     public void unapplyEffectAdminMarket(MarketAPI market, String id) {
-        market.getIncomeMult().unmodifyMult(id + "ba_stellar_eye_effect");
-        market.getUpkeepMult().unmodifyMult(id + "ba_stellar_eye_effect");
+        market.getIncomeMult().unmodifyMult(id);
+        market.getUpkeepMult().unmodifyMult(id);
     }
 
     @Override

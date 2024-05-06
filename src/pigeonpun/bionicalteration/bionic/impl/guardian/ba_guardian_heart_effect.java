@@ -20,7 +20,7 @@ import java.awt.*;
 public class ba_guardian_heart_effect implements ba_bioniceffect {
     public static float OFFICER_SHIP_ARMOR = 1.2f;
     public static float OFFICER_SHIP_MANEUVERABILITY = 0.75f;
-    public static float ADMIN_ACCESS_FLAT = 20f;
+    public static float ADMIN_ACCESS_FLAT = 0.2f;
     public static float ADMIN_UPKEEP_MULT = 1.25f;
     static Logger log = Global.getLogger(ba_guardian_heart_effect.class);
 
@@ -58,20 +58,20 @@ public class ba_guardian_heart_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getAcceleration().modifyMult(id + "ba_guardian_heart_effect", OFFICER_SHIP_MANEUVERABILITY);
-        stats.getDeceleration().modifyMult(id + "ba_guardian_heart_effect", OFFICER_SHIP_MANEUVERABILITY);
-        stats.getTurnAcceleration().modifyMult(id + "ba_guardian_heart_effect", OFFICER_SHIP_MANEUVERABILITY);
-        stats.getMaxTurnRate().modifyMult(id + "ba_guardian_heart_effect", OFFICER_SHIP_MANEUVERABILITY);
-        stats.getArmorBonus().modifyMult(id + "ba_guardian_heart_effect", OFFICER_SHIP_ARMOR);
+        stats.getAcceleration().modifyMult(id, OFFICER_SHIP_MANEUVERABILITY);
+        stats.getDeceleration().modifyMult(id, OFFICER_SHIP_MANEUVERABILITY);
+        stats.getTurnAcceleration().modifyMult(id, OFFICER_SHIP_MANEUVERABILITY);
+        stats.getMaxTurnRate().modifyMult(id, OFFICER_SHIP_MANEUVERABILITY);
+        stats.getArmorBonus().modifyMult(id, OFFICER_SHIP_ARMOR);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getAcceleration().unmodifyMult(id + "ba_guardian_heart_effect");
-        stats.getDeceleration().unmodifyMult(id + "ba_guardian_heart_effect");
-        stats.getTurnAcceleration().unmodifyMult(id + "ba_guardian_heart_effect");
-        stats.getMaxTurnRate().unmodifyMult(id + "ba_guardian_heart_effect");
-        stats.getArmorBonus().unmodifyMult(id + "ba_guardian_heart_effect");
+        stats.getAcceleration().unmodifyMult(id);
+        stats.getDeceleration().unmodifyMult(id);
+        stats.getTurnAcceleration().unmodifyMult(id);
+        stats.getMaxTurnRate().unmodifyMult(id);
+        stats.getArmorBonus().unmodifyMult(id);
     }
 
     @Override
@@ -86,14 +86,14 @@ public class ba_guardian_heart_effect implements ba_bioniceffect {
 
     @Override
     public void applyEffectAdminMarket(MarketAPI market, String id, float level, ba_bionicitemplugin bionic) {
-        market.getAccessibilityMod().modifyFlat(id + "ba_guardian_heart_effect", ADMIN_ACCESS_FLAT, bionic.getName() + " (Admins bionic)");
-        market.getUpkeepMult().modifyMult(id + "ba_guardian_heart_effect", ADMIN_UPKEEP_MULT, bionic.getName() + " (Admins bionic)");
+        market.getAccessibilityMod().modifyFlat(id, ADMIN_ACCESS_FLAT, bionic.getName() + " (Admins bionic)");
+        market.getUpkeepMult().modifyMult(id, ADMIN_UPKEEP_MULT, bionic.getName() + " (Admins bionic)");
     }
 
     @Override
     public void unapplyEffectAdminMarket(MarketAPI market, String id) {
-        market.getAccessibilityMod().unmodifyFlat(id + "ba_guardian_heart_effect");
-        market.getUpkeepMult().unmodifyMult(id + "ba_guardian_heart_effect");
+        market.getAccessibilityMod().unmodifyFlat(id);
+        market.getUpkeepMult().unmodifyMult(id);
     }
 
     @Override

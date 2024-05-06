@@ -60,14 +60,14 @@ public class ba_stellar_brain_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getDynamic().getStat(Stats.REPLACEMENT_RATE_INCREASE_MULT).modifyMult(id + "ba_stellar_brain_effect", OFFICER_FIGHTER_RATE_INCREASE_MULT);
-        stats.getSuppliesPerMonth().modifyMult(id + "ba_stellar_brain_effect", OFFICER_MAINT_MULT);
+        stats.getDynamic().getStat(Stats.REPLACEMENT_RATE_INCREASE_MULT).modifyMult(id, OFFICER_FIGHTER_RATE_INCREASE_MULT);
+        stats.getSuppliesPerMonth().modifyMult(id, OFFICER_MAINT_MULT);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getDynamic().getStat(Stats.REPLACEMENT_RATE_INCREASE_MULT).unmodifyMult(id + "ba_stellar_brain_effect");
-        stats.getSuppliesPerMonth().unmodifyMult(id + "ba_stellar_brain_effect");
+        stats.getDynamic().getStat(Stats.REPLACEMENT_RATE_INCREASE_MULT).unmodifyMult(id);
+        stats.getSuppliesPerMonth().unmodifyMult(id);
     }
 
     @Override
@@ -82,14 +82,14 @@ public class ba_stellar_brain_effect implements ba_bioniceffect {
 
     @Override
     public void applyEffectAdminMarket(MarketAPI market, String id, float level, ba_bionicitemplugin bionic) {
-        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id + "ba_stellar_brain_effect", ADMIN_DEFENSE_MULT, bionic.getName() + " (Admins bionic)");
-        market.getUpkeepMult().modifyMult(id + "ba_stellar_brain_effect", ADMIN_UPKEEP_MULT, bionic.getName() + " (Admins bionic)");
+        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id, ADMIN_DEFENSE_MULT, bionic.getName() + " (Admins bionic)");
+        market.getUpkeepMult().modifyMult(id, ADMIN_UPKEEP_MULT, bionic.getName() + " (Admins bionic)");
     }
 
     @Override
     public void unapplyEffectAdminMarket(MarketAPI market, String id) {
-        market.getAccessibilityMod().unmodifyFlat(id + "ba_stellar_brain_effect");
-        market.getUpkeepMult().unmodifyMult(id + "ba_stellar_brain_effect");
+        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).unmodifyMult(id);
+        market.getUpkeepMult().unmodifyMult(id);
     }
 
     @Override

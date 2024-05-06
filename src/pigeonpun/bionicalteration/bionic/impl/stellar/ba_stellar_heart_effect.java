@@ -55,22 +55,22 @@ public class ba_stellar_heart_effect implements ba_bioniceffect {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getAcceleration().modifyMult(id + "ba_stellar_heart_effect", SHIP_MANEUVERABILITY * 2f);
-        stats.getDeceleration().modifyMult(id + "ba_stellar_heart_effect", SHIP_MANEUVERABILITY);
-        stats.getTurnAcceleration().modifyMult(id + "ba_stellar_heart_effect", SHIP_MANEUVERABILITY * 2f);
-        stats.getMaxTurnRate().modifyMult(id + "ba_stellar_heart_effect", SHIP_MANEUVERABILITY);
-        stats.getArmorBonus().modifyMult(id + "ba_stellar_heart_effect", SHIP_ARMOR);
-        stats.getHullBonus().modifyMult(id + "ba_stellar_heart_effect", SHIP_HULL);
+        stats.getAcceleration().modifyMult(id, SHIP_MANEUVERABILITY * 2f);
+        stats.getDeceleration().modifyMult(id, SHIP_MANEUVERABILITY);
+        stats.getTurnAcceleration().modifyMult(id, SHIP_MANEUVERABILITY * 2f);
+        stats.getMaxTurnRate().modifyMult(id, SHIP_MANEUVERABILITY);
+        stats.getArmorBonus().modifyMult(id, SHIP_ARMOR);
+        stats.getHullBonus().modifyMult(id, SHIP_HULL);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getAcceleration().unmodifyMult(id + "ba_stellar_heart_effect");
-        stats.getDeceleration().unmodifyMult(id + "ba_stellar_heart_effect");
-        stats.getTurnAcceleration().unmodifyMult(id + "ba_stellar_heart_effect");
-        stats.getMaxTurnRate().unmodifyMult(id + "ba_stellar_heart_effect");
-        stats.getArmorBonus().unmodifyMult(id + "ba_stellar_heart_effect");
-        stats.getHullBonus().unmodifyMult(id + "ba_stellar_heart_effect");
+        stats.getAcceleration().unmodifyMult(id);
+        stats.getDeceleration().unmodifyMult(id);
+        stats.getTurnAcceleration().unmodifyMult(id);
+        stats.getMaxTurnRate().unmodifyMult(id);
+        stats.getArmorBonus().unmodifyMult(id);
+        stats.getHullBonus().unmodifyMult(id);
     }
 
     @Override

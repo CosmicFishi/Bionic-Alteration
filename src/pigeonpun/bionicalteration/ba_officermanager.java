@@ -11,6 +11,7 @@ import com.fs.starfarer.api.characters.OfficerDataAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
+import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import org.apache.log4j.Logger;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
@@ -422,6 +423,14 @@ public class ba_officermanager {
             if(removeSuccessful) {
                 person.addTag(bionic.bionicId+":"+limb.limbId);
                 updatePersonStatsOnInteract(bionic, limb, person, true);
+                //todo: test this
+                if(bionic.isApplyAdminEffect && !getPersonGovernMarkets(person).isEmpty()) {
+                    for(MarketAPI market: getPersonGovernMarkets(person)) {
+                        if(!market.hasCondition(ba_variablemanager.BA_MARKET_CONDITION_ID)) {
+                            market.addCondition(ba_variablemanager.BA_MARKET_CONDITION_ID);
+                        }
+                    }
+                }
                 if(bionic.effectScript != null) {
                     bionic.effectScript.onInstall(person, limb, bionic);
                 }
@@ -439,6 +448,14 @@ public class ba_officermanager {
     }
     public static boolean removeBionic(ba_bionicitemplugin bionic, ba_limbmanager.ba_limb limb, PersonAPI person) {
         if(checkIfCanRemoveBionic(bionic, limb, person)) {
+            if(bionic.isApplyAdminEffect && !getPersonGovernMarkets(person).isEmpty()) {
+                for(MarketAPI market: getPersonGovernMarkets(person)) {
+                    if(market.hasCondition(ba_variablemanager.BA_MARKET_CONDITION_ID)) {
+                        market.removeCondition(ba_variablemanager.BA_MARKET_CONDITION_ID);
+                    }
+                }
+            }
+            //remove later because the bionic tag is needed
             person.removeTag(bionic.bionicId+":"+limb.limbId);
             SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
             Global.getSector().getPlayerFleet().getCargo().addSpecial(specialItem, 1);
@@ -451,6 +468,15 @@ public class ba_officermanager {
             log.error("Can't remove "+ bionic.bionicId + " on " + limb.limbId);
         }
         return false;
+    }
+    public static List<MarketAPI> getPersonGovernMarkets(PersonAPI person) {
+        List<MarketAPI> governMarkets = new ArrayList<>();
+        for(MarketAPI market: Misc.getFactionMarkets(person.getFaction())) {
+            if(market.getAdmin().getId().equals(person.getId())) {
+                governMarkets.add(market);
+            }
+        }
+        return governMarkets;
     }
     public static List<PersonAPI> getListPersonsHaveBionic(CampaignFleetAPI fleet) {
         List<PersonAPI> list = new ArrayList<>();
