@@ -10,6 +10,7 @@ import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.FleetEncounterContext;
 import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl;
+import com.fs.starfarer.campaign.CampaignPlanet;
 import org.apache.log4j.Logger;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
@@ -40,6 +41,14 @@ public class ba_campaignlistener extends BaseCampaignEventListener implements Ev
             otherFleet.getMemoryWithoutUpdate().set("$ba_bionic_dropList", ba_officermanager.getListPotentialBionicDrop(otherFleet));
             log.info("Set up for officers completed");
         }
+        //todo: generate all the bionic for npc admins on after economy loaded
+//        if(target.getMarket() != null) {
+//            if(target.getMarket().getAdmin() != null) {
+//                List<PersonAPI> listPerson = new ArrayList<>();
+//                listPerson.add(target.getMarket().getAdmin());
+//                ba_officermanager.setUpListOfficers(listPerson);
+//            }
+//        }
     }
 
     @Override

@@ -423,7 +423,6 @@ public class ba_officermanager {
             if(removeSuccessful) {
                 person.addTag(bionic.bionicId+":"+limb.limbId);
                 updatePersonStatsOnInteract(bionic, limb, person, true);
-                //todo: test this
                 if(bionic.isApplyAdminEffect && !getPersonGovernMarkets(person).isEmpty()) {
                     for(MarketAPI market: getPersonGovernMarkets(person)) {
                         if(!market.hasCondition(ba_variablemanager.BA_MARKET_CONDITION_ID)) {
@@ -530,6 +529,9 @@ public class ba_officermanager {
         for (AdminData admin: Global.getSector().getCharacterData().getAdmins()) {
             if(admin.getPerson().getId().equals(person.getId())) return false;
         }
+        if(person.getMarket() != null && person.getMarket().getAdmin().getId().equals(person.getId())) {
+            return false;
+        }
         if(person.getFleet() != null) {
             if(Global.getSector().getPlayerFleet().getFleetData().getOfficersCopy() != null) {
                 for(OfficerDataAPI member: Global.getSector().getPlayerFleet().getFleetData().getOfficersCopy()) {
@@ -538,6 +540,7 @@ public class ba_officermanager {
                 return true;
             }
         }
+        //todo: find a way to detect npc admin
         if(person.getMemoryWithoutUpdate().get("$ome_isAdmin") == null) {
             return true;
         }
