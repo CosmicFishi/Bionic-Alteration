@@ -540,7 +540,6 @@ public class ba_officermanager {
                 return true;
             }
         }
-        //todo: find a way to detect npc admin
         if(person.getMemoryWithoutUpdate().get("$ome_isAdmin") == null) {
             return true;
         }

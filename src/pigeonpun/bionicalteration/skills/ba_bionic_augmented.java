@@ -200,7 +200,6 @@ public class ba_bionic_augmented {
         public void apply(MarketAPI market, String id, float level) {
             if(market.getAdmin() != null) {
                 PersonAPI person = market.getAdmin();
-                //todo: check on NPC market to see if working as intended
                 if(ba_bionicmanager.checkIfHaveBionicInstalled(person) && !market.hasCondition(ba_variablemanager.BA_MARKET_CONDITION_ID)) {
                     market.addCondition(ba_variablemanager.BA_MARKET_CONDITION_ID);
                 }
@@ -274,38 +273,6 @@ public class ba_bionic_augmented {
         }
     }
     //this is for save compatibility
-    public static void removeAllDuplicateEffectsBeforeApplyingNew(MarketAPI market) {
-        for(String key: new HashSet<>(market.getIncomeMult().getMultMods().keySet())) {
-            if(key.contains(ba_variablemanager.BA_BIONIC_SKILL_ID)) {
-                market.getIncomeMult().unmodify(key);
-            }
-        }
-        for(String key: new HashSet<>(market.getUpkeepMult().getMultMods().keySet())) {
-            if(key.contains(ba_variablemanager.BA_BIONIC_SKILL_ID)) {
-                market.getUpkeepMult().unmodify(key);
-            }
-        }
-        for(String key: new HashSet<>(market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).getMultBonuses().keySet())) {
-            if(key.contains(ba_variablemanager.BA_BIONIC_SKILL_ID)) {
-                market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).unmodifyMult(key);
-            }
-        }
-        for(String key: new HashSet<>(market.getStats().getDynamic().getMod(Stats.COMBAT_FLEET_SIZE_MULT).getMultBonuses().keySet())) {
-            if(key.contains(ba_variablemanager.BA_BIONIC_SKILL_ID)) {
-                market.getStats().getDynamic().getMod(Stats.COMBAT_FLEET_SIZE_MULT).unmodifyMult(key);
-            }
-        }
-        for(String key: new HashSet<>(market.getAccessibilityMod().getFlatBonuses().keySet())) {
-            if(key.contains(ba_variablemanager.BA_BIONIC_SKILL_ID)) {
-                market.getAccessibilityMod().unmodifyFlat(key);
-            }
-        }
-        for(String key: new HashSet<>(market.getStability().getFlatMods().keySet())) {
-            if(key.contains(ba_variablemanager.BA_BIONIC_SKILL_ID)) {
-                market.getStability().unmodifyFlat(key);
-            }
-        }
-    }
     public static class bionicInCombat implements AdvanceableListener {
         protected List<ba_bionicitemplugin> bionics;
         protected ShipAPI ship;
