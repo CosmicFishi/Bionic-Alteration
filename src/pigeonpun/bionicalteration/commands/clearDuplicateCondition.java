@@ -64,6 +64,7 @@ public class clearDuplicateCondition implements BaseCommand {
                 selectedMarket.getStability().unmodifyFlat(key);
             }
         }
+        Console.showMessage("Cleared duplicating effects for " + tmp[0]);
         return CommandResult.SUCCESS;
     }
 }
