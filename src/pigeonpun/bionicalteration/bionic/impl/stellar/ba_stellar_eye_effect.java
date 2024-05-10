@@ -80,8 +80,8 @@ public class ba_stellar_eye_effect implements ba_bioniceffect {
 
     @Override
     public void applyEffectAdminMarket(MarketAPI market, String id, float level, ba_bionicitemplugin bionic) {
-        market.getIncomeMult().modifyMult(id, ADMIN_INCOME_MULT, bionic.getName() + "(Admins bionic)");
-        market.getUpkeepMult().modifyMult(id, ADMIN_UPKEEP_MULT, bionic.getName() + "(Admins bionic)");
+        market.getIncomeMult().modifyMult(id, ADMIN_INCOME_MULT, bionic.getName() + " (Admins bionic)");
+        market.getUpkeepMult().modifyMult(id, ADMIN_UPKEEP_MULT, bionic.getName() + " (Admins bionic)");
     }
 
     @Override

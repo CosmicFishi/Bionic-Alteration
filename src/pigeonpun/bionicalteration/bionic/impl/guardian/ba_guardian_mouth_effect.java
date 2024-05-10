@@ -82,8 +82,8 @@ public class ba_guardian_mouth_effect implements ba_bioniceffect {
 
     @Override
     public void applyEffectAdminMarket(MarketAPI market, String id, float level, ba_bionicitemplugin bionic) {
-        market.getStability().modifyFlat(id, ADMIN_STABILITY_FLAT, bionic.getName() + "(Admins bionic)");
-        market.getAccessibilityMod().modifyFlat(id, -ADMIN_ACCESS_FLAT, bionic.getName() + "(Admins bionic)");
+        market.getStability().modifyFlat(id, ADMIN_STABILITY_FLAT, bionic.getName() + " (Admins bionic)");
+        market.getAccessibilityMod().modifyFlat(id, -ADMIN_ACCESS_FLAT, bionic.getName() + " (Admins bionic)");
     }
 
     @Override

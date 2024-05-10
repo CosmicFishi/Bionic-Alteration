@@ -74,8 +74,8 @@ public class ba_harmony_brain_effect implements ba_bioniceffect {
 
     @Override
     public void applyEffectAdminMarket(MarketAPI market, String id, float level, ba_bionicitemplugin bionic) {
-        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id, (MARKET_DEFEND_MULT), bionic.getName() + "(Admins bionic)");
-        market.getStats().getDynamic().getMod(Stats.COMBAT_FLEET_SIZE_MULT).modifyFlat(id, MARKET_FLEET_SIZE_FLAT, bionic.getName() + "(Admins bionic)");
+        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id, (MARKET_DEFEND_MULT), bionic.getName() + " (Admins bionic)");
+        market.getStats().getDynamic().getMod(Stats.COMBAT_FLEET_SIZE_MULT).modifyFlat(id, MARKET_FLEET_SIZE_FLAT, bionic.getName() + " (Admins bionic)");
     }
 
     @Override

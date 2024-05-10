@@ -73,8 +73,8 @@ public class ba_serenity_heart_effect implements ba_bioniceffect {
 
     @Override
     public void applyEffectAdminMarket(MarketAPI market, String id, float level, ba_bionicitemplugin bionic) {
-        market.getAccessibilityMod().modifyFlat(id, MARKET_ACCESS_FLAT, bionic.getName() + "(Admins bionic)");
-        market.getUpkeepMult().modifyMult(id, MARKET_UPKEEP_MULT, bionic.getName() + "(Admins bionic)");
+        market.getAccessibilityMod().modifyFlat(id, MARKET_ACCESS_FLAT, bionic.getName() + " (Admins bionic)");
+        market.getUpkeepMult().modifyMult(id, MARKET_UPKEEP_MULT, bionic.getName() + " (Admins bionic)");
     }
 
     @Override

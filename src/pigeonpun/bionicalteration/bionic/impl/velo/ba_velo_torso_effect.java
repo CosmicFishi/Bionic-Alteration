@@ -81,8 +81,8 @@ public class ba_velo_torso_effect implements ba_bioniceffect {
 
     @Override
     public void applyEffectAdminMarket(MarketAPI market, String id, float level, ba_bionicitemplugin bionic) {
-        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id, ADMIN_DEFEND_MULT, bionic.getName() + "(Admins bionic)");
-        market.getUpkeepMult().modifyMult(id, ADMIN_UPKEEP_MULT, bionic.getName() + "(Admins bionic)");
+        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id, ADMIN_DEFEND_MULT, bionic.getName() + " (Admins bionic)");
+        market.getUpkeepMult().modifyMult(id, ADMIN_UPKEEP_MULT, bionic.getName() + " (Admins bionic)");
     }
 
     @Override
