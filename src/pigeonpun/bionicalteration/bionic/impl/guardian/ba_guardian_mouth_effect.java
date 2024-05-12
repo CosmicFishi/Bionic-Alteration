@@ -45,7 +45,7 @@ public class ba_guardian_mouth_effect implements ba_bioniceffect {
         String textAdmin = "For admin, increase market stability by";
         String textAdminNum = Math.round(ADMIN_STABILITY_FLAT) + "";
         String negativeTextAdmin = "but also reduce accessibility by";
-        String negativeTextAdminNum = Math.round(ADMIN_ACCESS_FLAT) + "%";
+        String negativeTextAdminNum = Math.round(ADMIN_ACCESS_FLAT * 100) + "%";
         String name = isItem ? "Effect:" : bionic.getName() + ":";
         LabelAPI descriptions = tooltip.addPara("%s %s %s %s %s. %s %s %s %s", pad, t, name, text, textNum, negativeText, negativeTextNum, textAdmin, textAdminNum, negativeTextAdmin, negativeTextAdminNum);
         descriptions.setHighlightColors(isItem ? g.brighter().brighter() : bionic.displayColor, t, h, t, bad, t, h, t, bad);

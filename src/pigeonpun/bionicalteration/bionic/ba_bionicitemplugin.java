@@ -43,12 +43,13 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
     protected SpecialItemSpecAPI spec;
     protected CargoStackAPI stack;
     public float dropChance;
+    public boolean isEffectAppliedAfterRemove;
     public HashMap<String, Object> customData = new HashMap<>();
     protected boolean isInitFully = false;
     public ba_bionicitemplugin() {}
     public ba_bionicitemplugin(String bionicId, SpecialItemSpecAPI spec ,String bionicLimbGroupId, String namePrefix, Color displayColor, int brmCost,
                                float consciousnessCost, float dropChance, boolean isApplyCaptainEffect, boolean isApplyAdminEffect, boolean isAICoreBionic, ba_bioniceffect effectScript,
-                               List<String> conflictedBionicIdList, boolean isAllowedRemoveAfterInstall) {
+                               List<String> conflictedBionicIdList, boolean isAllowedRemoveAfterInstall, boolean isEffectAppliedAfterRemove) {
         this.bionicId = bionicId;
         this.spec = spec;
         this.bionicLimbGroupId = bionicLimbGroupId;
@@ -65,6 +66,7 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
             this.conflictedBionicIdList = conflictedBionicIdList;
         }
         this.isAllowedRemoveAfterInstall = isAllowedRemoveAfterInstall;
+        this.isEffectAppliedAfterRemove = isEffectAppliedAfterRemove;
         this.isInitFully = true;
     }
     public String getId() {

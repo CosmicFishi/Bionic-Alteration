@@ -78,6 +78,13 @@ public interface ba_bioniceffect{
      * Note: This also run in refit :D. Magic I know
      */
     public void advanceInCombat(ShipAPI ship, float amount);
+
+    /**
+     * IMPORTANT: Make sure that isEffectAppliedAfterRemove is TRUE for this method to be called.
+     * @param person
+     * @param limb
+     * @param bionic
+     */
     public void onRemove(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic);
     public void onInstall(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic);
 

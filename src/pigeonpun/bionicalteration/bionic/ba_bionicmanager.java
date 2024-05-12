@@ -79,7 +79,8 @@ public class ba_bionicmanager {
                             row.getBoolean("isAICoreBionic"),
                             effect,
                             !row.getString("conflictedBionicIdList").equals("")? ba_utils.trimAndSplitString(row.getString("conflictedBionicIdList")): null,
-                            row.getBoolean("isAllowedRemoveAfterInstall")
+                            row.getBoolean("isAllowedRemoveAfterInstall"),
+                            row.getBoolean("isEffectAppliedAfterRemove")
                     );
                     bionicItemMap.put(bionicId, bionic);
                     if(effect != null) effect.setBionicItem(bionic);

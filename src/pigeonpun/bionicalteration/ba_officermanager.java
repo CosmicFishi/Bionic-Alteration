@@ -459,7 +459,7 @@ public class ba_officermanager {
             SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
             Global.getSector().getPlayerFleet().getCargo().addSpecial(specialItem, 1);
             updatePersonStatsOnInteract(bionic, limb, person, false);
-            if(bionic.effectScript != null) {
+            if(bionic.effectScript != null && bionic.isEffectAppliedAfterRemove) {
                 bionic.effectScript.onRemove(person, limb, bionic);
             }
             return true;

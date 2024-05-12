@@ -885,7 +885,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         int removeBtnW = (int) (100 - pad);
         int removeBtnX = (int) (installBtnX - pad - removeBtnW);
         int removeBtnY = (int) (installBtnY);
-        ButtonAPI removeButton = infoPersonTooltipContainer.addButton(this.currentWorkShopMode.equals(this.INSTALL_WORKSHOP) ?"Edit": "Exit edit", null, t, Color.yellow.darker().darker(), removeBtnW, removeBtnH, 0);
+        ButtonAPI removeButton = infoPersonTooltipContainer.addButton(this.currentWorkShopMode.equals(this.INSTALL_WORKSHOP) ?"Remove": "Exit remove", null, t, Color.yellow.darker().darker(), removeBtnW, removeBtnH, 0);
         removeButton.getPosition().inTL(removeBtnX,removeBtnY);
         addButtonToList(removeButton, "bionic:edit");
         removeButton.setEnabled(false);
@@ -1263,31 +1263,35 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                 bionicName.setHighlightColors(Misc.getBasePlayerColor() ,bionic.displayColor);
                 //>Remove warn
                 String warnText = "No effect on remove";
-                if(bionic.effectScript != null && bionic.effectScript.getShortOnRemoveEffectDescription() != null) {
-                    if(!bionic.effectScript.getShortOnRemoveEffectDescription().equals("")) {
+                if(bionic.effectScript != null && bionic.isEffectAppliedAfterRemove) {
+                    if(bionic.effectScript.getShortOnRemoveEffectDescription() != null && !bionic.effectScript.getShortOnRemoveEffectDescription().equals("")) {
                         warnText = bionic.effectScript.getShortOnRemoveEffectDescription();
                     } else {
-                        warnText = "No description yet...";
+                        warnText = "No description on removing yet...";
                     }
-                    if(!bionic.isAllowedRemoveAfterInstall) {
-                        warnText = "Can't be removed";
-                    }
+                }
+                if(!bionic.isAllowedRemoveAfterInstall) {
+                    warnText = "Can't be removed";
                 }
                 LabelAPI warnLabel = rowTooltipContainer.addPara(warnText, pad);
                 warnLabel.getPosition().setSize(removeWarnW,btnH);
                 warnLabel.setHighlight(warnText);
-                warnLabel.setHighlightColors(bionic.effectScript != null && bionic.effectScript.getShortOnRemoveEffectDescription() != null? Misc.getNegativeHighlightColor(): Misc.getGrayColor().brighter());
+                warnLabel.setHighlightColors(!bionic.isAllowedRemoveAfterInstall? Misc.getNegativeHighlightColor(): Misc.getGrayColor().brighter());
                 warnLabel.getPosition().inTL(removeWarnX, pad);
                 //>remove button
-                ButtonAPI removeButton = rowTooltipContainer.addButton("Remove", null, t, Color.yellow.darker().darker(), removeBtnW, btnH, 0);
-                removeButton.getPosition().inTL(removeBtnX,pad);
-                removeButton.setEnabled(bionic.isAllowedRemoveAfterInstall);
-                addButtonToList(removeButton, "bionic:remove:" + bionic.bionicId);
-                //>remove button
-                ButtonAPI removeConfirmButton = rowTooltipContainer.addButton("Confirm remove", null, t, Color.red.darker().darker(), removeConfirmBtnW, btnH, 0);
-                removeConfirmButton.getPosition().inTL(removeConfirmBtnX,pad);
-                addButtonToList(removeConfirmButton, "bionic:removeConfirm:"+bionic.bionicId);
-                removeConfirmButton.setEnabled(this.currentRemovingBionic != null && this.currentRemovingBionic.bionicId.equals(bionic.bionicId));
+                if(bionic.isAllowedRemoveAfterInstall) {
+                    if(bionic.isEffectAppliedAfterRemove) {
+                        ButtonAPI removeButton = rowTooltipContainer.addButton("Remove", null, t, Color.yellow.darker().darker(), removeBtnW, btnH, 0);
+                        removeButton.getPosition().inTL(removeBtnX,pad);
+                        removeButton.setEnabled(bionic.isAllowedRemoveAfterInstall);
+                        addButtonToList(removeButton, "bionic:remove:" + bionic.bionicId);
+                    }
+                    //>remove button
+                    ButtonAPI removeConfirmButton = rowTooltipContainer.addButton("Confirm remove", null, t, Color.red.darker().darker(), removeConfirmBtnW, btnH, 0);
+                    removeConfirmButton.getPosition().inTL(removeConfirmBtnX,pad);
+                    addButtonToList(removeConfirmButton, "bionic:removeConfirm:"+bionic.bionicId);
+                    removeConfirmButton.setEnabled(!bionic.isEffectAppliedAfterRemove || (this.currentRemovingBionic != null && this.currentRemovingBionic.bionicId.equals(bionic.bionicId)));
+                }
                 //>BRM
                 LabelAPI bionicBRM = rowTooltipContainer.addPara("BRM: " + Math.round(bionic.brmCost), pad);
                 bionicBRM.getPosition().setSize(brmW,btnH);
@@ -1473,6 +1477,9 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                         break;
                     }
                     if(tokens[1].equals("removeConfirm") && !tokens[2].isEmpty()) {
+                        if(ba_bionicmanager.getBionic(tokens[2].toString()) != null && !ba_bionicmanager.getBionic(tokens[2].toString()).isEffectAppliedAfterRemove) {
+                            this.currentRemovingBionic = ba_bionicmanager.getBionic(tokens[2]);
+                        }
                         if(tokens[2].equals(this.currentRemovingBionic.bionicId)) {
                             removeBionic();
                             needsReset = true;
