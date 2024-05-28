@@ -1058,63 +1058,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                                     tooltip.addPara("Somehow the hover isn't registering the bionic ????? Im clueless LMAO. Try hovering again", Misc.getHighlightColor(),0);
                                     return;
                                 }
-                                //---------name
-                                tooltip.setParaInsigniaLarge();
-                                LabelAPI nameLabel = tooltip.addPara(currentHoveredBionic.getName(), Misc.getHighlightColor(),0);
-                                tooltip.addSpacer(10);
-                                tooltip.setParaFontDefault();
-                                //---------design
-                                LabelAPI designLabel = tooltip.addPara("%s %s",0,t, "Design by:",currentHoveredBionic.getDesignType());
-                                designLabel.setHighlight("Design by:", currentHoveredBionic.getDesignType());
-                                designLabel.setHighlightColors(g, t.darker());
-                                //---------effect
-                                currentHoveredBionic.effectScript.displayEffectDescription(tooltip, currentPerson, currentHoveredBionic, true);
-                                //---------Install type
-                                StringBuilder effectType = new StringBuilder();
-                                if(currentHoveredBionic.isApplyAdminEffect) {
-                                    effectType.append("Administrator");
-                                }
-                                if(currentHoveredBionic.isApplyCaptainEffect) {
-                                    effectType.setLength(0);
-                                    effectType.append("Captain");
-                                }
-                                if(currentHoveredBionic.isApplyAdminEffect && currentHoveredBionic.isApplyCaptainEffect) {
-                                    effectType.append(" and Administrator");
-                                }
-                                LabelAPI installTypeLabel = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Install type:", effectType.toString());
-                                installTypeLabel.setHighlight("Apply effect type:", effectType.toString());
-                                installTypeLabel.setHighlightColors(g.brighter().brighter(), Misc.getPositiveHighlightColor());
-                                //---------BRM + conscious
-                                LabelAPI brmConsciousLabel = tooltip.addPara("%s %s     %s %s", pad, Misc.getBasePlayerColor(), "BRM:", "" + Math.round(currentHoveredBionic.brmCost), "Conscious:", "" + Math.round(currentHoveredBionic.consciousnessCost * 100) + "%");
-                                brmConsciousLabel.setHighlight("BRM:", "" + Math.round(currentHoveredBionic.brmCost), "Conscious:", "" + Math.round(currentHoveredBionic.consciousnessCost * 100) + "%");
-                                brmConsciousLabel.setHighlightColors(g.brighter().brighter(), Color.red, g.brighter().brighter(), Color.red);
-                                //---------limb list
-                                StringBuilder limbNameList = new StringBuilder();
-                                for (ba_limbmanager.ba_limb limb: ba_limbmanager.getListLimbFromGroup(currentHoveredBionic.bionicLimbGroupId)) {
-                                    limbNameList.append(limb.name).append(", ");
-                                }
-                                if(limbNameList.length() > 0) limbNameList.setLength(limbNameList.length()-2);
-                                LabelAPI limbListLabel = tooltip.addPara("%s %s", pad, t,"Install on:", limbNameList.toString());
-                                limbListLabel.setHighlight("Install on:", limbNameList.toString());
-                                limbListLabel.setHighlightColors(g.brighter().brighter(), Misc.getBrightPlayerColor());
-                                //---------Conflicts
-                                StringBuilder conflictsList = new StringBuilder();
-                                for (ba_bionicitemplugin bionic: ba_bionicmanager.getListBionicConflicts(currentHoveredBionic)) {
-                                    conflictsList.append(bionic.getName()).append(", ");
-                                }
-                                if(conflictsList.length() > 0) {
-                                    conflictsList.setLength(conflictsList.length() - 2);
-                                } else {
-                                    conflictsList.append("None");
-                                }
-                                LabelAPI conflictListLabel = tooltip.addPara("%s %s", pad, t,"Conflicts:", conflictsList.toString());
-                                conflictListLabel.setHighlight("Conflicts:", conflictsList.toString());
-                                conflictListLabel.setHighlightColors(g.brighter().brighter(), conflictsList.toString().equals("None")? g: Misc.getNegativeHighlightColor());
-                                //----------desc
-                                String desc = currentHoveredBionic.getSpec().getDesc();
-                                LabelAPI descLabel = tooltip.addPara("%s %s", pad, t, "Description:", desc);
-                                descLabel.setHighlight("Description:", desc);
-                                descLabel.setHighlightColors(g.brighter().brighter(), t);
+                                ba_bionicmanager.displayBionicItemDescription(tooltip, currentHoveredBionic);
                             }
                         }, areaChecker, TooltipMakerAPI.TooltipLocation.ABOVE);
 

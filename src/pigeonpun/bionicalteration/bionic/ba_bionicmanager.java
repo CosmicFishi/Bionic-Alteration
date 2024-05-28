@@ -3,7 +3,9 @@ package pigeonpun.bionicalteration.bionic;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.ui.LabelAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
+import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -350,5 +352,80 @@ public class ba_bionicmanager {
     }
     public static List<String> getListBionicKeys() {
         return new ArrayList<>(bionicItemMap.keySet());
+    }
+
+    public static void displayBionicItemDescription(TooltipMakerAPI tooltip, ba_bionicitemplugin bionic) {
+        final float pad = 10f;
+        float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        final Color t = Misc.getTextColor();
+        final Color g = Misc.getGrayColor();
+
+        tooltip.setParaInsigniaLarge();
+        LabelAPI nameLabel = tooltip.addPara(bionic.getName(), Misc.getHighlightColor(),0);
+        tooltip.addSpacer(5);
+        tooltip.setParaFontDefault();
+
+        String design = bionic.getDesignType();
+        Misc.addDesignTypePara(tooltip, design, opad);
+        //---------effect
+        bionic.effectScript.displayEffectDescription(tooltip, null, null, true);
+        //---------Install type
+        StringBuilder effectType = new StringBuilder();
+        if(bionic.isApplyAdminEffect) {
+            effectType.append("Administrator");
+        }
+        if(bionic.isApplyCaptainEffect) {
+            effectType.setLength(0);
+            effectType.append("Captain");
+        }
+        if(bionic.isApplyAdminEffect && bionic.isApplyCaptainEffect) {
+            effectType.append(" and Administrator");
+        }
+        LabelAPI installTypeLabel = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Install type:", effectType.toString());
+        installTypeLabel.setHighlight("Apply effect type:", effectType.toString());
+        installTypeLabel.setHighlightColors(g.brighter().brighter(), Misc.getPositiveHighlightColor());
+        //---------BRM + conscious
+        LabelAPI brmConsciousLabel = tooltip.addPara("%s %s     %s %s", pad, Misc.getBasePlayerColor(), "BRM:", "" + Math.round(bionic.brmCost), "Conscious:", "" + Math.round(bionic.consciousnessCost * 100) + "%");
+        brmConsciousLabel.setHighlight("BRM:", "" + Math.round(bionic.brmCost), "Conscious:", "" + Math.round(bionic.consciousnessCost * 100) + "%");
+        brmConsciousLabel.setHighlightColors(g.brighter().brighter(), Color.red, g.brighter().brighter(), Color.red);
+        //---------limb list
+        StringBuilder limbNameList = new StringBuilder();
+        for (ba_limbmanager.ba_limb limb: ba_limbmanager.getListLimbFromGroup(bionic.bionicLimbGroupId)) {
+            limbNameList.append(limb.name).append(", ");
+        }
+        if(limbNameList.length() > 0) limbNameList.setLength(limbNameList.length()-2);
+        LabelAPI limbListLabel = tooltip.addPara("%s %s", pad, t,"Install on:", limbNameList.toString());
+        limbListLabel.setHighlight("Install on:", limbNameList.toString());
+        limbListLabel.setHighlightColors(g.brighter().brighter(), Misc.getBrightPlayerColor());
+        //---------Conflicts
+        StringBuilder conflictsList = new StringBuilder();
+        for (ba_bionicitemplugin b: ba_bionicmanager.getListBionicConflicts(bionic)) {
+            conflictsList.append(b.getName()).append(", ");
+        }
+        if(conflictsList.length() > 0) {
+            conflictsList.setLength(conflictsList.length() - 2);
+        } else {
+            conflictsList.append("None");
+        }
+        LabelAPI conflictListLabel = tooltip.addPara("%s %s", pad, t,"Conflicts:", conflictsList.toString());
+        conflictListLabel.setHighlight("Conflicts:", conflictsList.toString());
+        conflictListLabel.setHighlightColors(g.brighter().brighter(), conflictsList.toString().equals("None")? g: Misc.getNegativeHighlightColor());
+        //----------desc
+        String desc = bionic.getSpec().getDesc();
+        LabelAPI descLabel = tooltip.addPara("%s %s", pad, t, "Description:", desc);
+        descLabel.setHighlight("Description:", desc);
+        descLabel.setHighlightColors(g.brighter().brighter(), t);
+
+        if(bionic.isAllowedRemoveAfterInstall) {
+            if(bionic.isEffectAppliedAfterRemove) {
+                LabelAPI removableLabel = tooltip.addPara("%s", pad, t, "Has effect on uninstalling this bionic.");
+                removableLabel.setHighlightColors(Misc.getHighlightColor());
+            }
+        } else {
+            LabelAPI removableLabel = tooltip.addPara("%s", pad, t, "Can not be uninstall AFTER installing");
+            removableLabel.setHighlightColors(bad);
+        }
     }
 }
