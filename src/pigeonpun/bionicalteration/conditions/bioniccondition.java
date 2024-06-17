@@ -28,28 +28,32 @@ public class bioniccondition extends BaseMarketConditionPlugin {
 
     @Override
     public void apply(String id) {
-        List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
-        for(ba_bionicitemplugin bionic: listBionic) {
-            String applyId = id + bionic.bionicId;
-            if(bionic.effectScript != null  && bionic.isApplyAdminEffect && !checkIfAlreadyAppliedBionicEffect(applyId)) {
-                bionic.effectScript.applyEffectAdminMarket(market, applyId, 0, bionic);
+        if(person != null) {
+            List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
+            for(ba_bionicitemplugin bionic: listBionic) {
+                String applyId = id + bionic.bionicId;
+                if(bionic.effectScript != null  && bionic.isApplyAdminEffect && !checkIfAlreadyAppliedBionicEffect(applyId)) {
+                    bionic.effectScript.applyEffectAdminMarket(market, applyId, 0, bionic);
+                }
             }
+            ba_consciousmanager.resetBeforeApplyEffectAdminMarket(market, id);
+            ba_consciousmanager.getConsciousnessLevel(person).applyEffectAdminMarket(market, id, 0);
         }
-        ba_consciousmanager.resetBeforeApplyEffectAdminMarket(market, id);
-        ba_consciousmanager.getConsciousnessLevel(person).applyEffectAdminMarket(market, id, 0);
     }
 
     @Override
     public void unapply(String id) {
-        PersonAPI person = market.getAdmin();
-        List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
-        for(ba_bionicitemplugin bionic: listBionic) {
-            String applyId = id + bionic.bionicId;
-            if(bionic.effectScript != null && bionic.isApplyAdminEffect) {
-                bionic.effectScript.unapplyEffectAdminMarket(market, applyId);
+        if(person != null) {
+            PersonAPI person = market.getAdmin();
+            List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
+            for(ba_bionicitemplugin bionic: listBionic) {
+                String applyId = id + bionic.bionicId;
+                if(bionic.effectScript != null && bionic.isApplyAdminEffect) {
+                    bionic.effectScript.unapplyEffectAdminMarket(market, applyId);
+                }
             }
+            ba_consciousmanager.resetBeforeApplyEffectAdminMarket(market, id);
         }
-        ba_consciousmanager.resetBeforeApplyEffectAdminMarket(market, id);
     }
 
     @Override

@@ -331,7 +331,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             personalityLabel.getPosition().inTL(0, nameLabel.getPosition().getHeight() + statsSpacer);
             //>Occupation
             String occupation = "Idle";
-            if(this.currentPerson.getFleet() != null || this.currentPerson.isPlayer()) {
+            if(this.currentPerson.getFleet() != null || (this.currentPerson.isPlayer() && Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentPerson) != null)) {
                 if(this.currentPerson.isPlayer()) {
                     String shipName = Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentPerson).getShipName();
                     String shipClass = Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentPerson).getHullSpec().getNameWithDesignationWithDashClass();
