@@ -1449,6 +1449,20 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                     needsReset = true;
                     break;
                 }
+                if(tokens[0].equals("hover")) {
+                    if(!this.currentPerson.getId().equals(tokens[1])) {
+                        for(PersonAPI person: ba_officermanager.listPersons) {
+                            if(tokens[1].equals(person.getId())) {
+                                this.currentPerson = person;
+                            }
+                        }
+                    }
+                    if(this.currentPerson != null) {
+                        focusContent(WORKSHOP);
+                        needsReset = true;
+                        break;
+                    }
+                }
                 if(tokens[0].equals("bionic")) {
                     if(tokens[1].equals("install")) {
                         installBionic();
