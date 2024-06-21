@@ -237,6 +237,11 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             LabelAPI BRM = personBRMTooltip.addPara("BRM: " + currentBRM + " / " + limitBRM, pad);
             BRM.setHighlight("BRM: ", "" +currentBRM, "" +limitBRM);
             BRM.setHighlightColors(t,currentBRM > limitBRM ? bad: h,Misc.getBrightPlayerColor());
+            if(bionicalterationplugin.isBRMCapDisable) {
+                BRM.setText("BRM: " + currentBRM);
+                BRM.setHighlight("BRM: ", "" +currentBRM);
+                BRM.setHighlightColors(t, h);
+            }
             //Level
             int levelH = brmH;
             int levelW = 100;
@@ -331,7 +336,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             personalityLabel.getPosition().inTL(0, nameLabel.getPosition().getHeight() + statsSpacer);
             //>Occupation
             String occupation = "Idle";
-            if(this.currentPerson.getFleet() != null || this.currentPerson.isPlayer()) {
+            if(this.currentPerson.getFleet() != null || (this.currentPerson.isPlayer() && Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentPerson) != null)) {
                 if(this.currentPerson.isPlayer()) {
                     String shipName = Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentPerson).getShipName();
                     String shipClass = Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentPerson).getHullSpec().getNameWithDesignationWithDashClass();
@@ -357,6 +362,9 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             LabelAPI limitBRMLabel = personStatsTooltip.addPara(String.valueOf("BRM Limit: " + limitBRM), 0, Misc.getBrightPlayerColor(), "" + limitBRM);
             limitBRMLabel.getPosition().setSize(150,20);
             limitBRMLabel.getPosition().inTL(0, limitBRMY);
+            if(bionicalterationplugin.isBRMCapDisable) {
+                limitBRMLabel.setOpacity(0);
+            }
             //>BRM available
             int currentBRM = (int) this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
             int currentBRMY = (int) limitBRMY;
@@ -759,6 +767,11 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         BRM.setHighlightColors(t,currentBRM > limitBRM ? bad: h,Misc.getBrightPlayerColor());
         BRM.getPosition().inTL(brmX, brmY);
         BRM.getPosition().setSize(brmW, brmH);
+        if(bionicalterationplugin.isBRMCapDisable) {
+            BRM.setText("BRM: " + currentBRM);
+            BRM.setHighlight("BRM: ", "" +currentBRM);
+            BRM.setHighlightColors(t, h);
+        }
         //>Consciousness
         float consciousness = this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
         int consciousnessY = (int) (brmY + brmH);
@@ -873,6 +886,11 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                 bionicPersonTypeLabel.setHighlightColors(isBionicInstallableBaseOnPersonType? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
                 LabelAPI brmLabel = tooltip.addPara("[ %s ] %s the person BRM limit.", pad/2, Misc.getHighlightColor(), !isBrmExceed? "O": "X","Selected bionics BRM do not go past");
                 brmLabel.setHighlightColors(!isBrmExceed? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
+                if(bionicalterationplugin.isBRMCapDisable) {
+                    brmLabel.setText("[ R ] BRM Cap removed");
+                    brmLabel.setHighlight("[ R ] BRM Cap removed");
+                    brmLabel.setHighlightColors(Misc.getGrayColor());
+                }
                 LabelAPI consciousnessLabel = tooltip.addPara("[ %s ] %s the person's consciousness to lower or equal to %s.", pad/2, Misc.getHighlightColor(), !isConsciousnessReduceToZero? "O": "X","Selected bionics consciousness cost does not reduce", "0");
                 consciousnessLabel.setHighlightColors(!isConsciousnessReduceToZero? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
                 LabelAPI conflictedLabel = tooltip.addPara("[ %s ] %s with other bionics installed on the person.", pad/2, Misc.getHighlightColor(), !isBionicConflicted? "O": "X", "Selected bionic is not conflicting");
@@ -1396,6 +1414,20 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                     this.currentSelectedLimb = ba_limbmanager.getLimb(tokens[1]);
                     needsReset = true;
                     break;
+                }
+                if(tokens[0].equals("hover")) {
+                    if(!this.currentPerson.getId().equals(tokens[1])) {
+                        for(PersonAPI person: ba_officermanager.listPersons) {
+                            if(tokens[1].equals(person.getId())) {
+                                this.currentPerson = person;
+                            }
+                        }
+                    }
+                    if(this.currentPerson != null) {
+                        focusContent(WORKSHOP);
+                        needsReset = true;
+                        break;
+                    }
                 }
                 if(tokens[0].equals("bionic")) {
                     if(tokens[1].equals("install")) {

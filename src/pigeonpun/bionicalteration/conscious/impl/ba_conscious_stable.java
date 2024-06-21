@@ -10,8 +10,10 @@ import com.fs.starfarer.api.ui.Alignment;
 import com.fs.starfarer.api.ui.LabelAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
+import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.conscious.ba_conscious;
+import pigeonpun.bionicalteration.ui.ba_uiplugin;
 import pigeonpun.bionicalteration.utils.ba_stringhelper;
 
 import java.awt.*;
@@ -51,7 +53,7 @@ public class ba_conscious_stable implements ba_conscious {
             tooltip.setParaFontOrbitron();
             tooltip.addPara("Stable:", getColor(), pad).setOpacity(textAlpha);
         }
-        tooltip.setParaFontOrbitron();
+        tooltip.setParaFontDefault();
         tooltip.addPara("- No effects... for now.", pad, Misc.getTextColor(), "").setOpacity(textAlpha);
     }
 

@@ -367,6 +367,7 @@ public class ba_officermanager {
     public static boolean checkIfCurrentBRMLowerThanLimitOnInstall(ba_bionicitemplugin bionic, PersonAPI person) {
         float currentBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
         float limitBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);
+        if(bionicalterationplugin.isBRMCapDisable) return true; //disabling BRM limit
         return currentBrm + bionic.brmCost <= limitBrm;
     }
     public static boolean checkIfConsciousnessReduceAboveZeroOnInstall(ba_bionicitemplugin bionic, PersonAPI person) {
@@ -382,6 +383,7 @@ public class ba_officermanager {
     public static boolean checkIfCurrentBRMLowerThanLimit(PersonAPI person, float limit) {
         float currentBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
         float limitBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);
+        if(bionicalterationplugin.isBRMCapDisable) return true; //disabling BRM limit
         return currentBrm < limit * limitBrm;
     }
     public static boolean checkIfCurrentConsciousLowerThanLimit(PersonAPI person, float limit) {
