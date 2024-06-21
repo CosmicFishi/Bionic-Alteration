@@ -17,6 +17,7 @@ public class lunaconfighelper implements LunaSettingsListener {
 
         addHeader("Generate", null);
         addSetting("isAllowBionicsToSpawnInPlayerFleetOnNewSave", "boolean", null, bionicalterationplugin.isAllowBionicsToSpawnInPlayerFleetOnNewSave);
+        addSetting("isBRMCapDisable", "boolean", null, bionicalterationplugin.isBRMCapDisable);
         addHeader("debug", null);
         addSetting("isDevmode", "boolean", null, bionicalterationplugin.isDevmode);
 
@@ -37,6 +38,7 @@ public class lunaconfighelper implements LunaSettingsListener {
 
     public static void loadConfigFromLuna() {
         bionicalterationplugin.isAllowBionicsToSpawnInPlayerFleetOnNewSave = (boolean) loadSetting("isAllowBionicsToSpawnInPlayerFleetOnNewSave", "boolean");
+        bionicalterationplugin.isBRMCapDisable = (boolean) loadSetting("isBRMCapDisable", "boolean");
         bionicalterationplugin.isDevmode = (boolean) loadSetting("isDevmode", "boolean");
     }
 
