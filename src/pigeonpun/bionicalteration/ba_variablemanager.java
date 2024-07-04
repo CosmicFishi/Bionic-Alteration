@@ -68,4 +68,5 @@ public class ba_variablemanager {
     public static final String BA_ABILITY_KEY = "ba_bionicalteration";
     public static final String BA_MARKET_CONDITION_ID = "bionic_condition";
     public static final String BA_MARKET_BIONIC_MEMORY_KEY = "$ba_market_bionic_effect_applied";
+    public static final String BA_MARKET_ADMIN_SET_UP = "$ba_market_admin_set_up";
 }
