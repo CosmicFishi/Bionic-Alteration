@@ -23,9 +23,11 @@ public class ba_marketmanager {
         if(!Global.getSector().getMemoryWithoutUpdate().contains(ba_variablemanager.BA_MARKET_ADMIN_SET_UP)) {
             SectorAPI sector = Global.getSector();
             List<MarketAPI> markets = sector.getEconomy().getMarketsCopy();
+            log.info("Setting up bionics for NPC admins");
             for(MarketAPI market: markets) {
                 if(market.getAdmin() != null && !market.getAdmin().isDefault() && !market.getAdmin().isAICore()) {
                     ba_officermanager.setUpListOfficers(Arrays.asList(market.getAdmin()));
+                    //log.info("Setting up: " + market.getName() + " for " + market.getFaction() + " | Person tags: " + market.getAdmin().getTags());
                 }
             }
             Global.getSector().getMemoryWithoutUpdate().set(ba_variablemanager.BA_MARKET_ADMIN_SET_UP, true);

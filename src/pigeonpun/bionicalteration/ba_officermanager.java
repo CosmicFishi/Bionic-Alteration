@@ -53,8 +53,8 @@ public class ba_officermanager {
         refreshListPerson(listOfficer);
         setUpVariant(listPersons);
         setUpDynamicStats(listPersons);
-        setUpSkill(listPersons);
         setUpBionic(listPersons);
+        setUpSkill(listPersons);
     }
     /**
      * Set up all the needed stats/bionic/skill for encountering officer from other fleet to display bionics
@@ -63,8 +63,8 @@ public class ba_officermanager {
     public static void setUpListOfficers(List<PersonAPI> listOfficers) {
         setUpVariant(listOfficers);
         setUpDynamicStats(listOfficers);
-        setUpSkill(listOfficers);
         setUpBionic(listOfficers);
+        setUpSkill(listOfficers);
     }
     //create new admin
     //runcode import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent; import com.fs.starfarer.api.impl.campaign.ids.Factions; PersonAPI person = OfficerManagerEvent.createAdmin(Global.getSector().getFaction(Factions.MERCENARY), 1, new Random()); Global.getSector().getCharacterData().addAdmin(person);
