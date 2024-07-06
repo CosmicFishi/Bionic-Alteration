@@ -237,6 +237,11 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             LabelAPI BRM = personBRMTooltip.addPara("BRM: " + currentBRM + " / " + limitBRM, pad);
             BRM.setHighlight("BRM: ", "" +currentBRM, "" +limitBRM);
             BRM.setHighlightColors(t,currentBRM > limitBRM ? bad: h,Misc.getBrightPlayerColor());
+            if(bionicalterationplugin.isBRMCapDisable) {
+                BRM.setText("BRM: " + currentBRM);
+                BRM.setHighlight("BRM: ", "" +currentBRM);
+                BRM.setHighlightColors(t, h);
+            }
             //Level
             int levelH = brmH;
             int levelW = 100;
@@ -331,7 +336,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             personalityLabel.getPosition().inTL(0, nameLabel.getPosition().getHeight() + statsSpacer);
             //>Occupation
             String occupation = "Idle";
-            if(this.currentPerson.getFleet() != null || this.currentPerson.isPlayer()) {
+            if(this.currentPerson.getFleet() != null || (this.currentPerson.isPlayer() && Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentPerson) != null)) {
                 if(this.currentPerson.isPlayer()) {
                     String shipName = Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentPerson).getShipName();
                     String shipClass = Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentPerson).getHullSpec().getNameWithDesignationWithDashClass();
@@ -357,6 +362,9 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             LabelAPI limitBRMLabel = personStatsTooltip.addPara(String.valueOf("BRM Limit: " + limitBRM), 0, Misc.getBrightPlayerColor(), "" + limitBRM);
             limitBRMLabel.getPosition().setSize(150,20);
             limitBRMLabel.getPosition().inTL(0, limitBRMY);
+            if(bionicalterationplugin.isBRMCapDisable) {
+                limitBRMLabel.setOpacity(0);
+            }
             //>BRM available
             int currentBRM = (int) this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
             int currentBRMY = (int) limitBRMY;
@@ -759,6 +767,11 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         BRM.setHighlightColors(t,currentBRM > limitBRM ? bad: h,Misc.getBrightPlayerColor());
         BRM.getPosition().inTL(brmX, brmY);
         BRM.getPosition().setSize(brmW, brmH);
+        if(bionicalterationplugin.isBRMCapDisable) {
+            BRM.setText("BRM: " + currentBRM);
+            BRM.setHighlight("BRM: ", "" +currentBRM);
+            BRM.setHighlightColors(t, h);
+        }
         //>Consciousness
         float consciousness = this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
         int consciousnessY = (int) (brmY + brmH);
@@ -873,6 +886,11 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                 bionicPersonTypeLabel.setHighlightColors(isBionicInstallableBaseOnPersonType? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
                 LabelAPI brmLabel = tooltip.addPara("[ %s ] %s the person BRM limit.", pad/2, Misc.getHighlightColor(), !isBrmExceed? "O": "X","Selected bionics BRM do not go past");
                 brmLabel.setHighlightColors(!isBrmExceed? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
+                if(bionicalterationplugin.isBRMCapDisable) {
+                    brmLabel.setText("[ R ] BRM Cap removed");
+                    brmLabel.setHighlight("[ R ] BRM Cap removed");
+                    brmLabel.setHighlightColors(Misc.getGrayColor());
+                }
                 LabelAPI consciousnessLabel = tooltip.addPara("[ %s ] %s the person's consciousness to lower or equal to %s.", pad/2, Misc.getHighlightColor(), !isConsciousnessReduceToZero? "O": "X","Selected bionics consciousness cost does not reduce", "0");
                 consciousnessLabel.setHighlightColors(!isConsciousnessReduceToZero? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
                 LabelAPI conflictedLabel = tooltip.addPara("[ %s ] %s with other bionics installed on the person.", pad/2, Misc.getHighlightColor(), !isBionicConflicted? "O": "X", "Selected bionic is not conflicting");
@@ -885,7 +903,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         int removeBtnW = (int) (100 - pad);
         int removeBtnX = (int) (installBtnX - pad - removeBtnW);
         int removeBtnY = (int) (installBtnY);
-        ButtonAPI removeButton = infoPersonTooltipContainer.addButton(this.currentWorkShopMode.equals(this.INSTALL_WORKSHOP) ?"Edit": "Exit edit", null, t, Color.yellow.darker().darker(), removeBtnW, removeBtnH, 0);
+        ButtonAPI removeButton = infoPersonTooltipContainer.addButton(this.currentWorkShopMode.equals(this.INSTALL_WORKSHOP) ?"Remove": "Exit remove", null, t, Color.yellow.darker().darker(), removeBtnW, removeBtnH, 0);
         removeButton.getPosition().inTL(removeBtnX,removeBtnY);
         addButtonToList(removeButton, "bionic:edit");
         removeButton.setEnabled(false);
@@ -1058,63 +1076,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                                     tooltip.addPara("Somehow the hover isn't registering the bionic ????? Im clueless LMAO. Try hovering again", Misc.getHighlightColor(),0);
                                     return;
                                 }
-                                //---------name
-                                tooltip.setParaInsigniaLarge();
-                                LabelAPI nameLabel = tooltip.addPara(currentHoveredBionic.getName(), Misc.getHighlightColor(),0);
-                                tooltip.addSpacer(10);
-                                tooltip.setParaFontDefault();
-                                //---------design
-                                LabelAPI designLabel = tooltip.addPara("%s %s",0,t, "Design by:",currentHoveredBionic.getDesignType());
-                                designLabel.setHighlight("Design by:", currentHoveredBionic.getDesignType());
-                                designLabel.setHighlightColors(g, t.darker());
-                                //---------effect
-                                currentHoveredBionic.effectScript.displayEffectDescription(tooltip, currentPerson, currentHoveredBionic, true);
-                                //---------Install type
-                                StringBuilder effectType = new StringBuilder();
-                                if(currentHoveredBionic.isApplyAdminEffect) {
-                                    effectType.append("Administrator");
-                                }
-                                if(currentHoveredBionic.isApplyCaptainEffect) {
-                                    effectType.setLength(0);
-                                    effectType.append("Captain");
-                                }
-                                if(currentHoveredBionic.isApplyAdminEffect && currentHoveredBionic.isApplyCaptainEffect) {
-                                    effectType.append(" and Administrator");
-                                }
-                                LabelAPI installTypeLabel = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Install type:", effectType.toString());
-                                installTypeLabel.setHighlight("Apply effect type:", effectType.toString());
-                                installTypeLabel.setHighlightColors(g.brighter().brighter(), Misc.getPositiveHighlightColor());
-                                //---------BRM + conscious
-                                LabelAPI brmConsciousLabel = tooltip.addPara("%s %s     %s %s", pad, Misc.getBasePlayerColor(), "BRM:", "" + Math.round(currentHoveredBionic.brmCost), "Conscious:", "" + Math.round(currentHoveredBionic.consciousnessCost * 100) + "%");
-                                brmConsciousLabel.setHighlight("BRM:", "" + Math.round(currentHoveredBionic.brmCost), "Conscious:", "" + Math.round(currentHoveredBionic.consciousnessCost * 100) + "%");
-                                brmConsciousLabel.setHighlightColors(g.brighter().brighter(), Color.red, g.brighter().brighter(), Color.red);
-                                //---------limb list
-                                StringBuilder limbNameList = new StringBuilder();
-                                for (ba_limbmanager.ba_limb limb: ba_limbmanager.getListLimbFromGroup(currentHoveredBionic.bionicLimbGroupId)) {
-                                    limbNameList.append(limb.name).append(", ");
-                                }
-                                if(limbNameList.length() > 0) limbNameList.setLength(limbNameList.length()-2);
-                                LabelAPI limbListLabel = tooltip.addPara("%s %s", pad, t,"Install on:", limbNameList.toString());
-                                limbListLabel.setHighlight("Install on:", limbNameList.toString());
-                                limbListLabel.setHighlightColors(g.brighter().brighter(), Misc.getBrightPlayerColor());
-                                //---------Conflicts
-                                StringBuilder conflictsList = new StringBuilder();
-                                for (ba_bionicitemplugin bionic: ba_bionicmanager.getListBionicConflicts(currentHoveredBionic)) {
-                                    conflictsList.append(bionic.getName()).append(", ");
-                                }
-                                if(conflictsList.length() > 0) {
-                                    conflictsList.setLength(conflictsList.length() - 2);
-                                } else {
-                                    conflictsList.append("None");
-                                }
-                                LabelAPI conflictListLabel = tooltip.addPara("%s %s", pad, t,"Conflicts:", conflictsList.toString());
-                                conflictListLabel.setHighlight("Conflicts:", conflictsList.toString());
-                                conflictListLabel.setHighlightColors(g.brighter().brighter(), conflictsList.toString().equals("None")? g: Misc.getNegativeHighlightColor());
-                                //----------desc
-                                String desc = currentHoveredBionic.getSpec().getDesc();
-                                LabelAPI descLabel = tooltip.addPara("%s %s", pad, t, "Description:", desc);
-                                descLabel.setHighlight("Description:", desc);
-                                descLabel.setHighlightColors(g.brighter().brighter(), t);
+                                ba_bionicmanager.displayBionicItemDescription(tooltip, currentHoveredBionic);
                             }
                         }, areaChecker, TooltipMakerAPI.TooltipLocation.ABOVE);
 
@@ -1263,31 +1225,35 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                 bionicName.setHighlightColors(Misc.getBasePlayerColor() ,bionic.displayColor);
                 //>Remove warn
                 String warnText = "No effect on remove";
-                if(bionic.effectScript != null && bionic.effectScript.getShortOnRemoveEffectDescription() != null) {
-                    if(!bionic.effectScript.getShortOnRemoveEffectDescription().equals("")) {
+                if(bionic.effectScript != null && bionic.isEffectAppliedAfterRemove) {
+                    if(bionic.effectScript.getShortOnRemoveEffectDescription() != null && !bionic.effectScript.getShortOnRemoveEffectDescription().equals("")) {
                         warnText = bionic.effectScript.getShortOnRemoveEffectDescription();
                     } else {
-                        warnText = "No description yet...";
+                        warnText = "No description on removing yet...";
                     }
-                    if(!bionic.isAllowedRemoveAfterInstall) {
-                        warnText = "Can't be removed";
-                    }
+                }
+                if(!bionic.isAllowedRemoveAfterInstall) {
+                    warnText = "Can't be removed";
                 }
                 LabelAPI warnLabel = rowTooltipContainer.addPara(warnText, pad);
                 warnLabel.getPosition().setSize(removeWarnW,btnH);
                 warnLabel.setHighlight(warnText);
-                warnLabel.setHighlightColors(bionic.effectScript != null && bionic.effectScript.getShortOnRemoveEffectDescription() != null? Misc.getNegativeHighlightColor(): Misc.getGrayColor().brighter());
+                warnLabel.setHighlightColors(!bionic.isAllowedRemoveAfterInstall? Misc.getNegativeHighlightColor(): Misc.getGrayColor().brighter());
                 warnLabel.getPosition().inTL(removeWarnX, pad);
                 //>remove button
-                ButtonAPI removeButton = rowTooltipContainer.addButton("Remove", null, t, Color.yellow.darker().darker(), removeBtnW, btnH, 0);
-                removeButton.getPosition().inTL(removeBtnX,pad);
-                removeButton.setEnabled(bionic.isAllowedRemoveAfterInstall);
-                addButtonToList(removeButton, "bionic:remove:" + bionic.bionicId);
-                //>remove button
-                ButtonAPI removeConfirmButton = rowTooltipContainer.addButton("Confirm remove", null, t, Color.red.darker().darker(), removeConfirmBtnW, btnH, 0);
-                removeConfirmButton.getPosition().inTL(removeConfirmBtnX,pad);
-                addButtonToList(removeConfirmButton, "bionic:removeConfirm:"+bionic.bionicId);
-                removeConfirmButton.setEnabled(this.currentRemovingBionic != null && this.currentRemovingBionic.bionicId.equals(bionic.bionicId));
+                if(bionic.isAllowedRemoveAfterInstall) {
+                    if(bionic.isEffectAppliedAfterRemove) {
+                        ButtonAPI removeButton = rowTooltipContainer.addButton("Remove", null, t, Color.yellow.darker().darker(), removeBtnW, btnH, 0);
+                        removeButton.getPosition().inTL(removeBtnX,pad);
+                        removeButton.setEnabled(bionic.isAllowedRemoveAfterInstall);
+                        addButtonToList(removeButton, "bionic:remove:" + bionic.bionicId);
+                    }
+                    //>remove button
+                    ButtonAPI removeConfirmButton = rowTooltipContainer.addButton("Confirm remove", null, t, Color.red.darker().darker(), removeConfirmBtnW, btnH, 0);
+                    removeConfirmButton.getPosition().inTL(removeConfirmBtnX,pad);
+                    addButtonToList(removeConfirmButton, "bionic:removeConfirm:"+bionic.bionicId);
+                    removeConfirmButton.setEnabled(!bionic.isEffectAppliedAfterRemove || (this.currentRemovingBionic != null && this.currentRemovingBionic.bionicId.equals(bionic.bionicId)));
+                }
                 //>BRM
                 LabelAPI bionicBRM = rowTooltipContainer.addPara("BRM: " + Math.round(bionic.brmCost), pad);
                 bionicBRM.getPosition().setSize(brmW,btnH);
@@ -1449,6 +1415,20 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                     needsReset = true;
                     break;
                 }
+                if(tokens[0].equals("hover")) {
+                    if(!this.currentPerson.getId().equals(tokens[1])) {
+                        for(PersonAPI person: ba_officermanager.listPersons) {
+                            if(tokens[1].equals(person.getId())) {
+                                this.currentPerson = person;
+                            }
+                        }
+                    }
+                    if(this.currentPerson != null) {
+                        focusContent(WORKSHOP);
+                        needsReset = true;
+                        break;
+                    }
+                }
                 if(tokens[0].equals("bionic")) {
                     if(tokens[1].equals("install")) {
                         installBionic();
@@ -1473,6 +1453,9 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                         break;
                     }
                     if(tokens[1].equals("removeConfirm") && !tokens[2].isEmpty()) {
+                        if(ba_bionicmanager.getBionic(tokens[2].toString()) != null && !ba_bionicmanager.getBionic(tokens[2].toString()).isEffectAppliedAfterRemove) {
+                            this.currentRemovingBionic = ba_bionicmanager.getBionic(tokens[2]);
+                        }
                         if(tokens[2].equals(this.currentRemovingBionic.bionicId)) {
                             removeBionic();
                             needsReset = true;

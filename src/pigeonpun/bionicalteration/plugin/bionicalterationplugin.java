@@ -4,6 +4,7 @@ import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
 import org.lazywizard.lazylib.MathUtils;
 import pigeonpun.bionicalteration.ability.ba_bionicability;
+import pigeonpun.bionicalteration.ba_marketmanager;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.faction.ba_factionmanager;
@@ -21,6 +22,7 @@ public class bionicalterationplugin extends BaseModPlugin {
     public static boolean isLunalibEnabled = false;
     public static boolean isAllowBionicsToSpawnInPlayerFleetOnNewSave = false;
     public static boolean isDevmode = false;
+    public static boolean isBRMCapDisable = false;
     @Override
     public void onApplicationLoad() throws Exception {
 //        ba_manager.getInstance();
@@ -33,6 +35,7 @@ public class bionicalterationplugin extends BaseModPlugin {
         isLunalibEnabled = Global.getSettings().getModManager().isModEnabled("lunalib");
         isAllowBionicsToSpawnInPlayerFleetOnNewSave = Global.getSettings().getBoolean("isAllowBionicsToSpawnInPlayerFleetOnNewSave");
         isDevmode = Global.getSettings().getBoolean("isDevmode");
+        isBRMCapDisable = Global.getSettings().getBoolean("isBRMCapDisable");
 
         if(isLunalibEnabled) {
             lunaconfighelper.initLunaConfig();
@@ -47,6 +50,7 @@ public class bionicalterationplugin extends BaseModPlugin {
     @Override
     public void onGameLoad(boolean newGame) {
         ba_officermanager.onSaveLoad();
+        ba_marketmanager.onSaveLoad();
         addListeners();
         if(!Global.getSector().getCharacterData().getAbilities().contains(ba_variablemanager.BA_ABILITY_KEY)) {
             Global.getSector().getCharacterData().addAbility(ba_variablemanager.BA_ABILITY_KEY);
@@ -63,6 +67,10 @@ public class bionicalterationplugin extends BaseModPlugin {
         addListeners();
     }
 
+    @Override
+    public void onNewGameAfterEconomyLoad() {
+        ba_marketmanager.onNewGameAfterEconomyLoad();
+    }
     protected void addListeners() {
         campaignListener = new ba_campaignlistener(false);
         salvageListener = new ba_salvagelistener();

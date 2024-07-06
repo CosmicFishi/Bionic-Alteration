@@ -1,0 +1,37 @@
+=========== 0.0.2 ============
+- Add spawning bionc for NPC admins. (Pretty sure its save compatible ?)
+- Add message to item that is unremovable
+- Hopefully fix a lot of crashes from market due to admin being null
+- Overview UI:
+  - Clicking on the hovering officer go into the workshop with that officer selected
+- Workshop UI:
+  - Save scroll position of bionic body UI
+  - Rename "edit" button into "remove" button
+  - For bionic without effect on remove, have only one confirm button
+- Settings:
+  - Add option to disable BRM cap
+0.0.1e changelog:
+- FIxes multiple bionics when applying admin effects.
+- Fix bionic applying effect correctly when replacing bionics for admin.
+- Add "ba_clearDuplicateCondition" to clear up duplicating effect problem in colony for 0.0.1d
+0.0.1d Changelog: (Should be save compatible with earlier version)
+- Fix "whenever the player hover the bionic skill in administration UI, it will crash" huge thanks to Histidine
+- Fix "Serenity Adaptation Module" effects
+- Fix "Bionics effect for admin doesn't seems to reset upon removing"
+0.0.1c Bug fixes: (yes save compatible with 0.0.1b)
+- Fix Harmony Cognitive "extra" bonuses
+- Fix hyperspace weirdness causing crash  when loading the mod into existing save
+- Significantly reducing the price of bionics (fix infinite money exploit with officer recruiting)
+- Fix admin bionics spawning on officer when  recruiting officer
+- Fix Miko's Java 23 crashing issue (Thanks Creature)
+0.0.1b
+- Add save compatibility (Thanks Takko)
+- Change condition critical to remove reckless personality
+- Fix unsteady condition typo: "Unsteady" <- "Unstable" (Thanks Lukas04)
+- Fix bug removing bionic on salvage (Thanks ymfah)
+- Fix bug when double click bionic or something resolving in hovering bionic return null? (Thanks ANU)
+0.0.1 changelog:
+- initial release
+
+
+

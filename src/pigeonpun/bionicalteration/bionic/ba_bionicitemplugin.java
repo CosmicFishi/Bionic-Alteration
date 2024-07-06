@@ -43,12 +43,13 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
     protected SpecialItemSpecAPI spec;
     protected CargoStackAPI stack;
     public float dropChance;
+    public boolean isEffectAppliedAfterRemove;
     public HashMap<String, Object> customData = new HashMap<>();
     protected boolean isInitFully = false;
     public ba_bionicitemplugin() {}
     public ba_bionicitemplugin(String bionicId, SpecialItemSpecAPI spec ,String bionicLimbGroupId, String namePrefix, Color displayColor, int brmCost,
                                float consciousnessCost, float dropChance, boolean isApplyCaptainEffect, boolean isApplyAdminEffect, boolean isAICoreBionic, ba_bioniceffect effectScript,
-                               List<String> conflictedBionicIdList, boolean isAllowedRemoveAfterInstall) {
+                               List<String> conflictedBionicIdList, boolean isAllowedRemoveAfterInstall, boolean isEffectAppliedAfterRemove) {
         this.bionicId = bionicId;
         this.spec = spec;
         this.bionicLimbGroupId = bionicLimbGroupId;
@@ -65,6 +66,7 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
             this.conflictedBionicIdList = conflictedBionicIdList;
         }
         this.isAllowedRemoveAfterInstall = isAllowedRemoveAfterInstall;
+        this.isEffectAppliedAfterRemove = isEffectAppliedAfterRemove;
         this.isInitFully = true;
     }
     public String getId() {
@@ -96,6 +98,7 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
                 this.conflictedBionicIdList = bionicInMap.conflictedBionicIdList;
             }
             this.isAllowedRemoveAfterInstall = bionicInMap.isAllowedRemoveAfterInstall;
+            this.isEffectAppliedAfterRemove = bionicInMap.isEffectAppliedAfterRemove;
         }
     }
 
@@ -144,62 +147,11 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        tooltip.addTitle(getName());
-
-        String design = getDesignType();
-        Misc.addDesignTypePara(tooltip, design, opad);
-        //---------effect
-        this.effectScript.displayEffectDescription(tooltip, null, null, true);
-        //---------Install type
-        StringBuilder effectType = new StringBuilder();
-        if(this.isApplyAdminEffect) {
-            effectType.append("Administrator");
-        }
-        if(this.isApplyCaptainEffect) {
-            effectType.setLength(0);
-            effectType.append("Captain");
-        }
-        if(this.isApplyAdminEffect && this.isApplyCaptainEffect) {
-            effectType.append(" and Administrator");
-        }
-        LabelAPI installTypeLabel = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Install type:", effectType.toString());
-        installTypeLabel.setHighlight("Apply effect type:", effectType.toString());
-        installTypeLabel.setHighlightColors(g.brighter().brighter(), Misc.getPositiveHighlightColor());
-        //---------BRM + conscious
-        LabelAPI brmConsciousLabel = tooltip.addPara("%s %s     %s %s", pad, Misc.getBasePlayerColor(), "BRM:", "" + Math.round(this.brmCost), "Conscious:", "" + Math.round(this.consciousnessCost * 100) + "%");
-        brmConsciousLabel.setHighlight("BRM:", "" + Math.round(this.brmCost), "Conscious:", "" + Math.round(this.consciousnessCost * 100) + "%");
-        brmConsciousLabel.setHighlightColors(g.brighter().brighter(), Color.red, g.brighter().brighter(), Color.red);
-        //---------limb list
-        StringBuilder limbNameList = new StringBuilder();
-        for (ba_limbmanager.ba_limb limb: ba_limbmanager.getListLimbFromGroup(this.bionicLimbGroupId)) {
-            limbNameList.append(limb.name).append(", ");
-        }
-        if(limbNameList.length() > 0) limbNameList.setLength(limbNameList.length()-2);
-        LabelAPI limbListLabel = tooltip.addPara("%s %s", pad, t,"Install on:", limbNameList.toString());
-        limbListLabel.setHighlight("Install on:", limbNameList.toString());
-        limbListLabel.setHighlightColors(g.brighter().brighter(), Misc.getBrightPlayerColor());
-        //---------Conflicts
-        StringBuilder conflictsList = new StringBuilder();
-        for (ba_bionicitemplugin bionic: ba_bionicmanager.getListBionicConflicts(this)) {
-            conflictsList.append(bionic.getName()).append(", ");
-        }
-        if(conflictsList.length() > 0) {
-            conflictsList.setLength(conflictsList.length() - 2);
-        } else {
-            conflictsList.append("None");
-        }
-        LabelAPI conflictListLabel = tooltip.addPara("%s %s", pad, t,"Conflicts:", conflictsList.toString());
-        conflictListLabel.setHighlight("Conflicts:", conflictsList.toString());
-        conflictListLabel.setHighlightColors(g.brighter().brighter(), conflictsList.toString().equals("None")? g: Misc.getNegativeHighlightColor());
-        //----------desc
-        String desc = this.getSpec().getDesc();
-        LabelAPI descLabel = tooltip.addPara("%s %s", pad, t, "Description:", desc);
-        descLabel.setHighlight("Description:", desc);
-        descLabel.setHighlightColors(g.brighter().brighter(), t);
+        ba_bionicmanager.displayBionicItemDescription(tooltip, this);
 
         addCostLabel(tooltip, opad, transferHandler, stackSource);
 
-        tooltip.addPara("Interaction with this item can be found in the upgrade/change tab in the bionic augment menu (A skill)", opad, Misc.getGrayColor());
+        tooltip.addPara("%s", opad, Misc.getGrayColor(), "Interaction with this item can be found in the upgrade/change tab in the bionic augment menu (A ability)");
     }
     protected void addCostLabel(TooltipMakerAPI tooltip, float pad, CargoTransferHandlerAPI transferHandler, Object stackSource) {
         BaseSpecialItemPlugin.ItemCostLabelData data = getCostLabelData(stack, transferHandler, stackSource);

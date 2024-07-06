@@ -53,8 +53,8 @@ public class ba_officermanager {
         refreshListPerson(listOfficer);
         setUpVariant(listPersons);
         setUpDynamicStats(listPersons);
-        setUpSkill(listPersons);
         setUpBionic(listPersons);
+        setUpSkill(listPersons);
     }
     /**
      * Set up all the needed stats/bionic/skill for encountering officer from other fleet to display bionics
@@ -63,8 +63,8 @@ public class ba_officermanager {
     public static void setUpListOfficers(List<PersonAPI> listOfficers) {
         setUpVariant(listOfficers);
         setUpDynamicStats(listOfficers);
-        setUpSkill(listOfficers);
         setUpBionic(listOfficers);
+        setUpSkill(listOfficers);
     }
     //create new admin
     //runcode import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent; import com.fs.starfarer.api.impl.campaign.ids.Factions; PersonAPI person = OfficerManagerEvent.createAdmin(Global.getSector().getFaction(Factions.MERCENARY), 1, new Random()); Global.getSector().getCharacterData().addAdmin(person);
@@ -367,6 +367,7 @@ public class ba_officermanager {
     public static boolean checkIfCurrentBRMLowerThanLimitOnInstall(ba_bionicitemplugin bionic, PersonAPI person) {
         float currentBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
         float limitBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);
+        if(bionicalterationplugin.isBRMCapDisable) return true; //disabling BRM limit
         return currentBrm + bionic.brmCost <= limitBrm;
     }
     public static boolean checkIfConsciousnessReduceAboveZeroOnInstall(ba_bionicitemplugin bionic, PersonAPI person) {
@@ -382,6 +383,7 @@ public class ba_officermanager {
     public static boolean checkIfCurrentBRMLowerThanLimit(PersonAPI person, float limit) {
         float currentBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
         float limitBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);
+        if(bionicalterationplugin.isBRMCapDisable) return true; //disabling BRM limit
         return currentBrm < limit * limitBrm;
     }
     public static boolean checkIfCurrentConsciousLowerThanLimit(PersonAPI person, float limit) {
@@ -459,7 +461,7 @@ public class ba_officermanager {
             SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
             Global.getSector().getPlayerFleet().getCargo().addSpecial(specialItem, 1);
             updatePersonStatsOnInteract(bionic, limb, person, false);
-            if(bionic.effectScript != null) {
+            if(bionic.effectScript != null && bionic.isEffectAppliedAfterRemove) {
                 bionic.effectScript.onRemove(person, limb, bionic);
             }
             return true;
