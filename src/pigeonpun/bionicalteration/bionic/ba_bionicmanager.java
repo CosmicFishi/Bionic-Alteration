@@ -96,6 +96,38 @@ public class ba_bionicmanager {
 //        for (Map.Entry<String, ba_bionicitemplugin> entry: bionicItemMap.entrySet()) {
 //            log.info(entry.getKey() + ": " + entry.getValue().bionicLimbGroupId + "-----" + entry.getValue().getSpec().getDesc());
 //        }
+        List<String> overclockingFiles = MagicSettings.getList(ba_variablemanager.BIONIC_ALTERATION, "overclocking_bionic_files");
+        for (String path : overclockingFiles) {
+            log.error("merging bionic overclocking files");
+            JSONArray overclockingData = new JSONArray();
+            try {
+                overclockingData = Global.getSettings().getMergedSpreadsheetDataForMod("bionicId", path, ba_variablemanager.BIONIC_ALTERATION);
+            } catch (IOException | JSONException | RuntimeException ex) {
+                log.error("unable to read " + path, ex);
+            }
+            for (int i = 0; i < overclockingData.length(); i++) {
+                try{
+                    JSONObject row = overclockingData.getJSONObject(i);
+                    try{
+                        row.getString("overclockIds");
+                    }catch (JSONException ex) {
+                        continue;
+                    }
+                    String bionicId = row.getString("bionicId");
+                    ba_bionicitemplugin bionic = getBionic(bionicId);
+                    if(bionic != null) {
+                        ba_utils.trimAndSplitString(row.getString("overclockIds"));
+                        //todo: add the function that check whether the overclock exist in the overclockList in overclockmanager
+                        //todo: then add it into the bionic's overclock list
+                    }
+
+                } catch (JSONException ex) {
+                    log.error(ex);
+                    log.error("Invalid line, skipping");
+                }
+            }
+        }
+
     }
 
     /**

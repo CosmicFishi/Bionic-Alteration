@@ -1,0 +1,4 @@
+overclockId,overclockName,isApplyEffectCaptain,isApplyEffectAdmin,upgradeCost,effectScript,order
+ba_woobly_psyche,Woobly Psyche,TRUE,FALSE,0,pigeonpun.bionicalteration.overclock.impl.ba_woobly_psyche_effect,1
+ba_based_instinct,Based Instinct,TRUE,FALSE,0,pigeonpun.bionicalteration.overclock.impl.ba_based_instinct_effect,2
+,,,,,,

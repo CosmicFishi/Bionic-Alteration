@@ -45,6 +45,7 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
     public float dropChance;
     public boolean isEffectAppliedAfterRemove;
     public HashMap<String, Object> customData = new HashMap<>();
+    public List<String> overclockList = new ArrayList<>();
     protected boolean isInitFully = false;
     public ba_bionicitemplugin() {}
     public ba_bionicitemplugin(String bionicId, SpecialItemSpecAPI spec ,String bionicLimbGroupId, String namePrefix, Color displayColor, int brmCost,

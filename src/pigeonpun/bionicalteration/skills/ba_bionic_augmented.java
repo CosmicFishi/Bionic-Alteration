@@ -53,6 +53,7 @@ public class ba_bionic_augmented {
         }
         return null;
     }
+    //todo: DO THE OVERCLOCK EFFECTS on skill
     public static class Officer extends BaseSkillEffectDescription implements ShipSkillEffect, AfterShipCreationSkillEffect {
         @Override
         public void createCustomDescription(MutableCharacterStatsAPI stats, SkillSpecAPI skill, TooltipMakerAPI info, float width) {
