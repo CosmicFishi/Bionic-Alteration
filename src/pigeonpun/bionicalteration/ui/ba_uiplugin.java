@@ -1415,7 +1415,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                     needsReset = true;
                     break;
                 }
-                if(tokens[0].equals("hover")) {
+                if(tokens[0].equals("hover") && !isDisplayingOtherFleets) {
                     if(!this.currentPerson.getId().equals(tokens[1])) {
                         for(PersonAPI person: ba_officermanager.listPersons) {
                             if(tokens[1].equals(person.getId())) {
