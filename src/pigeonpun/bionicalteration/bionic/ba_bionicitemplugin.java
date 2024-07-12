@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Random;
 
 public class ba_bionicitemplugin implements SpecialItemPlugin {
+    //todo: refactor the bionic item plugin to include effect class into it.
+    // then have bionics extends this class
     static Logger log = Global.getLogger(ba_bionicitemplugin.class);
     public String bionicId;
     public String bionicLimbGroupId;

@@ -16,6 +16,7 @@ import org.magiclib.util.MagicSettings;
 import pigeonpun.bionicalteration.ba_limbmanager;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
+import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
 import pigeonpun.bionicalteration.utils.ba_utils;
 
 import java.awt.*;
@@ -116,9 +117,14 @@ public class ba_bionicmanager {
                     String bionicId = row.getString("bionicId");
                     ba_bionicitemplugin bionic = getBionic(bionicId);
                     if(bionic != null) {
-                        ba_utils.trimAndSplitString(row.getString("overclockIds"));
-                        //todo: add the function that check whether the overclock exist in the overclockList in overclockmanager
-                        //todo: then add it into the bionic's overclock list
+                        List<String> overclockList = ba_utils.trimAndSplitString(row.getString("overclockIds"));
+                        for(String id: overclockList) {
+                            if(ba_overclockmanager.getOverclock(id) != null) {
+                                bionic.overclockList.add(id);
+                            } else {
+                                log.error("Can't find overclock of id: " + id + " for bionic " + bionicId);
+                            }
+                        }
                     }
 
                 } catch (JSONException ex) {

@@ -11,6 +11,7 @@ import pigeonpun.bionicalteration.faction.ba_factionmanager;
 import pigeonpun.bionicalteration.listeners.ba_campaignlistener;
 import pigeonpun.bionicalteration.listeners.ba_salvagelistener;
 import pigeonpun.bionicalteration.lunalib.lunaconfighelper;
+import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
 import pigeonpun.bionicalteration.variant.ba_variantmanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.ba_limbmanager;
@@ -26,6 +27,7 @@ public class bionicalterationplugin extends BaseModPlugin {
     @Override
     public void onApplicationLoad() throws Exception {
 //        ba_manager.getInstance();
+        ba_overclockmanager.onApplicationLoad();
         ba_bionicmanager.onApplicationLoad();
         ba_variantmanager.onApplicationLoad();
         ba_limbmanager.onApplicationLoad();

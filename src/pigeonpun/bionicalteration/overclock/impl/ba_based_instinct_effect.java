@@ -1,13 +1,17 @@
 package pigeonpun.bionicalteration.overclock.impl;
 
+import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import com.fs.starfarer.api.combat.MutableShipStatsAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
-import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
-import pigeonpun.bionicalteration.overclock.ba_overclockeffect;
+import org.apache.log4j.Logger;
+import pigeonpun.bionicalteration.overclock.ba_overclock;
 
-public class ba_based_instinct_effect implements ba_overclockeffect {
+public class ba_based_instinct_effect extends ba_overclock {
+    static Logger log = Global.getLogger(ba_based_instinct_effect.class);
+    public ba_based_instinct_effect() {}
+
     //todo: do effects
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
@@ -16,26 +20,6 @@ public class ba_based_instinct_effect implements ba_overclockeffect {
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-
-    }
-
-    @Override
-    public void applyAdminEffect(MutableCharacterStatsAPI stats, String id) {
-
-    }
-
-    @Override
-    public void unapplyAdminEffect(MutableCharacterStatsAPI stats, String id) {
-
-    }
-
-    @Override
-    public void applyEffectAdminMarket(MarketAPI market, String id, float level, ba_bionicitemplugin bionic) {
-
-    }
-
-    @Override
-    public void unapplyEffectAdminMarket(MarketAPI market, String id) {
 
     }
 

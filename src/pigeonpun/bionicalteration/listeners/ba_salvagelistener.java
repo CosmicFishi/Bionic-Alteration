@@ -85,7 +85,7 @@ public class ba_salvagelistener implements ShowLootListener {
                 dropValueList.add(civilDropValue);
 
                 SalvageEntityGenDataSpec.DropData militaryDropValue = new SalvageEntityGenDataSpec.DropData();
-                militaryDropValue.group = "ba_bionic_civil";
+                militaryDropValue.group = "ba_bionic_military";
                 militaryDropValue.valueMult = d.valueMult;
                 militaryDropValue.value = value;
                 dropValueList.add(militaryDropValue);
@@ -128,7 +128,7 @@ public class ba_salvagelistener implements ShowLootListener {
                 dropRandomList.add(civilDropValue);
 
                 SalvageEntityGenDataSpec.DropData militaryDropValue = new SalvageEntityGenDataSpec.DropData();
-                militaryDropValue.group = "ba_bionic_civil";
+                militaryDropValue.group = "ba_bionic_military";
                 militaryDropValue.maxChances = d.maxChances;
                 militaryDropValue.chances = chances;
                 dropRandomList.add(militaryDropValue);

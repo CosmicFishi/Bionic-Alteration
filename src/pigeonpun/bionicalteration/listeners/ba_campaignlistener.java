@@ -41,7 +41,6 @@ public class ba_campaignlistener extends BaseCampaignEventListener implements Ev
             otherFleet.getMemoryWithoutUpdate().set("$ba_bionic_dropList", ba_officermanager.getListPotentialBionicDrop(otherFleet));
             log.info("Set up for officers completed");
         }
-        //todo: generate all the bionic for npc admins on after economy loaded
 //        if(target.getMarket() != null) {
 //            if(target.getMarket().getAdmin() != null) {
 //                List<PersonAPI> listPerson = new ArrayList<>();
