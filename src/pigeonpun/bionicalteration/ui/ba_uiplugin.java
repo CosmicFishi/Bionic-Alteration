@@ -1006,7 +1006,8 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             int defaultRows = 1;
             int neededRows = defaultRows;
             if(availableBionics.size() / itemsPerRow > defaultRows) {
-                neededRows = Math.round((float) availableBionics.size() / itemsPerRow);
+                //todo: test this
+                neededRows = Math.round((float) availableBionics.size() / itemsPerRow) + 1;
             }
             while(row < neededRows) {
                 int rowX = 0;
