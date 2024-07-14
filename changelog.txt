@@ -1,3 +1,6 @@
+0.0.2b changelog:
+- Fix inventory UI being weird on higher game resolution
+- All console command to add all bionics to player inventory
 0.0.2a changelog:
 - Fix clicking on officer on another fleet move them to the workshop UI. Thanks Steklomoy! (ooops)
 - Fix (may be?) a crash cause by the market condition list returning null. Thanks Ultraviolet Ace!
