@@ -996,6 +996,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                 availableBionics.add(cargo);
             }
         }
+        //todo: Fix inventory UI save scroll position when hovering and give them a debounce time
         List<ba_component> subComponentItemList = new ArrayList<>();
         if(availableBionics.size() != 0) {
             int index = 0;
