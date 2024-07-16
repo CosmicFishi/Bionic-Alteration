@@ -1,3 +1,6 @@
+0.0.2c changelog:
+- Add a debounce time to the inventory UI
+- Fix buffs not applying when a second duplicate bionic is equipped on the person
 0.0.2b changelog:
 - Fix inventory UI being weird on higher game resolution
 - All console command to add all bionics to player inventory
