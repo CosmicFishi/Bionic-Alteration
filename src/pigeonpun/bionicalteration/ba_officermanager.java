@@ -311,14 +311,16 @@ public class ba_officermanager {
         List<ba_bionicAugmentedData> anatomyList = new ArrayList<>();
         HashMap<ba_limbmanager.ba_limb, List<ba_bionicitemplugin>> bionicsInstalledList = ba_bionicmanager.getListLimbAndBionicInstalled(person);
         String personGenericVariant = getPersonVariantTag(person);
-        List<String> variantAnatomy = ba_variantmanager.variantList.get(personGenericVariant).limbIdList;
-        for (String limbString: variantAnatomy) {
-            ba_limbmanager.ba_limb limb = ba_limbmanager.getLimb(limbString);
-            if(bionicsInstalledList.get(limb) != null) {
-                List<ba_bionicitemplugin> bionicsInstalled = bionicsInstalledList.get(limb);
-                anatomyList.add(new ba_bionicAugmentedData(limb, bionicsInstalled));
-            } else {
-                anatomyList.add(new ba_bionicAugmentedData(limb, new ArrayList<ba_bionicitemplugin>()));
+        if(personGenericVariant != null) { //somehow, some PersonAPI dont have a variant tag ??????????? IDK
+            List<String> variantAnatomy = ba_variantmanager.variantList.get(personGenericVariant).limbIdList;
+            for (String limbString: variantAnatomy) {
+                ba_limbmanager.ba_limb limb = ba_limbmanager.getLimb(limbString);
+                if(bionicsInstalledList.get(limb) != null) {
+                    List<ba_bionicitemplugin> bionicsInstalled = bionicsInstalledList.get(limb);
+                    anatomyList.add(new ba_bionicAugmentedData(limb, bionicsInstalled));
+                } else {
+                    anatomyList.add(new ba_bionicAugmentedData(limb, new ArrayList<ba_bionicitemplugin>()));
+                }
             }
         }
         return anatomyList;
