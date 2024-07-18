@@ -1,3 +1,5 @@
+0.0.2d changelog:
+- Fix crash from interacting with other fleet when cant find the person variant
 0.0.2c changelog:
 - Add a debounce time to the inventory UI
 - Fix buffs not applying when a second duplicate bionic is equipped on the person

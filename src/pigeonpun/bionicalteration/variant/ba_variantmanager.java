@@ -83,7 +83,7 @@ public class ba_variantmanager {
     }
     /**
      * @param person Person
-     * @return the Generic Variant tag of a person. A person must only have 1 variant
+     * @return the Generic Variant tag of a person. A person must only have 1 variant, return null if cant find variant
      */
     public static String getPersonVariantTag(PersonAPI person) {
         List<String> anatomyVariantList = getListAnatomyKeys();
