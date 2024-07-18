@@ -89,11 +89,13 @@ public class ba_bionic_augmented {
         public void apply(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id, float level) {
             if(stats.getFleetMember() != null) {
                 PersonAPI captain = stats.getFleetMember().getCaptain();
-                List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(captain);
-                for(ba_bionicitemplugin bionic: listBionic) {
-                    if(bionic.effectScript != null && bionic.isApplyCaptainEffect) {
-                        String applyId = id + bionic.bionicId;
-                        bionic.effectScript.applyOfficerEffect(stats, hullSize, applyId);
+                List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(captain);
+                for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
+                    for(ba_bionicitemplugin bionic: anatomy.bionicInstalled) {
+                        if(bionic.effectScript != null && bionic.isApplyCaptainEffect) {
+                            String applyId = id + bionic.bionicId + anatomy.limb;
+                            bionic.effectScript.applyOfficerEffect(stats, hullSize, applyId);
+                        }
                     }
                 }
                 ba_consciousmanager.resetBeforeApplyEffectOfficer(stats, id);
@@ -105,11 +107,13 @@ public class ba_bionic_augmented {
         public void unapply(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
             if(stats.getFleetMember() != null) {
                 PersonAPI captain = stats.getFleetMember().getCaptain();
-                List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(captain);
-                for(ba_bionicitemplugin bionic: listBionic) {
-                    if(bionic.effectScript != null && bionic.isApplyCaptainEffect) {
-                        String applyId = id + bionic.bionicId;
-                        bionic.effectScript.unapplyOfficerEffect(stats, hullSize, applyId);
+                List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(captain);
+                for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
+                    for(ba_bionicitemplugin bionic: anatomy.bionicInstalled) {
+                        if(bionic.effectScript != null && bionic.isApplyCaptainEffect) {
+                            String applyId = id + bionic.bionicId + anatomy.limb;
+                            bionic.effectScript.unapplyOfficerEffect(stats, hullSize, applyId);
+                        }
                     }
                 }
                 ba_consciousmanager.resetBeforeApplyEffectOfficer(stats, id);
@@ -145,11 +149,13 @@ public class ba_bionic_augmented {
         public void apply(MutableCharacterStatsAPI stats, String id, float level) {
             PersonAPI person = findPerson(stats);
             if(person != null) {
-                List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
-                for(ba_bionicitemplugin bionic: listBionic) {
-                    if(bionic.effectScript != null && bionic.isApplyAdminEffect) {
-                        String applyId = id + bionic.bionicId;
-                        bionic.effectScript.applyAdminEffect(stats, applyId);
+                List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
+                for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
+                    for(ba_bionicitemplugin bionic: anatomy.bionicInstalled) {
+                        if(bionic.effectScript != null && bionic.isApplyCaptainEffect) {
+                            String applyId = id + bionic.bionicId + anatomy.limb;
+                            bionic.effectScript.applyAdminEffect(stats, applyId);
+                        }
                     }
                 }
                 ba_consciousmanager.resetBeforeApplyEffectAdmin(stats, id);
@@ -161,11 +167,13 @@ public class ba_bionic_augmented {
         public void unapply(MutableCharacterStatsAPI stats, String id) {
             PersonAPI person = findPerson(stats);
             if(person != null) {
-                List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
-                for(ba_bionicitemplugin bionic: listBionic) {
-                    if(bionic.effectScript != null && bionic.isApplyAdminEffect) {
-                        String applyId = id + bionic.bionicId;
-                        bionic.effectScript.unapplyAdminEffect(stats, applyId);
+                List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
+                for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
+                    for(ba_bionicitemplugin bionic: anatomy.bionicInstalled) {
+                        if(bionic.effectScript != null && bionic.isApplyCaptainEffect) {
+                            String applyId = id + bionic.bionicId + anatomy.limb;
+                            bionic.effectScript.unapplyAdminEffect(stats, applyId);
+                        }
                     }
                 }
                 ba_consciousmanager.resetBeforeApplyEffectAdmin(stats, id);
@@ -199,7 +207,7 @@ public class ba_bionic_augmented {
         }
         @Override
         public void apply(MarketAPI market, String id, float level) {
-            if(market.getAdmin() != null) {
+            if(market.getAdmin() != null && market.getConditions() != null) {
                 PersonAPI person = market.getAdmin();
                 if(ba_bionicmanager.checkIfHaveBionicInstalled(person) && !market.hasCondition(ba_variablemanager.BA_MARKET_CONDITION_ID)) {
                     market.addCondition(ba_variablemanager.BA_MARKET_CONDITION_ID);
@@ -209,7 +217,7 @@ public class ba_bionic_augmented {
 
         @Override
         public void unapply(MarketAPI market, String id) {
-            if(market.getAdmin() != null) {
+            if(market.getAdmin() != null && market.getConditions() != null) {
                 PersonAPI person = market.getAdmin();
                 if(market.hasCondition(ba_variablemanager.BA_MARKET_CONDITION_ID)) {
                     market.removeCondition(ba_variablemanager.BA_MARKET_CONDITION_ID);

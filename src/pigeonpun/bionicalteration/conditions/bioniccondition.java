@@ -5,6 +5,7 @@ import com.fs.starfarer.api.campaign.econ.MarketConditionAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.impl.campaign.econ.BaseMarketConditionPlugin;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
+import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
@@ -29,11 +30,13 @@ public class bioniccondition extends BaseMarketConditionPlugin {
     @Override
     public void apply(String id) {
         if(person != null) {
-            List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
-            for(ba_bionicitemplugin bionic: listBionic) {
-                String applyId = id + bionic.bionicId;
-                if(bionic.effectScript != null  && bionic.isApplyAdminEffect && !checkIfAlreadyAppliedBionicEffect(applyId)) {
-                    bionic.effectScript.applyEffectAdminMarket(market, applyId, 0, bionic);
+            List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
+            for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
+                for(ba_bionicitemplugin bionic: anatomy.bionicInstalled) {
+                    if(bionic.effectScript != null && bionic.isApplyCaptainEffect) {
+                        String applyId = id + bionic.bionicId + anatomy.limb;
+                        bionic.effectScript.applyEffectAdminMarket(market, applyId, 0, bionic);
+                    }
                 }
             }
             ba_consciousmanager.resetBeforeApplyEffectAdminMarket(market, id);
@@ -44,12 +47,13 @@ public class bioniccondition extends BaseMarketConditionPlugin {
     @Override
     public void unapply(String id) {
         if(person != null) {
-            PersonAPI person = market.getAdmin();
-            List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
-            for(ba_bionicitemplugin bionic: listBionic) {
-                String applyId = id + bionic.bionicId;
-                if(bionic.effectScript != null && bionic.isApplyAdminEffect) {
-                    bionic.effectScript.unapplyEffectAdminMarket(market, applyId);
+            List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
+            for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
+                for(ba_bionicitemplugin bionic: anatomy.bionicInstalled) {
+                    if(bionic.effectScript != null && bionic.isApplyCaptainEffect) {
+                        String applyId = id + bionic.bionicId + anatomy.limb;
+                        bionic.effectScript.unapplyEffectAdminMarket(market, applyId);
+                    }
                 }
             }
             ba_consciousmanager.resetBeforeApplyEffectAdminMarket(market, id);

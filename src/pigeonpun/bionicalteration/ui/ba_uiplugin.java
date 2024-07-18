@@ -57,10 +57,9 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
     String currentTabId = OVERVIEW;
     public static boolean isDisplayingOtherFleets = false;
     public static float currentScrollPositionOverview = 0;
-    public static float previousScrollPositionOverview = 0;
     public static float currentScrollPositionBionicTable = 0;
-    public static final float hoverDebounceDuration = 20f;
-    public static float hoverDebounceTimer = 0;
+    public static float currentScrollPositionInventory = 0;
+    public static ba_debounceplugin debounceplugin = new ba_debounceplugin();
     public static ba_uiplugin createDefault() {
         return new ba_uiplugin();
     }
@@ -94,6 +93,9 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         focusContent(moveToTabId);
         currentScrollPositionOverview = 0;
         currentScrollPositionBionicTable = 0;
+        currentScrollPositionInventory = 0;
+        debounceplugin.addToList("OVERVIEW_PERSON_LIST_TOOLTIP");
+        debounceplugin.addToList("WORKSHOP_INVENTORY_TOOLTIP");
     }
     public void initialUICreation()
     {
@@ -104,7 +106,9 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         if(currentTabId.equals(OVERVIEW)) {
             ba_component component = componentMap.get("OVERVIEW_PERSON_LIST_PANEL");
             if(component != null && component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP") != null) {
-                component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller().setYOffset(0);
+                if(component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller() != null) {
+                    component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller().setYOffset(0);
+                }
             }
         }
     }
@@ -272,7 +276,9 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         overviewPersonContainer.subComponentListMap.put("SUB_PERSON_LIST", subComponentPersonList);
         //do the adding late so the scroll work (thanks Lukas04)
         overviewPersonContainer.mainPanel.addUIElement(overviewPersonTooltipContainer);
-        overviewPersonTooltipContainer.getExternalScroller().setYOffset(currentScrollPositionOverview);
+        if(overviewPersonTooltipContainer.getExternalScroller() != null) {
+            overviewPersonTooltipContainer.getExternalScroller().setYOffset(currentScrollPositionOverview);
+        }
     }
     protected void displayPersonInfoList(ba_component creatorComponent, String creatorComponentTooltip, float personInfoW, float personInfoH, float personInfoX, float personInfoY) {
         float pad = 10f;
@@ -627,7 +633,9 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         infoPersonBionicContainer.subComponentListMap.put("SUB_BIONIC_LIST", subComponentBionicList);
         if(isScroll) {
             infoPersonBionicContainer.mainPanel.addUIElement(infoPersonBionicTooltipContainer);
-            infoPersonBionicTooltipContainer.getExternalScroller().setYOffset(currentScrollPositionBionicTable);
+            if(infoPersonBionicTooltipContainer.getExternalScroller() != null) {
+                infoPersonBionicTooltipContainer.getExternalScroller().setYOffset(currentScrollPositionBionicTable);
+            }
         }
     }
     protected void displayWorkshop() {
@@ -1005,8 +1013,8 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             int itemsPerRow = (int) Math.floor(containerW / itemW);
             int defaultRows = 1;
             int neededRows = defaultRows;
-            if(availableBionics.size() / itemsPerRow > defaultRows) {
-                neededRows = Math.round((float) availableBionics.size() / itemsPerRow);
+            if((float) availableBionics.size() / itemsPerRow > defaultRows) {
+                neededRows = (int) Math.ceil((float) availableBionics.size() / itemsPerRow);
             }
             while(row < neededRows) {
                 int rowX = 0;
@@ -1098,7 +1106,9 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         inventoryContainer.subComponentListMap.put("ITEM_LIST", subComponentItemList);
         //add this later so scroll works
         inventoryContainer.mainPanel.addUIElement(inventoryTooltipContainer).setLocation(0,0).inTL(0, 0);
-
+        if(inventoryTooltipContainer.getExternalScroller() != null) {
+            inventoryTooltipContainer.getExternalScroller().setYOffset(currentScrollPositionInventory);
+        }
         //border
         UIComponentAPI border = inventoryTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
         border.getPosition().setSize(containerW, containerH);
@@ -1324,6 +1334,8 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             if(this.currentRemovingBionic != null) this.currentRemovingBionic = null;
         }
         currentScrollPositionBionicTable = 0;
+        currentScrollPositionInventory = 0;
+        currentScrollPositionOverview = 0;
     }
     public void getNewListPerson() {
         List<PersonAPI> tempList = new ArrayList<>((ba_officermanager.listPersons));
@@ -1333,13 +1345,23 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         if(currentTabId.equals(OVERVIEW)) {
             ba_component component = componentMap.get("OVERVIEW_PERSON_LIST_PANEL");
             if(component != null && component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP") != null) {
-                currentScrollPositionOverview = component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller().getYOffset();
+                if(component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller() != null) {
+                    currentScrollPositionOverview = component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller().getYOffset();
+                }
             }
         }
         if(currentTabId.equals(WORKSHOP)) {
             ba_component component = componentMap.get("WORKSHOP_PERSON_INFO_BIONICS_PANEL");
             if(component != null && component.tooltipMap.get("PERSON_INFO_BIONICS_TOOLTIP") != null) {
-                currentScrollPositionBionicTable = component.tooltipMap.get("PERSON_INFO_BIONICS_TOOLTIP").getExternalScroller().getYOffset();
+                if(component.tooltipMap.get("PERSON_INFO_BIONICS_TOOLTIP").getExternalScroller() != null) {
+                    currentScrollPositionBionicTable = component.tooltipMap.get("PERSON_INFO_BIONICS_TOOLTIP").getExternalScroller().getYOffset();
+                }
+            }
+            ba_component component2 = componentMap.get("WORKSHOP_INVENTORY_PANEL");
+            if(component2 != null && component2.tooltipMap.get("WORKSHOP_INVENTORY_TOOLTIP") != null) {
+                if(component2.tooltipMap.get("WORKSHOP_INVENTORY_TOOLTIP").getExternalScroller() != null) {
+                    currentScrollPositionInventory = component2.tooltipMap.get("WORKSHOP_INVENTORY_TOOLTIP").getExternalScroller().getYOffset();
+                }
             }
         }
     }
@@ -1355,12 +1377,12 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
 
     @Override
     public void render(float alphaMult) {
-//        ba_component previousTab2 = componentMap.get("WORKSHOP_BIONIC_DETAIL_PANEL");
+//        ba_component previousTab2 = componentMap.get("WORKSHOP_INVENTORY_PANEL");
 //        ba_utils.drawBox(
-//                (int) previousTab2.getTooltip("WORKSHOP_BIONIC_DETAIL_TOOLTIP").getPosition().getX(),
-//                (int) previousTab2.getTooltip("WORKSHOP_BIONIC_DETAIL_TOOLTIP").getPosition().getY(),
-//                (int) previousTab2.getTooltip("WORKSHOP_BIONIC_DETAIL_TOOLTIP").getPosition().getWidth(),
-//                (int) previousTab2.getTooltip("WORKSHOP_BIONIC_DETAIL_TOOLTIP").getPosition().getHeight(),
+//                (int) previousTab2.getTooltip("WORKSHOP_INVENTORY_TOOLTIP").getPosition().getX(),
+//                (int) previousTab2.getTooltip("WORKSHOP_INVENTORY_TOOLTIP").getPosition().getY(),
+//                (int) previousTab2.getTooltip("WORKSHOP_INVENTORY_TOOLTIP").getPosition().getWidth(),
+//                (int) previousTab2.getTooltip("WORKSHOP_INVENTORY_TOOLTIP").getPosition().getHeight(),
 //                0.3f,
 //                Color.pink
 //        );
@@ -1415,7 +1437,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                     needsReset = true;
                     break;
                 }
-                if(tokens[0].equals("hover")) {
+                if(tokens[0].equals("hover") && !isDisplayingOtherFleets) {
                     if(!this.currentPerson.getId().equals(tokens[1])) {
                         for(PersonAPI person: ba_officermanager.listPersons) {
                             if(tokens[1].equals(person.getId())) {
@@ -1478,48 +1500,41 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         boolean shouldRefresh = false;
         for (InputEventAPI event : events) {
             if (event.isConsumed()) continue;
-
-            if(currentTabId.equals(OVERVIEW)) {
-                ba_component component = componentMap.get("OVERVIEW_PERSON_LIST_PANEL");
-                if(component != null && component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP") != null) {
-                    previousScrollPositionOverview = currentScrollPositionOverview;
-                    currentScrollPositionOverview = component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller().getYOffset();
-                }
-            }
-            if(previousScrollPositionOverview != currentScrollPositionOverview) {
-                hoverDebounceTimer = 0;
-            } else {
-                if(hoverDebounceTimer < hoverDebounceDuration) {
-                    hoverDebounceTimer += 1;
-                }
-            }
-            if(!currentTabId.equals(OVERVIEW) || hoverDebounceTimer == hoverDebounceDuration) {
-//                log.info("debounce over");
-                if(event.isMouseMoveEvent()) {
-                    for (ButtonAPI button: buttons) {
-                        float buttonX = button.getPosition().getX();
-                        float buttonY = button.getPosition().getY();
-                        float buttonW = button.getPosition().getWidth();
-                        float buttonH = button.getPosition().getHeight();
-                        if(event.getX() >= buttonX && event.getX() < buttonX + buttonW && event.getY() >= buttonY && event.getY() < buttonY+buttonH) {
-                            String s = buttonMap.get(button);
-                            String[] tokens = s.split(":");
+            if(event.isMouseMoveEvent()) {
+                for (ButtonAPI button: buttons) {
+                    float buttonX = button.getPosition().getX();
+                    float buttonY = button.getPosition().getY();
+                    float buttonW = button.getPosition().getWidth();
+                    float buttonH = button.getPosition().getHeight();
+                    if(event.getX() >= buttonX && event.getX() < buttonX + buttonW && event.getY() >= buttonY && event.getY() < buttonY+buttonH) {
+                        String s = buttonMap.get(button);
+                        String[] tokens = s.split(":");
 //                        log.info("hover " + s);
-                            if(tokens[0].equals("hover")) {
-                                if(!this.currentPerson.getId().equals(tokens[1])) {
-                                    for(PersonAPI person: ba_officermanager.listPersons) {
-                                        if(tokens[1].equals(person.getId())) {
-                                            this.currentPerson = person;
-                                            shouldRefresh = true;
+                        if(currentTabId.equals(OVERVIEW)) {
+                            ba_component component = componentMap.get("OVERVIEW_PERSON_LIST_PANEL");
+                            if(component != null && component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP") != null) {
+                                if(tokens[0].equals("hover") && debounceplugin.isDebounceOver("OVERVIEW_PERSON_LIST_TOOLTIP", 0, component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller().getYOffset())) {
+                                    if(!this.currentPerson.getId().equals(tokens[1])) {
+                                        for(PersonAPI person: ba_officermanager.listPersons) {
+                                            if(tokens[1].equals(person.getId())) {
+                                                this.currentPerson = person;
+                                                shouldRefresh = true;
+                                            }
                                         }
                                     }
                                 }
                             }
+                        }
+
+                        if(currentTabId.equals(WORKSHOP)) {
+                            ba_component component = componentMap.get("WORKSHOP_INVENTORY_PANEL");
                             //hover bionic item in inventory
-                            if(tokens[0].equals("hover_bionic_item")) {
-                                if(ba_bionicmanager.bionicItemMap.get(tokens[1]) != null && (this.currentHoveredBionic == null || !this.currentHoveredBionic.bionicId.equals(tokens[1]))) {
-                                    this.currentHoveredBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
-                                    shouldRefresh = true;
+                            if(component != null && component.tooltipMap.get("WORKSHOP_INVENTORY_TOOLTIP") != null) {
+                                if(tokens[0].equals("hover_bionic_item") && debounceplugin.isDebounceOver("WORKSHOP_INVENTORY_TOOLTIP", 0, component.tooltipMap.get("WORKSHOP_INVENTORY_TOOLTIP").getExternalScroller().getYOffset())) {
+                                    if(ba_bionicmanager.bionicItemMap.get(tokens[1]) != null && (this.currentHoveredBionic == null || !this.currentHoveredBionic.bionicId.equals(tokens[1]))) {
+                                        this.currentHoveredBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
+                                        shouldRefresh = true;
+                                    }
                                 }
                             }
                         }

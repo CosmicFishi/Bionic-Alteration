@@ -311,15 +311,19 @@ public class ba_officermanager {
         List<ba_bionicAugmentedData> anatomyList = new ArrayList<>();
         HashMap<ba_limbmanager.ba_limb, List<ba_bionicitemplugin>> bionicsInstalledList = ba_bionicmanager.getListLimbAndBionicInstalled(person);
         String personGenericVariant = getPersonVariantTag(person);
-        List<String> variantAnatomy = ba_variantmanager.variantList.get(personGenericVariant).limbIdList;
-        for (String limbString: variantAnatomy) {
-            ba_limbmanager.ba_limb limb = ba_limbmanager.getLimb(limbString);
-            if(bionicsInstalledList.get(limb) != null) {
-                List<ba_bionicitemplugin> bionicsInstalled = bionicsInstalledList.get(limb);
-                anatomyList.add(new ba_bionicAugmentedData(limb, bionicsInstalled));
-            } else {
-                anatomyList.add(new ba_bionicAugmentedData(limb, new ArrayList<ba_bionicitemplugin>()));
+        if(personGenericVariant != null && ba_variantmanager.variantList.get(personGenericVariant) != null) {
+            List<String> variantAnatomy = ba_variantmanager.variantList.get(personGenericVariant).limbIdList;
+            for (String limbString: variantAnatomy) {
+                ba_limbmanager.ba_limb limb = ba_limbmanager.getLimb(limbString);
+                if(bionicsInstalledList.get(limb) != null) {
+                    List<ba_bionicitemplugin> bionicsInstalled = bionicsInstalledList.get(limb);
+                    anatomyList.add(new ba_bionicAugmentedData(limb, bionicsInstalled));
+                } else {
+                    anatomyList.add(new ba_bionicAugmentedData(limb, new ArrayList<ba_bionicitemplugin>()));
+                }
             }
+        } else {
+            log.info("Error, can't find anatomy of variant: " + personGenericVariant + " for officer from " + person.getFaction().getDisplayName() + " with tags " + person.getTags());
         }
         return anatomyList;
     }
@@ -442,7 +446,7 @@ public class ba_officermanager {
             return removeSuccessful;
         } else {
             if(bionicalterationplugin.isDevmode) {
-                log.error("Can't install "+ bionic.bionicId + " on " + limb.limbId);
+//                log.error("Can't install "+ bionic.bionicId + " on " + limb.limbId);
             }
         }
         return false;
