@@ -399,6 +399,7 @@ public class ba_bionicmanager {
         Color bad = Misc.getNegativeHighlightColor();
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
+        final Color special = new Color(255, 149, 0);
 
         tooltip.setParaInsigniaLarge();
         LabelAPI nameLabel = tooltip.addPara(bionic.getName(), Misc.getHighlightColor(),0);
@@ -450,6 +451,14 @@ public class ba_bionicmanager {
         LabelAPI conflictListLabel = tooltip.addPara("%s %s", pad, t,"Conflicts:", conflictsList.toString());
         conflictListLabel.setHighlight("Conflicts:", conflictsList.toString());
         conflictListLabel.setHighlightColors(g.brighter().brighter(), conflictsList.toString().equals("None")? g: Misc.getNegativeHighlightColor());
+
+        if(ba_overclockmanager.isBionicOverclockable(bionic)) {
+            //----------overclock
+            String overclockApplied = bionic.isOverClockApplied() ? bionic.appliedOverclock.name: "none";
+            LabelAPI overclockLabel = tooltip.addPara("%s %s", pad, t, "Overclock:", overclockApplied);
+            overclockLabel.setHighlight("Overclock:", overclockApplied);
+            overclockLabel.setHighlightColors(special, bionic.isOverClockApplied() ? h: g);
+        }
         //----------desc
         String desc = bionic.getSpec().getDesc();
         LabelAPI descLabel = tooltip.addPara("%s %s", pad, t, "Description:", desc);

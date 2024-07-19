@@ -1027,7 +1027,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                 TooltipMakerAPI rowTooltipContainer = rowContainer.createTooltip(rowTooltipKey, rowW, rowH, false, 0,0);
                 inventoryContainer.attachSubPanel(inventoryTooltipKey, rowPanelKey, rowContainer, rowX, rowY);
                 subComponentItemList.add(rowContainer);
-
+                //todo: the overclock UI
                 int rowItemCount = 0;
                 while(rowItemCount < itemsPerRow) {
                     if(index < availableBionics.size()) {

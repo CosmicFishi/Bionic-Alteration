@@ -62,7 +62,8 @@ public class ba_overclockmanager {
                                 row.getBoolean("isApplyCaptainEffect"),
                                 row.getBoolean("isAdvanceInCombat"),
                                 row.getBoolean("isAdvanceInCampaign"),
-                                row.getInt("upgradeCost")
+                                row.getInt("upgradeCost"),
+                                (float) row.getDouble("prebuiltChance")
                         );
                         overclockMap.put(overclock.id, overclock);
                     }
@@ -96,7 +97,7 @@ public class ba_overclockmanager {
      * @param bionic
      * @return true if overclockable
      */
-    public boolean isBionicOverclockable(ba_bionicitemplugin bionic) {
+    public static boolean isBionicOverclockable(ba_bionicitemplugin bionic) {
         return !bionic.overclockList.isEmpty();
     }
 }

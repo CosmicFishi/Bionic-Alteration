@@ -17,6 +17,7 @@ import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import pigeonpun.bionicalteration.ba_limbmanager;
+import pigeonpun.bionicalteration.overclock.ba_overclock;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
     public boolean isEffectAppliedAfterRemove;
     public HashMap<String, Object> customData = new HashMap<>();
     public List<String> overclockList = new ArrayList<>();
+    public ba_overclock appliedOverclock = null;
     protected boolean isInitFully = false;
     public ba_bionicitemplugin() {}
     public ba_bionicitemplugin(String bionicId, SpecialItemSpecAPI spec ,String bionicLimbGroupId, String namePrefix, Color displayColor, int brmCost,
@@ -104,7 +106,9 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
             this.isEffectAppliedAfterRemove = bionicInMap.isEffectAppliedAfterRemove;
         }
     }
-
+    public boolean isOverClockApplied() {
+        return this.appliedOverclock != null;
+    }
     @Override
     public String getName() {
         return spec.getName();

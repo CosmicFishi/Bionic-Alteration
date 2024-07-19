@@ -118,13 +118,4 @@ public class ba_consciousmanager {
             }
         }
     }
-    //todo: Store all the bionics/conscious of admin into the market and save it there, whenever the market change, use that id to "reset" all the stuffs from bionic and replace it a anew list
-    public void storeMarketOfficerEffects(MarketAPI market, PersonAPI person) {
-        List<ba_bionicitemplugin> bionicList = ba_bionicmanager.getListBionicInstalled(person);
-        for(ba_bionicitemplugin bionic: bionicList) {
-            if(bionic.isApplyAdminEffect) {
-
-            }
-        }
-    }
 }

@@ -6,6 +6,11 @@
   "plugins":{
 
   },
+  "designTypeColors":{
+    "Civil Prosthetic": [217, 177, 255, 255],
+    "Military Bionic": [255, 177, 224, 255],
+    "Domain Augmentation": [255, 117, 134, 255]
+  },
   "ruleCommandPackages":[
     "pigeonpun.bionicalteration.rulecmd"
   ]
