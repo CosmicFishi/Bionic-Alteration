@@ -399,7 +399,7 @@ public class ba_bionicmanager {
         Color bad = Misc.getNegativeHighlightColor();
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
-        final Color special = new Color(255, 149, 0);
+        final Color special = ba_variablemanager.BA_OVERCLOCK_COLOR;
 
         tooltip.setParaInsigniaLarge();
         LabelAPI nameLabel = tooltip.addPara(bionic.getName(), Misc.getHighlightColor(),0);
@@ -454,7 +454,7 @@ public class ba_bionicmanager {
 
         if(ba_overclockmanager.isBionicOverclockable(bionic)) {
             //----------overclock
-            String overclockApplied = bionic.isOverClockApplied() ? bionic.appliedOverclock.name: "none";
+            String overclockApplied = bionic.isOverClockApplied() ? bionic.appliedOverclock.name: "none active";
             LabelAPI overclockLabel = tooltip.addPara("%s %s", pad, t, "Overclock:", overclockApplied);
             overclockLabel.setHighlight("Overclock:", overclockApplied);
             overclockLabel.setHighlightColors(special, bionic.isOverClockApplied() ? h: g);

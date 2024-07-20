@@ -20,6 +20,7 @@ import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.conscious.ba_conscious;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
+import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
 import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
 import pigeonpun.bionicalteration.utils.ba_utils;
 
@@ -444,10 +445,11 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
     protected void displayBionicTable(ba_component creatorComponent, String creatorComponentTooltip, String keyPrefix, final boolean isWorkshopMode, boolean isScroll , float tableW, float tableH, float tableX, float tableY) {
         final float pad = 10f;
         float opad = 10f;
-        Color h = Misc.getHighlightColor();
+        final Color h = Misc.getHighlightColor();
         Color bad = Misc.getNegativeHighlightColor();
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
+        final Color special = ba_variablemanager.BA_OVERCLOCK_COLOR;
         String prefix = keyPrefix + "_";
 
         String infoPersonBionicTooltipKey = "PERSON_INFO_BIONICS_TOOLTIP";
@@ -514,6 +516,10 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             String bionicPanelContainerKey = prefix + "BIONIC_PANEL_CONTAINER_"+i;
             int singleBionicInstalledNameH = 40;
             int bionicH = bionic.bionicInstalled.size()!= 0 ? singleBionicInstalledNameH * bionic.bionicInstalled.size() : singleBionicInstalledNameH;
+            //add a extra line for the overclock
+            if(bionic.bionicInstalled.size()!= 0 && ba_overclockmanager.isBionicOverclockable(bionic.bionicInstalled.get(0))) {
+                bionicH += singleBionicInstalledNameH;
+            }
             final int bionicW = (int) (tableW - pad);
             //--------bionic container
             ba_component bionicDisplayContainer = new ba_component(infoPersonBionicContainer.mainPanel, bionicW, bionicH,0,0,false, bionicPanelContainerKey);
@@ -553,6 +559,10 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                         for(ba_bionicitemplugin b: bionic.bionicInstalled) {
                             b.effectScript.displayEffectDescription(tooltip, currentPerson, b, false);
                             if(isWorkshopMode) {
+                                //---------Overclock
+                                LabelAPI overclockLabel = tooltip.addPara("%s %s", pad, t,"Overclock:", b.isOverClockApplied()? b.appliedOverclock.name: "None active");
+                                overclockLabel.setHighlight("Overclock:", b.isOverClockApplied()? b.appliedOverclock.name: "None active");
+                                overclockLabel.setHighlightColors(special, b.isOverClockApplied()? h: g);
                                 //---------Conflicts
                                 StringBuilder conflictsList = new StringBuilder();
                                 for (ba_bionicitemplugin bionic: ba_bionicmanager.getListBionicConflicts(b)) {
@@ -600,7 +610,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             //---------Bionic
             int bionicInstalledI = 0;
             for (ba_bionicitemplugin b: bionic.bionicInstalled) {
-                int sectionH = bionicH;
+                int sectionH = singleBionicInstalledNameH;
                 int sectionW = bionicRowW;
                 int sectionX = bionicRowX;
                 int sectionSpacerY = singleBionicInstalledNameH * bionicInstalledI;
@@ -625,6 +635,18 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                 bionicConscious.setHighlight("" + Math.round(b.consciousnessCost * 100) + "%");
                 bionicConscious.setHighlightColors(Misc.getNegativeHighlightColor());
                 bionicConscious.getPosition().inTL(bionicConsciousX + bionicConsciousW/2, pad);
+                if(ba_overclockmanager.isBionicOverclockable(b)) {
+                    int overclockRowY = singleBionicInstalledNameH;
+                    TooltipMakerAPI overclockTooltip = bionicDisplayContainer.createTooltip("BIONIC_OVERCLOCK_NAME", sectionW, sectionH, false, sectionX, overclockRowY);
+                    overclockTooltip.getPosition().inTL(sectionX, overclockRowY);
+                    //>name
+                    overclockTooltip.setParaSmallInsignia();
+                    LabelAPI overclockName = overclockTooltip.addPara("[ %s ]", pad, h, b.isOverClockApplied()? b.appliedOverclock.name: "--------");
+                    overclockName.setHighlight("[",b.isOverClockApplied()? b.appliedOverclock.name: "--------", "]");
+                    overclockName.setHighlightColors(special, b.isOverClockApplied()? h: g, special);
+                    overclockName.getPosition().setSize(bionicNameW,sectionH);
+                    overclockTooltip.setParaFontDefault();
+                }
 
                 bionicInstalledI++;
             }
@@ -1377,15 +1399,17 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
 
     @Override
     public void render(float alphaMult) {
-//        ba_component previousTab2 = componentMap.get("WORKSHOP_INVENTORY_PANEL");
-//        ba_utils.drawBox(
-//                (int) previousTab2.getTooltip("WORKSHOP_INVENTORY_TOOLTIP").getPosition().getX(),
-//                (int) previousTab2.getTooltip("WORKSHOP_INVENTORY_TOOLTIP").getPosition().getY(),
-//                (int) previousTab2.getTooltip("WORKSHOP_INVENTORY_TOOLTIP").getPosition().getWidth(),
-//                (int) previousTab2.getTooltip("WORKSHOP_INVENTORY_TOOLTIP").getPosition().getHeight(),
-//                0.3f,
-//                Color.pink
-//        );
+//        ba_component previousTab2 = componentMap.get("WORKSHOP_BIONIC_PANEL_CONTAINER_0");
+//        if(previousTab2.getTooltip("BIONIC_OVERCLOCK_NAME") != null) {
+//            ba_utils.drawBox(
+//                    (int) previousTab2.getTooltip("BIONIC_OVERCLOCK_NAME").getPosition().getX(),
+//                    (int) previousTab2.getTooltip("BIONIC_OVERCLOCK_NAME").getPosition().getY(),
+//                    (int) previousTab2.getTooltip("BIONIC_OVERCLOCK_NAME").getPosition().getWidth(),
+//                    (int) previousTab2.getTooltip("BIONIC_OVERCLOCK_NAME").getPosition().getHeight(),
+//                    0.3f,
+//                    Color.pink
+//            );
+//        }
 //        ba_component b = componentMap.get("INVENTORY_ROW_PANEL_1");
 //        if(b!=null) {
 //            ba_utils.drawBox(
