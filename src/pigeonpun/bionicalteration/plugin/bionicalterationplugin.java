@@ -70,6 +70,11 @@ public class bionicalterationplugin extends BaseModPlugin {
     }
 
     @Override
+    public void onNewGameAfterProcGen() {
+
+    }
+
+    @Override
     public void onNewGameAfterEconomyLoad() {
         ba_marketmanager.onNewGameAfterEconomyLoad();
     }
