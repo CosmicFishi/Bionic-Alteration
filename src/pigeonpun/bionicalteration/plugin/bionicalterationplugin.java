@@ -3,10 +3,8 @@ package pigeonpun.bionicalteration.plugin;
 import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
 import org.lazywizard.lazylib.MathUtils;
+import pigeonpun.bionicalteration.*;
 import pigeonpun.bionicalteration.ability.ba_bionicability;
-import pigeonpun.bionicalteration.ba_marketmanager;
-import pigeonpun.bionicalteration.ba_officermanager;
-import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.faction.ba_factionmanager;
 import pigeonpun.bionicalteration.listeners.ba_campaignlistener;
 import pigeonpun.bionicalteration.listeners.ba_salvagelistener;
@@ -14,7 +12,6 @@ import pigeonpun.bionicalteration.lunalib.lunaconfighelper;
 import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
 import pigeonpun.bionicalteration.variant.ba_variantmanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
-import pigeonpun.bionicalteration.ba_limbmanager;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
 
 public class bionicalterationplugin extends BaseModPlugin {
@@ -51,6 +48,7 @@ public class bionicalterationplugin extends BaseModPlugin {
 
     @Override
     public void onGameLoad(boolean newGame) {
+        ba_procgenmanager.generate();
         ba_officermanager.onSaveLoad();
         ba_marketmanager.onSaveLoad();
         addListeners();
@@ -69,10 +67,10 @@ public class bionicalterationplugin extends BaseModPlugin {
         addListeners();
     }
 
-    @Override
-    public void onNewGameAfterProcGen() {
-
-    }
+//    @Override
+//    public void onNewGameAfterProcGen() {
+//        ba_procgenmanager.generate();
+//    }
 
     @Override
     public void onNewGameAfterEconomyLoad() {
