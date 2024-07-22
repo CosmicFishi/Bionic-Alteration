@@ -10,14 +10,14 @@
 		"sprite":"graphics/stations/ba_overclock_station.png",
 		"spriteWidth":120,
 		"spriteHeight":120,
-		"renderShadow":false, #true,
+		"renderShadow":true,
 		"useLightColor":true,
 		"showInCampaign":true,
 		"showIconOnMap":true,
 		"showNameOnMap":false,
 		"scaleNameWithZoom":false,
 		"scaleIconWithZoom":true,
-		"tags":["station"],
+		"tags":["has_interaction_dialog", "neutrino"],
 		"layers":[STATIONS], # what layer(s) to render in. See CampaignEngineLayers.java for possible values
 	}
 }

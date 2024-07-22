@@ -1,12 +1,19 @@
 package pigeonpun.bionicalteration;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI;
 import com.fs.starfarer.api.campaign.PlanetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.impl.campaign.ids.Factions;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
+import com.fs.starfarer.api.impl.campaign.procgen.StarAge;
+import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator;
+import com.fs.starfarer.api.impl.campaign.procgen.themes.BaseThemeGenerator;
+import com.fs.starfarer.api.util.WeightedRandomPicker;
 import org.apache.log4j.Logger;
+import org.lazywizard.lazylib.MathUtils;
 import org.magiclib.util.MagicCampaign;
+import pigeonpun.bionicalteration.utils.ba_utils;
 
 import java.util.*;
 
@@ -47,44 +54,49 @@ public class ba_procgenmanager {
                 if (targetLocation == null) {
                     log.info("No suitable system found to spawn bionic research station");
                 } else {
-                    log.info("Found " + targetLocation.getStarSystem().getName() + " system, spawning bionic research station.");
-
-                    List<PlanetAPI> potentialPlanet = new ArrayList<>();
-                    HashMap<String, String> allEntites = new HashMap<>();
+                    WeightedRandomPicker<PlanetAPI> randomPlanetPicker = new WeightedRandomPicker<>(ba_utils.getRandom());
                     for (SectorEntityToken entity: targetLocation.getStarSystem().getAllEntities()) {
-                        if(entity instanceof PlanetAPI || entity.getOrbitFocus() instanceof PlanetAPI) {
-//                            if(entity.getOrbitFocus() instanceof PlanetAPI && !entity.getTags().contains(Tags.STATION)) {
-//                                continue;
-//                            }
-                            //todo: find a way to spawn bionic research station on planet without any other entity focused on
-                            if(entity instanceof PlanetAPI) {
-                                allEntites.put(entity.getId() + " - " + entity.getName(), "");
-                            } else {
-                                if(allEntites.containsKey(entity.getOrbitFocus().getId() + " - " + entity.getOrbitFocus().getName())) {
-                                    allEntites.put(entity.getOrbitFocus().getId() + " - " + entity.getOrbitFocus().getName(), allEntites.get(entity.getOrbitFocus().getId() + " - " + entity.getOrbitFocus().getName()).toString() + "-" +entity.getName());
-                                } else {
-                                    allEntites.put(entity.getOrbitFocus().getId() + " - " + entity.getOrbitFocus().getName(), "");
-                                }
+                        if(entity instanceof PlanetAPI && entity.getTags() != null && !entity.getTags().contains("star")) {
+                            randomPlanetPicker.add((PlanetAPI) entity);
+                        }
+                    }
+                    PlanetAPI selectedPlanet = randomPlanetPicker.pick();
+                    List<SectorEntityToken> listOrbittingEntities = new ArrayList<>();
+                    List<String> ignoredType = new ArrayList<>();
+                    ignoredType.add("wreck");
+                    for (SectorEntityToken entity: targetLocation.getStarSystem().getAllEntities()) {
+                        if(entity instanceof PlanetAPI || entity.getTags() == null) continue;
+                        if(entity.getTags() != null && !entity.getTags().contains(Tags.SALVAGEABLE)) continue;
+                        if(entity.getCustomEntityType() != null &&  ignoredType.contains(entity.getCustomEntityType())) continue;
+                        if(Objects.equals(entity.getOrbitFocus().getId(), selectedPlanet.getId())) {
+                            listOrbittingEntities.add(entity);
+                        }
+                    }
+                    boolean regnerate = true;
+                    float orbitAngle = 0;
+                    float maxRetry = 10;
+                    float currentRetry = 0;
+                    while(regnerate) {
+                        orbitAngle = MathUtils.getRandomNumberInRange(0, 360);
+                        boolean overlaps = false;
+                        for(SectorEntityToken entity: listOrbittingEntities) {
+                            if(entity.getCircularOrbitAngle() - 10 < orbitAngle && orbitAngle < entity.getCircularOrbitAngle() + 10) {
+                                overlaps = true;
+                                currentRetry += 1;
                             }
                         }
-                        if (entity instanceof PlanetAPI) {
-                            potentialPlanet.add((PlanetAPI) entity);
+                        if(!overlaps || currentRetry >= maxRetry) {
+                            regnerate = false;
                         }
-//                        else {
-//                            if (potentialPlanet.contains(entity.getOrbitFocus())) {
-//                                potentialPlanet.remove(entity.getOrbitFocus());
-//                            }
-//                        }
                     }
-
-                    for (Map.Entry<String, String> set: allEntites.entrySet()) {
-                        log.info(set.getKey() + " : " + set.getValue());
+                    if(currentRetry < maxRetry) {
+                        SectorEntityToken station = targetLocation.getStarSystem().addCustomEntity("ba_bionic_research_station_" + spawnCount, "Bionic Research Station", ba_variablemanager.BA_OVERCLOCK_STATION, Factions.DERELICT);
+                        station.setCircularOrbit(selectedPlanet, orbitAngle,  selectedPlanet.getRadius() + 180f, selectedPlanet.getCircularOrbitPeriod());
+                        station.setDiscoverable(true);
+                        station.setSensorProfile(1f);
+                        log.info("Found " + selectedPlanet.getStarSystem().getName() + " system, spawning bionic research station at " + selectedPlanet.getName());
+                        spawnCount += 1;
                     }
-
-                    spawnCount += 1;
-
-//                    SectorEntityToken station = targetLocation.getStarSystem().addCustomEntity("ba_bionic_research_station_" + spawnCount, "Bionic Research Station", ba_variablemanager.BA_OVERCLOCK_STATION, Factions.DERELICT);
-//                    station.setCircularOrbit(targetLocation, targetLocation.getCircularOrbitAngle(), 60f, targetLocation.getCircularOrbitPeriod());
                 }
             }
             Global.getSector().getMemoryWithoutUpdate().set(ba_variablemanager.BA_BIONIC_RESEARCH_STATION_SPAWNED_KEY, true);
