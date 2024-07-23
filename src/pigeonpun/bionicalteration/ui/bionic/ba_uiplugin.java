@@ -1,15 +1,13 @@
-package pigeonpun.bionicalteration.ui;
+package pigeonpun.bionicalteration.ui.bionic;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
-import com.fs.starfarer.api.characters.OfficerDataAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.combat.MutableStat;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.ui.*;
 import com.fs.starfarer.api.util.Misc;
-import com.fs.starfarer.campaign.ui.trade.CargoItemStack;
 import org.apache.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -18,10 +16,11 @@ import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.ba_officermanager;
-import pigeonpun.bionicalteration.conscious.ba_conscious;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
 import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
 import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
+import pigeonpun.bionicalteration.ui.ba_component;
+import pigeonpun.bionicalteration.ui.ba_debounceplugin;
 import pigeonpun.bionicalteration.utils.ba_utils;
 
 import java.awt.*;
@@ -149,10 +148,10 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         String mainOverviewPanelKey = "MAIN_OVERVIEW_CONTAINER";
         String mainInfoTooltipKey = "MAIN_INFO_TOOLTIP";
         String mainPersonListTooltipKey = "MAIN_LIST_TOOLTIP";
-        ba_component overviewContainer = new ba_component(containerPanel, pW, pH, MAIN_CONTAINER_PADDING/2, MAIN_CONTAINER_PADDING/2, true, mainOverviewPanelKey);
+        ba_component overviewContainer = new ba_component(componentMap, containerPanel, pW, pH, MAIN_CONTAINER_PADDING/2, MAIN_CONTAINER_PADDING/2, true, mainOverviewPanelKey);
 //        TooltipMakerAPI overviewTooltipContainer = overviewContainer.createTooltip(mainTooltipKey, pW, pH, false, 0, 0);
         tabMap.put(OVERVIEW, overviewContainer);
-        overviewContainer.unfocusComponent();
+        overviewContainer.unfocusComponent(dW);
 
         float listPersonW = 0.3f * pW;
         float infoPersonW = (1 - (listPersonW/pW)) * pW;
@@ -174,7 +173,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         //overview personContainer
         String overviewPersonTooltipKey = "OVERVIEW_PERSON_LIST_TOOLTIP";
         String overviewPersonPanelKey = "OVERVIEW_PERSON_LIST_PANEL";
-        ba_component overviewPersonContainer = new ba_component(creatorComponent.mainPanel, personListW, personListH, MAIN_CONTAINER_PADDING/2, MAIN_CONTAINER_PADDING/2, true, overviewPersonPanelKey);
+        ba_component overviewPersonContainer = new ba_component(componentMap, creatorComponent.mainPanel, personListW, personListH, MAIN_CONTAINER_PADDING/2, MAIN_CONTAINER_PADDING/2, true, overviewPersonPanelKey);
         TooltipMakerAPI overviewPersonTooltipContainer = overviewPersonContainer.createTooltip(overviewPersonTooltipKey, personListW, personListH, true, 0, 0);
         //important to set the container tooltip to have scroll enable if you want scroll
         //Next important is to have panel.addUI at the bottom of the code if you have scroll enabled, or the scroll wont work
@@ -200,7 +199,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                 overviewPersonTooltipContainer.addSpacer(ySpacer);
             }
             //--------person container
-            ba_component personDisplayContainer = new ba_component(overviewPersonContainer.mainPanel, personW, personH,0,0,false, defaultPersonPanelContainerKey);
+            ba_component personDisplayContainer = new ba_component(componentMap, overviewPersonContainer.mainPanel, personW, personH,0,0,false, defaultPersonPanelContainerKey);
             TooltipMakerAPI personDisplayContainerTooltip = personDisplayContainer.createTooltip(defaultPersonTooltipContainerKey, personW, personH, false, 0,0);
             personDisplayContainerTooltip.setForceProcessInput(true);
                 //attach to have the main tooltip scroll effect this component's panel
@@ -291,7 +290,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
 
         String infoPersonTooltipKey = "OVERVIEW_PERSON_INFO_TOOLTIP";
         String infoPersonPanelKey = "OVERVIEW_PERSON_INFO_PANEL";
-        ba_component infoPersonContainer = new ba_component(creatorComponent.mainPanel, personInfoW, personInfoH, personInfoX, personInfoY, true, infoPersonPanelKey);
+        ba_component infoPersonContainer = new ba_component(componentMap, creatorComponent.mainPanel, personInfoW, personInfoH, personInfoX, personInfoY, true, infoPersonPanelKey);
         TooltipMakerAPI infoPersonTooltipContainer = infoPersonContainer.createTooltip(infoPersonTooltipKey, personInfoW, personInfoH, false, 0,0);
         creatorComponent.attachSubPanel(creatorComponentTooltip, infoPersonPanelKey,infoPersonContainer,0,0);
         //important to do this after you attach the sub panel
@@ -454,7 +453,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
 
         String infoPersonBionicTooltipKey = "PERSON_INFO_BIONICS_TOOLTIP";
         String infoPersonBionicPanelKey = prefix + "PERSON_INFO_BIONICS_PANEL";
-        ba_component infoPersonBionicContainer = new ba_component(creatorComponent.mainPanel, tableW, tableH, tableX, tableY, !isScroll, infoPersonBionicPanelKey);
+        ba_component infoPersonBionicContainer = new ba_component(componentMap, creatorComponent.mainPanel, tableW, tableH, tableX, tableY, !isScroll, infoPersonBionicPanelKey);
         TooltipMakerAPI infoPersonBionicTooltipContainer = infoPersonBionicContainer.createTooltip(infoPersonBionicTooltipKey, tableW, tableH, isScroll, 0,0);
         creatorComponent.attachSubPanel(creatorComponentTooltip, infoPersonBionicPanelKey, infoPersonBionicContainer, tableX, tableY);
 
@@ -464,7 +463,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         int tableHeaderH = 40;
         int tableHeaderW = (int) (tableW - pad);
         //--------bionic container
-        ba_component tableHeaderDisplayContainer = new ba_component(infoPersonBionicContainer.mainPanel, tableHeaderW, tableHeaderH,0,0,false, tableHeaderPanelContainerKey);
+        ba_component tableHeaderDisplayContainer = new ba_component(componentMap, infoPersonBionicContainer.mainPanel, tableHeaderW, tableHeaderH,0,0,false, tableHeaderPanelContainerKey);
         TooltipMakerAPI tableHeaderDisplayContainerTooltip = tableHeaderDisplayContainer.createTooltip(tableHeaderTooltipContainerKey, tableHeaderW, tableHeaderH, false, 0,0);
         tableHeaderDisplayContainerTooltip.setForceProcessInput(true);
         //attach to have the main tooltip scroll effect this component's panel
@@ -522,7 +521,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
             }
             final int bionicW = (int) (tableW - pad);
             //--------bionic container
-            ba_component bionicDisplayContainer = new ba_component(infoPersonBionicContainer.mainPanel, bionicW, bionicH,0,0,false, bionicPanelContainerKey);
+            ba_component bionicDisplayContainer = new ba_component(componentMap, infoPersonBionicContainer.mainPanel, bionicW, bionicH,0,0,false, bionicPanelContainerKey);
             TooltipMakerAPI personDisplayContainerTooltip = bionicDisplayContainer.createTooltip(bionicTooltipContainerKey, bionicW, bionicH, false, 0,0);
             personDisplayContainerTooltip.setForceProcessInput(true);
             //attach to have the main tooltip scroll effect this component's panel
@@ -688,9 +687,9 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         String mainPersonInfoTooltipKey = "MAIN_PERSON_TOOLTIP";
         String mainInventoryTooltipKey = "MAIN_INVENTORY_TOOLTIP";
         String mainEffectsTooltipKey = "MAIN_EFFECTS_TOOLTIP";
-        ba_component workshopContainer = new ba_component(containerPanel, pW, pH, MAIN_CONTAINER_PADDING/2, MAIN_CONTAINER_PADDING/2, true, mainOverviewPanelKey);
+        ba_component workshopContainer = new ba_component(componentMap, containerPanel, pW, pH, MAIN_CONTAINER_PADDING/2, MAIN_CONTAINER_PADDING/2, true, mainOverviewPanelKey);
         tabMap.put(WORKSHOP, workshopContainer);
-        workshopContainer.unfocusComponent();
+        workshopContainer.unfocusComponent(dW);
 
         //tooltip for scroll
         float personInfoW = 0.7f * pW;
@@ -728,7 +727,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
 
         String infoPersonTooltipKey = "WORKSHOP_PERSON_INFO_TOOLTIP";
         String infoPersonPanelKey = "WORKSHOP_PERSON_INFO_PANEL";
-        ba_component infoPersonContainer = new ba_component(creatorComponent.mainPanel, personInfoW, personInfoH, personInfoX, personInfoY, true, infoPersonPanelKey);
+        ba_component infoPersonContainer = new ba_component(componentMap, creatorComponent.mainPanel, personInfoW, personInfoH, personInfoX, personInfoY, true, infoPersonPanelKey);
         TooltipMakerAPI infoPersonTooltipContainer = infoPersonContainer.createTooltip(infoPersonTooltipKey, personInfoW, personInfoH, false, 0,0);
         creatorComponent.attachSubPanel(creatorComponentTooltip, infoPersonPanelKey,infoPersonContainer,0,0);
 
@@ -1017,7 +1016,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         int containerY = (int) pad;
         String inventoryTooltipKey = "WORKSHOP_INVENTORY_TOOLTIP";
         String inventoryPanelKey = "WORKSHOP_INVENTORY_PANEL";
-        ba_component inventoryContainer = new ba_component(creatorComponent.mainPanel, containerW, containerH, containerX, containerY, true, inventoryPanelKey);
+        ba_component inventoryContainer = new ba_component(componentMap, creatorComponent.mainPanel, containerW, containerH, containerX, containerY, true, inventoryPanelKey);
         TooltipMakerAPI inventoryTooltipContainer = inventoryContainer.createTooltip(inventoryTooltipKey, containerW, containerH, true, 0,0);
         creatorComponent.attachSubPanel(creatorComponentTooltip, inventoryPanelKey, inventoryContainer, containerX, containerY);
 
@@ -1047,11 +1046,10 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                 int rowH = (int) (itemH);
                 String rowTooltipKey = "INVENTORY_ROW_TOOLTIP";
                 String rowPanelKey = "INVENTORY_ROW_PANEL_"+ row;
-                ba_component rowContainer = new ba_component(inventoryContainer.mainPanel, rowW, rowH, rowX, rowY, false, rowPanelKey);
+                ba_component rowContainer = new ba_component(componentMap, inventoryContainer.mainPanel, rowW, rowH, rowX, rowY, false, rowPanelKey);
                 TooltipMakerAPI rowTooltipContainer = rowContainer.createTooltip(rowTooltipKey, rowW, rowH, false, 0,0);
                 inventoryContainer.attachSubPanel(inventoryTooltipKey, rowPanelKey, rowContainer, rowX, rowY);
                 subComponentItemList.add(rowContainer);
-                //todo: the overclock UI
                 int rowItemCount = 0;
                 while(rowItemCount < itemsPerRow) {
                     if(index < availableBionics.size()) {
@@ -1148,7 +1146,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
 
         String effectListTooltipKey = "WORKSHOP_EFFECT_LIST_TOOLTIP";
         String effectListPanelKey = "WORKSHOP_EFFECT_LIST_PANEL";
-        ba_component effectListContainer = new ba_component(creatorComponent.mainPanel, effectListW, effectListH, effectListX, effectListY, true, effectListPanelKey);
+        ba_component effectListContainer = new ba_component(componentMap, creatorComponent.mainPanel, effectListW, effectListH, effectListX, effectListY, true, effectListPanelKey);
         TooltipMakerAPI effectListTooltipContainer = effectListContainer.createTooltip(effectListTooltipKey, effectListW, effectListH, false, 0,0);
         creatorComponent.attachSubPanel(creatorComponentTooltip, effectListPanelKey,effectListContainer,0,0);
 
@@ -1168,7 +1166,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         int subEffectY = (int) (pad + pad);
         String subEffectListTooltipKey = "WORKSHOP_SUB_EFFECT_LIST_TOOLTIP";
         String subEffectListPanelKey = "WORKSHOP_SUB_EFFECT_LIST_PANEL";
-        ba_component subEffectListContainer = new ba_component(effectListContainer.mainPanel, subEffectW, subEffectH, subEffectX, subEffectY, false, subEffectListPanelKey);
+        ba_component subEffectListContainer = new ba_component(componentMap, effectListContainer.mainPanel, subEffectW, subEffectH, subEffectX, subEffectY, false, subEffectListPanelKey);
         TooltipMakerAPI subEffectListTooltipContainer = subEffectListContainer.createTooltip(subEffectListTooltipKey, subEffectW, subEffectH, true, 0,0);
         effectListContainer.attachSubPanel(effectListTooltipKey, subEffectListPanelKey,subEffectListContainer,0,0);
 
@@ -1215,7 +1213,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
         int containerY = (int) pad;
         String removeContainerTooltipKey = "WORKSHOP_REMOVE_CONTAINER_TOOLTIP";
         String removeContainerPanelKey = "WORKSHOP_REMOVE_CONTAINER_PANEL";
-        ba_component removeContainer = new ba_component(creatorComponent.mainPanel, containerW, containerH, containerX, containerY, true, removeContainerPanelKey);
+        ba_component removeContainer = new ba_component(componentMap, creatorComponent.mainPanel, containerW, containerH, containerX, containerY, true, removeContainerPanelKey);
         TooltipMakerAPI removeTooltipContainer = removeContainer.createTooltip(removeContainerTooltipKey, containerW, containerH, true, 0,0);
         creatorComponent.attachSubPanel(creatorComponentTooltip, removeContainerPanelKey, removeContainer, containerX, containerY);
 
@@ -1231,7 +1229,7 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
                 int rowY = (int) ((row * rowH) + pad);
                 String rowTooltipKey = "REMOVE_ROW_TOOLTIP";
                 String rowPanelKey = "REMOVE_ROW_PANEL_"+ row;
-                ba_component rowContainer = new ba_component(removeContainer.mainPanel, rowW, rowH, rowX, rowY, false, rowPanelKey);
+                ba_component rowContainer = new ba_component(componentMap, removeContainer.mainPanel, rowW, rowH, rowX, rowY, false, rowPanelKey);
                 TooltipMakerAPI rowTooltipContainer = rowContainer.createTooltip(rowTooltipKey, rowW, rowH, false, 0,0);
                 removeContainer.attachSubPanel(removeContainerTooltipKey, rowPanelKey, rowContainer, rowX, rowY);
                 subComponentItemList.add(rowContainer);
@@ -1591,94 +1589,5 @@ public class ba_uiplugin implements CustomUIPanelPlugin {
     public void addButtonToList(ButtonAPI button, String buttonMapValue) {
         buttons.add(button);
         buttonMap.put(button, buttonMapValue);
-    }
-    public class ba_component {
-//        protected TooltipMakerAPI tooltip;
-        protected CustomPanelAPI mainPanel;
-        protected HashMap<String, TooltipMakerAPI> tooltipMap = new HashMap<>();
-        protected HashMap<String, List<TooltipMakerAPI>> tooltipListMap = new HashMap<>();
-        protected HashMap<String, ba_component> subComponentMap = new HashMap<>();
-        protected HashMap<String, List<ba_component>> subComponentListMap = new HashMap<>();
-        /**
-         * Create component and attach the component's panel to the creator panel<br>
-         * @param creatorPanel creator panel
-         * @param width Width of this component
-         * @param height Height of this component
-         * @param x location
-         * @param y location
-         * @param addToCreatorPanel true if is container, false if is element inside a scrolling container
-         * @param thisComponentMapKey this component map key, access from {@code componentMap}
-         */
-        public ba_component(CustomPanelAPI creatorPanel, float width, float height,float x, float y, boolean addToCreatorPanel,String thisComponentMapKey) {
-            //create both panel and tooltip
-            mainPanel = creatorPanel.createCustomPanel(width, height, null);
-            mainPanel.getPosition().setLocation(0,0);
-            mainPanel.getPosition().inTL(x, y);
-            //add into the big panel
-            if(addToCreatorPanel) {
-                creatorPanel.addComponent(mainPanel);
-            }
-            //add into list to remove on reset
-            if(componentMap.get(thisComponentMapKey) == null) {
-                componentMap.put(thisComponentMapKey, this);
-            } else {
-                log.error("Component already exist!!!. Key: " + thisComponentMapKey);
-            }
-        }
-
-        /**
-         * @param key
-         * @param width
-         * @param height
-         * @param hasScroller If true, tooltip won't be added to the panel. Meaning, you will have to manually add the tooltip to the panel later on so the scroll work
-         * @param tooltipLocationX
-         * @param tooltipLocationY
-         * @return
-         */
-        protected TooltipMakerAPI createTooltip(String key, float width, float height, boolean hasScroller, float tooltipLocationX, float tooltipLocationY) {
-            TooltipMakerAPI tooltip = this.mainPanel.createUIElement(width, height, hasScroller);
-            tooltip.setForceProcessInput(true);
-            if(!hasScroller) this.mainPanel.addUIElement(tooltip).setLocation(tooltipLocationX, tooltipLocationY);
-            this.tooltipMap.put(key, tooltip);
-            return tooltip;
-        }
-        protected TooltipMakerAPI getTooltip(String key) {
-            TooltipMakerAPI tooltip = this.tooltipMap.get(key);
-            if(tooltip == null) {
-                log.error("Can not find tooltip of key " + key);
-            }
-            return tooltip;
-        }
-        /**
-         * Use for attaching an existing component's panel into this component<br>
-         * @param tooltipKeyAttachTo Creator component's tooltip key
-         * @param otherComponent the attaching component
-         * @param otherComponentMapKey the attaching component map key. So the creator component can access to the attaching component in {@code subComponentMap}
-         */
-        protected void attachSubPanel(String tooltipKeyAttachTo, String otherComponentMapKey, ba_component otherComponent) {
-            TooltipMakerAPI tooltipAttachingTo = this.tooltipMap.get(tooltipKeyAttachTo);
-            if(tooltipAttachingTo == null) {
-                log.error("Can't find container tooltip of Id: " + tooltipAttachingTo + " for: " + otherComponentMapKey);
-            }
-            tooltipAttachingTo.addCustom(otherComponent.mainPanel, 0f);
-            subComponentMap.put(otherComponentMapKey, otherComponent);
-        }
-        /**
-         * Use for attaching an existing component's panel into this component<br>
-         * Use this for when the Sub component is aligning with the parent component which we want to break and reset it to certain point
-         * @param tooltipKeyAttachTo Creator component's tooltip key
-         * @param otherComponent the attaching component
-         * @param otherComponentMapKey the attaching component map key. So the creator component can access to the attaching component in {@code subComponentMap}
-         * @param locationX X
-         * @param locationY Y
-         */
-        protected void attachSubPanel(String tooltipKeyAttachTo, String otherComponentMapKey, ba_component otherComponent, float locationX, float locationY) {
-            attachSubPanel(tooltipKeyAttachTo, otherComponentMapKey, otherComponent);
-            //important to do this after you attach the sub panel
-            otherComponent.mainPanel.getPosition().inTL(locationX,locationY);
-        }
-        public void unfocusComponent() {
-            mainPanel.getPosition().inTL(dW, 0);
-        }
     }
 }

@@ -1,11 +1,25 @@
 id,trigger,conditions,script,text,options,notes
 "#RULESET_NAME Bionic Alteration",,,,,,
-ba_fleetEncoutner_BionicScan,PopulateOptions,"$isPerson
-ba_hasBionics score:9999997","Highlight ""bionics""","Bioscanner indicates multiple usage of bionics on the other fleet. Reports about them can be displayed with some adjustment to our comms.","0:ba_fleetEncoutner_BionicScanDisplay:Display bionics on fleet",
-ba_fleetEncoutner_BionicScanDisplay,DialogOptionSelected,"$option == ba_fleetEncoutner_BionicScanDisplay
-ba_hasBionics score:9999997","ba_displayBionicUI",,,
+,,,,,,
+# overclock,,,,,,
+ba_overclock_encounter,OpenInteractionDialog,"$tag:ba_overclock_station score:9999997
+","ShowDefaultVisual
+PrintDescription 1
+FireAll ba_showOverclockWorkshopOptions ",,,
+ba_overclock_openWorkshopOpt,ba_showOverclockWorkshopOptions,,,,"10:ba_openOverclockWorkshop:Manage Overclocks",
+ba_overclock_leaveWorkshopOpt,ba_showOverclockWorkshopOptions,,"SetShortcut ba_leaveWorkshop ""ESCAPE""",,"100:ba_leaveWorkshop:Leave",
+ba_overclock_openWorkshop,DialogOptionSelected,"$option == ba_openOverclockWorkshop","ba_displayOverclockUI",,,
+ba_overclock_closeWorkshop,DialogOptionSelected,"$option == ba_leaveWorkshop","DismissDialog",,"100:ba_overclockWorkshopLeave:Leave",
+"#END overclock",,,,,,
 ,,,,,,
 # officer hiring,,,,,,
 ba_officer_viewBionic,DialogOptionSelected,"$option == ome_askSkills score:100","ba_displayBionicUI $id","Your tripad light up as the person information displayed.",,
 "#END officer hiring",,,,,,
+,,,,,,
+# fleet interaction,,,,,,
+ba_fleetEncoutner_BionicScan,PopulateOptions,"$isPerson
+ba_hasBionics score:9999997","Highlight ""bionics""","Bioscanner indicates multiple usage of bionics on the other fleet. Reports about them can be displayed with some adjustment to our comms.","0:ba_fleetEncoutner_BionicScanDisplay:Display bionics on fleet",
+ba_fleetEncoutner_BionicScanDisplay,DialogOptionSelected,"$option == ba_fleetEncoutner_BionicScanDisplay
+ba_hasBionics score:9999997","ba_displayBionicUI",,,
+"#END fleet interaction",,,,,,
 

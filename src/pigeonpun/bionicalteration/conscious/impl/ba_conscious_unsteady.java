@@ -1,21 +1,18 @@
 package pigeonpun.bionicalteration.conscious.impl;
 
-import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.combat.MutableShipStatsAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.ui.Alignment;
-import com.fs.starfarer.api.ui.LabelAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
-import org.apache.log4j.Logger;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.conscious.ba_conscious;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
-import pigeonpun.bionicalteration.ui.ba_uiplugin;
+import pigeonpun.bionicalteration.ui.bionic.ba_uiplugin;
 import pigeonpun.bionicalteration.utils.ba_stringhelper;
 
 import java.awt.*;
