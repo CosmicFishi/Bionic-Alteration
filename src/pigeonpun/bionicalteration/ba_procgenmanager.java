@@ -55,7 +55,18 @@ public class ba_procgenmanager {
                 if (targetLocation == null) {
                     log.info("No suitable system found to spawn bionic research station");
                 } else {
+                    boolean continueToNextOne = false;
                     WeightedRandomPicker<PlanetAPI> randomPlanetPicker = new WeightedRandomPicker<>(ba_utils.getRandom());
+                    for (SectorEntityToken entity: targetLocation.getStarSystem().getAllEntities()) {
+                        if(entity.getTags() != null &&  entity.getTags().contains("ba_overclock_station")) {
+                            continueToNextOne = true;
+                            log.info("Duplicated searching, skip for " + targetLocation.getStarSystem().getName());
+                            break;
+                        }
+                    }
+                    if(continueToNextOne) continue;
+
+                    //if no duplicate bionic research station in that system
                     for (SectorEntityToken entity: targetLocation.getStarSystem().getAllEntities()) {
                         if(entity instanceof PlanetAPI && entity.getTags() != null && !entity.getTags().contains("star")) {
                             randomPlanetPicker.add((PlanetAPI) entity);
@@ -95,6 +106,8 @@ public class ba_procgenmanager {
                         station.setCircularOrbit(selectedPlanet, orbitAngle,  selectedPlanet.getRadius() + 180f, selectedPlanet.getCircularOrbitPeriod());
                         station.setDiscoverable(true);
                         station.setSensorProfile(1f);
+                        station.getMemoryWithoutUpdate().set("$hasDefenders", true, 0f);
+                        //todo: add bionic t3 drop group into salvage_entity_gen_data.csv for the bionic overclock station
                         log.info("Found " + selectedPlanet.getStarSystem().getName() + " system, spawning bionic research station at " + selectedPlanet.getName());
                         spawnCount += 1;
                     }

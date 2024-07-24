@@ -1,0 +1,4 @@
+id,rating,detection_range,type,autoXP,xpDiscover,xpSalvage,tags,drop_value,drop_random,defFaction,defQuality,probDefenders,minStr,maxStr,minSize,maxSize,probStation,stationRole
+ba_station_overclock,0,3500,DISCOVERABLE,2200,,,,basic:8000,"ai_cores3:5,
+rem_weapons2:20,
+rare_tech_low:2",remnant,1,1,80,80,,4,,
