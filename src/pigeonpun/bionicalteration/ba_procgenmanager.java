@@ -102,11 +102,17 @@ public class ba_procgenmanager {
                         }
                     }
                     if(currentRetry < maxRetry) {
-                        SectorEntityToken station = targetLocation.getStarSystem().addCustomEntity("ba_bionic_research_station_" + spawnCount, "Bionic Research Station", ba_variablemanager.BA_OVERCLOCK_STATION, Factions.DERELICT);
+                        //todo: fix weird issue where the fleet will be regenerating after each interaction
+                        //waiting for Alex to reply back
+                        SectorEntityToken station = targetLocation.getStarSystem().addCustomEntity(
+                                "ba_bionic_research_station_" + spawnCount,
+                                "Bionic Research Station", ba_variablemanager.BA_OVERCLOCK_STATION,
+                                Factions.DERELICT
+                        );
                         station.setCircularOrbit(selectedPlanet, orbitAngle,  selectedPlanet.getRadius() + 180f, selectedPlanet.getCircularOrbitPeriod());
                         station.setDiscoverable(true);
                         station.setSensorProfile(1f);
-                        station.getMemoryWithoutUpdate().set("$hasDefenders", true, 0f);
+//                        station.getMemoryWithoutUpdate().set("$hasDefenders", true, 0f);
                         //todo: add bionic t3 drop group into salvage_entity_gen_data.csv for the bionic overclock station
                         log.info("Found " + selectedPlanet.getStarSystem().getName() + " system, spawning bionic research station at " + selectedPlanet.getName());
                         spawnCount += 1;
