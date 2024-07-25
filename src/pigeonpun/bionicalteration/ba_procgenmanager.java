@@ -5,6 +5,7 @@ import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI;
 import com.fs.starfarer.api.campaign.PlanetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.impl.campaign.ids.Factions;
+import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import com.fs.starfarer.api.impl.campaign.procgen.StarAge;
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator;
@@ -102,7 +103,6 @@ public class ba_procgenmanager {
                         }
                     }
                     if(currentRetry < maxRetry) {
-                        //todo: fix weird issue where the fleet will be regenerating after each interaction
                         //waiting for Alex to reply back
                         SectorEntityToken station = targetLocation.getStarSystem().addCustomEntity(
                                 "ba_bionic_research_station_" + spawnCount,
@@ -112,6 +112,8 @@ public class ba_procgenmanager {
                         station.setCircularOrbit(selectedPlanet, orbitAngle,  selectedPlanet.getRadius() + 180f, selectedPlanet.getCircularOrbitPeriod());
                         station.setDiscoverable(true);
                         station.setSensorProfile(1f);
+                        long salvageSeed = ba_utils.getRandom().nextLong();
+                        station.getMemoryWithoutUpdate().set(MemFlags.SALVAGE_SEED, salvageSeed);
 //                        station.getMemoryWithoutUpdate().set("$hasDefenders", true, 0f);
                         //todo: add bionic t3 drop group into salvage_entity_gen_data.csv for the bionic overclock station
                         log.info("Found " + selectedPlanet.getStarSystem().getName() + " system, spawning bionic research station at " + selectedPlanet.getName());
