@@ -1,11 +1,12 @@
 package pigeonpun.bionicalteration.ui;
 
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.CargoAPI;
-import com.fs.starfarer.api.campaign.CargoStackAPI;
+import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.ui.*;
 import com.fs.starfarer.api.util.Misc;
+import org.lwjgl.input.Keyboard;
 import pigeonpun.bionicalteration.ba_limbmanager;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
@@ -23,41 +24,31 @@ import java.util.Objects;
 
 //import static pigeonpun.bionicalteration.ui.bionic.ba_uiplugin.currentScrollPositionBionicTable;
 //todo: may be use this as a base class for the other two UIplugin ?
-public class ba_uicommon {
-    HashMap<String, ba_component>  componentMap;
-    List<ButtonAPI> buttons;
-    HashMap<ButtonAPI, String> buttonMap;
-    ba_bionicitemplugin currentHoveredBionic;
-    ba_limbmanager.ba_limb currentSelectedLimb;
-    ba_bionicitemplugin currentSelectedBionic;
-    PersonAPI currentPerson;
-    float currentScrollPositionInventory;
-    float currentScrollPositionBionicTable;
-    public ba_uicommon(
-            HashMap<String, ba_component>  componentMap,
-            List<ButtonAPI> buttons,
-            HashMap<ButtonAPI, String> buttonMap,
-            ba_bionicitemplugin currentHoveredBionic,
-            ba_limbmanager.ba_limb currentSelectedLimb,
-            ba_bionicitemplugin currentSelectedBionic,
-            PersonAPI currentPerson,
-            float currentScrollPositionInventory,
-            float currentScrollPositionBionicTable
-    ) {
-        this.componentMap = componentMap;
-        this.currentPerson = currentPerson;
-        this.buttons = buttons;
-        this.buttonMap = buttonMap;
-        this.currentHoveredBionic = currentHoveredBionic;
-        this.currentSelectedLimb = currentSelectedLimb;
-        this.currentSelectedBionic = currentSelectedBionic;
-        this.currentScrollPositionInventory = currentScrollPositionInventory;
-        this.currentScrollPositionBionicTable = currentScrollPositionBionicTable;
+public class ba_uicommon implements CustomUIPanelPlugin {
+    protected CustomVisualDialogDelegate.DialogCallbacks callbacks;
+    protected InteractionDialogAPI dialog;
+    protected HashMap<String, ba_component>  componentMap = new HashMap<>();
+    protected List<ButtonAPI> buttons = new ArrayList<>();
+    protected HashMap<ButtonAPI, String> buttonMap = new HashMap<>();
+    protected ba_bionicitemplugin currentHoveredBionic;
+    protected ba_limbmanager.ba_limb currentSelectedLimb;
+    protected ba_bionicitemplugin currentSelectedBionic;
+    protected PersonAPI currentPerson;
+    protected float currentScrollPositionInventory;
+    protected float currentScrollPositionBionicTable;
+    public static ba_debounceplugin debounceplugin = new ba_debounceplugin();
+    protected void init(CustomPanelAPI panel, CustomVisualDialogDelegate.DialogCallbacks callbacks, InteractionDialogAPI dialog) {
+        debounceplugin.addToList("INVENTORY_TOOLTIP");
+    }
+    protected void refresh() {
+//        log.info("refreshing");
+        buttons.clear();
+        buttonMap.clear();
+        componentMap.clear();
     }
     public void displayInventoryWorkshop(
             ba_component creatorComponent,
             String creatorComponentTooltip,
-            String keyPrefix,
             float inventoryW, float inventoryH,
             float inventoryX, float inventoryY
     ) {
@@ -67,15 +58,14 @@ public class ba_uicommon {
         Color bad = Misc.getNegativeHighlightColor();
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
-        String prefix = keyPrefix + "_";
 
         //big container
         final float containerW = inventoryW - pad - pad / 2;
         int containerH = (int) (inventoryH - pad - pad);
         int containerX = (int) pad;
         int containerY = (int) pad;
-        String inventoryTooltipKey = prefix + "INVENTORY_TOOLTIP";
-        String inventoryPanelKey = prefix + "INVENTORY_PANEL";
+        String inventoryTooltipKey = "INVENTORY_TOOLTIP";
+        String inventoryPanelKey = "INVENTORY_PANEL";
         ba_component inventoryContainer = new ba_component(componentMap, creatorComponent.mainPanel, containerW, containerH, containerX, containerY, true, inventoryPanelKey);
         TooltipMakerAPI inventoryTooltipContainer = inventoryContainer.createTooltip(inventoryTooltipKey, containerW, containerH, true, 0,0);
         creatorComponent.attachSubPanel(creatorComponentTooltip, inventoryPanelKey, inventoryContainer, containerX, containerY);
@@ -199,7 +189,6 @@ public class ba_uicommon {
     protected void displayBionicTable(
             ba_component creatorComponent,
             String creatorComponentTooltip,
-            String keyPrefix,
             final boolean isWorkshopMode,
             boolean isScroll , float tableW, float tableH, float tableX, float tableY) {
         final float pad = 10f;
@@ -209,17 +198,16 @@ public class ba_uicommon {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
         final Color special = ba_variablemanager.BA_OVERCLOCK_COLOR;
-        String prefix = keyPrefix + "_";
 
         String infoPersonBionicTooltipKey = "PERSON_INFO_BIONICS_TOOLTIP";
-        String infoPersonBionicPanelKey = prefix + "PERSON_INFO_BIONICS_PANEL";
+        String infoPersonBionicPanelKey = "PERSON_INFO_BIONICS_PANEL";
         ba_component infoPersonBionicContainer = new ba_component(componentMap, creatorComponent.mainPanel, tableW, tableH, tableX, tableY, !isScroll, infoPersonBionicPanelKey);
         TooltipMakerAPI infoPersonBionicTooltipContainer = infoPersonBionicContainer.createTooltip(infoPersonBionicTooltipKey, tableW, tableH, isScroll, 0,0);
         creatorComponent.attachSubPanel(creatorComponentTooltip, infoPersonBionicPanelKey, infoPersonBionicContainer, tableX, tableY);
 
         //table header
         String tableHeaderTooltipContainerKey = "BIONIC_TABLE_HEADER_TOOLTIP";
-        String tableHeaderPanelContainerKey = prefix + "BIONIC_TABLE_HEADER_PANEL";
+        String tableHeaderPanelContainerKey = "BIONIC_TABLE_HEADER_PANEL";
         int tableHeaderH = 40;
         int tableHeaderW = (int) (tableW - pad);
         //--------bionic container
@@ -272,7 +260,7 @@ public class ba_uicommon {
 //        }
         for(final ba_officermanager.ba_bionicAugmentedData bionic: currentAnatomyList) {
             String bionicTooltipContainerKey = "BIONIC_TOOLTIP_CONTAINER";
-            String bionicPanelContainerKey = prefix + "BIONIC_PANEL_CONTAINER_"+i;
+            String bionicPanelContainerKey = "BIONIC_PANEL_CONTAINER_"+i;
             int singleBionicInstalledNameH = 40;
             int bionicH = bionic.bionicInstalled.size()!= 0 ? singleBionicInstalledNameH * bionic.bionicInstalled.size() : singleBionicInstalledNameH;
             //add a extra line for the overclock
@@ -424,5 +412,136 @@ public class ba_uicommon {
     public void addButtonToList(ButtonAPI button, String buttonMapValue) {
         buttons.add(button);
         buttonMap.put(button, buttonMapValue);
+    }
+    public void saveScrollPosition() {
+        //for the bionic table
+        ba_component component = componentMap.get("PERSON_INFO_BIONICS_PANEL");
+        if(component != null && component.tooltipMap.get("PERSON_INFO_BIONICS_TOOLTIP") != null) {
+            if(component.tooltipMap.get("PERSON_INFO_BIONICS_TOOLTIP").getExternalScroller() != null) {
+                currentScrollPositionBionicTable = component.tooltipMap.get("PERSON_INFO_BIONICS_TOOLTIP").getExternalScroller().getYOffset();
+            }
+        }
+        //for the inventory
+        ba_component component2 = componentMap.get("INVENTORY_PANEL");
+        if(component2 != null && component2.tooltipMap.get("INVENTORY_TOOLTIP") != null) {
+            if(component2.tooltipMap.get("INVENTORY_TOOLTIP").getExternalScroller() != null) {
+                currentScrollPositionInventory = component2.tooltipMap.get("INVENTORY_TOOLTIP").getExternalScroller().getYOffset();
+            }
+        }
+    }
+    @Override
+    public void positionChanged(PositionAPI position) {
+
+    }
+
+    @Override
+    public void renderBelow(float alphaMult) {
+
+    }
+
+    @Override
+    public void render(float alphaMult) {
+//        ba_component previousTab2 = componentMap.get("MAIN_OVERCLOCk_CONTAINER");
+//        if(previousTab2.getTooltip("INVENTORY_TOOLTIP") != null) {
+//            ba_utils.drawBox(
+//                    (int) previousTab2.getTooltip("INVENTORY_TOOLTIP").getPosition().getX(),
+//                    (int) previousTab2.getTooltip("INVENTORY_TOOLTIP").getPosition().getY(),
+//                    (int) previousTab2.getTooltip("INVENTORY_TOOLTIP").getPosition().getWidth(),
+//                    (int) previousTab2.getTooltip("INVENTORY_TOOLTIP").getPosition().getHeight(),
+//                    0.3f,
+//                    Color.pink
+//            );
+//        }
+//        if(previousTab2.getTooltip("OVERCLOCK_LIST_TOOLTIP") != null) {
+//            ba_utils.drawBox(
+//                    (int) previousTab2.getTooltip("OVERCLOCK_LIST_TOOLTIP").getPosition().getX(),
+//                    (int) previousTab2.getTooltip("OVERCLOCK_LIST_TOOLTIP").getPosition().getY(),
+//                    (int) previousTab2.getTooltip("OVERCLOCK_LIST_TOOLTIP").getPosition().getWidth(),
+//                    (int) previousTab2.getTooltip("OVERCLOCK_LIST_TOOLTIP").getPosition().getHeight(),
+//                    0.3f,
+//                    Color.blue
+//            );
+//        }
+    }
+
+    @Override
+    public void advance(float amount) {
+        //handles button input processing
+        //if pressing a button changes something in the diplay, call reset()
+        boolean needsReset = false;
+        for (ButtonAPI b : buttons)
+        {
+//            log.info("" + b + "--" + b.isHighlighted() + "-" + b.isChecked() + "-" + b.isEnabled());
+            if (b.isChecked()) {
+                b.setChecked(false);
+                //Check if click change main page
+                String s = buttonMap.get(b);
+                String[] tokens = s.split(":");
+                if(tokens[0].equals("hover_bionic_item")) {
+                    if(ba_bionicmanager.bionicItemMap.get(tokens[1]) != null) {
+                        this.currentSelectedBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
+                        needsReset = true;
+                        break;
+                    }
+                }
+                if(tokens[0].equals("hover_bionic_table_limb")) {
+                    this.currentSelectedLimb = ba_limbmanager.getLimb(tokens[1]);
+                    needsReset = true;
+                    break;
+                }
+            }
+        }
+
+        //pressing a button usually means something we are displaying has changed, so redraw the panel from scratch
+        if (needsReset) {
+            saveScrollPosition();
+            refresh();
+        };
+    }
+
+    @Override
+    public void processInput(List<InputEventAPI> events) {
+        boolean shouldRefresh = false;
+        for (InputEventAPI event : events) {
+            if (event.isConsumed()) continue;
+            if(event.isMouseMoveEvent()) {
+                for (ButtonAPI button: buttons) {
+                    float buttonX = button.getPosition().getX();
+                    float buttonY = button.getPosition().getY();
+                    float buttonW = button.getPosition().getWidth();
+                    float buttonH = button.getPosition().getHeight();
+                    if(event.getX() >= buttonX && event.getX() < buttonX + buttonW && event.getY() >= buttonY && event.getY() < buttonY+buttonH) {
+                        String s = buttonMap.get(button);
+                        String[] tokens = s.split(":");
+                        ba_component component = componentMap.get("INVENTORY_PANEL");
+                        //hover bionic item in inventory
+                        if(component != null && component.tooltipMap.get("INVENTORY_TOOLTIP") != null) {
+                            if(tokens[0].equals("hover_bionic_item") && debounceplugin.isDebounceOver("INVENTORY_TOOLTIP", 0, component.tooltipMap.get("INVENTORY_TOOLTIP").getExternalScroller().getYOffset())) {
+                                if(ba_bionicmanager.bionicItemMap.get(tokens[1]) != null && (this.currentHoveredBionic == null || !this.currentHoveredBionic.bionicId.equals(tokens[1]))) {
+                                    this.currentHoveredBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
+                                    shouldRefresh = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            //is ESC is pressed, close the custom UI panel and the blank IDP we used to create it
+            if (event.isKeyDownEvent() && event.getEventValue() == Keyboard.KEY_ESCAPE) {
+                event.consume();
+                callbacks.dismissDialog();
+                return;
+            }
+        }
+
+        if(shouldRefresh) {
+            saveScrollPosition();
+            refresh();
+        };
+    }
+
+    @Override
+    public void buttonPressed(Object buttonId) {
+
     }
 }
