@@ -98,6 +98,7 @@ public class ba_uiplugin extends ba_uicommon {
     @Override
     public void saveScrollPosition() {
         super.saveScrollPosition();
+
     }
     public void displayOverclock() {
         float pad = 5f;
@@ -215,16 +216,16 @@ public class ba_uiplugin extends ba_uicommon {
                     if(event.getX() >= buttonX && event.getX() < buttonX + buttonW && event.getY() >= buttonY && event.getY() < buttonY+buttonH) {
                         String s = buttonMap.get(button);
                         String[] tokens = s.split(":");
-                        ba_component component = componentMap.get("WORKSHOP_INVENTORY_PANEL");
-                        //hover bionic item in inventory
-                        if(component != null && component.tooltipMap.get("WORKSHOP_INVENTORY_TOOLTIP") != null) {
-                            if(tokens[0].equals("hover_bionic_item") && debounceplugin.isDebounceOver("WORKSHOP_INVENTORY_TOOLTIP", 0, component.tooltipMap.get("WORKSHOP_INVENTORY_TOOLTIP").getExternalScroller().getYOffset())) {
-                                if(ba_bionicmanager.bionicItemMap.get(tokens[1]) != null && (this.currentHoveredBionic == null || !this.currentHoveredBionic.bionicId.equals(tokens[1]))) {
-                                    this.currentHoveredBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
-                                    shouldRefresh = true;
-                                }
-                            }
-                        }
+//                        ba_component component = componentMap.get("INVENTORY_PANEL");
+//                        //hover bionic item in inventory
+//                        if(component != null && component.tooltipMap.get("INVENTORY_TOOLTIP") != null) {
+//                            if(tokens[0].equals("hover_bionic_item") && debounceplugin.isDebounceOver("INVENTORY_TOOLTIP", 0, component.tooltipMap.get("INVENTORY_TOOLTIP").getExternalScroller().getYOffset())) {
+//                                if(ba_bionicmanager.bionicItemMap.get(tokens[1]) != null && (this.currentHoveredBionic == null || !this.currentHoveredBionic.bionicId.equals(tokens[1]))) {
+//                                    this.currentHoveredBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
+//                                    shouldRefresh = true;
+//                                }
+//                            }
+//                        }
                     }
                 }
             }

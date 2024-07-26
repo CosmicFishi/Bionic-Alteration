@@ -14,6 +14,7 @@ import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
 import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
+import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
 import pigeonpun.bionicalteration.utils.ba_utils;
 
 import java.awt.*;
@@ -36,11 +37,14 @@ public class ba_uicommon implements CustomUIPanelPlugin {
     protected PersonAPI currentPerson;
     protected float currentScrollPositionInventory = 0;
     protected float currentScrollPositionBionicTable = 0;
+    protected float currentScrollPositionPersonList = 0;
     public static ba_debounceplugin debounceplugin = new ba_debounceplugin();
     protected void init(CustomPanelAPI panel, CustomVisualDialogDelegate.DialogCallbacks callbacks, InteractionDialogAPI dialog) {
         currentScrollPositionInventory = 0;
         currentScrollPositionBionicTable = 0;
+        currentScrollPositionPersonList = 0;
         debounceplugin.addToList("INVENTORY_TOOLTIP");
+        debounceplugin.addToList("PERSON_LIST_TOOLTIP");
     }
     protected void refresh() {
         //reset button for checking press
@@ -448,23 +452,171 @@ public class ba_uicommon implements CustomUIPanelPlugin {
             }
         }
     }
+    protected void displayPersonList(
+            ba_component creatorComponent,
+            String creatorComponentTooltip,
+            boolean isDisplayingOtherFleets,
+            float personListW, float personListH,
+            float personListX, float personListY
+    ) {
+        displayPersonListWithKeyPreset(creatorComponent, creatorComponentTooltip, "", isDisplayingOtherFleets, personListW, personListH, personListX, personListY);
+    }
+    protected void displayPersonListWithKeyPreset(
+            ba_component creatorComponent,
+            String creatorComponentTooltip,
+            String preset,
+            boolean isDisplayingOtherFleets,
+            float personListW, float personListH,
+            float personListX, float personListY
+    ) {
+        float pad = 10f;
+        float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        Color t = Misc.getTextColor();
+        Color g = Misc.getGrayColor();
+        String keyPreset = "";
+        if(preset != "") {
+            keyPreset = preset + "_";
+        }
+
+        //overview personContainer
+        String overviewPersonTooltipKey = keyPreset+"PERSON_LIST_TOOLTIP";
+        String overviewPersonPanelKey = keyPreset+"PERSON_LIST_PANEL";
+        ba_component overviewPersonContainer = new ba_component(componentMap, creatorComponent.mainPanel, personListW, personListH,personListX, personListY, true, overviewPersonPanelKey);
+        TooltipMakerAPI overviewPersonTooltipContainer = overviewPersonContainer.createTooltip(overviewPersonTooltipKey, personListW, personListH, true, 0, 0);
+        //important to set the container tooltip to have scroll enable if you want scroll
+        //Next important is to have panel.addUI at the bottom of the code if you have scroll enabled, or the scroll wont work
+        creatorComponent.attachSubPanel(creatorComponentTooltip,overviewPersonPanelKey, overviewPersonContainer);
+
+        int i = 0;
+        int xStart = 0;
+        int yStart = 0;
+        int imageH = 80;
+        int imageW = 80;
+        int ySpacer = 10;
+        float personW = personListW - 10 * 2; //time 2 for the padding both left and right
+        float personH = imageH + 20;
+        List<ba_component> subComponentPersonList = new ArrayList<>();
+        for (PersonAPI member: ba_officermanager.listPersons) {
+            float currentStartX = xStart;
+            float currentStartY = yStart;
+            String spriteName = member.getPortraitSprite();
+            String defaultPersonTooltipContainerKey = "PERSON_TOOLTIP_CONTAINER";
+            String defaultPersonPanelContainerKey = "PERSON_PANEL_CONTAINER_"+i;
+            //add first spacer
+            if(subComponentPersonList.size() == 0) {
+                overviewPersonTooltipContainer.addSpacer(ySpacer);
+            }
+            //--------person container
+            ba_component personDisplayContainer = new ba_component(componentMap, overviewPersonContainer.mainPanel, personW, personH,0,0,false, defaultPersonPanelContainerKey);
+            TooltipMakerAPI personDisplayContainerTooltip = personDisplayContainer.createTooltip(defaultPersonTooltipContainerKey, personW, personH, false, 0,0);
+            personDisplayContainerTooltip.setForceProcessInput(true);
+            //attach to have the main tooltip scroll effect this component's panel
+            overviewPersonContainer.attachSubPanel(overviewPersonTooltipKey, defaultPersonPanelContainerKey,personDisplayContainer);
+            subComponentPersonList.add(personDisplayContainer);
+            //border
+//            UIComponentAPI border = personDisplayContainerTooltip.createRect(Color.red, 1);
+//            border.getPosition().setSize(personW, personH);
+//            personDisplayContainer.mainPanel.addComponent(border).setLocation(0,0).inTL(currentStartX, currentStartY);
+            //hover
+            ButtonAPI areaChecker = personDisplayContainerTooltip.addAreaCheckbox("", null,Color.red.darker(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), personW, personH, 0);
+            addButtonToList(areaChecker, "hover:"+member.getId());
+            areaChecker.getPosition().setLocation(0,0).inTL(currentStartX, currentStartY);
+            //--------image
+            int imageX = (int) currentStartX;
+            TooltipMakerAPI personImageTooltip = personDisplayContainer.createTooltip("PERSON_IMAGE", imageW, imageH, false, 0, 0);
+            personImageTooltip.getPosition().inTL(imageX, currentStartY);
+            personImageTooltip.addImage(spriteName, imageW, imageH, 0);
+            personImageTooltip.getPosition().inTL(0, (personH - imageH ) / 2);
+            //---------Name
+            int nameH = 30;
+            int nameW = (int) (personListW - imageW - 30);
+            int nameX = (int) (imageX + imageW + pad);
+            TooltipMakerAPI personNameTooltip = personDisplayContainer.createTooltip("PERSON_NAME", nameW, nameH, false, 0, 0);
+            personNameTooltip.getPosition().inTL(nameX, 0);
+            LabelAPI name = personNameTooltip.addPara(member.getName().getFullName() + (member.isPlayer() ? " (" + "You" + ")": ""), pad);
+            name.setHighlight(member.getName().getFullName());
+            name.setHighlightColors(Misc.getBrightPlayerColor());
+            //Personality
+            //BRM (Bionic Rights Management)
+            int brmH = 30;
+            int brmW = 120;
+            int brmX = (int) (nameX);
+            int brmY = (int) (currentStartY + nameH);
+            int currentBRM = (int) member.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);;
+            int limitBRM = (int) member.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);;
+            TooltipMakerAPI personBRMTooltip = personDisplayContainer.createTooltip("PERSON_BRM", brmW, brmH, false, 0, 0);
+            personBRMTooltip.getPosition().inTL(brmX, brmY);
+            LabelAPI BRM = personBRMTooltip.addPara("BRM: " + currentBRM + " / " + limitBRM, pad);
+            BRM.setHighlight("BRM: ", "" +currentBRM, "" +limitBRM);
+            BRM.setHighlightColors(t,currentBRM > limitBRM ? bad: h,Misc.getBrightPlayerColor());
+            if(bionicalterationplugin.isBRMCapDisable) {
+                BRM.setText("BRM: " + currentBRM);
+                BRM.setHighlight("BRM: ", "" +currentBRM);
+                BRM.setHighlightColors(t, h);
+            }
+            //Level
+            int levelH = brmH;
+            int levelW = 100;
+            int levelX = (int) (brmX + brmW);
+            int levelY = brmY;
+            TooltipMakerAPI personLevelTooltip = personDisplayContainer.createTooltip("PERSON_LEVEL", levelW, levelH, false, 0, 0);
+            personLevelTooltip.getPosition().inTL(levelX, levelY);
+            LabelAPI level = personLevelTooltip.addPara("Level: " + member.getStats().getLevel(), pad);
+            level.setHighlight("Level: ","" + member.getStats().getLevel());
+            level.setHighlightColors(g,h);
+            //Profession: Captain/Administrator
+            int profH = 20;
+            int profW = 200;
+            int profX = (int) (nameX);
+            int profY = (int) (currentStartY + brmH + nameH);
+            TooltipMakerAPI personProfTooltip = personDisplayContainer.createTooltip("PERSON_PROF", profW, profH, false, 9, 0);
+            personProfTooltip.getPosition().inTL(profX, profY);
+            String profString = ba_officermanager.getProfessionText(member, isDisplayingOtherFleets);
+            LabelAPI prof = personProfTooltip.addPara("Profession: " + profString, pad);
+            prof.setHighlight("Profession: ", profString);
+            prof.setHighlightColors(g,h);
+            //Monthly Salary
+            //Assign to ship/planet
+            //--------Spacer because scroller dont like position offseting as spacing
+            overviewPersonTooltipContainer.addSpacer(ySpacer);
+            i++;
+        }
+        overviewPersonContainer.subComponentListMap.put("SUB_PERSON_LIST", subComponentPersonList);
+        //do the adding late so the scroll work (thanks Lukas04)
+        overviewPersonContainer.mainPanel.addUIElement(overviewPersonTooltipContainer);
+        if(overviewPersonTooltipContainer.getExternalScroller() != null) {
+            overviewPersonTooltipContainer.getExternalScroller().setYOffset(currentScrollPositionPersonList);
+        }
+    }
+
     public void addButtonToList(ButtonAPI button, String buttonMapValue) {
         buttons.add(button);
         buttonMap.put(button, buttonMapValue);
     }
     public void saveScrollPosition() {
-        //for the bionic table
+        //if the component have a preset, you will have to manually save position on the child class
+        //these are for the case where the preset is empty string
+        //Bionic table, preset = ""
         ba_component component = componentMap.get("PERSON_INFO_BIONICS_PANEL");
         if(component != null && component.tooltipMap.get("PERSON_INFO_BIONICS_TOOLTIP") != null) {
             if(component.tooltipMap.get("PERSON_INFO_BIONICS_TOOLTIP").getExternalScroller() != null) {
                 currentScrollPositionBionicTable = component.tooltipMap.get("PERSON_INFO_BIONICS_TOOLTIP").getExternalScroller().getYOffset();
             }
         }
-        //for the inventory
+        //inventory, preset = ""
         ba_component component2 = componentMap.get("INVENTORY_PANEL");
         if(component2 != null && component2.tooltipMap.get("INVENTORY_TOOLTIP") != null) {
             if(component2.tooltipMap.get("INVENTORY_TOOLTIP").getExternalScroller() != null) {
                 currentScrollPositionInventory = component2.tooltipMap.get("INVENTORY_TOOLTIP").getExternalScroller().getYOffset();
+            }
+        }
+        //person list, preset = ""
+        ba_component component3 = componentMap.get("PERSON_LIST_PANEL");
+        if(component3 != null && component3.tooltipMap.get("PERSON_LIST_TOOLTIP") != null) {
+            if(component3.tooltipMap.get("PERSON_LIST_TOOLTIP").getExternalScroller() != null) {
+                currentScrollPositionPersonList = component3.tooltipMap.get("PERSON_LIST_TOOLTIP").getExternalScroller().getYOffset();
             }
         }
     }
@@ -559,6 +711,19 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                                 if(ba_bionicmanager.bionicItemMap.get(tokens[1]) != null && (this.currentHoveredBionic == null || !this.currentHoveredBionic.bionicId.equals(tokens[1]))) {
                                     this.currentHoveredBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
                                     shouldRefresh = true;
+                                }
+                            }
+                        }
+                        ba_component component1 = componentMap.get("PERSON_LIST_PANEL");
+                        if(component1 != null && component1.tooltipMap.get("PERSON_LIST_TOOLTIP") != null) {
+                            if(tokens[0].equals("hover") && debounceplugin.isDebounceOver("PERSON_LIST_TOOLTIP", 0, component1.tooltipMap.get("PERSON_LIST_TOOLTIP").getExternalScroller().getYOffset())) {
+                                if(!this.currentPerson.getId().equals(tokens[1])) {
+                                    for(PersonAPI person: ba_officermanager.listPersons) {
+                                        if(tokens[1].equals(person.getId())) {
+                                            this.currentPerson = person;
+                                            shouldRefresh = true;
+                                        }
+                                    }
                                 }
                             }
                         }
