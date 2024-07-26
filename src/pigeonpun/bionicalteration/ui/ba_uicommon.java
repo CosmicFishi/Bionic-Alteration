@@ -34,13 +34,21 @@ public class ba_uicommon implements CustomUIPanelPlugin {
     protected ba_limbmanager.ba_limb currentSelectedLimb;
     protected ba_bionicitemplugin currentSelectedBionic;
     protected PersonAPI currentPerson;
-    protected float currentScrollPositionInventory;
-    protected float currentScrollPositionBionicTable;
+    protected float currentScrollPositionInventory = 0;
+    protected float currentScrollPositionBionicTable = 0;
     public static ba_debounceplugin debounceplugin = new ba_debounceplugin();
     protected void init(CustomPanelAPI panel, CustomVisualDialogDelegate.DialogCallbacks callbacks, InteractionDialogAPI dialog) {
+        currentScrollPositionInventory = 0;
+        currentScrollPositionBionicTable = 0;
         debounceplugin.addToList("INVENTORY_TOOLTIP");
     }
     protected void refresh() {
+        //reset button for checking press
+        for (ButtonAPI b : buttons) {
+            if (b.isChecked()) {
+                b.setChecked(false);
+            }
+        }
 //        log.info("refreshing");
         buttons.clear();
         buttonMap.clear();
@@ -191,6 +199,33 @@ public class ba_uicommon implements CustomUIPanelPlugin {
             String creatorComponentTooltip,
             final boolean isWorkshopMode,
             boolean isScroll , float tableW, float tableH, float tableX, float tableY) {
+        displayBionicTableWithKeyPreset(
+                creatorComponent,
+                creatorComponentTooltip, "",
+                isWorkshopMode, isScroll,
+                tableW, tableH,
+                tableX, tableY
+        );
+    }
+
+    /**
+     * Use this for the preset keys inside the component
+     * Note: You will have to set up custom input detection with this
+     * @param creatorComponent
+     * @param creatorComponentTooltip
+     * @param isWorkshopMode
+     * @param isScroll
+     * @param tableW
+     * @param tableH
+     * @param tableX
+     * @param tableY
+     */
+    protected void displayBionicTableWithKeyPreset(
+            ba_component creatorComponent,
+            String creatorComponentTooltip,
+            String preset,
+            final boolean isWorkshopMode,
+            boolean isScroll , float tableW, float tableH, float tableX, float tableY) {
         final float pad = 10f;
         float opad = 10f;
         final Color h = Misc.getHighlightColor();
@@ -198,16 +233,20 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
         final Color special = ba_variablemanager.BA_OVERCLOCK_COLOR;
+        String keyPreset = "";
+        if(preset != "") {
+            keyPreset = preset + "_";
+        }
 
         String infoPersonBionicTooltipKey = "PERSON_INFO_BIONICS_TOOLTIP";
-        String infoPersonBionicPanelKey = "PERSON_INFO_BIONICS_PANEL";
+        String infoPersonBionicPanelKey = keyPreset+"PERSON_INFO_BIONICS_PANEL";
         ba_component infoPersonBionicContainer = new ba_component(componentMap, creatorComponent.mainPanel, tableW, tableH, tableX, tableY, !isScroll, infoPersonBionicPanelKey);
         TooltipMakerAPI infoPersonBionicTooltipContainer = infoPersonBionicContainer.createTooltip(infoPersonBionicTooltipKey, tableW, tableH, isScroll, 0,0);
         creatorComponent.attachSubPanel(creatorComponentTooltip, infoPersonBionicPanelKey, infoPersonBionicContainer, tableX, tableY);
 
         //table header
         String tableHeaderTooltipContainerKey = "BIONIC_TABLE_HEADER_TOOLTIP";
-        String tableHeaderPanelContainerKey = "BIONIC_TABLE_HEADER_PANEL";
+        String tableHeaderPanelContainerKey = keyPreset + "BIONIC_TABLE_HEADER_PANEL";
         int tableHeaderH = 40;
         int tableHeaderW = (int) (tableW - pad);
         //--------bionic container
@@ -260,7 +299,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
 //        }
         for(final ba_officermanager.ba_bionicAugmentedData bionic: currentAnatomyList) {
             String bionicTooltipContainerKey = "BIONIC_TOOLTIP_CONTAINER";
-            String bionicPanelContainerKey = "BIONIC_PANEL_CONTAINER_"+i;
+            String bionicPanelContainerKey = keyPreset + "BIONIC_PANEL_CONTAINER_"+i;
             int singleBionicInstalledNameH = 40;
             int bionicH = bionic.bionicInstalled.size()!= 0 ? singleBionicInstalledNameH * bionic.bionicInstalled.size() : singleBionicInstalledNameH;
             //add a extra line for the overclock
@@ -473,7 +512,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         {
 //            log.info("" + b + "--" + b.isHighlighted() + "-" + b.isChecked() + "-" + b.isEnabled());
             if (b.isChecked()) {
-                b.setChecked(false);
+//                b.setChecked(false);
                 //Check if click change main page
                 String s = buttonMap.get(b);
                 String[] tokens = s.split(":");
@@ -525,12 +564,6 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                         }
                     }
                 }
-            }
-            //is ESC is pressed, close the custom UI panel and the blank IDP we used to create it
-            if (event.isKeyDownEvent() && event.getEventValue() == Keyboard.KEY_ESCAPE) {
-                event.consume();
-                callbacks.dismissDialog();
-                return;
             }
         }
 

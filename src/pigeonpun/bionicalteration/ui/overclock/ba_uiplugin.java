@@ -30,8 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-import static pigeonpun.bionicalteration.ui.bionic.ba_uiplugin.currentScrollPositionBionicTable;
-
 /**
  * @author PigeonPun
  */
@@ -176,7 +174,7 @@ public class ba_uiplugin extends ba_uicommon {
         {
 //            log.info("" + b + "--" + b.isHighlighted() + "-" + b.isChecked() + "-" + b.isEnabled());
             if (b.isChecked()) {
-                b.setChecked(false);
+//                b.setChecked(false);
                 //Check if click change main page
                 String s = buttonMap.get(b);
                 String[] tokens = s.split(":");
@@ -209,26 +207,32 @@ public class ba_uiplugin extends ba_uicommon {
         for (InputEventAPI event : events) {
             if (event.isConsumed()) continue;
             if(event.isMouseMoveEvent()) {
-//                for (ButtonAPI button: buttons) {
-//                    float buttonX = button.getPosition().getX();
-//                    float buttonY = button.getPosition().getY();
-//                    float buttonW = button.getPosition().getWidth();
-//                    float buttonH = button.getPosition().getHeight();
-//                    if(event.getX() >= buttonX && event.getX() < buttonX + buttonW && event.getY() >= buttonY && event.getY() < buttonY+buttonH) {
-//                        String s = buttonMap.get(button);
-//                        String[] tokens = s.split(":");
-//                        ba_component component = componentMap.get("WORKSHOP_INVENTORY_PANEL");
-//                        //hover bionic item in inventory
-//                        if(component != null && component.tooltipMap.get("WORKSHOP_INVENTORY_TOOLTIP") != null) {
-//                            if(tokens[0].equals("hover_bionic_item") && debounceplugin.isDebounceOver("WORKSHOP_INVENTORY_TOOLTIP", 0, component.tooltipMap.get("WORKSHOP_INVENTORY_TOOLTIP").getExternalScroller().getYOffset())) {
-//                                if(ba_bionicmanager.bionicItemMap.get(tokens[1]) != null && (this.currentHoveredBionic == null || !this.currentHoveredBionic.bionicId.equals(tokens[1]))) {
-//                                    this.currentHoveredBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
-//                                    shouldRefresh = true;
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
+                for (ButtonAPI button: buttons) {
+                    float buttonX = button.getPosition().getX();
+                    float buttonY = button.getPosition().getY();
+                    float buttonW = button.getPosition().getWidth();
+                    float buttonH = button.getPosition().getHeight();
+                    if(event.getX() >= buttonX && event.getX() < buttonX + buttonW && event.getY() >= buttonY && event.getY() < buttonY+buttonH) {
+                        String s = buttonMap.get(button);
+                        String[] tokens = s.split(":");
+                        ba_component component = componentMap.get("WORKSHOP_INVENTORY_PANEL");
+                        //hover bionic item in inventory
+                        if(component != null && component.tooltipMap.get("WORKSHOP_INVENTORY_TOOLTIP") != null) {
+                            if(tokens[0].equals("hover_bionic_item") && debounceplugin.isDebounceOver("WORKSHOP_INVENTORY_TOOLTIP", 0, component.tooltipMap.get("WORKSHOP_INVENTORY_TOOLTIP").getExternalScroller().getYOffset())) {
+                                if(ba_bionicmanager.bionicItemMap.get(tokens[1]) != null && (this.currentHoveredBionic == null || !this.currentHoveredBionic.bionicId.equals(tokens[1]))) {
+                                    this.currentHoveredBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
+                                    shouldRefresh = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            //is ESC is pressed, close the custom UI panel and the blank IDP we used to create it
+            if (event.isKeyDownEvent() && event.getEventValue() == Keyboard.KEY_ESCAPE) {
+                event.consume();
+                callbacks.dismissDialog();
+                return;
             }
         }
 
