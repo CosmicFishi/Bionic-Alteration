@@ -46,7 +46,8 @@ public class ba_officermanager {
     }
 
     /**
-     * Refresh the entire list person plus all the other stats set up needed
+     * Refresh the entire list person plus all the other stats set up needed <br>
+     * @param listOfficer if Null, player fleet's officers will be loaded into listPersons
      * Call when first init
      */
     public static void refresh(List<PersonAPI> listOfficer) {
