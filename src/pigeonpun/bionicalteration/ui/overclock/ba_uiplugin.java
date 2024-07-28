@@ -41,6 +41,8 @@ public class ba_uiplugin extends ba_uicommon {
     public static final String OVERCLOCK = "OVERCLOCK_WORKSHOP";
     public static final float MAIN_CONTAINER_WIDTH = Global.getSettings().getScreenWidth() - MAIN_CONTAINER_PADDING;
     public static final float MAIN_CONTAINER_HEIGHT = Global.getSettings().getScreenHeight() - MAIN_CONTAINER_PADDING;
+    public static final String PERSON_LIST = "person_list", INVENTORY = "inventory";
+    public String currentSelectOverclockLocation = PERSON_LIST;
     int dW, dH, pW, pH;
     protected HashMap<String, ba_component> tabMap = new HashMap<>();
 
@@ -164,10 +166,11 @@ public class ba_uiplugin extends ba_uicommon {
         TooltipMakerAPI inventoryMidTooltipContainer = inventoryMidContainer.createTooltip(inventoryMidTooltipKey, midW, midH, false, 0,0);
         creatorComponent.attachSubPanel(creatorComponentTooltip, inventoryMidPanelKey, inventoryMidContainer, midX, midY);
 
-        UIComponentAPI borderMid = inventoryMidTooltipContainer.createRect(Color.yellow, 1);
-        borderMid.getPosition().setSize(midW, midH);
-        inventoryMidContainer.mainPanel.addComponent(borderMid).setLocation(0,0).inTL(0, 0);
+//        UIComponentAPI borderMid = inventoryMidTooltipContainer.createRect(Color.yellow, 1);
+//        borderMid.getPosition().setSize(midW, midH);
+//        inventoryMidContainer.mainPanel.addComponent(borderMid).setLocation(0,0).inTL(0, 0);
         //display mid
+        displayInventoryMid(inventoryMidContainer, inventoryMidTooltipContainer, midW, midH, 0, 0);
 
         //Btm
         float btmW = invW;
@@ -225,6 +228,92 @@ public class ba_uiplugin extends ba_uicommon {
         borderRight.getPosition().setSize(rightW, rightH);
         inventoryRightContainer.mainPanel.addComponent(borderRight).setLocation(0,0).inTL(0, 0);
     }
+    private void displayInventoryMid(ba_component creatorComponent, TooltipMakerAPI creatorComponentTooltipMaker, float cW, float cH, float cX, float cY) {
+        final float pad = 10f;
+        float opad = 10f;
+        final Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        final Color t = Misc.getTextColor();
+        final Color g = Misc.getGrayColor();
+
+        UIComponentAPI borderTop = creatorComponentTooltipMaker.createRect(Misc.getDarkPlayerColor(), 1);
+        borderTop.getPosition().setSize(cW, 1);
+        creatorComponent.mainPanel.addComponent(borderTop).setLocation(0,0).inTL(0, 0);
+        UIComponentAPI borderBtm = creatorComponentTooltipMaker.createRect(Misc.getDarkPlayerColor(), 1);
+        borderBtm.getPosition().setSize(cW, 1);
+        creatorComponent.mainPanel.addComponent(borderBtm).setLocation(0,0).inTL(0, cH);
+
+        float switchW = 200;
+        float switchH = 40;
+        float switchX = pad;
+        float switchY = cH/2 - switchH/2;
+        Color invColor = Color.YELLOW.darker().darker();
+        Color personColor = Misc.getGrayColor().darker().darker();
+        ButtonAPI switchBtn = creatorComponentTooltipMaker.addButton(
+                "Switch to - " + (Objects.equals(currentSelectOverclockLocation, INVENTORY) ? "Fleet": "Inventory"),
+                null,
+                Misc.getBrightPlayerColor(), Objects.equals(currentSelectOverclockLocation, INVENTORY) ? personColor: invColor,
+                Alignment.MID, CutStyle.TOP,
+                switchW, switchH, pad
+                );
+        addButtonToList(switchBtn, "switch:" + (Objects.equals(currentSelectOverclockLocation, INVENTORY) ? PERSON_LIST: INVENTORY));
+        switchBtn.getPosition().setLocation(0,0).inTL(switchX, switchY);
+        switchBtn.setShortcut(Keyboard.KEY_S, false);
+
+        float questionW = 40;
+        float questionH = 40;
+        float questionX = switchW + switchX + pad;
+        float questionY = switchY;
+        ButtonAPI questionBtn = creatorComponentTooltipMaker.addButton(
+                "?", null,
+                Misc.getBrightPlayerColor(), Color.GREEN.darker().darker(),
+                Alignment.MID, CutStyle.TL_BR,
+                questionW, questionH, pad
+        );
+        addButtonToList(questionBtn, "question:");
+        questionBtn.getPosition().setLocation(0,0).inTL(questionX, questionY);
+        creatorComponentTooltipMaker.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
+            @Override
+            public boolean isTooltipExpandable(Object tooltipParam) {
+                return true;
+            }
+
+            @Override
+            public float getTooltipWidth(Object tooltipParam) {
+                return 500;
+            }
+
+            @Override
+            public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                //todo: add a bit of lore about the instruction: like a tripad shows up, displaying a scientist explaining how it all works
+                tooltip.setParaOrbitronLarge();
+                LabelAPI helpPara = tooltip.addSectionHeading("Help", Alignment.MID, 0);
+                tooltip.setParaFontDefault();
+                LabelAPI step1Para = tooltip.addPara("- Select the %s from either %s or %s", pad , h, "overclocking bionic", "player fleet", "player inventory");
+                step1Para.setHighlightColors(h,h,h);
+                LabelAPI step2Para = tooltip.addPara("- Select what %s you want to put into your bionic", pad , h, "overclock");
+                step1Para.setHighlightColors(h);
+                LabelAPI step3Para = tooltip.addPara("- Check for the %s", pad , h, "overclock cost");
+                step1Para.setHighlightColors(h);
+                LabelAPI step4Para = tooltip.addPara("- If available, select the %s button", pad , h, "Overclock");
+                step1Para.setHighlightColors(h);
+            }
+        }, questionBtn, TooltipMakerAPI.TooltipLocation.ABOVE);
+
+        //overclock button
+        float overclockW = 150;
+        float overclockH = 40;
+        float overclockX = cW - overclockW - pad;
+        float overclockY = switchY;
+        ButtonAPI overclockBtn = creatorComponentTooltipMaker.addButton(
+                "Overclock", null,
+                Misc.getBrightPlayerColor(), new Color(255, 117, 134).darker().darker(),
+                Alignment.MID, CutStyle.ALL,
+                overclockW, overclockH, pad
+        );
+        addButtonToList(overclockBtn, "overclock:");
+        overclockBtn.getPosition().setLocation(0,0).inTL(overclockX, overclockY);
+    }
     public void displayInventoryBtm(ba_component creatorComponent, String creatorComponentTooltip, float cW, float cH, float cX, float cY) {
         final float pad = 10f;
         float opad = 10f;
@@ -233,37 +322,42 @@ public class ba_uiplugin extends ba_uicommon {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        //left
-        float leftW = (cW * 35)/100;
-        float leftH = cH;
-        float leftX = cX;
-        float leftY = cY;
-        String inventoryLeftTooltipKey = "INVENTORY_BTM_LEFT_TOOLTIP";
-        String inventoryLeftPanelKey = "INVENTORY_BTM_LEFT_PANEL";
-        ba_component inventoryLeftContainer = new ba_component(componentMap, creatorComponent.mainPanel, leftW, leftH, leftX, leftY, true, inventoryLeftPanelKey);
-        TooltipMakerAPI inventoryLeftTooltipContainer = inventoryLeftContainer.createTooltip(inventoryLeftTooltipKey, leftW, leftH, false, 0,0);
-        creatorComponent.attachSubPanel(creatorComponentTooltip, inventoryLeftPanelKey, inventoryLeftContainer, leftX, leftY);
+        if(currentSelectOverclockLocation.equals(PERSON_LIST)) {
+            //left
+            float leftW = (cW * 35)/100;
+            float leftH = cH;
+            float leftX = cX;
+            float leftY = cY;
+            String inventoryLeftTooltipKey = "INVENTORY_BTM_LEFT_TOOLTIP";
+            String inventoryLeftPanelKey = "INVENTORY_BTM_LEFT_PANEL";
+            ba_component inventoryLeftContainer = new ba_component(componentMap, creatorComponent.mainPanel, leftW, leftH, leftX, leftY, true, inventoryLeftPanelKey);
+            TooltipMakerAPI inventoryLeftTooltipContainer = inventoryLeftContainer.createTooltip(inventoryLeftTooltipKey, leftW, leftH, false, 0,0);
+            creatorComponent.attachSubPanel(creatorComponentTooltip, inventoryLeftPanelKey, inventoryLeftContainer, leftX, leftY);
 
 //        UIComponentAPI borderLeft = inventoryLeftTooltipContainer.createRect(Color.white, 1);
 //        borderLeft.getPosition().setSize(leftW, leftH);
 //        inventoryLeftContainer.mainPanel.addComponent(borderLeft).setLocation(0,0).inTL(0, 0);
-        displayPersonList(inventoryLeftContainer, inventoryLeftTooltipKey, false, leftW, leftH, 0, 0);
+            displayPersonList(inventoryLeftContainer, inventoryLeftTooltipKey, false, leftW, leftH, 0, 0);
 
 //        //right
-        float rightW = cW - leftW;
-        float rightH = cH;
-        float rightX = leftW;
-        float rightY = cY;
-        String inventoryRightTooltipKey = "INVENTORY_BTM_RIGHT_TOOLTIP";
-        String inventoryRightPanelKey = "INVENTORY_BTM_RIGHT_PANEL";
-        ba_component inventoryRightContainer = new ba_component(componentMap, creatorComponent.mainPanel, rightW, rightH, rightX, rightY, true, inventoryRightPanelKey);
-        TooltipMakerAPI inventoryRightTooltipContainer = inventoryRightContainer.createTooltip(inventoryRightTooltipKey, rightW, rightH, false, 0,0);
-        creatorComponent.attachSubPanel(creatorComponentTooltip, inventoryRightPanelKey, inventoryRightContainer, rightX, rightY);
+            float rightW = cW - leftW;
+            float rightH = cH;
+            float rightX = leftW;
+            float rightY = cY;
+            String inventoryRightTooltipKey = "INVENTORY_BTM_RIGHT_TOOLTIP";
+            String inventoryRightPanelKey = "INVENTORY_BTM_RIGHT_PANEL";
+            ba_component inventoryRightContainer = new ba_component(componentMap, creatorComponent.mainPanel, rightW, rightH, rightX, rightY, true, inventoryRightPanelKey);
+            TooltipMakerAPI inventoryRightTooltipContainer = inventoryRightContainer.createTooltip(inventoryRightTooltipKey, rightW, rightH, false, 0,0);
+            creatorComponent.attachSubPanel(creatorComponentTooltip, inventoryRightPanelKey, inventoryRightContainer, rightX, rightY);
 
 //        UIComponentAPI borderRight = inventoryRightTooltipContainer.createRect(Color.CYAN, 1);
 //        borderRight.getPosition().setSize(rightW, rightH);
 //        inventoryRightContainer.mainPanel.addComponent(borderRight).setLocation(0,0).inTL(0, 0);
-        displayBionicTable(inventoryRightContainer, inventoryRightTooltipKey, true, true, rightW, rightH, 0, 0);
+            displayBionicTable(inventoryRightContainer, inventoryRightTooltipKey, true, true, rightW, rightH, 0, 0);
+        }
+        if(currentSelectOverclockLocation.equals(INVENTORY)) {
+            displayInventoryWorkshop(creatorComponent, creatorComponentTooltip, cW, cH, cX, cY);
+        }
     }
     public void displaySelectedPersonInfo(ba_component creatorComponent, String creatorComponentTooltip, float cW, float cH, float cX, float cY) {
         //todo: move the person info to somewhere better like center or something
@@ -280,18 +374,30 @@ public class ba_uiplugin extends ba_uicommon {
         TooltipMakerAPI infoPersonTooltipContainer = infoPersonContainer.createTooltip(infoPersonTooltipKey, cW, cH, false, 0,0);
         creatorComponent.attachSubPanel(creatorComponentTooltip, infoPersonPanelKey,infoPersonContainer,0,0);
 
+        //Selected Person info
+        int selectH = 30;
+        int selectW = (int) cW;
+        int selectX = 0;
+        int selectY = 0;
+        infoPersonTooltipContainer.setParaOrbitronLarge();
+        LabelAPI select = infoPersonTooltipContainer.addPara("Selected Person Info", pad);
+        select.setAlignment(Alignment.MID);
+        select.getPosition().inTL(selectX, selectY);
+        select.getPosition().setSize(selectW, selectH);
+        infoPersonTooltipContainer.setParaFontDefault();
+
 //        infoPersonTooltipContainer.addPara("person info" , 0);
         float infoLeftW = cW * 0.4f;
         float inforRightW = cW - infoLeftW;
 
         //--------image
         float imageX = (int) (0);
-        float imageY = (int) (0);
+        float imageY = (int) (selectH + pad);
         float imageW = (int) infoLeftW;
         float imageH = imageW;
         String spriteName = this.currentPerson.getPortraitSprite();
         TooltipMakerAPI personImageTooltip = infoPersonContainer.createTooltip("OVERCLOCK_PERSON_IMAGE", imageW, imageH, false, 0, 0);
-        personImageTooltip.getPosition().inTL(imageX, cH/2 - imageH/2);
+        personImageTooltip.getPosition().inTL(imageX, imageY);
         personImageTooltip.addImage(spriteName, imageW, imageH, 0);
 
         //todo: dev mode displaying overclock stuffs for debugging
@@ -322,7 +428,7 @@ public class ba_uiplugin extends ba_uicommon {
         int nameH = 30;
         int nameW = (int) inforRightW;
         int nameX = (int) (imageW + pad + pad);
-        int nameY = (int) (pad);
+        int nameY = (int) (selectH + pad);
         LabelAPI name = infoPersonTooltipContainer.addPara(this.currentPerson.getName().getFullName() + (this.currentPerson.isPlayer() ? " (" + "You" + ")": ""), pad);
         name.getPosition().inTL(nameX, nameY);
         name.getPosition().setSize(nameW, nameH);
@@ -471,6 +577,11 @@ public class ba_uiplugin extends ba_uicommon {
                 }
                 if(tokens[0].equals("hover_bionic_table_limb")) {
                     this.currentSelectedLimb = ba_limbmanager.getLimb(tokens[1]);
+                    needsReset = true;
+                    break;
+                }
+                if(tokens[0].equals("switch") && ((Objects.equals(tokens[1], PERSON_LIST)) || (Objects.equals(tokens[1], INVENTORY)))) {
+                    this.currentSelectOverclockLocation = tokens[1];
                     needsReset = true;
                     break;
                 }
