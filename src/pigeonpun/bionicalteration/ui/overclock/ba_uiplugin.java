@@ -45,7 +45,6 @@ public class ba_uiplugin extends ba_uicommon {
     public static final String PERSON_LIST = "person_list", INVENTORY = "inventory";
     public String currentSelectOverclockLocation = PERSON_LIST;
     public ba_bionicitemplugin currentSelectOverclockBionic = null;
-    public String previousSelectOverclockLimbId = "";
     int dW, dH, pW, pH;
     protected HashMap<String, ba_component> tabMap = new HashMap<>();
 
@@ -649,23 +648,22 @@ public class ba_uiplugin extends ba_uicommon {
                 if(tokens[0].equals("hover_bionic_item")) {
                     if(ba_bionicmanager.bionicItemMap.get(tokens[1]) != null) {
                         this.currentSelectedBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
+                        this.currentSelectOverclockBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
                         needsReset = true;
                         break;
                     }
                 }
                 if(tokens[0].equals("hover_bionic_table_limb")) {
                     this.currentSelectedLimb = ba_limbmanager.getLimb(tokens[1]);
-                    if(this.currentSelectedLimb != null && !this.previousSelectOverclockLimbId.equals(this.currentSelectedLimb.limbId)) {
-                        for(ba_officermanager.ba_bionicAugmentedData data: ba_officermanager.getBionicAnatomyList(this.currentPerson)) {
-                            if(data.limb.limbId.equals(this.currentSelectedLimb.limbId)) {
-                                this.previousSelectOverclockLimbId = this.currentSelectedLimb.limbId;
-                                if(data.bionicInstalled.size() > 0) {
-                                    this.currentSelectOverclockBionic = data.bionicInstalled.get(0);
-                                } else {
-                                    this.currentSelectOverclockBionic = null;
-                                }
-                                break;
+                    for(ba_officermanager.ba_bionicAugmentedData data: ba_officermanager.getBionicAnatomyList(this.currentPerson)) {
+                        if(data.limb.limbId.equals(this.currentSelectedLimb.limbId)) {
+//                            this.previousSelectOverclockLimbId = this.currentSelectedLimb.limbId;
+                            if(data.bionicInstalled.size() > 0) {
+                                this.currentSelectOverclockBionic = data.bionicInstalled.get(0);
+                            } else {
+                                this.currentSelectOverclockBionic = null;
                             }
+                            break;
                         }
                     }
                     needsReset = true;
@@ -673,6 +671,9 @@ public class ba_uiplugin extends ba_uicommon {
                 }
                 if(tokens[0].equals("switch") && ((Objects.equals(tokens[1], PERSON_LIST)) || (Objects.equals(tokens[1], INVENTORY)))) {
                     this.currentSelectOverclockLocation = tokens[1];
+                    this.currentSelectOverclockBionic = null;
+                    this.currentSelectedLimb = null;
+                    this.currentSelectedBionic = null;
                     needsReset = true;
                     break;
                 }

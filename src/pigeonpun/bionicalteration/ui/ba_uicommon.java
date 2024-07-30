@@ -351,13 +351,13 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                     if(bionic.bionicInstalled.size() != 0) {
                         for(ba_bionicitemplugin b: bionic.bionicInstalled) {
                             b.effectScript.displayEffectDescription(tooltip, currentPerson, b, false);
+                            //---------Overclock
+                            if(ba_overclockmanager.isBionicOverclockable(b)) {
+                                LabelAPI overclockLabel = tooltip.addPara("%s %s", pad, t,"Overclock:", b.isOverClockApplied()? b.appliedOverclock.name: "None active");
+                                overclockLabel.setHighlight("Overclock:", b.isOverClockApplied()? b.appliedOverclock.name: "None active");
+                                overclockLabel.setHighlightColors(special, b.isOverClockApplied()? h: g);
+                            }
                             if(isWorkshopMode) {
-                                //---------Overclock
-                                if(ba_overclockmanager.isBionicOverclockable(b)) {
-                                    LabelAPI overclockLabel = tooltip.addPara("%s %s", pad, t,"Overclock:", b.isOverClockApplied()? b.appliedOverclock.name: "None active");
-                                    overclockLabel.setHighlight("Overclock:", b.isOverClockApplied()? b.appliedOverclock.name: "None active");
-                                    overclockLabel.setHighlightColors(special, b.isOverClockApplied()? h: g);
-                                }
                                 //---------Conflicts
                                 StringBuilder conflictsList = new StringBuilder();
                                 for (ba_bionicitemplugin bionic: ba_bionicmanager.getListBionicConflicts(b)) {
