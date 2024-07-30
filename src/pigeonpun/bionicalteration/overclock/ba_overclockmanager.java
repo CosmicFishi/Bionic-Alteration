@@ -63,7 +63,8 @@ public class ba_overclockmanager {
                                 row.getBoolean("isAdvanceInCombat"),
                                 row.getBoolean("isAdvanceInCampaign"),
                                 row.getInt("upgradeCost"),
-                                (float) row.getDouble("prebuiltChance")
+                                (float) row.getDouble("prebuiltChance"),
+                                (float) row.getDouble("order")
                         );
                         overclockMap.put(overclock.id, overclock);
                     }

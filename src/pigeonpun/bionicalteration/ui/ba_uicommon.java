@@ -584,6 +584,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         TooltipMakerAPI personDisplayContainerTooltip = personDisplayContainer.createTooltip(componentTooltipKey, pW, pH, false, 0,0);
         personDisplayContainerTooltip.setForceProcessInput(true);
         //attach to have the main tooltip scroll effect this component's panel
+        //important that this doesn't set the location of the attaching component
         creatorComponent.attachSubPanel(creatorComponentTooltip, componentPanelKey,personDisplayContainer);
 //        subComponentPersonList.add(personDisplayContainer);
         //hover

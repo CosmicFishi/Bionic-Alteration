@@ -16,6 +16,7 @@ import org.magiclib.util.MagicSettings;
 import pigeonpun.bionicalteration.ba_limbmanager;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
+import pigeonpun.bionicalteration.overclock.ba_overclock;
 import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
 import pigeonpun.bionicalteration.utils.ba_utils;
 
@@ -124,6 +125,16 @@ public class ba_bionicmanager {
                             } else {
                                 log.error("Can't find overclock of id: " + id + " for bionic " + bionicId);
                             }
+                        }
+                        if(!bionic.overclockList.isEmpty()) {
+                            Collections.sort(bionic.overclockList, new Comparator<String>() {
+                                @Override
+                                public int compare(String o1, String o2) {
+                                    ba_overclock overclock1 = ba_overclockmanager.getOverclock(o1);
+                                    ba_overclock overclock2 = ba_overclockmanager.getOverclock(o2);
+                                    return overclock1.order > overclock2.order ? 1 : 0;
+                                }
+                            });
                         }
                     }
 

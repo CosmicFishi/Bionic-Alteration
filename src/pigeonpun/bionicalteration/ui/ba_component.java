@@ -73,7 +73,7 @@ public class ba_component {
 
     /**
      * Use for attaching an existing component's panel into this component<br>
-     *
+     * This doesn't set the location for the attaching component => component list can stack on top of each other
      * @param tooltipKeyAttachTo   Creator component's tooltip key
      * @param otherComponent       the attaching component
      * @param otherComponentMapKey the attaching component map key. So the creator component can access to the attaching component in {@code subComponentMap}

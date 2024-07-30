@@ -17,6 +17,7 @@ import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
+import pigeonpun.bionicalteration.overclock.ba_overclock;
 import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
 import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
 import pigeonpun.bionicalteration.ui.ba_component;
@@ -43,6 +44,8 @@ public class ba_uiplugin extends ba_uicommon {
     public static final float MAIN_CONTAINER_HEIGHT = Global.getSettings().getScreenHeight() - MAIN_CONTAINER_PADDING;
     public static final String PERSON_LIST = "person_list", INVENTORY = "inventory";
     public String currentSelectOverclockLocation = PERSON_LIST;
+    public ba_bionicitemplugin currentSelectOverclockBionic = null;
+    public String previousSelectOverclockLimbId = "";
     int dW, dH, pW, pH;
     protected HashMap<String, ba_component> tabMap = new HashMap<>();
 
@@ -510,14 +513,90 @@ public class ba_uiplugin extends ba_uicommon {
         String overclockListTooltipKey = "OVERCLOCK_LIST_TOOLTIP";
         String overclockListPanelKey = "OVERCLOCK_LIST_PANEL";
         ba_component overclockListContainer = new ba_component(componentMap, creatorComponent.mainPanel, overclockListW, overclockListH, overclockListX, overclockListY, true, overclockListPanelKey);
-        overclockListContainer.mainPanel.getPosition().setLocation(overclockListX, overclockListY);
-        TooltipMakerAPI overclockListTooltipContainer = overclockListContainer.createTooltip(overclockListTooltipKey, overclockListW, overclockListH, false, 0,0);
+        TooltipMakerAPI overclockListTooltipContainer = overclockListContainer.createTooltip(overclockListTooltipKey, overclockListW, overclockListH, true, 0,0);
         creatorComponent.attachSubPanel(creatorComponentTooltip, overclockListPanelKey, overclockListContainer, overclockListX, overclockListY);
 
-        UIComponentAPI borderList = overclockListTooltipContainer.createRect(Color.BLUE, 1);
+        UIComponentAPI borderList = overclockListTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
         borderList.getPosition().setSize(overclockListW, overclockListH);
         overclockListContainer.mainPanel.addComponent(borderList).setLocation(0,0).inTL(0, 0);
+        if(currentSelectOverclockBionic == null || currentSelectOverclockBionic.overclockList.isEmpty()) {
+            //display the empty overclock
+            int emptyX = (int) overclockListW / 2;
+            int emptyY = (int) overclockListH / 2;
+            String emptyText = "Currently no available overclock.";
+            LabelAPI emptyLabel = overclockListTooltipContainer.addPara(emptyText,Misc.getDarkPlayerColor(), 1);
+            emptyLabel.getPosition().inTL(emptyX - (emptyLabel.computeTextWidth(emptyText) / 2), emptyY);
+        } else {
+            //todo: overclock list
+            float itemW = listW;
+            float itemH = 300;
+            float itemX = 0;
+            float itemY = 0;
+            int i = 0;
+            for(String overclockId: currentSelectOverclockBionic.overclockList) {
+                if(ba_overclockmanager.getOverclock(overclockId) != null) {
+                    displayOverclockItem(
+                            overclockListContainer,
+                            overclockListTooltipKey,
+                            ba_overclockmanager.getOverclock(overclockId),
+                            i,
+                            itemW, itemH,
+                            itemX, itemY
+                    );
+                    if(i != currentSelectOverclockBionic.overclockList.size() - 1) {
+                        overclockListTooltipContainer.addSpacer(pad);
+                    }
+                    i++;
+                } else {
+                    log.error("Can't find overclock of string: " + overclockId + "to display for bionic: " + currentSelectOverclockBionic.getName());
+                }
+            }
+        }
+        //do the adding late so the scroll work (thanks Lukas04)
+        overclockListContainer.mainPanel.addUIElement(overclockListTooltipContainer);
     }
+    public void displayOverclockItem(ba_component creatorComponent, String creatorComponentTooltip, ba_overclock overclock, int index ,float itemW, float itemH, float itemX, float itemY) {
+        final float pad = 10f;
+        float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        final Color t = Misc.getTextColor();
+        final Color g = Misc.getGrayColor();
+        //item
+        float itemContainerW = itemW;
+        float itemContainerH = itemH;
+        float itemContainerX = itemX;
+        float itemContainerY = itemY;
+        String itemContainerTooltipKey = "OVERCLOCK_ITEM_CONTAINER_TOOLTIP";
+        String itemContainerPanelKey = "OVERCLOCK_ITEM_CONTAINER_PANEL_" + index;
+        ba_component itemContainerContainer = new ba_component(componentMap, creatorComponent.mainPanel, itemContainerW, itemContainerH, itemContainerX, itemContainerY, false, itemContainerPanelKey);
+        TooltipMakerAPI itemContainerTooltipContainer = itemContainerContainer.createTooltip(itemContainerTooltipKey, itemContainerW, itemContainerH, false, 0,0);
+        creatorComponent.attachSubPanel(creatorComponentTooltip, itemContainerPanelKey, itemContainerContainer);
+
+        UIComponentAPI borderList = itemContainerTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
+        borderList.getPosition().setSize(itemContainerW - pad, itemContainerH - pad);
+        itemContainerContainer.mainPanel.addComponent(borderList).setLocation(0,0).inTL(0, pad);
+
+//        //hover
+//        ButtonAPI areaChecker = itemContainerTooltipContainer.addAreaCheckbox("", null, new Color(255, 117, 134).darker().darker(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), pW, pH, 0);
+//        addButtonToList(areaChecker, "overclock_hover:"+overclock.id);
+//        areaChecker.getPosition().setSize(borderList.getPosition().getWidth(), borderList.getPosition().getHeight());
+//        areaChecker.getPosition().setLocation(0,0).inTL(0, 0);
+        //---------Name
+        int nameH = 30;
+        int nameW = (int) (borderList.getPosition().getWidth() - pad - pad);
+        int nameX = (int) (pad);
+        int nameY = (int) (pad + pad);
+        itemContainerTooltipContainer.setParaOrbitronLarge();
+        LabelAPI name = itemContainerTooltipContainer.addPara(overclock.name, Misc.getHighlightColor(), pad);
+        name.getPosition().setSize(nameW, nameH);
+        name.getPosition().inTL(nameX, nameY);
+        itemContainerTooltipContainer.setParaFontDefault();
+
+        //todo: wrap this in a container component to control the width
+        overclock.displayEffectDescription(itemContainerTooltipContainer, this.currentPerson, this.currentSelectOverclockBionic);
+    }
+
     @Override
     public void positionChanged(PositionAPI position) {
         super.positionChanged(position);
@@ -556,7 +635,6 @@ public class ba_uiplugin extends ba_uicommon {
 
     @Override
     public void advance(float amount) {
-        super.advance(amount);
         //handles button input processing
         //if pressing a button changes something in the diplay, call reset()
         boolean needsReset = false;
@@ -577,6 +655,19 @@ public class ba_uiplugin extends ba_uicommon {
                 }
                 if(tokens[0].equals("hover_bionic_table_limb")) {
                     this.currentSelectedLimb = ba_limbmanager.getLimb(tokens[1]);
+                    if(this.currentSelectedLimb != null && !this.previousSelectOverclockLimbId.equals(this.currentSelectedLimb.limbId)) {
+                        for(ba_officermanager.ba_bionicAugmentedData data: ba_officermanager.getBionicAnatomyList(this.currentPerson)) {
+                            if(data.limb.limbId.equals(this.currentSelectedLimb.limbId)) {
+                                this.previousSelectOverclockLimbId = this.currentSelectedLimb.limbId;
+                                if(data.bionicInstalled.size() > 0) {
+                                    this.currentSelectOverclockBionic = data.bionicInstalled.get(0);
+                                } else {
+                                    this.currentSelectOverclockBionic = null;
+                                }
+                                break;
+                            }
+                        }
+                    }
                     needsReset = true;
                     break;
                 }
@@ -585,9 +676,10 @@ public class ba_uiplugin extends ba_uicommon {
                     needsReset = true;
                     break;
                 }
+                //check when the player click the bionic table
             }
         }
-
+        super.advance(amount);
         //pressing a button usually means something we are displaying has changed, so redraw the panel from scratch
         if (needsReset) {
             saveScrollPosition();
