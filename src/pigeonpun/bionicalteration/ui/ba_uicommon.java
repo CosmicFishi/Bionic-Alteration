@@ -323,7 +323,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
             subComponentBionicList.add(bionicDisplayContainer);
             //hover
             ButtonAPI areaChecker = personDisplayContainerTooltip.addAreaCheckbox("", null,Misc.getBasePlayerColor(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), bionicW, bionicH, 0);
-            addButtonToList(areaChecker, "hover_bionic_table_limb:"+bionic.limb.limbId);
+            addButtonToList(areaChecker, "hover_bionic_table_limb:"+bionic.limb.limbId + (!bionic.bionicInstalled.isEmpty()? ":"+bionic.bionicInstalled.get(0).getId() : ""));
             areaChecker.getPosition().setLocation(0,0).inTL(0, 0);
             if(this.currentSelectedLimb != null) {
                 if(this.currentSelectedLimb.limbId.equals(bionic.limb.limbId)) {

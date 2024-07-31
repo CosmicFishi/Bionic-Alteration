@@ -16,8 +16,11 @@ import com.fs.starfarer.api.util.Highlights;
 import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
+import org.json.JSONObject;
 import pigeonpun.bionicalteration.ba_limbmanager;
 import pigeonpun.bionicalteration.overclock.ba_overclock;
+import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
+import pigeonpun.bionicalteration.utils.ba_utils;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -74,6 +77,7 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
         this.isEffectAppliedAfterRemove = isEffectAppliedAfterRemove;
         this.isInitFully = true;
     }
+
     public String getId() {
         return bionicId;
     }
@@ -104,6 +108,20 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
             }
             this.isAllowedRemoveAfterInstall = bionicInMap.isAllowedRemoveAfterInstall;
             this.isEffectAppliedAfterRemove = bionicInMap.isEffectAppliedAfterRemove;
+
+            //todo: save the overclock ID into this data => extract it here to put into the applied overclock
+            if(stack.getSpecialDataIfSpecial().getData() != null) {
+                JSONObject json = ba_utils.getJsonFromString(stack.getSpecialDataIfSpecial().getData());
+                try {
+                    String overclockId = json.getString("overclock");
+                    ba_overclock overclock = ba_overclockmanager.getOverclock(overclockId);
+                    if(overclock != null) {
+                        this.appliedOverclock = overclock;
+                    }
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
     }
     public boolean isOverClockApplied() {

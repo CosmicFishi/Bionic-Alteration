@@ -25,10 +25,8 @@ import pigeonpun.bionicalteration.ui.ba_uicommon;
 import pigeonpun.bionicalteration.utils.ba_utils;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author PigeonPun
@@ -45,6 +43,9 @@ public class ba_uiplugin extends ba_uicommon {
     public final String INSTALL_WORKSHOP="INSTALL", EDIT_WORKSHOP="EDIT";
     public String currentWorkShopMode = INSTALL_WORKSHOP; //determine what mode workshop is in
     public ba_bionicitemplugin currentRemovingBionic; //selected for removing
+//    public ba_limbmanager.ba_limb currentHoveringLimb = null; //To highlight which effect on the effect list,
+    // sadly not possible with how the bionic table currently implemented.
+    // Bionic table hidden in certain UI resolution which cause the hovering being weird. it can still detect the button even tho its hidden
     HashMap<String, ba_component> tabMap = new HashMap<>();
     String currentTabId = OVERVIEW;
     public static boolean isDisplayingOtherFleets = false;

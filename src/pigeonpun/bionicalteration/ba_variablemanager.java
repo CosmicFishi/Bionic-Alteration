@@ -72,4 +72,5 @@ public class ba_variablemanager {
     public static final Color BA_OVERCLOCK_COLOR = new Color(255, 149, 0);
     public static final String BA_OVERCLOCK_STATION = "ba_station_overclock";
     public static final String BA_BIONIC_RESEARCH_STATION_SPAWNED_KEY = "$ba_bionic_research_station_spawned";
+    public static final String BA_OVERCLOCK_ITEM = "ba_evoshard";
 }

@@ -18,6 +18,8 @@ import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.faction.ba_factiondata;
 import pigeonpun.bionicalteration.faction.ba_factionmanager;
+import pigeonpun.bionicalteration.overclock.ba_overclock;
+import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
 import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
 import pigeonpun.bionicalteration.utils.ba_utils;
 import pigeonpun.bionicalteration.variant.ba_variantmanager;
@@ -318,9 +320,9 @@ public class ba_officermanager {
                 ba_limbmanager.ba_limb limb = ba_limbmanager.getLimb(limbString);
                 if(bionicsInstalledList.get(limb) != null) {
                     List<ba_bionicitemplugin> bionicsInstalled = bionicsInstalledList.get(limb);
-                    anatomyList.add(new ba_bionicAugmentedData(limb, bionicsInstalled));
+                    anatomyList.add(new ba_bionicAugmentedData(limb, bionicsInstalled, null));
                 } else {
-                    anatomyList.add(new ba_bionicAugmentedData(limb, new ArrayList<ba_bionicitemplugin>()));
+                    anatomyList.add(new ba_bionicAugmentedData(limb, new ArrayList<ba_bionicitemplugin>(), null));
                 }
             }
         } else {
@@ -424,6 +426,7 @@ public class ba_officermanager {
         if(checkIfCanInstallBionic(bionic, limb, person)) {
             boolean removeSuccessful = true;
             if(removeBionicOnInstall) {
+                //todo: modify this so that the item that have overclock will apply the overclock when they install the bionic if the bionic have overclock in it
                 SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
                 removeSuccessful = Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, 1);
             }
@@ -461,6 +464,7 @@ public class ba_officermanager {
                     }
                 }
             }
+            //todo: modify this so that the overclock will be applied to the bionic item in the inventory
             //remove later because the bionic tag is needed
             person.removeTag(bionic.bionicId+":"+limb.limbId);
             SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
@@ -472,6 +476,31 @@ public class ba_officermanager {
             return true;
         } else {
             log.error("Can't remove "+ bionic.bionicId + " on " + limb.limbId);
+        }
+        return false;
+    }
+    public static boolean overclockBionic(ba_bionicitemplugin bionic, ba_limbmanager.ba_limb limb, ba_overclock selectedOverclock, PersonAPI person) {
+        if(ba_overclockmanager.isBionicOverclockable(bionic)) {
+            boolean removeSuccessful = true;
+            SpecialItemData specialItem = new SpecialItemData(ba_variablemanager.BA_OVERCLOCK_ITEM, null);
+            removeSuccessful = Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, selectedOverclock.upgradeCost);
+            if(removeSuccessful) {
+                updatePersonStatsOnInteract(bionic, limb, person, true);
+                if(bionic.isApplyAdminEffect && !getPersonGovernMarkets(person).isEmpty()) {
+                    for(MarketAPI market: getPersonGovernMarkets(person)) {
+                        if(!market.hasCondition(ba_variablemanager.BA_MARKET_CONDITION_ID)) {
+                            market.addCondition(ba_variablemanager.BA_MARKET_CONDITION_ID);
+                        }
+                    }
+                }
+                if(bionic.effectScript != null) {
+                    bionic.effectScript.onInstall(person, limb, bionic);
+                }
+            }
+            if(!removeSuccessful) {
+                log.error("Can't find bionic item in player inventory => abort installing");
+            }
+            return removeSuccessful;
         }
         return false;
     }
@@ -555,9 +584,11 @@ public class ba_officermanager {
     public static class ba_bionicAugmentedData {
         public ba_limbmanager.ba_limb limb;
         public List<ba_bionicitemplugin> bionicInstalled;
-        ba_bionicAugmentedData(ba_limbmanager.ba_limb limb, List<ba_bionicitemplugin> bionic) {
+        public ba_overclock appliedOverclock = null;
+        public ba_bionicAugmentedData(ba_limbmanager.ba_limb limb, List<ba_bionicitemplugin> bionic, ba_overclock appliedOverclock) {
             this.limb = limb;
             this.bionicInstalled = bionic;
+            this.appliedOverclock = appliedOverclock;
         }
     }
 }
