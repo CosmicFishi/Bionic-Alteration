@@ -35,32 +35,32 @@ public class clearDuplicateCondition implements BaseCommand {
         }
 
         for(String key: new HashSet<>(selectedMarket.getIncomeMult().getMultMods().keySet())) {
-            if(key.contains(ba_variablemanager.BA_BIONIC_SKILL_ID)) {
+            if(key.contains(ba_variablemanager.BA_BIONIC_SKILL_ID) || key.contains(ba_variablemanager.BA_MARKET_CONDITION_ID)) {
                 selectedMarket.getIncomeMult().unmodify(key);
             }
         }
         for(String key: new HashSet<>(selectedMarket.getUpkeepMult().getMultMods().keySet())) {
-            if(key.contains(ba_variablemanager.BA_BIONIC_SKILL_ID)) {
+            if(key.contains(ba_variablemanager.BA_BIONIC_SKILL_ID) || key.contains(ba_variablemanager.BA_MARKET_CONDITION_ID)) {
                 selectedMarket.getUpkeepMult().unmodify(key);
             }
         }
         for(String key: new HashSet<>(selectedMarket.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).getMultBonuses().keySet())) {
-            if(key.contains(ba_variablemanager.BA_BIONIC_SKILL_ID)) {
+            if(key.contains(ba_variablemanager.BA_BIONIC_SKILL_ID) || key.contains(ba_variablemanager.BA_MARKET_CONDITION_ID)) {
                 selectedMarket.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).unmodifyMult(key);
             }
         }
         for(String key: new HashSet<>(selectedMarket.getStats().getDynamic().getMod(Stats.COMBAT_FLEET_SIZE_MULT).getMultBonuses().keySet())) {
-            if(key.contains(ba_variablemanager.BA_BIONIC_SKILL_ID)) {
+            if(key.contains(ba_variablemanager.BA_BIONIC_SKILL_ID) || key.contains(ba_variablemanager.BA_MARKET_CONDITION_ID)) {
                 selectedMarket.getStats().getDynamic().getMod(Stats.COMBAT_FLEET_SIZE_MULT).unmodifyMult(key);
             }
         }
         for(String key: new HashSet<>(selectedMarket.getAccessibilityMod().getFlatBonuses().keySet())) {
-            if(key.contains(ba_variablemanager.BA_BIONIC_SKILL_ID)) {
+            if(key.contains(ba_variablemanager.BA_BIONIC_SKILL_ID) || key.contains(ba_variablemanager.BA_MARKET_CONDITION_ID)) {
                 selectedMarket.getAccessibilityMod().unmodifyFlat(key);
             }
         }
         for(String key: new HashSet<>(selectedMarket.getStability().getFlatMods().keySet())) {
-            if(key.contains(ba_variablemanager.BA_BIONIC_SKILL_ID)) {
+            if(key.contains(ba_variablemanager.BA_BIONIC_SKILL_ID) || key.contains(ba_variablemanager.BA_MARKET_CONDITION_ID)) {
                 selectedMarket.getStability().unmodifyFlat(key);
             }
         }
