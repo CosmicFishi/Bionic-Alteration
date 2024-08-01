@@ -2,6 +2,7 @@ package pigeonpun.bionicalteration.overclock;
 
 import com.fs.starfarer.api.Global;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,6 +65,7 @@ public class ba_overclockmanager {
                                 row.getBoolean("isAdvanceInCampaign"),
                                 row.getInt("upgradeCost"),
                                 (float) row.getDouble("prebuiltChance"),
+                                row.getString("description"),
                                 (float) row.getDouble("order")
                         );
                         overclockMap.put(overclock.id, overclock);
@@ -100,5 +102,13 @@ public class ba_overclockmanager {
      */
     public static boolean isBionicOverclockable(ba_bionicitemplugin bionic) {
         return !bionic.overclockList.isEmpty();
+    }
+    public static boolean overclockBionic(ba_bionicitemplugin bionic, @NotNull String overclocKId) {
+        if(!overclocKId.equals("")) {
+            if(isBionicOverclockable(bionic) && bionic.overclockList.contains(overclocKId) && getOverclock(overclocKId) != null) {
+                bionic.appliedOverclock = getOverclock(overclocKId);
+            }
+        }
+        return false;
     }
 }

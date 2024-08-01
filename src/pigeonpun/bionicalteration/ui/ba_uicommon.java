@@ -353,9 +353,15 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                             b.effectScript.displayEffectDescription(tooltip, currentPerson, b, false);
                             //---------Overclock
                             if(ba_overclockmanager.isBionicOverclockable(b)) {
-                                LabelAPI overclockLabel = tooltip.addPara("%s %s", pad, t,"Overclock:", b.isOverClockApplied()? b.appliedOverclock.name: "None active");
-                                overclockLabel.setHighlight("Overclock:", b.isOverClockApplied()? b.appliedOverclock.name: "None active");
-                                overclockLabel.setHighlightColors(special, b.isOverClockApplied()? h: g);
+                                if(b.isOverClockApplied()) {
+                                    //todo: update overclocks descriptions and move this into their separate overclock classes
+                                    LabelAPI overclockLabel = tooltip.addPara("%s %s: %s", pad, t, b.appliedOverclock.name, "[O]" , !b.appliedOverclock.description.equals("")? b.appliedOverclock.description: "No description for now...");
+                                    overclockLabel.setHighlightColors(h, special,  Misc.getTextColor());
+                                } else {
+                                    LabelAPI overclockLabel = tooltip.addPara("%s %s", pad, t,"Overclock:", "None active");
+                                    overclockLabel.setHighlight("Overclock:", "None active");
+                                    overclockLabel.setHighlightColors(special, g);
+                                }
                             }
                             if(isWorkshopMode) {
                                 //---------Conflicts
@@ -435,12 +441,10 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                     TooltipMakerAPI overclockTooltip = bionicDisplayContainer.createTooltip("BIONIC_OVERCLOCK_NAME", sectionW, sectionH, false, sectionX, overclockRowY);
                     overclockTooltip.getPosition().inTL(sectionX, overclockRowY);
                     //>name
-                    overclockTooltip.setParaSmallInsignia();
                     LabelAPI overclockName = overclockTooltip.addPara("[ %s ]", pad, h, b.isOverClockApplied()? b.appliedOverclock.name: "--------");
                     overclockName.setHighlight("[",b.isOverClockApplied()? b.appliedOverclock.name: "--------", "]");
                     overclockName.setHighlightColors(special, b.isOverClockApplied()? h: g, special);
                     overclockName.getPosition().setSize(bionicNameW,sectionH);
-                    overclockTooltip.setParaFontDefault();
                 }
 
                 bionicInstalledI++;
@@ -589,7 +593,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
 //        subComponentPersonList.add(personDisplayContainer);
         //hover
         ButtonAPI areaChecker = personDisplayContainerTooltip.addAreaCheckbox("", null,Color.red.darker(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), pW, pH, 0);
-        addButtonToList(areaChecker, "hover:"+member.getId());
+        addButtonToList(areaChecker, "hover_person:"+member.getId());
         areaChecker.getPosition().setLocation(0,0).inTL(0, 0);
         //--------image
         int imageX = (int) 0;
@@ -774,7 +778,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                         }
                         ba_component component1 = componentMap.get("PERSON_LIST_PANEL");
                         if(component1 != null && component1.tooltipMap.get("PERSON_LIST_TOOLTIP") != null) {
-                            if(tokens[0].equals("hover") && debounceplugin.isDebounceOver("PERSON_LIST_TOOLTIP", 0, component1.tooltipMap.get("PERSON_LIST_TOOLTIP").getExternalScroller().getYOffset())) {
+                            if(tokens[0].equals("hover_person") && debounceplugin.isDebounceOver("PERSON_LIST_TOOLTIP", 0, component1.tooltipMap.get("PERSON_LIST_TOOLTIP").getExternalScroller().getYOffset())) {
                                 if(!this.currentPerson.getId().equals(tokens[1])) {
                                     for(PersonAPI person: ba_officermanager.listPersons) {
                                         if(tokens[1].equals(person.getId())) {

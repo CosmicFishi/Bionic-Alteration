@@ -45,6 +45,7 @@ public class ba_uiplugin extends ba_uicommon {
     public static final String PERSON_LIST = "person_list", INVENTORY = "inventory";
     public String currentSelectOverclockLocation = PERSON_LIST;
     public ba_bionicitemplugin currentSelectOverclockBionic = null;
+    public String currentSelectedOverclock = null;
     int dW, dH, pW, pH;
     protected HashMap<String, ba_component> tabMap = new HashMap<>();
 
@@ -294,11 +295,11 @@ public class ba_uiplugin extends ba_uicommon {
                 LabelAPI step1Para = tooltip.addPara("- Select the %s from either %s or %s", pad , h, "overclocking bionic", "player fleet", "player inventory");
                 step1Para.setHighlightColors(h,h,h);
                 LabelAPI step2Para = tooltip.addPara("- Select what %s you want to put into your bionic", pad , h, "overclock");
-                step1Para.setHighlightColors(h);
+                step2Para.setHighlightColors(h);
                 LabelAPI step3Para = tooltip.addPara("- Check for the %s", pad , h, "overclock cost");
-                step1Para.setHighlightColors(h);
+                step3Para.setHighlightColors(h);
                 LabelAPI step4Para = tooltip.addPara("- If available, select the %s button", pad , h, "Overclock");
-                step1Para.setHighlightColors(h);
+                step4Para.setHighlightColors(h);
             }
         }, questionBtn, TooltipMakerAPI.TooltipLocation.ABOVE);
 
@@ -315,6 +316,37 @@ public class ba_uiplugin extends ba_uicommon {
         );
         addButtonToList(overclockBtn, "overclock:");
         overclockBtn.getPosition().setLocation(0,0).inTL(overclockX, overclockY);
+        overclockBtn.setEnabled(this.currentSelectOverclockBionic != null && this.currentSelectedOverclock != null);
+        creatorComponentTooltipMaker.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
+            @Override
+            public boolean isTooltipExpandable(Object tooltipParam) {
+                return true;
+            }
+
+            @Override
+            public float getTooltipWidth(Object tooltipParam) {
+                return 500;
+            }
+
+            @Override
+            public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                tooltip.setParaOrbitronLarge();
+                LabelAPI helpPara = tooltip.addSectionHeading("Info", Alignment.MID, 0);
+                tooltip.setParaFontDefault();
+                LabelAPI selectBPara = tooltip.addPara("- Current selected bionic: %s", pad , h, currentSelectOverclockBionic != null? currentSelectOverclockBionic.getName(): "None");
+                selectBPara.setHighlightColors(currentSelectOverclockBionic != null? h : g);
+                if(currentSelectOverclockLocation.equals(PERSON_LIST)) {
+                    LabelAPI selectLPara = tooltip.addPara("- Current selected limb: %s", pad , h, currentSelectedLimb != null ? currentSelectedLimb.name: "None");
+                    selectLPara.setHighlightColors(currentSelectedLimb != null ? h: g);
+                }
+                LabelAPI selectOPara = tooltip.addPara("- Current selected overclock: %s", pad , h,
+                        (currentSelectedOverclock != null) ?
+                                ba_overclockmanager.getOverclock(currentSelectedOverclock) != null ?
+                                ba_overclockmanager.getOverclock(currentSelectedOverclock).name : "the overclock ID doesn't match any of the existing" :
+                            "None");
+                selectOPara.setHighlightColors(currentSelectedOverclock != null? h: g);
+            }
+        }, overclockBtn, TooltipMakerAPI.TooltipLocation.ABOVE);
     }
     public void displayInventoryBtm(ba_component creatorComponent, String creatorComponentTooltip, float cW, float cH, float cX, float cY) {
         final float pad = 10f;
@@ -526,7 +558,8 @@ public class ba_uiplugin extends ba_uicommon {
             LabelAPI emptyLabel = overclockListTooltipContainer.addPara(emptyText,Misc.getDarkPlayerColor(), 1);
             emptyLabel.getPosition().inTL(emptyX - (emptyLabel.computeTextWidth(emptyText) / 2), emptyY);
         } else {
-            //todo: overclock list
+            //todo: overclock list.
+            //disable the item if the person already installed that overclock
             float itemW = listW;
             float itemH = 300;
             float itemX = 0;
@@ -576,11 +609,11 @@ public class ba_uiplugin extends ba_uicommon {
         borderList.getPosition().setSize(itemContainerW - pad, itemContainerH - pad);
         itemContainerContainer.mainPanel.addComponent(borderList).setLocation(0,0).inTL(0, pad);
 
-//        //hover
-//        ButtonAPI areaChecker = itemContainerTooltipContainer.addAreaCheckbox("", null, new Color(255, 117, 134).darker().darker(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), pW, pH, 0);
-//        addButtonToList(areaChecker, "overclock_hover:"+overclock.id);
-//        areaChecker.getPosition().setSize(borderList.getPosition().getWidth(), borderList.getPosition().getHeight());
-//        areaChecker.getPosition().setLocation(0,0).inTL(0, 0);
+        //hover
+        ButtonAPI areaChecker = itemContainerTooltipContainer.addAreaCheckbox("", null, new Color(255, 117, 134).darker().darker(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), pW, pH, 0);
+        addButtonToList(areaChecker, "overclock_hover:"+overclock.id);
+        areaChecker.getPosition().setSize(borderList.getPosition().getWidth(), borderList.getPosition().getHeight());
+        areaChecker.getPosition().setLocation(0,0).inTL(0, pad);
         //---------Name
         int nameH = 30;
         int nameW = (int) (borderList.getPosition().getWidth() - pad - pad);
@@ -677,7 +710,28 @@ public class ba_uiplugin extends ba_uicommon {
                     needsReset = true;
                     break;
                 }
-                //check when the player click the bionic table
+                if(tokens[0].equals("overclock_hover")  && tokens[1] != null) {
+                    if(ba_overclockmanager.getOverclock(tokens[1]) != null) {
+                        this.currentSelectedOverclock = tokens[1];
+                        needsReset = true;
+                        break;
+                    }
+                }
+                if(tokens[0].equals("overclock") && this.currentSelectOverclockBionic != null && this.currentSelectedOverclock != null) {
+                    boolean success = false;
+                    if(this.currentSelectedLimb != null) {
+                        success = ba_officermanager.overclockBionic(this.currentSelectOverclockBionic, this.currentSelectedOverclock, this.currentSelectedLimb, this.currentPerson);
+                    } else {
+                        success = ba_officermanager.overclockBionic(this.currentSelectOverclockBionic, this.currentSelectedOverclock, null, null);
+                    }
+                    if(success) {
+                        this.currentSelectOverclockBionic = null;
+                        this.currentSelectedLimb = null;
+                        this.currentSelectedBionic = null;
+                    }
+                    needsReset= true;
+                    break;
+                }
             }
         }
         super.advance(amount);
@@ -690,7 +744,6 @@ public class ba_uiplugin extends ba_uicommon {
 
     @Override
     public void processInput(List<InputEventAPI> events) {
-        super.processInput(events);
         boolean shouldRefresh = false;
         for (InputEventAPI event : events) {
             if (event.isConsumed()) continue;
@@ -703,19 +756,22 @@ public class ba_uiplugin extends ba_uicommon {
                     if(event.getX() >= buttonX && event.getX() < buttonX + buttonW && event.getY() >= buttonY && event.getY() < buttonY+buttonH) {
                         String s = buttonMap.get(button);
                         String[] tokens = s.split(":");
-//                        ba_component component = componentMap.get("INVENTORY_PANEL");
-//                        //hover bionic item in inventory
-//                        if(component != null && component.tooltipMap.get("INVENTORY_TOOLTIP") != null) {
-//                            if(tokens[0].equals("hover_bionic_item") && debounceplugin.isDebounceOver("INVENTORY_TOOLTIP", 0, component.tooltipMap.get("INVENTORY_TOOLTIP").getExternalScroller().getYOffset())) {
-//                                if(ba_bionicmanager.bionicItemMap.get(tokens[1]) != null && (this.currentHoveredBionic == null || !this.currentHoveredBionic.bionicId.equals(tokens[1]))) {
-//                                    this.currentHoveredBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
-//                                    shouldRefresh = true;
-//                                }
-//                            }
-//                        }
+                        ba_component component1 = componentMap.get("PERSON_LIST_PANEL");
+                        if(component1 != null && component1.tooltipMap.get("PERSON_LIST_TOOLTIP") != null) {
+                            if(tokens[0].equals("hover_person")) {
+                                if(!this.currentPerson.getId().equals(tokens[1])) {
+                                    if(this.currentSelectedOverclock != null) this.currentSelectedOverclock = null;
+                                    if(this.currentSelectOverclockBionic != null) this.currentSelectOverclockBionic = null;
+                                    if(this.currentSelectedLimb != null) this.currentSelectedLimb = null;
+                                    shouldRefresh = true;
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
             }
+            super.processInput(events);
             //is ESC is pressed, close the custom UI panel and the blank IDP we used to create it
             if (event.isKeyDownEvent() && event.getEventValue() == Keyboard.KEY_ESCAPE) {
                 event.consume();

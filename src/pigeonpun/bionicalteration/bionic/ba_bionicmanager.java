@@ -334,9 +334,13 @@ public class ba_bionicmanager {
                     if(bionicInstalled == null) log.error("Can't find bionic of tag: " + tokens[0]);
                     ba_limbmanager.ba_limb sectionInstalled = ba_limbmanager.getLimb(tokens[1]);
                     if(sectionInstalled == null) log.error("Can't find limb of tag: " + tokens[1]);
-                    if(tokens[2] != null) {
+                    if(tokens.length >= 3 && tokens[2] != null) {
                         ba_overclock appliedOverclock = ba_overclockmanager.getOverclock(tokens[2]);
-                        if (appliedOverclock == null) log.error("Can't find overclock of tag: " + tokens[2]);
+                        if (appliedOverclock == null) {
+                            log.error("Can't find overclock of tag: " + tokens[2]);
+                        } else {
+                            ba_overclockmanager.overclockBionic(bionicInstalled, appliedOverclock.id);
+                        }
                     }
                     if(bionicsInstalledList.get(sectionInstalled) != null) {
                         bionicsInstalledList.get(sectionInstalled).add(bionicInstalled);

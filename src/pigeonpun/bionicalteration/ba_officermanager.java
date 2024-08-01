@@ -426,7 +426,6 @@ public class ba_officermanager {
         if(checkIfCanInstallBionic(bionic, limb, person)) {
             boolean removeSuccessful = true;
             if(removeBionicOnInstall) {
-                //todo: modify this so that the item that have overclock will apply the overclock when they install the bionic if the bionic have overclock in it
                 SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
                 removeSuccessful = Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, 1);
             }
@@ -464,7 +463,6 @@ public class ba_officermanager {
                     }
                 }
             }
-            //todo: modify this so that the overclock will be applied to the bionic item in the inventory
             //remove later because the bionic tag is needed
             person.removeTag(bionic.bionicId+":"+limb.limbId);
             SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
@@ -479,29 +477,40 @@ public class ba_officermanager {
         }
         return false;
     }
-    public static boolean overclockBionic(ba_bionicitemplugin bionic, ba_limbmanager.ba_limb limb, ba_overclock selectedOverclock, PersonAPI person) {
+
+    /**
+     * @param bionic
+     * @param overclockId
+     * @param limb can be null
+     * @param person can be null
+     * @return
+     */
+    public static boolean overclockBionic(ba_bionicitemplugin bionic, String overclockId, ba_limbmanager.ba_limb limb, PersonAPI person) {
         if(ba_overclockmanager.isBionicOverclockable(bionic)) {
             boolean removeSuccessful = true;
-            SpecialItemData specialItem = new SpecialItemData(ba_variablemanager.BA_OVERCLOCK_ITEM, null);
-            removeSuccessful = Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, selectedOverclock.upgradeCost);
+            //todo: remove the evoshard
+//            SpecialItemData specialItem = new SpecialItemData(ba_variablemanager.BA_OVERCLOCK_ITEM, null);
+//            removeSuccessful = Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, selectedOverclock.upgradeCost);
             if(removeSuccessful) {
-                updatePersonStatsOnInteract(bionic, limb, person, true);
-                if(bionic.isApplyAdminEffect && !getPersonGovernMarkets(person).isEmpty()) {
-                    for(MarketAPI market: getPersonGovernMarkets(person)) {
-                        if(!market.hasCondition(ba_variablemanager.BA_MARKET_CONDITION_ID)) {
-                            market.addCondition(ba_variablemanager.BA_MARKET_CONDITION_ID);
-                        }
+                if(limb != null && person != null) {
+                    //overclock bionic while the bionic is on the person
+                    String personBionicLimbTag = bionic.bionicId+":"+limb.limbId;
+                    if(person.getTags().contains(personBionicLimbTag)) {
+                        person.getTags().remove(personBionicLimbTag);
+                        String newTag = personBionicLimbTag + ":" + overclockId;
+                        person.addTag(newTag);
                     }
+                } else {
+                    ba_overclockmanager.overclockBionic(bionic, overclockId);
                 }
-                if(bionic.effectScript != null) {
-                    bionic.effectScript.onInstall(person, limb, bionic);
-                }
+                updatePersonStatsOnInteract(bionic, limb, person, true);
             }
             if(!removeSuccessful) {
                 log.error("Can't find bionic item in player inventory => abort installing");
             }
             return removeSuccessful;
         }
+
         return false;
     }
     public static List<MarketAPI> getPersonGovernMarkets(PersonAPI person) {
