@@ -33,8 +33,8 @@ public class bioniccondition extends BaseMarketConditionPlugin {
             List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
             for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
                 for(ba_bionicitemplugin bionic: anatomy.bionicInstalled) {
-                    if(bionic.effectScript != null && bionic.isApplyCaptainEffect) {
-                        String applyId = id + bionic.bionicId + anatomy.limb;
+                    String applyId = id + bionic.bionicId + anatomy.limb;
+                    if(bionic.effectScript != null && bionic.isApplyAdminEffect && !checkIfAlreadyAppliedBionicEffect(applyId)) {
                         bionic.effectScript.applyEffectAdminMarket(market, applyId, 0, bionic);
                     }
                 }
@@ -50,7 +50,7 @@ public class bioniccondition extends BaseMarketConditionPlugin {
             List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
             for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
                 for(ba_bionicitemplugin bionic: anatomy.bionicInstalled) {
-                    if(bionic.effectScript != null && bionic.isApplyCaptainEffect) {
+                    if(bionic.effectScript != null && bionic.isApplyAdminEffect) {
                         String applyId = id + bionic.bionicId + anatomy.limb;
                         bionic.effectScript.unapplyEffectAdminMarket(market, applyId);
                     }

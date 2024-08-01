@@ -11,7 +11,6 @@
     "name_isAllowBionicsToSpawnInPlayerFleetOnNewSave": "Allow bionics to spawn on player's fleet on new game",
     "name_isBRMCapDisable": "True to disable the BRM cap, BRM cap will no longer be applied. Allowing you and others to install bionic regardless of BRM cap. Do note that if have this enable and generate bionic on player fleet enable, when you start a new save, you will be bombarded with bionics on start",
     "header_debug": "Debug",
-    "name_isDevmode": "Dev mode",
-    "header_Generate": "Generating Bionics"
+    "name_isDevmode": "Dev mode"
   }
 }
