@@ -128,7 +128,7 @@ public class ba_conscious_critical implements ba_conscious {
         market.getAccessibilityMod().modifyFlat(id + "conscious", -MARKET_ACCESS, ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
         market.getStability().modifyFlat(id + "conscious", -MARKET_STABILITY, ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
         market.getUpkeepMult().modifyMult(id + "conscious", 1 + MARKET_UPKEEP,  ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
-        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id + "conscious", (1 - MARKET_DEFEND) * 100, ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
+        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id + "conscious", (1 - MARKET_DEFEND), ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
     }
 
     @Override
