@@ -1,5 +1,6 @@
 0.0.2e changelog:
 - Fix bionic effect not applying on market (partly also solve the issue of duplicating bionic effect on the market as well)
+- Fix critical effect applying ways more than intended.
 0.0.2d changelog:
 - Fix crash from interacting with other fleet when cant find the person variant
 0.0.2c changelog:
