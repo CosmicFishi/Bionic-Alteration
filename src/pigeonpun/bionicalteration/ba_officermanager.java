@@ -81,7 +81,7 @@ public class ba_officermanager {
     }
     public static void setUpVariant(List<PersonAPI> listOfficers) {
         for(PersonAPI person: listOfficers) {
-            if(getPersonVariantTag(person) == null) {
+            if(getPersonVariantTag(person) == null && person.getFaction() != null) {
                 String randomVariant = ba_variantmanager.getRandomVariantFromFaction(person.getFaction().getId());
                 person.addTag(randomVariant);
             }
@@ -124,6 +124,9 @@ public class ba_officermanager {
         for(PersonAPI person : listOfficer) {
             int currentTry = 0;
             int maxTotalTries = 50;
+            if(person.getFaction() == null) {
+                continue;
+            }
             ba_factiondata factionData = ba_factionmanager.getFactionData(person.getFaction().getId());
             ba_factiondata.ba_factionVariantDetails personVariant = null;
             for(ba_factiondata.ba_factionVariantDetails detail: factionData.variantDetails) {
@@ -323,7 +326,7 @@ public class ba_officermanager {
                 }
             }
         } else {
-            log.info("Error, can't find anatomy of variant: " + personGenericVariant + " for officer from " + person.getFaction().getDisplayName() + " with tags " + person.getTags());
+            log.info("Error, can't find anatomy of variant: " + personGenericVariant + " for officer from " + (person.getFaction() != null ? person.getFaction().getDisplayName(): "(No faction)") + " with tags " + person.getTags());
         }
         return anatomyList;
     }
@@ -476,9 +479,11 @@ public class ba_officermanager {
     }
     public static List<MarketAPI> getPersonGovernMarkets(PersonAPI person) {
         List<MarketAPI> governMarkets = new ArrayList<>();
-        for(MarketAPI market: Misc.getFactionMarkets(person.getFaction())) {
-            if(market.getAdmin().getId().equals(person.getId())) {
-                governMarkets.add(market);
+        if(person.getFaction() != null) {
+            for(MarketAPI market: Misc.getFactionMarkets(person.getFaction())) {
+                if(market.getAdmin().getId().equals(person.getId())) {
+                    governMarkets.add(market);
+                }
             }
         }
         return governMarkets;
