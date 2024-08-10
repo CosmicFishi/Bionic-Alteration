@@ -7,9 +7,9 @@
     {
       "major": 0,
       "minor": 0,
-      "patch": 2e # Can be a number, character or string (1, 2, a, b, "-RC2", etc)
+      "patch": 2f # Can be a number, character or string (1, 2, a, b, "-RC2", etc)
     },
-  "modThreadId": 0, # eg 8181
+  "modThreadId": 30383, # eg 8181
 
   "directDownloadURL": "https://github.com/CosmicFishi/Bionic-Alteration/releases/download/0.0.2e/Bionic-Alteration-0.0.2e.zip"
 }
