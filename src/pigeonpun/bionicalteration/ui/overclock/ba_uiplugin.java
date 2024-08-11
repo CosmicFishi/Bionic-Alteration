@@ -691,8 +691,8 @@ public class ba_uiplugin extends ba_uicommon {
                     for(ba_officermanager.ba_bionicAugmentedData data: ba_officermanager.getBionicAnatomyList(this.currentPerson)) {
                         if(data.limb.limbId.equals(this.currentSelectedLimb.limbId)) {
 //                            this.previousSelectOverclockLimbId = this.currentSelectedLimb.limbId;
-                            if(data.bionicInstalled.size() > 0) {
-                                this.currentSelectOverclockBionic = data.bionicInstalled.get(0);
+                            if(data.bionicInstalled != null) {
+                                this.currentSelectOverclockBionic = data.bionicInstalled;
                             } else {
                                 this.currentSelectOverclockBionic = null;
                             }

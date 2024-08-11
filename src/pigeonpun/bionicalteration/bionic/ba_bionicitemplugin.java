@@ -52,7 +52,7 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
     public boolean isEffectAppliedAfterRemove;
     public HashMap<String, Object> customData = new HashMap<>();
     public List<String> overclockList = new ArrayList<>();
-    public ba_overclock appliedOverclock = null;
+//    public ba_overclock appliedOverclock = null;
     protected boolean isInitFully = false;
     public ba_bionicitemplugin() {}
     public ba_bionicitemplugin(String bionicId, SpecialItemSpecAPI spec ,String bionicLimbGroupId, String namePrefix, Color displayColor, int brmCost,
@@ -109,24 +109,23 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
             this.isAllowedRemoveAfterInstall = bionicInMap.isAllowedRemoveAfterInstall;
             this.isEffectAppliedAfterRemove = bionicInMap.isEffectAppliedAfterRemove;
 
-            //todo: save the overclock ID into this data => extract it here to put into the applied overclock
-            if(stack.getSpecialDataIfSpecial().getData() != null) {
-                JSONObject json = ba_utils.getJsonFromString(stack.getSpecialDataIfSpecial().getData());
-                try {
-                    String overclockId = json.getString("overclock");
-                    ba_overclock overclock = ba_overclockmanager.getOverclock(overclockId);
-                    if(overclock != null) {
-                        this.appliedOverclock = overclock;
-                    }
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+//            if(stack.getSpecialDataIfSpecial().getData() != null) {
+//                JSONObject json = ba_utils.getJsonFromString(stack.getSpecialDataIfSpecial().getData());
+//                try {
+//                    String overclockId = json.getString("overclock");
+//                    ba_overclock overclock = ba_overclockmanager.getOverclock(overclockId);
+//                    if(overclock != null) {
+//                        this.appliedOverclock = overclock;
+//                    }
+//                } catch (JSONException e) {
+//                    throw new RuntimeException(e);
+//                }
+//            }
         }
     }
-    public boolean isOverClockApplied() {
-        return this.appliedOverclock != null;
-    }
+//    public boolean isOverClockApplied() {
+//        return this.appliedOverclock != null;
+//    }
     @Override
     public String getName() {
         return spec.getName();

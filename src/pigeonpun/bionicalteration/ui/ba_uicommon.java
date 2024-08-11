@@ -308,9 +308,9 @@ public class ba_uicommon implements CustomUIPanelPlugin {
             String bionicTooltipContainerKey = "BIONIC_TOOLTIP_CONTAINER";
             String bionicPanelContainerKey = keyPreset + "BIONIC_PANEL_CONTAINER_"+i;
             int singleBionicInstalledNameH = 40;
-            int bionicH = bionic.bionicInstalled.size()!= 0 ? singleBionicInstalledNameH * bionic.bionicInstalled.size() : singleBionicInstalledNameH;
+            int bionicH = singleBionicInstalledNameH;
             //add a extra line for the overclock
-            if(bionic.bionicInstalled.size()!= 0 && ba_overclockmanager.isBionicOverclockable(bionic.bionicInstalled.get(0))) {
+            if(bionic.bionicInstalled != null && ba_overclockmanager.isBionicOverclockable(bionic.bionicInstalled)) {
                 bionicH += singleBionicInstalledNameH;
             }
             final int bionicW = (int) (tableW - pad);
@@ -323,7 +323,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
             subComponentBionicList.add(bionicDisplayContainer);
             //hover
             ButtonAPI areaChecker = personDisplayContainerTooltip.addAreaCheckbox("", null,Misc.getBasePlayerColor(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), bionicW, bionicH, 0);
-            addButtonToList(areaChecker, "hover_bionic_table_limb:"+bionic.limb.limbId + (!bionic.bionicInstalled.isEmpty()? ":"+bionic.bionicInstalled.get(0).getId() : ""));
+            addButtonToList(areaChecker, "hover_bionic_table_limb:"+bionic.limb.limbId + (bionic.bionicInstalled != null ? ":"+bionic.bionicInstalled.getId() : ""));
             areaChecker.getPosition().setLocation(0,0).inTL(0, 0);
             if(this.currentSelectedLimb != null) {
                 if(this.currentSelectedLimb.limbId.equals(bionic.limb.limbId)) {
@@ -348,37 +348,38 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                     tooltip.addPara(bionic.limb.description, pad);
                     tooltip.addSpacer(pad);
                     tooltip.addSectionHeading("Bionics", Alignment.MID, 0);
-                    if(bionic.bionicInstalled.size() != 0) {
-                        for(ba_bionicitemplugin b: bionic.bionicInstalled) {
-                            b.effectScript.displayEffectDescription(tooltip, currentPerson, b, false);
-                            //---------Overclock
-                            if(ba_overclockmanager.isBionicOverclockable(b)) {
-                                if(b.isOverClockApplied()) {
-                                    //todo: update overclocks descriptions and move this into their separate overclock classes
-                                    LabelAPI overclockLabel = tooltip.addPara("%s %s: %s", pad, t, b.appliedOverclock.name, "[O]" , !b.appliedOverclock.description.equals("")? b.appliedOverclock.description: "No description for now...");
-                                    overclockLabel.setHighlightColors(h, special,  Misc.getTextColor());
-                                } else {
-                                    LabelAPI overclockLabel = tooltip.addPara("%s %s", pad, t,"Overclock:", "None active");
-                                    overclockLabel.setHighlight("Overclock:", "None active");
-                                    overclockLabel.setHighlightColors(special, g);
-                                }
+                    if(bionic.bionicInstalled != null) {
+                        ba_bionicitemplugin b = bionic.bionicInstalled;
+                        b.effectScript.displayEffectDescription(tooltip, currentPerson, b, false);
+                        //---------Overclock
+                        //todo: fix overclock
+//                        if(ba_overclockmanager.isBionicOverclockable(b)) {
+//                            if(b.isOverClockApplied()) {
+//                                //todo: update overclocks descriptions and move this into their separate overclock classes
+//                                LabelAPI overclockLabel = tooltip.addPara("%s %s: %s", pad, t, b.appliedOverclock.name, "[O]" , !b.appliedOverclock.description.equals("")? b.appliedOverclock.description: "No description for now...");
+//                                overclockLabel.setHighlightColors(h, special,  Misc.getTextColor());
+//                            } else {
+//                                LabelAPI overclockLabel = tooltip.addPara("%s %s", pad, t,"Overclock:", "None active");
+//                                overclockLabel.setHighlight("Overclock:", "None active");
+//                                overclockLabel.setHighlightColors(special, g);
+//                            }
+//                        }
+                        if(isWorkshopMode) {
+                            //---------Conflicts
+                            StringBuilder conflictsList = new StringBuilder();
+                            for (ba_bionicitemplugin bionic: ba_bionicmanager.getListBionicConflicts(b)) {
+                                conflictsList.append(bionic.getName()).append(", ");
                             }
-                            if(isWorkshopMode) {
-                                //---------Conflicts
-                                StringBuilder conflictsList = new StringBuilder();
-                                for (ba_bionicitemplugin bionic: ba_bionicmanager.getListBionicConflicts(b)) {
-                                    conflictsList.append(bionic.getName()).append(", ");
-                                }
-                                if(conflictsList.length() > 0) {
-                                    conflictsList.setLength(conflictsList.length() - 2);
-                                } else {
-                                    conflictsList.append("None");
-                                }
-                                LabelAPI conflictListLabel = tooltip.addPara("%s %s", pad, t,"Conflicts:", conflictsList.toString());
-                                conflictListLabel.setHighlight("Conflicts:", conflictsList.toString());
-                                conflictListLabel.setHighlightColors(g.brighter().brighter(), conflictsList.toString().equals("None")? g : Misc.getNegativeHighlightColor());
+                            if(conflictsList.length() > 0) {
+                                conflictsList.setLength(conflictsList.length() - 2);
+                            } else {
+                                conflictsList.append("None");
                             }
-                            if(expanded) {
+                            LabelAPI conflictListLabel = tooltip.addPara("%s %s", pad, t,"Conflicts:", conflictsList.toString());
+                            conflictListLabel.setHighlight("Conflicts:", conflictsList.toString());
+                            conflictListLabel.setHighlightColors(g.brighter().brighter(), conflictsList.toString().equals("None")? g : Misc.getNegativeHighlightColor());
+                        }
+                        if(expanded) {
 //                                if(!isWorkshopMode) {
 //                                    b.effectScript.displayEffectDescription(tooltip, currentPerson, b);
 ////                                    LabelAPI expandedTooltip = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Effects:", effect);
@@ -387,12 +388,11 @@ public class ba_uicommon implements CustomUIPanelPlugin {
 //                                } else {
 //
 //                                }
-                                LabelAPI expandedTooltip = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Description:", b.getSpec().getDesc());
-                                expandedTooltip.setHighlight("Description:", b.getSpec().getDesc());
-                                expandedTooltip.setHighlightColors(Misc.getGrayColor().brighter(), t);
-                            }
-                            tooltip.addSpacer(pad);
+                            LabelAPI expandedTooltip = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Description:", b.getSpec().getDesc());
+                            expandedTooltip.setHighlight("Description:", b.getSpec().getDesc());
+                            expandedTooltip.setHighlightColors(Misc.getGrayColor().brighter(), t);
                         }
+                        tooltip.addSpacer(pad);
                     } else {
                         tooltip.addPara("No bionic installed", pad, Misc.getGrayColor(), "No bionic installed");
                         tooltip.addSpacer(pad);
@@ -410,7 +410,8 @@ public class ba_uicommon implements CustomUIPanelPlugin {
             limbName.setHighlightColors(t);
             //---------Bionic
             int bionicInstalledI = 0;
-            for (ba_bionicitemplugin b: bionic.bionicInstalled) {
+            if(bionic.bionicInstalled != null) {
+                ba_bionicitemplugin b = bionic.bionicInstalled;
                 int sectionH = singleBionicInstalledNameH;
                 int sectionW = bionicRowW;
                 int sectionX = bionicRowX;
@@ -436,16 +437,17 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 bionicConscious.setHighlight("" + Math.round(b.consciousnessCost * 100) + "%");
                 bionicConscious.setHighlightColors(Misc.getNegativeHighlightColor());
                 bionicConscious.getPosition().inTL(bionicConsciousX + bionicConsciousW/2, pad);
-                if(ba_overclockmanager.isBionicOverclockable(b)) {
-                    int overclockRowY = singleBionicInstalledNameH;
-                    TooltipMakerAPI overclockTooltip = bionicDisplayContainer.createTooltip("BIONIC_OVERCLOCK_NAME", sectionW, sectionH, false, sectionX, overclockRowY);
-                    overclockTooltip.getPosition().inTL(sectionX, overclockRowY);
-                    //>name
-                    LabelAPI overclockName = overclockTooltip.addPara("[ %s ]", pad, h, b.isOverClockApplied()? b.appliedOverclock.name: "--------");
-                    overclockName.setHighlight("[",b.isOverClockApplied()? b.appliedOverclock.name: "--------", "]");
-                    overclockName.setHighlightColors(special, b.isOverClockApplied()? h: g, special);
-                    overclockName.getPosition().setSize(bionicNameW,sectionH);
-                }
+                //todo: fix overclock
+//                if(ba_overclockmanager.isBionicOverclockable(b)) {
+//                    int overclockRowY = singleBionicInstalledNameH;
+//                    TooltipMakerAPI overclockTooltip = bionicDisplayContainer.createTooltip("BIONIC_OVERCLOCK_NAME", sectionW, sectionH, false, sectionX, overclockRowY);
+//                    overclockTooltip.getPosition().inTL(sectionX, overclockRowY);
+//                    //>name
+//                    LabelAPI overclockName = overclockTooltip.addPara("[ %s ]", pad, h, b.isOverClockApplied()? b.appliedOverclock.name: "--------");
+//                    overclockName.setHighlight("[",b.isOverClockApplied()? b.appliedOverclock.name: "--------", "]");
+//                    overclockName.setHighlightColors(special, b.isOverClockApplied()? h: g, special);
+//                    overclockName.getPosition().setSize(bionicNameW,sectionH);
+//                }
 
                 bionicInstalledI++;
             }

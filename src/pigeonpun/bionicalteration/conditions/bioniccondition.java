@@ -33,10 +33,10 @@ public class bioniccondition extends BaseMarketConditionPlugin {
         if(person != null) {
             List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
             for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
-                for(ba_bionicitemplugin bionic: anatomy.bionicInstalled) {
-                    String applyId = bionic.bionicId + anatomy.limb.limbId;
-                    if(bionic.effectScript != null && bionic.isApplyAdminEffect) {
-                        bionic.effectScript.applyEffectAdminMarket(market, applyId, 0, bionic);
+                if(anatomy.bionicInstalled != null) {
+                    String applyId = anatomy.bionicInstalled.bionicId + anatomy.limb.limbId;
+                    if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyAdminEffect) {
+                        anatomy.bionicInstalled.effectScript.applyEffectAdminMarket(market, applyId, 0, anatomy.bionicInstalled);
                     }
                 }
             }
@@ -50,10 +50,10 @@ public class bioniccondition extends BaseMarketConditionPlugin {
         if(person != null) {
             List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
             for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
-                for(ba_bionicitemplugin bionic: anatomy.bionicInstalled) {
-                    if(bionic.effectScript != null && bionic.isApplyAdminEffect) {
-                        String applyId = bionic.bionicId + anatomy.limb.limbId;
-                        bionic.effectScript.unapplyEffectAdminMarket(market, applyId);
+                if(anatomy.bionicInstalled != null) {
+                    if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyAdminEffect) {
+                        String applyId = anatomy.bionicInstalled.bionicId + anatomy.limb.limbId;
+                        anatomy.bionicInstalled.effectScript.unapplyEffectAdminMarket(market, applyId);
                     }
                 }
             }

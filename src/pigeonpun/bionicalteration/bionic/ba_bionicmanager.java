@@ -8,6 +8,7 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -324,8 +325,8 @@ public class ba_bionicmanager {
      * @param person Person
      * @return The bionics and limb they are installed on.
      */
-    public static HashMap<ba_limbmanager.ba_limb, List<ba_bionicitemplugin>> getListLimbAndBionicInstalled(PersonAPI person) {
-        HashMap<ba_limbmanager.ba_limb, List<ba_bionicitemplugin>> bionicsInstalledList = new HashMap<>();
+    public static HashMap<ba_limbmanager.ba_limb, bionicData> getListLimbAndBionicInstalled(PersonAPI person) {
+        HashMap<ba_limbmanager.ba_limb, bionicData> bionicsInstalledList = new HashMap<>();
         if (!person.getTags().isEmpty()) {
             for (String tag: person.getTags()) {
                 if(tag != null && tag.contains(":")) {
@@ -334,18 +335,21 @@ public class ba_bionicmanager {
                     if(bionicInstalled == null) log.error("Can't find bionic of tag: " + tokens[0]);
                     ba_limbmanager.ba_limb sectionInstalled = ba_limbmanager.getLimb(tokens[1]);
                     if(sectionInstalled == null) log.error("Can't find limb of tag: " + tokens[1]);
+                    ba_overclock appliedOverclock = null;
                     if(tokens.length >= 3 && tokens[2] != null) {
-                        ba_overclock appliedOverclock = ba_overclockmanager.getOverclock(tokens[2]);
+                        appliedOverclock = ba_overclockmanager.getOverclock(tokens[2]);
                         if (appliedOverclock == null) {
                             log.error("Can't find overclock of tag: " + tokens[2]);
-                        } else {
-                            ba_overclockmanager.overclockBionic(bionicInstalled, appliedOverclock.id);
                         }
+                        //todo: change this.
+                        // Overclocks on person should be saved in the person memory
+                        // Overclocks applied on bionics in the inventory should be saved in the stack memory
                     }
                     if(bionicsInstalledList.get(sectionInstalled) != null) {
-                        bionicsInstalledList.get(sectionInstalled).add(bionicInstalled);
+                        bionicsInstalledList.get(sectionInstalled).bionic = bionicInstalled;
+                        bionicsInstalledList.get(sectionInstalled).overclock = appliedOverclock;
                     } else {
-                        bionicsInstalledList.put(sectionInstalled, new ArrayList<ba_bionicitemplugin>(Arrays.asList(bionicInstalled)));
+                        bionicsInstalledList.put(sectionInstalled, new bionicData(appliedOverclock, bionicInstalled));
                     }
                 }
             }
@@ -475,10 +479,11 @@ public class ba_bionicmanager {
 
         if(ba_overclockmanager.isBionicOverclockable(bionic)) {
             //----------overclock
-            String overclockApplied = bionic.isOverClockApplied() ? bionic.appliedOverclock.name: "none active";
-            LabelAPI overclockLabel = tooltip.addPara("%s %s", pad, t, "Overclock:", overclockApplied);
-            overclockLabel.setHighlight("Overclock:", overclockApplied);
-            overclockLabel.setHighlightColors(special, bionic.isOverClockApplied() ? h: g);
+            //todo: this
+//            String overclockApplied = bionic.isOverClockApplied() ? bionic.appliedOverclock.name: "none active";
+//            LabelAPI overclockLabel = tooltip.addPara("%s %s", pad, t, "Overclock:", overclockApplied);
+//            overclockLabel.setHighlight("Overclock:", overclockApplied);
+//            overclockLabel.setHighlightColors(special, bionic.isOverClockApplied() ? h: g);
         }
         //----------desc
         String desc = bionic.getSpec().getDesc();
@@ -494,6 +499,14 @@ public class ba_bionicmanager {
         } else {
             LabelAPI removableLabel = tooltip.addPara("%s", pad, t, "Can not be uninstall AFTER installing");
             removableLabel.setHighlightColors(bad);
+        }
+    }
+    public static class bionicData {
+        public ba_overclock overclock;
+        public ba_bionicitemplugin bionic;
+        public bionicData(@Nullable ba_overclock overclock, @Nullable ba_bionicitemplugin bionic) {
+            this.overclock = overclock;
+            this.bionic = bionic;
         }
     }
 }

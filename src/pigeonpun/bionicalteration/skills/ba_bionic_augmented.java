@@ -91,10 +91,10 @@ public class ba_bionic_augmented {
                 PersonAPI captain = stats.getFleetMember().getCaptain();
                 List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(captain);
                 for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
-                    for(ba_bionicitemplugin bionic: anatomy.bionicInstalled) {
-                        if(bionic.effectScript != null && bionic.isApplyCaptainEffect) {
-                            String applyId = id + bionic.bionicId + anatomy.limb;
-                            bionic.effectScript.applyOfficerEffect(stats, hullSize, applyId);
+                    if(anatomy.bionicInstalled != null) {
+                        if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyCaptainEffect) {
+                            String applyId = id + anatomy.bionicInstalled.bionicId + anatomy.limb;
+                            anatomy.bionicInstalled.effectScript.applyOfficerEffect(stats, hullSize, applyId);
                         }
                     }
                 }
@@ -109,10 +109,10 @@ public class ba_bionic_augmented {
                 PersonAPI captain = stats.getFleetMember().getCaptain();
                 List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(captain);
                 for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
-                    for(ba_bionicitemplugin bionic: anatomy.bionicInstalled) {
-                        if(bionic.effectScript != null && bionic.isApplyCaptainEffect) {
-                            String applyId = id + bionic.bionicId + anatomy.limb;
-                            bionic.effectScript.unapplyOfficerEffect(stats, hullSize, applyId);
+                    if(anatomy.bionicInstalled != null) {
+                        if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyCaptainEffect) {
+                            String applyId = id + anatomy.bionicInstalled.bionicId + anatomy.limb;
+                            anatomy.bionicInstalled.effectScript.unapplyOfficerEffect(stats, hullSize, applyId);
                         }
                     }
                 }
@@ -151,10 +151,10 @@ public class ba_bionic_augmented {
             if(person != null) {
                 List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
                 for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
-                    for(ba_bionicitemplugin bionic: anatomy.bionicInstalled) {
-                        if(bionic.effectScript != null && bionic.isApplyCaptainEffect) {
-                            String applyId = id + bionic.bionicId + anatomy.limb;
-                            bionic.effectScript.applyAdminEffect(stats, applyId);
+                    if(anatomy.bionicInstalled != null) {
+                        if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyCaptainEffect) {
+                            String applyId = id + anatomy.bionicInstalled.bionicId + anatomy.limb;
+                            anatomy.bionicInstalled.effectScript.applyAdminEffect(stats, applyId);
                         }
                     }
                 }
@@ -169,10 +169,10 @@ public class ba_bionic_augmented {
             if(person != null) {
                 List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
                 for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
-                    for(ba_bionicitemplugin bionic: anatomy.bionicInstalled) {
-                        if(bionic.effectScript != null && bionic.isApplyCaptainEffect) {
-                            String applyId = id + bionic.bionicId + anatomy.limb;
-                            bionic.effectScript.unapplyAdminEffect(stats, applyId);
+                    if(anatomy.bionicInstalled != null) {
+                        if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyCaptainEffect) {
+                            String applyId = id + anatomy.bionicInstalled.bionicId + anatomy.limb;
+                            anatomy.bionicInstalled.effectScript.unapplyAdminEffect(stats, applyId);
                         }
                     }
                 }

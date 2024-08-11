@@ -73,4 +73,5 @@ public class ba_variablemanager {
     public static final String BA_OVERCLOCK_STATION = "ba_station_overclock";
     public static final String BA_BIONIC_RESEARCH_STATION_SPAWNED_KEY = "$ba_bionic_research_station_spawned";
     public static final String BA_OVERCLOCK_ITEM = "ba_evoshard";
+    public static final String BA_PERSON_MEMORY_BIONIC_KEY = "$ba_bionic_key";
 }

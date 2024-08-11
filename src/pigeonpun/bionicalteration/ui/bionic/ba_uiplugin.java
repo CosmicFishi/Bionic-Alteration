@@ -817,20 +817,12 @@ public class ba_uiplugin extends ba_uicommon {
         List<ba_officermanager.ba_bionicAugmentedData> currentAnatomyList = ba_officermanager.getBionicAnatomyList(this.currentPerson);
         int i = 0;
         for(ba_officermanager.ba_bionicAugmentedData bionicAugmentedDatas: currentAnatomyList) {
-            for (ba_bionicitemplugin bionic: bionicAugmentedDatas.bionicInstalled) {
-//                String effect = "No effects yet...";
-//                if(bionic.effectScript != null) {
-//                    effect = bionic.effectScript.getShortEffectDescription();
-//                }
-//                LabelAPI expandedTooltip = subEffectListTooltipContainer.addPara("%s - %s", pad, Misc.getBasePlayerColor(), bionic.getName(), effect);
-//                expandedTooltip.setHighlight(bionic.getName(), effect);
-//                expandedTooltip.setHighlightColors(bionic.displayColor, bionic.effectScript != null ? t :Misc.getGrayColor());
-//                expandedTooltip.getPosition().inTL(pad, expandedTooltip.getPosition().getHeight() * i);
-                bionic.effectScript.displayEffectDescription(subEffectListTooltipContainer, currentPerson, bionic, false);
+            if(bionicAugmentedDatas.bionicInstalled != null) {
+                bionicAugmentedDatas.bionicInstalled.effectScript.displayEffectDescription(subEffectListTooltipContainer, currentPerson, bionicAugmentedDatas.bionicInstalled, false);
 
                 subEffectListTooltipContainer.addSpacer(spacerY);
-                i++;
             }
+            i++;
         }
         //do the adding late so the scroll work
         subEffectListContainer.mainPanel.addUIElement(subEffectListTooltipContainer).setLocation(0,0).inTL(subEffectX, subEffectY);
@@ -1161,7 +1153,7 @@ public class ba_uiplugin extends ba_uicommon {
                         if(currentTabId.equals(OVERVIEW)) {
                             ba_component component = componentMap.get("OVERVIEW_PERSON_LIST_PANEL");
                             if(component != null && component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP") != null) {
-                                if(tokens[0].equals("hover") && debounceplugin.isDebounceOver("OVERVIEW_PERSON_LIST_TOOLTIP", 0, component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller().getYOffset())) {
+                                if(tokens[0].equals("hover_person") && debounceplugin.isDebounceOver("OVERVIEW_PERSON_LIST_TOOLTIP", 0, component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller().getYOffset())) {
                                     if(!this.currentPerson.getId().equals(tokens[1])) {
                                         for(PersonAPI person: ba_officermanager.listPersons) {
                                             if(tokens[1].equals(person.getId())) {
