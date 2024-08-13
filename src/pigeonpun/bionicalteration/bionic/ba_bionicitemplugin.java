@@ -51,7 +51,8 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
     public float dropChance;
     public boolean isEffectAppliedAfterRemove;
     public HashMap<String, Object> customData = new HashMap<>();
-    public List<String> overclockList = new ArrayList<>();
+    public List<String> overclockList = new ArrayList<>(); //this can be empty if it is not the default in the bionic map from bionic manager.
+    public String appliedOverclock;
 //    public ba_overclock appliedOverclock = null;
     protected boolean isInitFully = false;
     public ba_bionicitemplugin() {}
@@ -108,19 +109,9 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
             }
             this.isAllowedRemoveAfterInstall = bionicInMap.isAllowedRemoveAfterInstall;
             this.isEffectAppliedAfterRemove = bionicInMap.isEffectAppliedAfterRemove;
-
-//            if(stack.getSpecialDataIfSpecial().getData() != null) {
-//                JSONObject json = ba_utils.getJsonFromString(stack.getSpecialDataIfSpecial().getData());
-//                try {
-//                    String overclockId = json.getString("overclock");
-//                    ba_overclock overclock = ba_overclockmanager.getOverclock(overclockId);
-//                    if(overclock != null) {
-//                        this.appliedOverclock = overclock;
-//                    }
-//                } catch (JSONException e) {
-//                    throw new RuntimeException(e);
-//                }
-//            }
+        }
+        if(stack != null) {
+            appliedOverclock = stack.getSpecialDataIfSpecial().getData();
         }
     }
 //    public boolean isOverClockApplied() {
@@ -134,6 +125,18 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
     public int getPrice(MarketAPI market, SubmarketAPI submarket) {
         if (spec != null) return (int) spec.getBasePrice();
         return 0;
+    }
+
+    /**
+     * NOTE: ONLY use this for the bionic ITEM, not when displaying on the bionic table.
+     * @return null or the overclock
+     */
+    public ba_overclock getAppliedOverclockOnItem() {
+        ba_overclock overclock = null;
+        if(appliedOverclock != null && !appliedOverclock.equals("")) {
+            overclock = ba_overclockmanager.getOverclock(appliedOverclock);
+        }
+        return overclock;
     }
 
     @Override

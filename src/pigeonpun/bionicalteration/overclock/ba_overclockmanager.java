@@ -13,6 +13,7 @@ import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bioniceffect;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
+import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.utils.ba_utils;
 
 import java.io.IOException;
@@ -104,9 +105,11 @@ public class ba_overclockmanager {
      * @return true if overclockable
      */
     public static boolean isBionicOverclockable(ba_bionicitemplugin bionic) {
-        return !bionic.overclockList.isEmpty();
+        ba_bionicitemplugin defaultBionic = ba_bionicmanager.getBionic(bionic.getId());
+        return !defaultBionic.overclockList.isEmpty();
     }
-    public static boolean overclockBionic(ba_bionicitemplugin bionic, String overclocKId) {
+    public static boolean overclockBionicItem(ba_bionicitemplugin bionic, String overclocKId) {
+        //todo: overclock the bionic item it self
 //        if(overclocKId != null && !overclocKId.equals("")) {
 //            if(isBionicOverclockable(bionic) && bionic.overclockList.contains(overclocKId) && getOverclock(overclocKId) != null) {
 //                bionic.appliedOverclock = getOverclock(overclocKId);
@@ -125,7 +128,29 @@ public class ba_overclockmanager {
 //                }
 //            }
 //        }
+        List<ba_officermanager.ba_bionicAugmentedData> listData = ba_officermanager.getBionicAnatomyList(person);
+        for(ba_officermanager.ba_bionicAugmentedData data: listData) {
+            if(data.limb.limbId.equals(limb.limbId)) {
+                overclock = data.appliedOverclock;
+                break;
+            }
+        }
         
+        return overclock;
+    }
+    public static ba_overclock getOverclockFromItem(ba_bionicitemplugin bionic) {
+        ba_overclock overclock = null;
+//        if(person.getMemoryWithoutUpdate().get(ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY) != null && person.getMemoryWithoutUpdate().get(ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY) instanceof ba_officermanager.ba_personmemorydata) {
+//            ba_officermanager.ba_personmemorydata data = (ba_officermanager.ba_personmemorydata) person.getMemoryWithoutUpdate().get(ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY);
+//            if(data.bionicInstalled.get(limb.limbId) != null) {
+//                ba_officermanager.ba_personmemorydata.ba_bionicData bionicData = data.bionicInstalled.get(limb.limbId);
+//                if(bionicData.overclockId != null) {
+//                    overclock = getOverclock(bionicData.overclockId);
+//                }
+//            }
+//        }
+        overclock = bionic.getAppliedOverclockOnItem();
+
         return overclock;
     }
 }

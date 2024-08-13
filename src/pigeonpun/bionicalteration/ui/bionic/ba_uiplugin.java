@@ -956,7 +956,10 @@ public class ba_uiplugin extends ba_uicommon {
         }
     }
     protected void removeBionic() {
-        ba_officermanager.removeBionic(this.currentRemovingBionic, this.currentSelectedLimb, this.currentPerson);
+        boolean success = ba_officermanager.removeBionic(this.currentRemovingBionic, this.currentSelectedLimb, this.currentPerson);
+        if (!success) {
+            log.error("Can not remove " + this.currentRemovingBionic.getName() + " from person with tags: " + this.currentPerson.getTags().toString());
+        }
 //        this.currentSelectedLimb = null;
         this.currentSelectedBionic = null;
         this.currentRemovingBionic = null;

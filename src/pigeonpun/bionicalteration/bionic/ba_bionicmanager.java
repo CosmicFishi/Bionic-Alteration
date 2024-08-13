@@ -341,9 +341,6 @@ public class ba_bionicmanager {
                         if (appliedOverclock == null) {
                             log.error("Can't find overclock of tag: " + tokens[2]);
                         }
-                        //todo: change this.
-                        // Overclocks on person should be saved in the person memory
-                        // Overclocks applied on bionics in the inventory should be saved in the stack memory
                     }
                     if(bionicsInstalledList.get(sectionInstalled) != null) {
                         bionicsInstalledList.get(sectionInstalled).bionic = bionicInstalled;
@@ -479,11 +476,11 @@ public class ba_bionicmanager {
 
         if(ba_overclockmanager.isBionicOverclockable(bionic)) {
             //----------overclock
-            //todo: this
-//            String overclockApplied = bionic.isOverClockApplied() ? bionic.appliedOverclock.name: "none active";
-//            LabelAPI overclockLabel = tooltip.addPara("%s %s", pad, t, "Overclock:", overclockApplied);
-//            overclockLabel.setHighlight("Overclock:", overclockApplied);
-//            overclockLabel.setHighlightColors(special, bionic.isOverClockApplied() ? h: g);
+            ba_overclock overclock = ba_overclockmanager.getOverclockFromItem(bionic);
+            String overclockApplied = overclock != null ? overclock.name : "none active";
+            LabelAPI overclockLabel = tooltip.addPara("%s %s", pad, t, "Overclock:", overclockApplied);
+            overclockLabel.setHighlight("Overclock:", overclockApplied);
+            overclockLabel.setHighlightColors(special, overclock != null ? h: g);
         }
         //----------desc
         String desc = bionic.getSpec().getDesc();

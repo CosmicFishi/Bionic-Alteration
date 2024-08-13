@@ -14,6 +14,7 @@ import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
+import pigeonpun.bionicalteration.overclock.ba_overclock;
 import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
 import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
 import pigeonpun.bionicalteration.utils.ba_utils;
@@ -25,7 +26,6 @@ import java.util.List;
 import java.util.Objects;
 
 //import static pigeonpun.bionicalteration.ui.bionic.ba_uiplugin.currentScrollPositionBionicTable;
-//todo: may be use this as a base class for the other two UIplugin ?
 public class ba_uicommon implements CustomUIPanelPlugin {
     protected CustomVisualDialogDelegate.DialogCallbacks callbacks;
     protected InteractionDialogAPI dialog;
@@ -40,6 +40,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
     protected float currentScrollPositionBionicTable = 0;
     protected float currentScrollPositionPersonList = 0;
     public static ba_debounceplugin debounceplugin = new ba_debounceplugin();
+    public List<CargoStackAPI> cargoBionic = new ArrayList<>();
     protected void init(CustomPanelAPI panel, CustomVisualDialogDelegate.DialogCallbacks callbacks, InteractionDialogAPI dialog) {
         currentScrollPositionInventory = 0;
         currentScrollPositionBionicTable = 0;
@@ -49,6 +50,13 @@ public class ba_uicommon implements CustomUIPanelPlugin {
     }
     protected void refresh() {
         //reset button for checking press
+        cargoBionic.clear();
+        CargoAPI playerCargo = Global.getSector().getPlayerFleet().getCargo();
+        for(CargoStackAPI cargo: playerCargo.getStacksCopy()) {
+            if(cargo.isSpecialStack() && cargo.getSpecialItemSpecIfSpecial() != null && ba_bionicmanager.bionicItemMap.containsKey(cargo.getSpecialDataIfSpecial().getId())) {
+                cargoBionic.add(cargo);
+            }
+        }
         for (ButtonAPI b : buttons) {
             if (b.isChecked()) {
                 b.setChecked(false);
@@ -83,15 +91,15 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         TooltipMakerAPI inventoryTooltipContainer = inventoryContainer.createTooltip(inventoryTooltipKey, containerW, containerH, true, 0,0);
         creatorComponent.attachSubPanel(creatorComponentTooltip, inventoryPanelKey, inventoryContainer, containerX, containerY);
 
-        CargoAPI playerCargo = Global.getSector().getPlayerFleet().getCargo();
-        java.util.List<CargoStackAPI> availableBionics = new ArrayList<>();
-        for(CargoStackAPI cargo: playerCargo.getStacksCopy()) {
-            if(cargo.isSpecialStack() && cargo.getSpecialItemSpecIfSpecial() != null && ba_bionicmanager.bionicItemMap.containsKey(cargo.getSpecialDataIfSpecial().getId())) {
-                availableBionics.add(cargo);
-            }
-        }
+//        CargoAPI playerCargo = Global.getSector().getPlayerFleet().getCargo();
+//        java.util.List<CargoStackAPI> availableBionics = new ArrayList<>();
+//        for(CargoStackAPI cargo: playerCargo.getStacksCopy()) {
+//            if(cargo.isSpecialStack() && cargo.getSpecialItemSpecIfSpecial() != null && ba_bionicmanager.bionicItemMap.containsKey(cargo.getSpecialDataIfSpecial().getId())) {
+//                availableBionics.add(cargo);
+//            }
+//        }
         List<ba_component> subComponentItemList = new ArrayList<>();
-        if(availableBionics.size() != 0) {
+        if(cargoBionic.size() != 0) {
             int index = 0;
             int row = 0;
             int itemW = 100;
@@ -99,8 +107,8 @@ public class ba_uicommon implements CustomUIPanelPlugin {
             int itemsPerRow = (int) Math.floor(containerW / itemW);
             int defaultRows = 1;
             int neededRows = defaultRows;
-            if((float) availableBionics.size() / itemsPerRow > defaultRows) {
-                neededRows = (int) Math.ceil((float) availableBionics.size() / itemsPerRow);
+            if((float) cargoBionic.size() / itemsPerRow > defaultRows) {
+                neededRows = (int) Math.ceil((float) cargoBionic.size() / itemsPerRow);
             }
             while(row < neededRows) {
                 int rowX = 0;
@@ -115,9 +123,9 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 subComponentItemList.add(rowContainer);
                 int rowItemCount = 0;
                 while(rowItemCount < itemsPerRow) {
-                    if(index < availableBionics.size()) {
-                        CargoStackAPI cargo = availableBionics.get(index);
-                        final ba_bionicitemplugin bionic = ba_bionicmanager.bionicItemMap.get(cargo.getSpecialItemSpecIfSpecial().getId());
+                    if(index < cargoBionic.size()) {
+                        CargoStackAPI cargo = cargoBionic.get(index);
+                        final ba_bionicitemplugin bionic = (ba_bionicitemplugin) cargo.getPlugin();
                         float quantity = cargo.getSize();
 
                         int itemX = rowItemCount * itemW;
@@ -139,7 +147,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                         quantityLabel.getPosition().inTL(itemX + itemW - quantityLabel.computeTextWidth(String.valueOf((int) quantity)) - pad / 2, itemY + pad / 2);
                         //---------hover
                         ButtonAPI areaChecker = rowTooltipContainer.addAreaCheckbox("", null,Misc.getBasePlayerColor(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), itemW, itemH, 0);
-                        addButtonToList(areaChecker, "hover_bionic_item:"+bionic.getId());
+                        addButtonToList(areaChecker, "hover_bionic_item:"+bionic.getId()+":"+index);
                         areaChecker.getPosition().setLocation(0,0).inTL(itemX, itemY);
                         if(currentSelectedBionic != null) {
                             if(currentSelectedBionic.equals(bionic)) {
@@ -304,13 +312,13 @@ public class ba_uicommon implements CustomUIPanelPlugin {
 //                }
 //            }
 //        }
-        for(final ba_officermanager.ba_bionicAugmentedData bionic: currentAnatomyList) {
+        for(final ba_officermanager.ba_bionicAugmentedData augmentData: currentAnatomyList) {
             String bionicTooltipContainerKey = "BIONIC_TOOLTIP_CONTAINER";
             String bionicPanelContainerKey = keyPreset + "BIONIC_PANEL_CONTAINER_"+i;
             int singleBionicInstalledNameH = 40;
             int bionicH = singleBionicInstalledNameH;
             //add a extra line for the overclock
-            if(bionic.bionicInstalled != null && ba_overclockmanager.isBionicOverclockable(bionic.bionicInstalled)) {
+            if(augmentData.bionicInstalled != null && ba_overclockmanager.isBionicOverclockable(augmentData.bionicInstalled)) {
                 bionicH += singleBionicInstalledNameH;
             }
             final int bionicW = (int) (tableW - pad);
@@ -323,10 +331,10 @@ public class ba_uicommon implements CustomUIPanelPlugin {
             subComponentBionicList.add(bionicDisplayContainer);
             //hover
             ButtonAPI areaChecker = personDisplayContainerTooltip.addAreaCheckbox("", null,Misc.getBasePlayerColor(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), bionicW, bionicH, 0);
-            addButtonToList(areaChecker, "hover_bionic_table_limb:"+bionic.limb.limbId + (bionic.bionicInstalled != null ? ":"+bionic.bionicInstalled.getId() : ""));
+            addButtonToList(areaChecker, "hover_bionic_table_limb:"+augmentData.limb.limbId + (augmentData.bionicInstalled != null ? ":"+augmentData.bionicInstalled.getId() : ""));
             areaChecker.getPosition().setLocation(0,0).inTL(0, 0);
             if(this.currentSelectedLimb != null) {
-                if(this.currentSelectedLimb.limbId.equals(bionic.limb.limbId)) {
+                if(this.currentSelectedLimb.limbId.equals(augmentData.limb.limbId)) {
                     areaChecker.highlight();
                 }
             }
@@ -345,30 +353,30 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 @Override
                 public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
                     tooltip.addSectionHeading("Limb", Alignment.MID, 0);
-                    tooltip.addPara(bionic.limb.description, pad);
+                    tooltip.addPara(augmentData.limb.description, pad);
                     tooltip.addSpacer(pad);
                     tooltip.addSectionHeading("Bionics", Alignment.MID, 0);
-                    if(bionic.bionicInstalled != null) {
-                        ba_bionicitemplugin b = bionic.bionicInstalled;
+                    if(augmentData.bionicInstalled != null) {
+                        ba_bionicitemplugin b = augmentData.bionicInstalled;
                         b.effectScript.displayEffectDescription(tooltip, currentPerson, b, false);
                         //---------Overclock
-                        //todo: fix overclock
-//                        if(ba_overclockmanager.isBionicOverclockable(b)) {
-//                            if(b.isOverClockApplied()) {
-//                                //todo: update overclocks descriptions and move this into their separate overclock classes
-//                                LabelAPI overclockLabel = tooltip.addPara("%s %s: %s", pad, t, b.appliedOverclock.name, "[O]" , !b.appliedOverclock.description.equals("")? b.appliedOverclock.description: "No description for now...");
-//                                overclockLabel.setHighlightColors(h, special,  Misc.getTextColor());
-//                            } else {
-//                                LabelAPI overclockLabel = tooltip.addPara("%s %s", pad, t,"Overclock:", "None active");
-//                                overclockLabel.setHighlight("Overclock:", "None active");
-//                                overclockLabel.setHighlightColors(special, g);
-//                            }
-//                        }
+                        if(ba_overclockmanager.isBionicOverclockable(b)) {
+                            ba_overclock overclock = augmentData.appliedOverclock;
+                            if(overclock != null) {
+                                //todo: update overclocks descriptions and move this into their separate overclock classes
+                                LabelAPI overclockLabel = tooltip.addPara("%s %s: %s", pad, t, overclock.name, "[O]" , !overclock.description.equals("")? overclock.description: "No description for now...");
+                                overclockLabel.setHighlightColors(h, special,  Misc.getTextColor());
+                            } else {
+                                LabelAPI overclockLabel = tooltip.addPara("%s %s", pad, t,"Overclock:", "None active");
+                                overclockLabel.setHighlight("Overclock:", "None active");
+                                overclockLabel.setHighlightColors(special, g);
+                            }
+                        }
                         if(isWorkshopMode) {
                             //---------Conflicts
                             StringBuilder conflictsList = new StringBuilder();
-                            for (ba_bionicitemplugin bionic: ba_bionicmanager.getListBionicConflicts(b)) {
-                                conflictsList.append(bionic.getName()).append(", ");
+                            for (ba_bionicitemplugin augmentData: ba_bionicmanager.getListBionicConflicts(b)) {
+                                conflictsList.append(augmentData.getName()).append(", ");
                             }
                             if(conflictsList.length() > 0) {
                                 conflictsList.setLength(conflictsList.length() - 2);
@@ -405,13 +413,13 @@ public class ba_uicommon implements CustomUIPanelPlugin {
             int nameX = limbX;
             TooltipMakerAPI bionicLimbNameTooltip = bionicDisplayContainer.createTooltip("BIONIC_LIMB_NAME", nameW, nameH, false, 0, 0);
             bionicLimbNameTooltip.getPosition().inTL(nameX, 0);
-            LabelAPI limbName = bionicLimbNameTooltip.addPara(bionic.limb.name, pad);
-            limbName.setHighlight(bionic.limb.name);
+            LabelAPI limbName = bionicLimbNameTooltip.addPara(augmentData.limb.name, pad);
+            limbName.setHighlight(augmentData.limb.name);
             limbName.setHighlightColors(t);
             //---------Bionic
             int bionicInstalledI = 0;
-            if(bionic.bionicInstalled != null) {
-                ba_bionicitemplugin b = bionic.bionicInstalled;
+            if(augmentData.bionicInstalled != null) {
+                ba_bionicitemplugin b = augmentData.bionicInstalled;
                 int sectionH = singleBionicInstalledNameH;
                 int sectionW = bionicRowW;
                 int sectionX = bionicRowX;
@@ -437,17 +445,17 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 bionicConscious.setHighlight("" + Math.round(b.consciousnessCost * 100) + "%");
                 bionicConscious.setHighlightColors(Misc.getNegativeHighlightColor());
                 bionicConscious.getPosition().inTL(bionicConsciousX + bionicConsciousW/2, pad);
-                //todo: fix overclock
-//                if(ba_overclockmanager.isBionicOverclockable(b)) {
-//                    int overclockRowY = singleBionicInstalledNameH;
-//                    TooltipMakerAPI overclockTooltip = bionicDisplayContainer.createTooltip("BIONIC_OVERCLOCK_NAME", sectionW, sectionH, false, sectionX, overclockRowY);
-//                    overclockTooltip.getPosition().inTL(sectionX, overclockRowY);
-//                    //>name
-//                    LabelAPI overclockName = overclockTooltip.addPara("[ %s ]", pad, h, b.isOverClockApplied()? b.appliedOverclock.name: "--------");
-//                    overclockName.setHighlight("[",b.isOverClockApplied()? b.appliedOverclock.name: "--------", "]");
-//                    overclockName.setHighlightColors(special, b.isOverClockApplied()? h: g, special);
-//                    overclockName.getPosition().setSize(bionicNameW,sectionH);
-//                }
+                if(b != null && ba_overclockmanager.isBionicOverclockable(b)) {
+                    ba_overclock overclock = augmentData.appliedOverclock;
+                    int overclockRowY = singleBionicInstalledNameH;
+                    TooltipMakerAPI overclockTooltip = bionicDisplayContainer.createTooltip("BIONIC_OVERCLOCK_NAME", sectionW, sectionH, false, sectionX, overclockRowY);
+                    overclockTooltip.getPosition().inTL(sectionX, overclockRowY);
+                    //>name
+                    LabelAPI overclockName = overclockTooltip.addPara("[ %s ]", pad, h, overclock != null? overclock.name: "--------");
+                    overclockName.setHighlight("[",overclock != null? overclock.name: "--------", "]");
+                    overclockName.setHighlightColors(special, overclock != null ? h: g, special);
+                    overclockName.getPosition().setSize(bionicNameW,sectionH);
+                }
 
                 bionicInstalledI++;
             }
@@ -734,7 +742,8 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 String[] tokens = s.split(":");
                 if(tokens[0].equals("hover_bionic_item")) {
                     if(ba_bionicmanager.bionicItemMap.get(tokens[1]) != null) {
-                        this.currentSelectedBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
+                        this.currentSelectedBionic = (ba_bionicitemplugin) cargoBionic.get(Integer.parseInt(tokens[2])).getPlugin();;
+//                        this.currentSelectedBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
                         needsReset = true;
                         break;
                     }
@@ -773,7 +782,8 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                         if(component != null && component.tooltipMap.get("INVENTORY_TOOLTIP") != null) {
                             if(tokens[0].equals("hover_bionic_item") && debounceplugin.isDebounceOver("INVENTORY_TOOLTIP", 0, component.tooltipMap.get("INVENTORY_TOOLTIP").getExternalScroller().getYOffset())) {
                                 if(ba_bionicmanager.bionicItemMap.get(tokens[1]) != null && (this.currentHoveredBionic == null || !this.currentHoveredBionic.bionicId.equals(tokens[1]))) {
-                                    this.currentHoveredBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
+                                    this.currentHoveredBionic = (ba_bionicitemplugin) cargoBionic.get(Integer.parseInt(tokens[2])).getPlugin();
+//                                    this.currentHoveredBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
                                     shouldRefresh = true;
                                 }
                             }
