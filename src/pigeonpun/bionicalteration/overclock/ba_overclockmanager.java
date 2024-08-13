@@ -63,13 +63,12 @@ public class ba_overclockmanager {
                         overclock.setOverclock(
                                 row.getString("overclockId"),
                                 row.getString("overclockName"),
-                                row.getBoolean("isApplyAdminEffect"),
                                 row.getBoolean("isApplyCaptainEffect"),
+                                row.getBoolean("isApplyAdminEffect"),
                                 row.getBoolean("isAdvanceInCombat"),
                                 row.getBoolean("isAdvanceInCampaign"),
                                 row.getInt("upgradeCost"),
                                 (float) row.getDouble("prebuiltChance"),
-                                row.getString("description"),
                                 (float) row.getDouble("order")
                         );
                         overclockMap.put(overclock.id, overclock);

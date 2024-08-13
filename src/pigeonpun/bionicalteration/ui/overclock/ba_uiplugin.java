@@ -561,7 +561,7 @@ public class ba_uiplugin extends ba_uicommon {
             //todo: overclock list.
             //disable the item if the person already installed that overclock
             float itemW = listW;
-            float itemH = 300;
+            float itemH = 180;
             float itemX = 0;
             float itemY = 0;
             int i = 0;
@@ -576,7 +576,7 @@ public class ba_uiplugin extends ba_uicommon {
                             itemX, itemY
                     );
                     if(i != currentSelectOverclockBionic.overclockList.size() - 1) {
-                        overclockListTooltipContainer.addSpacer(pad);
+                        overclockListTooltipContainer.addSpacer(pad/2);
                     }
                     i++;
                 } else {
@@ -624,9 +624,22 @@ public class ba_uiplugin extends ba_uicommon {
         name.getPosition().setSize(nameW, nameH);
         name.getPosition().inTL(nameX, nameY);
         itemContainerTooltipContainer.setParaFontDefault();
-
-        //todo: wrap this in a container component to control the width
-        overclock.displayEffectDescription(itemContainerTooltipContainer, this.currentPerson, this.currentSelectOverclockBionic);
+        //---------Effect description
+//        int descriptionH = 30;
+//        int descriptionW = nameW;
+//        int descriptionX = (int) (pad);
+//        int descriptionY = (int) (nameH + nameY + pad);
+//        itemContainerTooltipContainer.setParaOrbitronLarge();
+//        LabelAPI description = itemContainerTooltipContainer.addPara(overclock.description, Misc.getHighlightColor(), pad);
+//        description.getPosition().setSize(descriptionW, descriptionH);
+//        description.getPosition().inTL(descriptionX, descriptionY);
+//        itemContainerTooltipContainer.setParaFontDefault();
+        String descriptionTooltipKey = "OVERCLOCK_DESCRIPTION_CONTAINER_TOOLTIP";
+        int descriptionW = (int) (nameW);
+        int descriptionH = (int) (itemContainerH - nameH - pad - pad);
+        TooltipMakerAPI descriptionTooltipContainer = itemContainerContainer.createTooltip(descriptionTooltipKey, descriptionW, descriptionH, false, 0,0);
+        descriptionTooltipContainer.getPosition().inTL(pad/2, nameH + pad/2);
+        overclock.displayEffectDescription(descriptionTooltipContainer, this.currentPerson, this.currentSelectOverclockBionic, false);
     }
 
     @Override

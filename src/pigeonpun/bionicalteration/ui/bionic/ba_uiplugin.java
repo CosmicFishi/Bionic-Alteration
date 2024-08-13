@@ -821,6 +821,9 @@ public class ba_uiplugin extends ba_uicommon {
                 bionicAugmentedDatas.bionicInstalled.effectScript.displayEffectDescription(subEffectListTooltipContainer, currentPerson, bionicAugmentedDatas.bionicInstalled, false);
 
                 subEffectListTooltipContainer.addSpacer(spacerY);
+                if(bionicAugmentedDatas.appliedOverclock != null) {
+                    bionicAugmentedDatas.appliedOverclock.displayEffectDescription(subEffectListTooltipContainer, currentPerson, bionicAugmentedDatas.bionicInstalled, true);
+                }
             }
             i++;
         }

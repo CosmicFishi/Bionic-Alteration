@@ -96,6 +96,12 @@ public class ba_bionic_augmented {
                             String applyId = id + anatomy.bionicInstalled.bionicId + anatomy.limb;
                             anatomy.bionicInstalled.effectScript.applyOfficerEffect(stats, hullSize, applyId);
                         }
+                        if(anatomy.appliedOverclock != null) {
+                            if(anatomy.appliedOverclock.isApplyCaptainEffect) {
+                                String applyId = id + "_" + anatomy.bionicInstalled.bionicId + "_" + anatomy.appliedOverclock.id + "_" + anatomy.limb;
+                                anatomy.appliedOverclock.applyOfficerEffect(stats, hullSize, applyId);
+                            }
+                        }
                     }
                 }
                 ba_consciousmanager.resetBeforeApplyEffectOfficer(stats, id);
@@ -113,6 +119,12 @@ public class ba_bionic_augmented {
                         if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyCaptainEffect) {
                             String applyId = id + anatomy.bionicInstalled.bionicId + anatomy.limb;
                             anatomy.bionicInstalled.effectScript.unapplyOfficerEffect(stats, hullSize, applyId);
+                        }
+                        if(anatomy.appliedOverclock != null) {
+                            if(anatomy.appliedOverclock.isApplyCaptainEffect) {
+                                String applyId = id + "_" + anatomy.bionicInstalled.bionicId + "_" + anatomy.appliedOverclock.id + "_" + anatomy.limb;
+                                anatomy.appliedOverclock.unapplyOfficerEffect(stats, hullSize, applyId);
+                            }
                         }
                     }
                 }
@@ -156,6 +168,12 @@ public class ba_bionic_augmented {
                             String applyId = id + anatomy.bionicInstalled.bionicId + anatomy.limb;
                             anatomy.bionicInstalled.effectScript.applyAdminEffect(stats, applyId);
                         }
+                        if(anatomy.appliedOverclock != null) {
+                            if(anatomy.appliedOverclock.isApplyAdminEffect) {
+                                String applyId = id + "_" + anatomy.bionicInstalled.bionicId + "_" + anatomy.appliedOverclock.id + "_" + anatomy.limb;
+                                anatomy.appliedOverclock.applyAdminEffect(stats, applyId);
+                            }
+                        }
                     }
                 }
                 ba_consciousmanager.resetBeforeApplyEffectAdmin(stats, id);
@@ -173,6 +191,12 @@ public class ba_bionic_augmented {
                         if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyCaptainEffect) {
                             String applyId = id + anatomy.bionicInstalled.bionicId + anatomy.limb;
                             anatomy.bionicInstalled.effectScript.unapplyAdminEffect(stats, applyId);
+                        }
+                        if(anatomy.appliedOverclock != null) {
+                            if(anatomy.appliedOverclock.isApplyAdminEffect) {
+                                String applyId = id + "_" + anatomy.bionicInstalled.bionicId + "_" + anatomy.appliedOverclock.id + "_" + anatomy.limb;
+                                anatomy.appliedOverclock.unapplyAdminEffect(stats, applyId);
+                            }
                         }
                     }
                 }

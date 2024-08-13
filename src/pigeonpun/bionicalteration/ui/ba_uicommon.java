@@ -364,8 +364,9 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                             ba_overclock overclock = augmentData.appliedOverclock;
                             if(overclock != null) {
                                 //todo: update overclocks descriptions and move this into their separate overclock classes
-                                LabelAPI overclockLabel = tooltip.addPara("%s %s: %s", pad, t, overclock.name, "[O]" , !overclock.description.equals("")? overclock.description: "No description for now...");
-                                overclockLabel.setHighlightColors(h, special,  Misc.getTextColor());
+//                                LabelAPI overclockLabel = tooltip.addPara("%s %s: %s", pad, t, overclock.name, "[O]" , !overclock.description.equals("")? overclock.description: "No description for now...");
+//                                overclockLabel.setHighlightColors(h, special,  Misc.getTextColor());
+                                overclock.displayEffectDescription(tooltip, currentPerson, currentSelectedBionic, true);
                             } else {
                                 LabelAPI overclockLabel = tooltip.addPara("%s %s", pad, t,"Overclock:", "None active");
                                 overclockLabel.setHighlight("Overclock:", "None active");

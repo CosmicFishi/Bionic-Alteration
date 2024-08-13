@@ -1,8 +1,8 @@
-overclockId,overclockName,isApplyCaptainEffect,isApplyAdminEffect,upgradeCost,prebuiltChance,isAdvanceInCombat,isAdvanceInCampaign,effectScript,description,order
-ba_woobly_psyche,Woobly Psyche,TRUE,FALSE,0,0,FALSE,FALSE,pigeonpun.bionicalteration.overclock.impl.ba_woobly_psyche_effect,,1
-ba_based_instinct,Based Instinct,TRUE,FALSE,0,0,FALSE,FALSE,pigeonpun.bionicalteration.overclock.impl.ba_based_instinct_effect,,2
-ba_concentration,Concentration,TRUE,FALSE,0,0,FALSE,FALSE,pigeonpun.bionicalteration.overclock.impl.ba_concentration_effect,,1
-ba_arise,Arise,TRUE,FALSE,0,0,FALSE,FALSE,pigeonpun.bionicalteration.overclock.impl.ba_arise_effect,,2
-ba_juice_fusing,Juice Fusing,TRUE,FALSE,0,0,FALSE,FALSE,pigeonpun.bionicalteration.overclock.impl.ba_juice_fusing_effect,,1
-ba_urgent_filling,Urgent Filling,TRUE,FALSE,0,0,FALSE,FALSE,pigeonpun.bionicalteration.overclock.impl.ba_urgent_filling_effect,,2
-,,,,,,,,,,
+overclockId,overclockName,isApplyCaptainEffect,isApplyAdminEffect,upgradeCost,prebuiltChance,isAdvanceInCombat,isAdvanceInCampaign,effectScript,order
+ba_woobly_psyche,Woobly Psyche,TRUE,FALSE,0,0,FALSE,FALSE,pigeonpun.bionicalteration.overclock.impl.ba_woobly_psyche_effect,1
+ba_based_instinct,Based Instinct,TRUE,FALSE,0,0,FALSE,FALSE,pigeonpun.bionicalteration.overclock.impl.ba_based_instinct_effect,2
+ba_concentration,Concentration,TRUE,FALSE,0,0,FALSE,FALSE,pigeonpun.bionicalteration.overclock.impl.ba_concentration_effect,1
+ba_arise,Arise,TRUE,FALSE,0,0,FALSE,FALSE,pigeonpun.bionicalteration.overclock.impl.ba_arise_effect,2
+ba_juice_fusing,Juice Fusing,TRUE,FALSE,0,0,FALSE,FALSE,pigeonpun.bionicalteration.overclock.impl.ba_juice_fusing_effect,1
+ba_urgent_filling,Urgent Filling,TRUE,FALSE,0,0,FALSE,FALSE,pigeonpun.bionicalteration.overclock.impl.ba_urgent_filling_effect,2
+,,,,,,,,,

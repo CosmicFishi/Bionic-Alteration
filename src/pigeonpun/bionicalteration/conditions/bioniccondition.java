@@ -38,6 +38,12 @@ public class bioniccondition extends BaseMarketConditionPlugin {
                     if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyAdminEffect) {
                         anatomy.bionicInstalled.effectScript.applyEffectAdminMarket(market, applyId, 0, anatomy.bionicInstalled);
                     }
+                    if(anatomy.appliedOverclock != null) {
+                        if(anatomy.appliedOverclock.isApplyAdminEffect) {
+                            String applyOverclockId = id + "_" + anatomy.bionicInstalled.bionicId + "_" + anatomy.appliedOverclock.id + "_" + anatomy.limb;
+                            anatomy.appliedOverclock.applyEffectAdminMarket(market, applyOverclockId, 0, anatomy.bionicInstalled);
+                        }
+                    }
                 }
             }
             ba_consciousmanager.resetBeforeApplyEffectAdminMarket(market, id);
@@ -54,6 +60,12 @@ public class bioniccondition extends BaseMarketConditionPlugin {
                     if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyAdminEffect) {
                         String applyId = anatomy.bionicInstalled.bionicId + anatomy.limb.limbId;
                         anatomy.bionicInstalled.effectScript.unapplyEffectAdminMarket(market, applyId);
+                    }
+                    if(anatomy.appliedOverclock != null) {
+                        if(anatomy.appliedOverclock.isApplyAdminEffect) {
+                            String applyOverclockId = id + "_" + anatomy.bionicInstalled.bionicId + "_" + anatomy.appliedOverclock.id + "_" + anatomy.limb;
+                            anatomy.appliedOverclock.unapplyEffectAdminMarket(market, applyOverclockId);
+                        }
                     }
                 }
             }
