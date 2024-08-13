@@ -1,5 +1,6 @@
 package pigeonpun.bionicalteration.commands;
 
+import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Stats;
 import com.fs.starfarer.api.util.Misc;
@@ -23,7 +24,7 @@ public class clearDuplicateCondition implements BaseCommand {
             return CommandResult.BAD_SYNTAX;
 
         MarketAPI selectedMarket = null;
-        for(MarketAPI market: Misc.getPlayerMarkets(false)) {
+        for(MarketAPI market: Global.getSector().getEconomy().getMarketsCopy()) {
             if(market.getName().equalsIgnoreCase(tmp[0])) {
                 selectedMarket = market;
                 break;
