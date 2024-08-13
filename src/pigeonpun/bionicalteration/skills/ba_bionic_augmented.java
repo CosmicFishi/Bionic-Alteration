@@ -164,7 +164,7 @@ public class ba_bionic_augmented {
                 List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
                 for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
                     if(anatomy.bionicInstalled != null) {
-                        if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyCaptainEffect) {
+                        if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyAdminEffect) {
                             String applyId = id + anatomy.bionicInstalled.bionicId + anatomy.limb;
                             anatomy.bionicInstalled.effectScript.applyAdminEffect(stats, applyId);
                         }
@@ -188,7 +188,7 @@ public class ba_bionic_augmented {
                 List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
                 for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
                     if(anatomy.bionicInstalled != null) {
-                        if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyCaptainEffect) {
+                        if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyAdminEffect) {
                             String applyId = id + anatomy.bionicInstalled.bionicId + anatomy.limb;
                             anatomy.bionicInstalled.effectScript.unapplyAdminEffect(stats, applyId);
                         }

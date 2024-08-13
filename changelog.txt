@@ -1,3 +1,6 @@
+0.0.2g changelog:
+- Fix bionic skill not checking the correct condition for admin
+- Fix ba_clearDuplicateCondition unable to search for market that isn't own by player
 0.0.2f changelog:
 - Add forum ID
 - Add null check for get faction
