@@ -18,21 +18,16 @@ public class ba_overclock implements ba_overclockeffect{
     public String name;
     public boolean isApplyCaptainEffect;
     public boolean isApplyAdminEffect;
-    public boolean isAdvanceInCombat;
-    public boolean isAdvanceInCampaign;
     public int upgradeCost;
     //todo: add feature for this V
     public float prebuiltChance; //the chance of which the overclock is already applied when the bionic spawned in
     public float order;
     public ba_overclock() {};
-    public void setOverclock(String id, String name, boolean isApplyCaptainEffect, boolean isApplyAdminEffect, boolean isAdvanceInCombat,
-                        boolean isAdvanceInCampaign, int upgradeCost, float prebuiltChance, float order) {
+    public void setOverclock(String id, String name, boolean isApplyCaptainEffect, boolean isApplyAdminEffect, int upgradeCost, float prebuiltChance, float order) {
         this.id = id;
         this.name = name;
         this.isApplyAdminEffect = isApplyAdminEffect;
         this.isApplyCaptainEffect = isApplyCaptainEffect;
-        this.isAdvanceInCombat = isAdvanceInCombat;
-        this.isAdvanceInCampaign = isAdvanceInCampaign;
         this.upgradeCost = upgradeCost;
         this.prebuiltChance = prebuiltChance;
         this.order = order;

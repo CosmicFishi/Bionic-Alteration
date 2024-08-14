@@ -65,8 +65,6 @@ public class ba_overclockmanager {
                                 row.getString("overclockName"),
                                 row.getBoolean("isApplyCaptainEffect"),
                                 row.getBoolean("isApplyAdminEffect"),
-                                row.getBoolean("isAdvanceInCombat"),
-                                row.getBoolean("isAdvanceInCampaign"),
                                 row.getInt("upgradeCost"),
                                 (float) row.getDouble("prebuiltChance"),
                                 (float) row.getDouble("order")

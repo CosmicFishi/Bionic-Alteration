@@ -53,7 +53,6 @@ public class ba_bionic_augmented {
         }
         return null;
     }
-    //todo: DO THE OVERCLOCK EFFECTS on skill
     public static class Officer extends BaseSkillEffectDescription implements ShipSkillEffect, AfterShipCreationSkillEffect {
         @Override
         public void createCustomDescription(MutableCharacterStatsAPI stats, SkillSpecAPI skill, TooltipMakerAPI info, float width) {
@@ -67,22 +66,19 @@ public class ba_bionic_augmented {
 
         @Override
         public void applyEffectsAfterShipCreation(ShipAPI ship, String id) {
-            PersonAPI captain = ship.getCaptain();
-            List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(captain);
-            for(ba_bionicitemplugin bionic: listBionic) {
-                if(bionic.isAdvanceInCombat) {
-                    log.info("Registering Bionic Listener");
-                    ship.addListener(new bionicInCombat(ship, listBionic, captain));
-                    break;
-                }
+            if(ship.getListeners(bionicInCombat.class).isEmpty()) {
+                PersonAPI captain = ship.getCaptain();
+                List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(captain);
+                log.info("Registering Bionic Listener");
+                ship.addListener(new bionicInCombat(ship, listAnatomy, captain));
             }
         }
 
         @Override
         public void unapplyEffectsAfterShipCreation(ShipAPI ship, String id) {
-            if(ship.getListenerManager() != null && ship.getListenerManager().hasListener(bionicInCombat.class)) {
-                ship.removeListenerOfClass(bionicInCombat.class);
-            }
+//            if(ship.getListenerManager() != null && ship.getListenerManager().hasListener(bionicInCombat.class)) {
+//                ship.removeListenerOfClass(bionicInCombat.class);
+//            }
         }
 
         @Override
@@ -307,21 +303,29 @@ public class ba_bionic_augmented {
     }
     //this is for save compatibility
     public static class bionicInCombat implements AdvanceableListener {
-        protected List<ba_bionicitemplugin> bionics;
+        protected List<ba_officermanager.ba_bionicAugmentedData> dataList;
         protected ShipAPI ship;
         protected PersonAPI person;
-        public bionicInCombat(ShipAPI ship, List<ba_bionicitemplugin> bionics, PersonAPI person) {
-            this.bionics = bionics;
+        public bionicInCombat(ShipAPI ship, List<ba_officermanager.ba_bionicAugmentedData> data, PersonAPI person) {
+            this.dataList = data;
             this.ship = ship;
             this.person = person;
         }
         @Override
         public void advance(float amount) {
+            if(Global.getCombatEngine().isPaused()) return;
             ba_conscious conscious = ba_consciousmanager.getConsciousnessLevel(person);
             conscious.advanceInCombat(this.ship, amount);
-            for(ba_bionicitemplugin bionic: this.bionics) {
-                if (bionic.isAdvanceInCombat && bionic.effectScript != null) {
-                    bionic.effectScript.advanceInCombat(this.ship, amount);
+            for(ba_officermanager.ba_bionicAugmentedData anatomy: this.dataList) {
+                if (anatomy.bionicInstalled != null) {
+                    if(anatomy.bionicInstalled.isAdvanceInCombat && anatomy.bionicInstalled.effectScript != null) {
+                        anatomy.bionicInstalled.effectScript.advanceInCombat(this.ship, amount);
+                    }
+                    if(anatomy.appliedOverclock != null) {
+                        if(anatomy.appliedOverclock.isAdvanceInCombat()) {
+                            anatomy.appliedOverclock.advanceInCombat(ship, amount);
+                        }
+                    }
                 }
             }
         }

@@ -62,6 +62,6 @@ public class ba_campaignlistener extends BaseCampaignEventListener implements Ev
 
     @Override
     public void advance(float amount) {
-
+        //todo: advance in camapaign stuffs here
     }
 }
