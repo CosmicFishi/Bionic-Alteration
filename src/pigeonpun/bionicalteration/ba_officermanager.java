@@ -550,16 +550,20 @@ public class ba_officermanager {
 
                 if(limb != null && person != null) {
                     //overclock bionic while the bionic is on the person
-                    String personBionicLimbTag = convertToTag(bionic, limb, null);
-                    if(person.getTags().contains(personBionicLimbTag)) {
-                        person.getTags().remove(personBionicLimbTag);
+                    String removingTag = convertToTag(bionic, limb, null);
+                    ba_overclock addedOverclock = ba_overclockmanager.getOverclockFromPerson(person, limb);
+                    if(addedOverclock != null) {
+                        removingTag = convertToTag(bionic, limb, addedOverclock.id);
+                    }
+                    if(person.getTags().contains(removingTag)) {
+                        person.getTags().remove(removingTag);
                         String newTag = convertToTag(bionic, limb, overclockId);
                         person.addTag(newTag);
                     }
+                    updatePersonStatsOnInteract(bionic, limb, person, true);
                 } else {
                     ba_overclockmanager.overclockBionicItem(bionic, overclockId);
                 }
-                updatePersonStatsOnInteract(bionic, limb, person, true);
             }
             if(!removeSuccessful) {
                 log.error("Can't find bionic item in player inventory => abort installing");

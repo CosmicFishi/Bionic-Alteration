@@ -1,6 +1,8 @@
 package pigeonpun.bionicalteration.overclock;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.CargoAPI;
+import com.fs.starfarer.api.campaign.SpecialItemData;
 import com.fs.starfarer.api.characters.PersonAPI;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -112,6 +114,20 @@ public class ba_overclockmanager {
 //                bionic.appliedOverclock = getOverclock(overclocKId);
 //            }
 //        }
+        if(bionic != null && overclocKId != null) {
+            SpecialItemData specialItemRemoving = null;
+            if(bionic.getAppliedOverclockOnItem() != null) {
+                specialItemRemoving = new SpecialItemData(bionic.bionicId, bionic.getAppliedOverclockOnItem().id);
+            } else {
+                specialItemRemoving = new SpecialItemData(bionic.bionicId, null);
+            }
+            boolean removed = Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItemRemoving, 1);;
+            if (removed) {
+                SpecialItemData specialItemAdd = new SpecialItemData(bionic.bionicId, overclocKId);
+                Global.getSector().getPlayerFleet().getCargo().addSpecial(specialItemAdd, 1);
+                return true;
+            }
+        }
         return false;
     }
     public static ba_overclock getOverclockFromPerson(PersonAPI person, ba_limbmanager.ba_limb limb) {

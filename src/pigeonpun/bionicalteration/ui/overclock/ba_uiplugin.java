@@ -550,7 +550,8 @@ public class ba_uiplugin extends ba_uicommon {
         UIComponentAPI borderList = overclockListTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
         borderList.getPosition().setSize(overclockListW, overclockListH);
         overclockListContainer.mainPanel.addComponent(borderList).setLocation(0,0).inTL(0, 0);
-        if(currentSelectOverclockBionic == null || currentSelectOverclockBionic.overclockList.isEmpty()) {
+
+        if(currentSelectOverclockBionic == null || (currentSelectOverclockBionic != null && ba_bionicmanager.getBionic(currentSelectOverclockBionic.getId()).overclockList.isEmpty())) {
             //display the empty overclock
             int emptyX = (int) overclockListW / 2;
             int emptyY = (int) overclockListH / 2;
@@ -565,7 +566,8 @@ public class ba_uiplugin extends ba_uicommon {
             float itemX = 0;
             float itemY = 0;
             int i = 0;
-            for(String overclockId: currentSelectOverclockBionic.overclockList) {
+            List<String> overclockList = ba_bionicmanager.getBionic(currentSelectOverclockBionic.getId()).overclockList;
+            for(String overclockId: overclockList) {
                 if(ba_overclockmanager.getOverclock(overclockId) != null) {
                     displayOverclockItem(
                             overclockListContainer,
@@ -575,7 +577,7 @@ public class ba_uiplugin extends ba_uicommon {
                             itemW, itemH,
                             itemX, itemY
                     );
-                    if(i != currentSelectOverclockBionic.overclockList.size() - 1) {
+                    if(i != overclockList.size() - 1) {
                         overclockListTooltipContainer.addSpacer(pad/2);
                     }
                     i++;
@@ -610,10 +612,13 @@ public class ba_uiplugin extends ba_uicommon {
         itemContainerContainer.mainPanel.addComponent(borderList).setLocation(0,0).inTL(0, pad);
 
         //hover
-        ButtonAPI areaChecker = itemContainerTooltipContainer.addAreaCheckbox("", null, new Color(255, 117, 134).darker().darker(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), pW, pH, 0);
+        ButtonAPI areaChecker = itemContainerTooltipContainer.addAreaCheckbox("", null, Misc.getBasePlayerColor().darker(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), pW, pH, 0);
         addButtonToList(areaChecker, "overclock_hover:"+overclock.id);
         areaChecker.getPosition().setSize(borderList.getPosition().getWidth(), borderList.getPosition().getHeight());
         areaChecker.getPosition().setLocation(0,0).inTL(0, pad);
+        if(currentSelectedOverclock != null && currentSelectedOverclock.equals(overclock.id)) {
+            areaChecker.highlight();
+        }
         //---------Name
         int nameH = 30;
         int nameW = (int) (borderList.getPosition().getWidth() - pad - pad);
@@ -693,8 +698,8 @@ public class ba_uiplugin extends ba_uicommon {
                 String[] tokens = s.split(":");
                 if(tokens[0].equals("hover_bionic_item")) {
                     if(ba_bionicmanager.bionicItemMap.get(tokens[1]) != null) {
-                        this.currentSelectedBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
-                        this.currentSelectOverclockBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
+                        this.currentSelectedBionic = (ba_bionicitemplugin) cargoBionic.get(Integer.parseInt(tokens[2])).getPlugin();
+                        this.currentSelectOverclockBionic = (ba_bionicitemplugin) cargoBionic.get(Integer.parseInt(tokens[2])).getPlugin();
                         needsReset = true;
                         break;
                     }

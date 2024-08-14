@@ -36,6 +36,8 @@ public class ba_bionicmanager {
     //NOTE: DO NOT MODIFY ANY OF THE BIONICS ON THIS LIST
     //This is just a list of bionic item always available for query
     public static HashMap<String, ba_bionicitemplugin> bionicItemMap = new HashMap<>();
+    //todo: create a seperate map from the normal bionicIemMap for easier identification. Currently some bionic item will have overclock list, some wont
+    public static HashMap<String, List<String>> overclockableBionicItemMap = new HashMap<>();
     public ba_bionicmanager() {
         loadBionic();
     }
