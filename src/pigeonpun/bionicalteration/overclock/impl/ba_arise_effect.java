@@ -126,7 +126,8 @@ public class ba_arise_effect extends ba_overclock {
                     data = (invincibleData) ship.getCustomData().get(dataKey);
                 }
                 if(data != null) {
-                    boolean willTrigger = Math.random() > CHANCE_TRIGGERING_INVINCIBLE;
+                    Random rand = new Random();
+                    boolean willTrigger = rand.nextDouble() < CHANCE_TRIGGERING_INVINCIBLE;
                     if(willTrigger && data.state == ariseInvincibleState.NONE_ACTIVE) {
                         log.error("Activate");
                         data.state = ariseInvincibleState.ACTIVE;
