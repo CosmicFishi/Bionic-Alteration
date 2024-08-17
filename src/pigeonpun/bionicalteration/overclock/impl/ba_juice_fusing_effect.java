@@ -82,6 +82,7 @@ public class ba_juice_fusing_effect extends ba_overclock {
             if(willReload) {
                 for(WeaponAPI weapon: ship.getAllWeapons()) {
                     if(weapon.getType().equals(WeaponAPI.WeaponType.MISSILE) & weapon.getAmmo() < weapon.getMaxAmmo()) {
+                        weapon.ensureClonedSpec();
                         weapon.setAmmo(weapon.getAmmo() + weapon.getSpec().getBurstSize() * RELOAD_SALVO);
                         if (weapon.getAmmo() > weapon.getMaxAmmo()) {
                             weapon.setAmmo(weapon.getMaxAmmo());

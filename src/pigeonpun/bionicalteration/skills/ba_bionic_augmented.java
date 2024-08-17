@@ -102,6 +102,9 @@ public class ba_bionic_augmented {
                 }
                 ba_consciousmanager.resetBeforeApplyEffectOfficer(stats, id);
                 ba_consciousmanager.getConsciousnessLevel(captain).applyEffectOfficer(stats, id);
+                if(stats.getFleetMember() != null && stats.getFleetMember().getVariant() != null) {
+                    stats.getFleetMember().getVariant().addPermaMod(ba_variablemanager.BA_BIONIC_INFO_HULLMOD);
+                }
             }
         }
 
@@ -125,6 +128,9 @@ public class ba_bionic_augmented {
                     }
                 }
                 ba_consciousmanager.resetBeforeApplyEffectOfficer(stats, id);
+                if(stats.getFleetMember() != null && stats.getFleetMember().getVariant() != null) {
+                    stats.getFleetMember().getVariant().removePermaMod(ba_variablemanager.BA_BIONIC_INFO_HULLMOD);
+                }
             }
         }
 
@@ -174,6 +180,7 @@ public class ba_bionic_augmented {
                 }
                 ba_consciousmanager.resetBeforeApplyEffectAdmin(stats, id);
                 ba_consciousmanager.getConsciousnessLevel(person).applyEffectAdmin(stats, id);
+
             }
         }
 

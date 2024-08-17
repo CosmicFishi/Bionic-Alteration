@@ -569,13 +569,20 @@ public class ba_uiplugin extends ba_uicommon {
             List<String> overclockList = ba_bionicmanager.getBionic(currentSelectOverclockBionic.getId()).overclockList;
             for(String overclockId: overclockList) {
                 if(ba_overclockmanager.getOverclock(overclockId) != null) {
+                    ba_overclock installedOverclock = null;
+                    if(currentSelectOverclockLocation.equals(PERSON_LIST)) {
+                        installedOverclock = ba_overclockmanager.getOverclockFromPerson(this.currentPerson, this.currentSelectedLimb);
+                    }
+                    if(currentSelectOverclockLocation.equals(INVENTORY)) {
+                        installedOverclock = ba_overclockmanager.getOverclockFromItem(this.currentSelectOverclockBionic);
+                    }
                     displayOverclockItem(
                             overclockListContainer,
                             overclockListTooltipKey,
                             ba_overclockmanager.getOverclock(overclockId),
                             i,
                             itemW, itemH,
-                            itemX, itemY
+                            itemX, itemY, installedOverclock != null && installedOverclock.id.equals(overclockId)
                     );
                     if(i != overclockList.size() - 1) {
                         overclockListTooltipContainer.addSpacer(pad/2);
@@ -589,13 +596,14 @@ public class ba_uiplugin extends ba_uicommon {
         //do the adding late so the scroll work (thanks Lukas04)
         overclockListContainer.mainPanel.addUIElement(overclockListTooltipContainer);
     }
-    public void displayOverclockItem(ba_component creatorComponent, String creatorComponentTooltip, ba_overclock overclock, int index ,float itemW, float itemH, float itemX, float itemY) {
+    public void displayOverclockItem(ba_component creatorComponent, String creatorComponentTooltip, ba_overclock overclock, int index ,float itemW, float itemH, float itemX, float itemY, boolean isDisable) {
         final float pad = 10f;
         float opad = 10f;
         Color h = Misc.getHighlightColor();
         Color bad = Misc.getNegativeHighlightColor();
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
+        float disableOpacity = 0.7f;
         //item
         float itemContainerW = itemW;
         float itemContainerH = itemH;
@@ -612,12 +620,14 @@ public class ba_uiplugin extends ba_uicommon {
         itemContainerContainer.mainPanel.addComponent(borderList).setLocation(0,0).inTL(0, pad);
 
         //hover
-        ButtonAPI areaChecker = itemContainerTooltipContainer.addAreaCheckbox("", null, Misc.getBasePlayerColor().darker(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), pW, pH, 0);
-        addButtonToList(areaChecker, "overclock_hover:"+overclock.id);
-        areaChecker.getPosition().setSize(borderList.getPosition().getWidth(), borderList.getPosition().getHeight());
-        areaChecker.getPosition().setLocation(0,0).inTL(0, pad);
-        if(currentSelectedOverclock != null && currentSelectedOverclock.equals(overclock.id)) {
-            areaChecker.highlight();
+        if(!isDisable) {
+            ButtonAPI areaChecker = itemContainerTooltipContainer.addAreaCheckbox("", null, Misc.getBasePlayerColor().darker(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), pW, pH, 0);
+            areaChecker.getPosition().setSize(borderList.getPosition().getWidth(), borderList.getPosition().getHeight());
+            areaChecker.getPosition().setLocation(0,0).inTL(0, pad);
+            addButtonToList(areaChecker, "overclock_hover:"+overclock.id);
+            if(currentSelectedOverclock != null && currentSelectedOverclock.equals(overclock.id)) {
+                areaChecker.highlight();
+            }
         }
         //TODO: disable the overclock that is already installed on the person
         //---------Name
@@ -626,9 +636,10 @@ public class ba_uiplugin extends ba_uicommon {
         int nameX = (int) (pad);
         int nameY = (int) (pad + pad);
         itemContainerTooltipContainer.setParaOrbitronLarge();
-        LabelAPI name = itemContainerTooltipContainer.addPara(overclock.name, Misc.getHighlightColor(), pad);
+        LabelAPI name = itemContainerTooltipContainer.addPara(overclock.name + (isDisable? " (O)": ""), isDisable? bad : Misc.getHighlightColor(), pad);
         name.getPosition().setSize(nameW, nameH);
         name.getPosition().inTL(nameX, nameY);
+        if(isDisable) name.setOpacity(disableOpacity);
         itemContainerTooltipContainer.setParaFontDefault();
         //---------Effect description
 //        int descriptionH = 30;
@@ -747,6 +758,7 @@ public class ba_uiplugin extends ba_uicommon {
                         this.currentSelectOverclockBionic = null;
                         this.currentSelectedLimb = null;
                         this.currentSelectedBionic = null;
+                        this.currentSelectedOverclock = null;
                     }
                     needsReset= true;
                     break;

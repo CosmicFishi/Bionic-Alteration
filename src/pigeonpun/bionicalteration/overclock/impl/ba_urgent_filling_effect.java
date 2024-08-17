@@ -37,12 +37,12 @@ public class ba_urgent_filling_effect extends ba_overclock {
             LabelAPI descriptions = tooltip.addPara("" +
                             "When all turret mounts on the ship are all %s or all %s, increase weapon's ammo regeneration by %s but reduce the ship's armor by %s.",
                     pad, t, "ballistic", "energy", "" + Math.round((AMMO_REGEN_BONUS * 100) - 100) + "%", "" + Math.round((1-ARMOR_REDUCE_MULT) * 100) + "%");
-            descriptions.setHighlightColors(Misc.getBallisticMountColor(),Misc.getEnergyMountColor(),h,h,bad);
+            descriptions.setHighlightColors(Misc.getBallisticMountColor(),Misc.getEnergyMountColor(),h,bad);
         } else {
             LabelAPI overclockLabel = tooltip.addPara("%s %s: " +
                             "When all turret mounts on the ship are all %s or all %s, increase weapon's ammo regeneration by %s but reduce the ship's armor by %s.",
                     pad, t, this.name, "[O]", "ballistic", "energy", "" + Math.round((AMMO_REGEN_BONUS * 100) - 100) + "%", "" + Math.round((1-ARMOR_REDUCE_MULT) * 100) + "%");
-            overclockLabel.setHighlightColors(h,special,Misc.getBallisticMountColor(),Misc.getEnergyMountColor(),h,h,bad);
+            overclockLabel.setHighlightColors(h,special,Misc.getBallisticMountColor(),Misc.getEnergyMountColor(),h,bad);
         }
     }
 
