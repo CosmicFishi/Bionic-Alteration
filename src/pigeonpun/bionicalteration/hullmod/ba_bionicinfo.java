@@ -14,7 +14,6 @@ import java.awt.*;
 import java.util.List;
 
 public class ba_bionicinfo extends BaseHullMod {
-    //todo: Add a hullmod that display the effects of each bionic
     //todo: Add apply effect before/after ship creation to the bionic
 
     @Override

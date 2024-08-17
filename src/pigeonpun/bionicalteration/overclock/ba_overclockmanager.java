@@ -31,6 +31,7 @@ import java.util.Objects;
 public class ba_overclockmanager {
     public static Logger log = Global.getLogger(ba_overclockmanager.class);
     public static HashMap<String, ba_overclock> overclockMap = new HashMap<>();
+    public static final float evoshardToBRMRate = 1f;
     public static void onApplicationLoad() {
         loadOverclock();
     }
@@ -108,7 +109,6 @@ public class ba_overclockmanager {
         return !defaultBionic.overclockList.isEmpty();
     }
     public static boolean overclockBionicItem(ba_bionicitemplugin bionic, String overclocKId) {
-        //todo: overclock the bionic item it self
 //        if(overclocKId != null && !overclocKId.equals("")) {
 //            if(isBionicOverclockable(bionic) && bionic.overclockList.contains(overclocKId) && getOverclock(overclocKId) != null) {
 //                bionic.appliedOverclock = getOverclock(overclocKId);
@@ -165,5 +165,8 @@ public class ba_overclockmanager {
         overclock = bionic.getAppliedOverclockOnItem();
 
         return overclock;
+    }
+    public static float computeEvoshardForBionic(ba_bionicitemplugin bionic) {
+        return bionic.brmCost * evoshardToBRMRate;
     }
 }

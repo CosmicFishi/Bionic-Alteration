@@ -12,6 +12,8 @@ ba_overclock_openWorkshopOpt,ba_showOverclockWorkshopOptions,,,,"10:ba_openOverc
 ba_overclock_leaveWorkshopOpt,ba_showOverclockWorkshopOptions,,"SetShortcut ba_leaveWorkshop ""ESCAPE""",,"100:ba_leaveWorkshop:Leave",
 ba_overclock_openWorkshop,DialogOptionSelected,"$option == ba_openOverclockWorkshop","ba_displayOverclockUI",,,
 ba_overclock_closeWorkshop,DialogOptionSelected,"$option == ba_leaveWorkshop","DismissDialog",,"100:ba_overclockWorkshopLeave:Leave",
+ba_evoshard_exchangeOpt,ba_showOverclockWorkshopOptions,,,,"11:ba_evoshardExchange:Exchange Evoshards",
+ba_evoshard_exchange,DialogOptionSelected,"$option == ba_evoshardExchange","ba_evoshardExchange exchange",,,
 "#END workshop",,,,,,
 ,,,,,,
 # defender,,,,,,

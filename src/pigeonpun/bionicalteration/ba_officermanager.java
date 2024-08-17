@@ -539,8 +539,8 @@ public class ba_officermanager {
      * @return
      */
     public static boolean overclockBionic(ba_bionicitemplugin bionic, String overclockId, ba_limbmanager.ba_limb limb, PersonAPI person) {
-        //todo: exchange the overclock if the bionic has the overclock. Get the overclock from person -> convert it
-        //todo: for item, get the special data -> remove the bionic from the player inventory -> add the new bionic with the new special data
+        //Exchange the overclock if the bionic has the overclock. Get the overclock from person -> convert it
+        //For item, get the special data -> remove the bionic from the player inventory -> add the new bionic with the new special data
         if(ba_overclockmanager.isBionicOverclockable(bionic)) {
             boolean removeSuccessful = true;
             //todo: remove the evoshard

@@ -559,7 +559,6 @@ public class ba_uiplugin extends ba_uicommon {
             LabelAPI emptyLabel = overclockListTooltipContainer.addPara(emptyText,Misc.getDarkPlayerColor(), 1);
             emptyLabel.getPosition().inTL(emptyX - (emptyLabel.computeTextWidth(emptyText) / 2), emptyY);
         } else {
-            //todo: overclock list.
             //disable the item if the person already installed that overclock
             float itemW = listW;
             float itemH = 180;
@@ -629,7 +628,6 @@ public class ba_uiplugin extends ba_uicommon {
                 areaChecker.highlight();
             }
         }
-        //TODO: disable the overclock that is already installed on the person
         //---------Name
         int nameH = 30;
         int nameW = (int) (borderList.getPosition().getWidth() - pad - pad);

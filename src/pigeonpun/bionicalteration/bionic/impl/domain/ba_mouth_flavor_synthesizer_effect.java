@@ -16,7 +16,6 @@ import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import java.awt.*;
 
 public class ba_mouth_flavor_synthesizer_effect implements ba_bioniceffect {
-    //todo: do effects
     public static final float TURN_RATE_BONUS = 50f;
     public static final float HEALTH_BONUS = 20f;
     @Override
