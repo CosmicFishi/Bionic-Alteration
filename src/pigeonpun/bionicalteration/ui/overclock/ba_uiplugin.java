@@ -619,6 +619,7 @@ public class ba_uiplugin extends ba_uicommon {
         if(currentSelectedOverclock != null && currentSelectedOverclock.equals(overclock.id)) {
             areaChecker.highlight();
         }
+        //TODO: disable the overclock that is already installed on the person
         //---------Name
         int nameH = 30;
         int nameW = (int) (borderList.getPosition().getWidth() - pad - pad);
