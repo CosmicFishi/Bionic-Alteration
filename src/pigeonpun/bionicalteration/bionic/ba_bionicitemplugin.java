@@ -85,7 +85,7 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
     public void setId(String id) {
         this.bionicId = id;
         spec = Global.getSettings().getSpecialItemSpec(id);
-        log.info(spec);
+//        log.info(spec);
     }
 
     public void init(CargoStackAPI stack) {

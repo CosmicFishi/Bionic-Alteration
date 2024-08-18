@@ -9,8 +9,10 @@ import com.fs.starfarer.api.impl.campaign.ids.Commodities;
 import com.fs.starfarer.api.impl.campaign.ids.Strings;
 import com.fs.starfarer.api.impl.campaign.rulecmd.AddRemoveCommodity;
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin;
+import com.fs.starfarer.api.ui.LabelAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
+import org.apache.log4j.Logger;
 import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
@@ -29,6 +31,7 @@ public class ba_evoshardExchange extends BaseCommandPlugin {
     protected MemoryAPI memory;
     protected InteractionDialogAPI dialog;
     protected Map<String, MemoryAPI> memoryMap;
+    static Logger log = Global.getLogger(ba_evoshardExchange.class);
     @Override
     public boolean execute(String ruleId, InteractionDialogAPI dialog, List<Misc.Token> params, Map<String, MemoryAPI> memoryMap) {
         //todo: do the evoshard exchange similar to how project did for the special weapons
@@ -94,21 +97,46 @@ public class ba_evoshardExchange extends BaseCommandPlugin {
                 final Color t = Misc.getTextColor();
                 final Color g = Misc.getGrayColor();
                 final Color special = ba_variablemanager.BA_OVERCLOCK_COLOR;
-                panel.addPara("Exchanging bionics below for Evoshards, will result in:", opad);
+                final float maxListHeight = 300f;
+
+                panel.setParaOrbitronLarge();
+                LabelAPI info = panel.addPara("%s", opad, h, "Ripping bionics for Evoshards");
+                panel.setParaFontDefault();
+
+                LabelAPI warning = panel.addPara("%s Bionics in the list below %s on confirmation.", opad, t , "Note:","WILL BE DESTROYED");
+                warning.setHighlightColors(Misc.getGrayColor(), Color.red);
+                panel.addSpacer(pad);
+
                 panel.beginGrid(width, 2, t);
-                if(!cargo.getStacksCopy().isEmpty()) {
-                    int i = 0;
+                panel.addToGrid(0, 0, "Bionic name", "Evoshards");
+                if(!cargo.isEmpty()) {
+                    int i = 1;
+                    int maxI = 19;
                     for(CargoStackAPI stack: cargo.getStacksCopy()) {
                         SpecialItemSpecAPI spec = stack.getSpecialItemSpecIfSpecial();
-                        if (spec != null && ba_bionicmanager.getBionic(spec.getId()) != null) {
+                        if (spec != null && ba_bionicmanager.getBionic(spec.getId()) != null && i < maxI) {
                             ba_bionicitemplugin bionic = ba_bionicmanager.getBionic(spec.getId());
                             panel.setGridLabelColor(bionic.displayColor);
-                            panel.addToGrid(0, i, bionic.getName(), "" + Math.round(ba_overclockmanager.computeEvoshardForBionic(bionic)) + " Evoshards");
+                            panel.addToGrid(0, i, bionic.getName() + (stack.getSize() > 1? " ("+Math.round(stack.getSize())+")": ""), "" + Math.round(ba_overclockmanager.computeEvoshardForBionic(bionic)) + "");
                             i++;
                         }
+                        if(i == maxI) {
+                            panel.setGridValueColor(Misc.getHighlightColor());
+                            panel.setGridLabelColor(Misc.getHighlightColor());
+                            panel.addToGrid(0, maxI, "...", "...");
+                        }
+                        panel.addToGrid(0, maxI + 1, "", "");
+                        panel.setGridValueColor(Misc.getHighlightColor());
+                        panel.setGridLabelColor(Misc.getHighlightColor());
+                        panel.setParaOrbitronLarge();
+                        panel.addToGrid(0, maxI + 2, "TOTAL", "" + Math.round(computeEvoshardValue(cargo)) + " Evoshards");
+                        panel.setParaFontDefault();
                     }
                 } else {
-                    panel.addPara("Empty, select bionic to exchange for Evoshards", pad);
+                    panel.setGridValueColor(Misc.getGrayColor());
+                    panel.setGridLabelColor(Misc.getGrayColor());
+                    panel.addToGrid(0, 1, "Empty", "-");
+//                    panel.addPara("%s", pad, Misc.getGrayColor().darker().darker(), "Empty");
                 }
                 panel.addGrid(pad);
             }

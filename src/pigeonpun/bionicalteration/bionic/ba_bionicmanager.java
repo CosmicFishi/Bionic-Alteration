@@ -74,26 +74,27 @@ public class ba_bionicmanager {
                     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
-                    ba_bionicitemplugin bionic = new ba_bionicitemplugin(
-                            bionicId,
-                            Global.getSettings().getSpecialItemSpec(bionicId),
-                            row.getString("limbGroupId"),
-                            !row.getString("namePrefix").equals("") ? row.getString("namePrefix") : "",
-                            MagicSettings.toColor3(row.getString("colorDisplay")),
-                            row.getInt("brmCost"),
-                            (float) row.getDouble("consciousnessCost"),
-                            (float) row.getDouble("dropChance"),
-                            row.getBoolean("isApplyCaptainEffect"),
-                            row.getBoolean("isApplyAdminEffect"),
-                            row.getBoolean("isAICoreBionic"),
-                            effect,
-                            !row.getString("conflictedBionicIdList").equals("")? ba_utils.trimAndSplitString(row.getString("conflictedBionicIdList")): null,
-                            row.getBoolean("isAllowedRemoveAfterInstall"),
-                            row.getBoolean("isEffectAppliedAfterRemove")
-                    );
-                    bionicItemMap.put(bionicId, bionic);
-                    if(effect != null) effect.setBionicItem(bionic);
-
+                    if(!Objects.equals(row.getString("effectScript"), "")) {
+                        ba_bionicitemplugin bionic = new ba_bionicitemplugin(
+                                bionicId,
+                                Global.getSettings().getSpecialItemSpec(bionicId),
+                                row.getString("limbGroupId"),
+                                !row.getString("namePrefix").equals("") ? row.getString("namePrefix") : "",
+                                MagicSettings.toColor3(row.getString("colorDisplay")),
+                                row.getInt("brmCost"),
+                                (float) row.getDouble("consciousnessCost"),
+                                (float) row.getDouble("dropChance"),
+                                row.getBoolean("isApplyCaptainEffect"),
+                                row.getBoolean("isApplyAdminEffect"),
+                                row.getBoolean("isAICoreBionic"),
+                                effect,
+                                !row.getString("conflictedBionicIdList").equals("")? ba_utils.trimAndSplitString(row.getString("conflictedBionicIdList")): null,
+                                row.getBoolean("isAllowedRemoveAfterInstall"),
+                                row.getBoolean("isEffectAppliedAfterRemove")
+                        );
+                        bionicItemMap.put(bionicId, bionic);
+                        if(effect != null) effect.setBionicItem(bionic);
+                    }
                 } catch (JSONException ex) {
                     log.error(ex);
                     log.error("Invalid line, skipping");
