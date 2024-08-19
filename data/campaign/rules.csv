@@ -8,12 +8,14 @@ ba_overclock_begin,OpenInteractionDialog,"$tag:ba_overclock_station score:999999
 $usable","ShowDefaultVisual
 PrintDescription 1
 FireAll ba_showOverclockWorkshopOptions",,,
-ba_overclock_openWorkshopOpt,ba_showOverclockWorkshopOptions,,,,"10:ba_openOverclockWorkshop:Manage Overclocks",
+ba_overclock_openWorkshopOpt,ba_showOverclockWorkshopOptions,,,,"10:ba_openOverclockWorkshop:Overclocks Workshop",
 ba_overclock_leaveWorkshopOpt,ba_showOverclockWorkshopOptions,,"SetShortcut ba_leaveWorkshop ""ESCAPE""",,"100:ba_leaveWorkshop:Leave",
 ba_overclock_openWorkshop,DialogOptionSelected,"$option == ba_openOverclockWorkshop","ba_displayOverclockUI",,,
 ba_overclock_closeWorkshop,DialogOptionSelected,"$option == ba_leaveWorkshop","DismissDialog",,"100:ba_overclockWorkshopLeave:Leave",
-ba_evoshard_exchangeOpt,ba_showOverclockWorkshopOptions,,,,"11:ba_evoshardExchange:Rip Evoshards",
+ba_evoshard_exchangeOpt,ba_showOverclockWorkshopOptions,,,,"30:ba_evoshardExchange:Rip Evoshards",
 ba_evoshard_exchange,DialogOptionSelected,"$option == ba_evoshardExchange","ba_evoshardExchange exchange",,,
+ba_bionic_openWorkshopOpt,ba_showOverclockWorkshopOptions,,,,"20:ba_openBionicWorkshop:Bionics Workshop",
+ba_openBionicWorkshop,DialogOptionSelected,"$option == ba_openBionicWorkshop","ba_displayBionicUI",,,
 "#END workshop",,,,,,
 ,,,,,,
 # defender,,,,,,

@@ -37,19 +37,25 @@ public class ba_displayBionicUI extends BaseCommandPlugin {
             );
             return true;
         }
-        //hiring UI
         if (plugin instanceof RuleBasedInteractionDialogPluginImpl) {
+            //hiring UI
             List<PersonAPI> listPerson = new ArrayList<>();
-            for(PersonAPI person: target.getMarket().getPeopleCopy()) {
-                if(person.getId().equals(params.get(0).getString(memoryMap))) {
-                    listPerson.add(person);
-                    break;
-                }
-            }
             if(!listPerson.isEmpty()) {
+                for(PersonAPI person: target.getMarket().getPeopleCopy()) {
+                    if(person.getId().equals(params.get(0).getString(memoryMap))) {
+                        listPerson.add(person);
+                        break;
+                    }
+                }
                 dialog.showCustomVisualDialog(ba_uiplugin.MAIN_CONTAINER_WIDTH,
                         ba_uiplugin.MAIN_CONTAINER_HEIGHT,
                         new ba_delegate(ba_uiplugin.createDefault(), dialog, listPerson)
+                );
+            }
+            if(target.getTags().contains("ba_overclock_station")) {
+                dialog.showCustomVisualDialog(ba_uiplugin.MAIN_CONTAINER_WIDTH,
+                        ba_uiplugin.MAIN_CONTAINER_HEIGHT,
+                        new ba_delegate(ba_uiplugin.createDefault(), dialog, null)
                 );
             }
             return true;

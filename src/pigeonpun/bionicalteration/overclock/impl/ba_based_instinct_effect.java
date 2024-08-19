@@ -19,7 +19,7 @@ import java.awt.*;
 
 public class ba_based_instinct_effect extends ba_overclock {
     static Logger log = Global.getLogger(ba_based_instinct_effect.class);
-    public static final float ROF_BONUS_MULT = 1.5f;
+    public static final float ROF_BONUS_MULT = 1.4f;
     public ba_based_instinct_effect() {}
 
     @Override

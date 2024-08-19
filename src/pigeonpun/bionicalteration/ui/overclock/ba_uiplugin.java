@@ -227,9 +227,10 @@ public class ba_uiplugin extends ba_uicommon {
         TooltipMakerAPI inventoryRightTooltipContainer = inventoryRightContainer.createTooltip(inventoryRightTooltipKey, rightW, rightH, false, 0,0);
         creatorComponent.attachSubPanel(creatorComponentTooltip, inventoryRightPanelKey, inventoryRightContainer, rightX, rightY);
 
-        UIComponentAPI borderRight = inventoryRightTooltipContainer.createRect(Color.RED, 1);
-        borderRight.getPosition().setSize(rightW, rightH);
-        inventoryRightContainer.mainPanel.addComponent(borderRight).setLocation(0,0).inTL(0, 0);
+//        UIComponentAPI borderRight = inventoryRightTooltipContainer.createRect(Color.RED, 1);
+//        borderRight.getPosition().setSize(rightW, rightH);
+//        inventoryRightContainer.mainPanel.addComponent(borderRight).setLocation(0,0).inTL(0, 0);
+        displayOverclockingInfo(inventoryRightContainer, inventoryRightTooltipKey, rightW, rightH, rightX, rightY);
     }
     private void displayInventoryMid(ba_component creatorComponent, TooltipMakerAPI creatorComponentTooltipMaker, float cW, float cH, float cX, float cY) {
         final float pad = 10f;
@@ -529,6 +530,44 @@ public class ba_uiplugin extends ba_uicommon {
             }
         }, consciousAreaChecker, TooltipMakerAPI.TooltipLocation.ABOVE);
     }
+    public void displayOverclockingInfo(ba_component creatorComponent, String creatorComponentTooltip, float cW, float cH, float cX, float cY) {
+        final float pad = 10f;
+        float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        final Color t = Misc.getTextColor();
+        final Color g = Misc.getGrayColor();
+
+        String infoOverclockingTooltipKey = "OVERCLOCK_OVERCLOCKING_INFO_TOOLTIP";
+        String infoOverclockingPanelKey = "OVERCLOCK_OVERCLOCKING_INFO_PANEL";
+        ba_component infoOverclockingContainer = new ba_component(componentMap, creatorComponent.mainPanel, cW, cH, cX, cY, true, infoOverclockingPanelKey);
+        TooltipMakerAPI infoOverclockingTooltipContainer = infoOverclockingContainer.createTooltip(infoOverclockingTooltipKey, cW, cH, false, 0,0);
+        creatorComponent.attachSubPanel(creatorComponentTooltip, infoOverclockingPanelKey,infoOverclockingContainer,0,0);
+
+        int evoshardCount = 0;
+        for(CargoStackAPI stack: Global.getSector().getPlayerFleet().getCargo().getStacksCopy()) {
+            if(stack.getType().equals(CargoAPI.CargoItemType.SPECIAL) && stack.getSpecialItemSpecIfSpecial().getId().equals(ba_variablemanager.BA_OVERCLOCK_ITEM)) {
+                evoshardCount += stack.getSize();
+            }
+        }
+        //border
+        float borderX = (int) (pad);
+        float borderY = (int) (pad);
+        float borderW = (int) cW - pad - pad/2;
+        float borderH = cH - pad - pad;
+        UIComponentAPI borderRight = infoOverclockingTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
+        borderRight.getPosition().setSize(borderW, borderH);
+        infoOverclockingContainer.mainPanel.addComponent(borderRight).setLocation(0,0).inTL(borderX, borderY);
+        //--------image
+        float imageX = (int) (borderX + pad);
+        float imageY = (int) (borderY + pad);
+        float imageW = (int) 48;
+        float imageH = imageW;
+        String spriteName = "graphics/cargo/ba_evoshard.png";
+        TooltipMakerAPI personImageTooltip = infoOverclockingContainer.createTooltip("OVERCLOCK_ITEM_IMAGE", imageW, imageH, false, 0, 0);
+        personImageTooltip.getPosition().inTL(imageX, imageY);
+        personImageTooltip.addImage(spriteName, imageW, imageH, 0);
+    }
     public void displayOverclockList(ba_component creatorComponent, String creatorComponentTooltip, float listW, float listH, float listX, float listY) {
         final float pad = 10f;
         float opad = 10f;
@@ -614,7 +653,7 @@ public class ba_uiplugin extends ba_uicommon {
         TooltipMakerAPI itemContainerTooltipContainer = itemContainerContainer.createTooltip(itemContainerTooltipKey, itemContainerW, itemContainerH, false, 0,0);
         creatorComponent.attachSubPanel(creatorComponentTooltip, itemContainerPanelKey, itemContainerContainer);
 
-        UIComponentAPI borderList = itemContainerTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
+        UIComponentAPI borderList = itemContainerTooltipContainer.createRect(Misc.getBrightPlayerColor(), 1);
         borderList.getPosition().setSize(itemContainerW - pad, itemContainerH - pad);
         itemContainerContainer.mainPanel.addComponent(borderList).setLocation(0,0).inTL(0, pad);
 
@@ -639,21 +678,21 @@ public class ba_uiplugin extends ba_uicommon {
         name.getPosition().inTL(nameX, nameY);
         if(isDisable) name.setOpacity(disableOpacity);
         itemContainerTooltipContainer.setParaFontDefault();
+        //---------Cost
+        int costH = 30;
+        int costW = (int) (nameW);
+        int costX = (int) (pad);
+        int costY = (int) (nameH + nameX + pad/2);
+        LabelAPI cost = itemContainerTooltipContainer.addPara("Cost: %s", pad, Misc.getBrightPlayerColor(), bad, "" + overclock.upgradeCost + " Evoshards");
+        cost.getPosition().setSize(costW, costH);
+        cost.getPosition().inTL(costX, costY);
+        if(isDisable) cost.setOpacity(disableOpacity);
         //---------Effect description
-//        int descriptionH = 30;
-//        int descriptionW = nameW;
-//        int descriptionX = (int) (pad);
-//        int descriptionY = (int) (nameH + nameY + pad);
-//        itemContainerTooltipContainer.setParaOrbitronLarge();
-//        LabelAPI description = itemContainerTooltipContainer.addPara(overclock.description, Misc.getHighlightColor(), pad);
-//        description.getPosition().setSize(descriptionW, descriptionH);
-//        description.getPosition().inTL(descriptionX, descriptionY);
-//        itemContainerTooltipContainer.setParaFontDefault();
         String descriptionTooltipKey = "OVERCLOCK_DESCRIPTION_CONTAINER_TOOLTIP";
         int descriptionW = (int) (nameW);
         int descriptionH = (int) (itemContainerH - nameH - pad - pad);
         TooltipMakerAPI descriptionTooltipContainer = itemContainerContainer.createTooltip(descriptionTooltipKey, descriptionW, descriptionH, false, 0,0);
-        descriptionTooltipContainer.getPosition().inTL(pad/2, nameH + pad/2);
+        descriptionTooltipContainer.getPosition().inTL(pad/2, costY + pad);
         overclock.displayEffectDescription(descriptionTooltipContainer, this.currentPerson, this.currentSelectOverclockBionic, false);
     }
 

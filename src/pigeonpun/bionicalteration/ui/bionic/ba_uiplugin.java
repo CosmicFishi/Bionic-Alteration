@@ -1190,7 +1190,7 @@ public class ba_uiplugin extends ba_uicommon {
             if (event.isKeyDownEvent() && event.getEventValue() == Keyboard.KEY_ESCAPE) {
                 event.consume();
                 callbacks.dismissDialog();
-                if(!isDisplayingOtherFleets) {
+                if(!isDisplayingOtherFleets && (dialog.getInteractionTarget() == null || (dialog.getInteractionTarget() != null && !dialog.getInteractionTarget().getTags().contains("ba_overclock_station")))) {
                     dialog.dismiss();
                 }
                 return;

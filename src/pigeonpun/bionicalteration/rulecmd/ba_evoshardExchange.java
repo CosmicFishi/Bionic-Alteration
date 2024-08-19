@@ -84,6 +84,8 @@ public class ba_evoshardExchange extends BaseCommandPlugin {
                 if(evoshardsGain > 0) {
                     addEvoshardsGainText((int) evoshardsGain, text);
                 }
+                SpecialItemData data = new SpecialItemData(ba_variablemanager.BA_OVERCLOCK_ITEM, null);
+                playerCargo.addSpecial(data, evoshardsGain);
             }
             public void cancelledCargoSelection() {
             }

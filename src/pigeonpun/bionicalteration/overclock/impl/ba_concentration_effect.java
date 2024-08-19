@@ -18,7 +18,7 @@ import java.awt.*;
 public class ba_concentration_effect extends ba_overclock {
     static Logger log = Global.getLogger(ba_concentration_effect.class);
     public static final float SYSTEM_CD_PERCENTAGE = 30f;
-    public static final float ROF_REDUCE_MULT = 0.7f;
+    public static final float ROF_REDUCE_MULT = 0.8f;
     public ba_concentration_effect() {}
     @Override
     public void displayEffectDescription(TooltipMakerAPI tooltip, PersonAPI person, ba_bionicitemplugin bionic, boolean inBionicTable) {
