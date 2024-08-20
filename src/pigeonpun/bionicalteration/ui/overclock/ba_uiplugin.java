@@ -31,6 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import static com.fs.starfarer.api.ui.Fonts.*;
+
 /**
  * @author PigeonPun
  */
@@ -236,7 +238,7 @@ public class ba_uiplugin extends ba_uicommon {
         final float pad = 10f;
         float opad = 10f;
         final Color h = Misc.getHighlightColor();
-        Color bad = Misc.getNegativeHighlightColor();
+        final Color bad = Misc.getNegativeHighlightColor();
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
@@ -315,9 +317,13 @@ public class ba_uiplugin extends ba_uicommon {
                 Alignment.MID, CutStyle.ALL,
                 overclockW, overclockH, pad
         );
+        float remaindEvoshard = -1;
+        if(currentSelectedOverclock != null) {
+            remaindEvoshard = ba_officermanager.getEvoshardsFromPlayerInventory() - ba_overclockmanager.getOverclock(currentSelectedOverclock).upgradeCost;
+        }
         addButtonToList(overclockBtn, "overclock:");
         overclockBtn.getPosition().setLocation(0,0).inTL(overclockX, overclockY);
-        overclockBtn.setEnabled(this.currentSelectOverclockBionic != null && this.currentSelectedOverclock != null);
+        overclockBtn.setEnabled(this.currentSelectOverclockBionic != null && this.currentSelectedOverclock != null && remaindEvoshard > 0);
         creatorComponentTooltipMaker.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
             @Override
             public boolean isTooltipExpandable(Object tooltipParam) {
@@ -334,18 +340,25 @@ public class ba_uiplugin extends ba_uicommon {
                 tooltip.setParaOrbitronLarge();
                 LabelAPI helpPara = tooltip.addSectionHeading("Info", Alignment.MID, 0);
                 tooltip.setParaFontDefault();
-                LabelAPI selectBPara = tooltip.addPara("- Current selected bionic: %s", pad , h, currentSelectOverclockBionic != null? currentSelectOverclockBionic.getName(): "None");
-                selectBPara.setHighlightColors(currentSelectOverclockBionic != null? h : g);
+                LabelAPI selectBPara = tooltip.addPara("[ %s ] Current selected bionic: %s", pad , h, currentSelectOverclockBionic != null?"O":"X" ,currentSelectOverclockBionic != null? currentSelectOverclockBionic.getName(): "None");
+                selectBPara.setHighlightColors(currentSelectOverclockBionic != null?Misc.getPositiveHighlightColor():bad,currentSelectOverclockBionic != null? currentSelectOverclockBionic.displayColor : g);
                 if(currentSelectOverclockLocation.equals(PERSON_LIST)) {
-                    LabelAPI selectLPara = tooltip.addPara("- Current selected limb: %s", pad , h, currentSelectedLimb != null ? currentSelectedLimb.name: "None");
-                    selectLPara.setHighlightColors(currentSelectedLimb != null ? h: g);
+                    LabelAPI selectLPara = tooltip.addPara("[ %s ] Current selected limb: %s", pad , h, currentSelectedLimb != null ? "O" : "X", currentSelectedLimb != null ? currentSelectedLimb.name: "None");
+                    selectLPara.setHighlightColors(currentSelectedLimb != null ? Misc.getPositiveHighlightColor() : bad, currentSelectedLimb != null ? h: g);
                 }
-                LabelAPI selectOPara = tooltip.addPara("- Current selected overclock: %s", pad , h,
+                LabelAPI selectOPara = tooltip.addPara("[ %s ] Current selected overclock: %s", pad , h,
+                        (currentSelectedOverclock != null) ? "O" : "X",
                         (currentSelectedOverclock != null) ?
                                 ba_overclockmanager.getOverclock(currentSelectedOverclock) != null ?
                                 ba_overclockmanager.getOverclock(currentSelectedOverclock).name : "the overclock ID doesn't match any of the existing" :
                             "None");
-                selectOPara.setHighlightColors(currentSelectedOverclock != null? h: g);
+                selectOPara.setHighlightColors(currentSelectedOverclock != null? Misc.getPositiveHighlightColor(): bad, currentSelectedOverclock != null? h: g);
+                float remaindEvoshard = -1;
+                if(currentSelectedOverclock != null) {
+                    remaindEvoshard = ba_officermanager.getEvoshardsFromPlayerInventory() - ba_overclockmanager.getOverclock(currentSelectedOverclock).upgradeCost;
+                }
+                LabelAPI negativeEvoshardPara = tooltip.addPara("[ %s ] Remainder Evoshards does not fall %s: %s", pad , h, remaindEvoshard > 0 ?"O":"X" , "below 0" ,"" + Math.round(remaindEvoshard));
+                negativeEvoshardPara.setHighlightColors(remaindEvoshard > 0 ?Misc.getPositiveHighlightColor():bad, h ,remaindEvoshard > 0? h : bad);
             }
         }, overclockBtn, TooltipMakerAPI.TooltipLocation.ABOVE);
     }
@@ -558,15 +571,71 @@ public class ba_uiplugin extends ba_uicommon {
         UIComponentAPI borderRight = infoOverclockingTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
         borderRight.getPosition().setSize(borderW, borderH);
         infoOverclockingContainer.mainPanel.addComponent(borderRight).setLocation(0,0).inTL(borderX, borderY);
+        float halfLeft = borderW * 20f / 100;
+        float halfRight = borderW - halfLeft;
         //--------image
-        float imageX = (int) (borderX + pad);
-        float imageY = (int) (borderY + pad);
-        float imageW = (int) 48;
+        float imageW = (int) 64;
         float imageH = imageW;
+        float imageX = (int) (borderX + halfLeft/2 - imageW/2);
+        float imageY = (int) (borderY + borderH/2 - imageH/2);
         String spriteName = "graphics/cargo/ba_evoshard.png";
         TooltipMakerAPI personImageTooltip = infoOverclockingContainer.createTooltip("OVERCLOCK_ITEM_IMAGE", imageW, imageH, false, 0, 0);
         personImageTooltip.getPosition().inTL(imageX, imageY);
         personImageTooltip.addImage(spriteName, imageW, imageH, 0);
+        //--------Grid
+        float gridX = (int) (borderX + halfLeft);
+        float gridY = (int) (borderY + pad);
+        float gridW = (int) (halfRight - pad - pad / 2);
+        float gridH = borderH - pad - pad;
+        TooltipMakerAPI gridTooltip = infoOverclockingContainer.createTooltip("OVERCLOCK_ITEM_grid", gridW, gridH, false, 0, 0);
+        gridTooltip.getPosition().inTL(gridX, gridY);
+
+        gridTooltip.beginGrid(gridW, 2);
+        gridTooltip.setGridLabelColor(h);
+        gridTooltip.addToGrid(0,0, "Evoshards", "Count", h);
+        gridTooltip.setGridLabelColor(t);
+        gridTooltip.addToGrid(0,1, "Available", "" + ba_officermanager.getEvoshardsFromPlayerInventory(), Misc.getPositiveHighlightColor());
+        gridTooltip.addToGrid(0,2, "Require", this.currentSelectedOverclock != null ? "" + ba_overclockmanager.getOverclock(this.currentSelectedOverclock).upgradeCost : "0", this.currentSelectedOverclock != null ? bad : g);
+        if(this.currentSelectedOverclock != null) {
+            float remainderCount = ba_officermanager.getEvoshardsFromPlayerInventory() - ba_overclockmanager.getOverclock(this.currentSelectedOverclock).upgradeCost;
+            gridTooltip.addToGrid(0,3, "Remainder", "" + Math.round(remainderCount), remainderCount > 0 ? h: bad);
+        } else {
+            gridTooltip.addToGrid(0,3, "Remainder", "" + ba_officermanager.getEvoshardsFromPlayerInventory(), h);
+        }
+        gridTooltip.addGrid(0);
+
+        //---------Selected bionic
+        int bionicH = 22;
+        int bionicW = (int) (borderW - pad);
+        int bionicX = (int) (gridX + pad/2);
+        int bionicY = (int) (gridY + gridTooltip.getHeightSoFar() + pad);
+        LabelAPI bionic = infoOverclockingTooltipContainer.addPara("Current selected %s: %s", pad, t, "bionic", currentSelectOverclockBionic != null? currentSelectOverclockBionic.getName(): "None");
+        bionic.setHighlightColors(h, currentSelectOverclockBionic != null? currentSelectOverclockBionic.displayColor : g);
+        bionic.getPosition().setSize(bionicW, bionicH);
+        bionic.getPosition().inTL(bionicX, bionicY);
+        //---------Selected limb
+        int limbH = 22;
+        int limbW = (int) (borderW - pad);
+        int limbX = (int) (bionicX);
+        int limbY = (int) (bionicY + bionicH + pad/4);
+        if(currentSelectOverclockLocation.equals(PERSON_LIST)) {
+            LabelAPI limb = infoOverclockingTooltipContainer.addPara("Current selected %s: %s", pad, t, "limb", currentSelectedLimb != null ? currentSelectedLimb.name: "None");
+            limb.setHighlightColors(h, currentSelectedLimb != null ? h: g);
+            limb.getPosition().setSize(limbW, limbH);
+            limb.getPosition().inTL(limbX, limbY);
+        }
+        //---------Selected overclock
+        int overclockH = 22;
+        int overclockW = (int) (borderW - pad);
+        int overclockX = (int) (limbX);
+        int overclockY = (int) (limbY + limbH + pad/4);
+        LabelAPI overclock = infoOverclockingTooltipContainer.addPara("Current selected %s: %s", pad, t, "overclock", (currentSelectedOverclock != null) ?
+                ba_overclockmanager.getOverclock(currentSelectedOverclock) != null ?
+                        ba_overclockmanager.getOverclock(currentSelectedOverclock).name : "the overclock ID doesn't match any of the existing" :
+                "None");
+        overclock.setHighlightColors(h, currentSelectedOverclock != null? h: g);
+        overclock.getPosition().setSize(overclockW, overclockH);
+        overclock.getPosition().inTL(overclockX, overclockY);
     }
     public void displayOverclockList(ba_component creatorComponent, String creatorComponentTooltip, float listW, float listH, float listX, float listY) {
         final float pad = 10f;
@@ -695,7 +764,6 @@ public class ba_uiplugin extends ba_uicommon {
         descriptionTooltipContainer.getPosition().inTL(pad/2, costY + pad);
         overclock.displayEffectDescription(descriptionTooltipContainer, this.currentPerson, this.currentSelectOverclockBionic, false);
     }
-
     @Override
     public void positionChanged(PositionAPI position) {
         super.positionChanged(position);
@@ -763,6 +831,7 @@ public class ba_uiplugin extends ba_uicommon {
                             } else {
                                 this.currentSelectOverclockBionic = null;
                             }
+                            this.currentSelectedOverclock = null;
                             break;
                         }
                     }

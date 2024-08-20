@@ -3,6 +3,7 @@ package pigeonpun.bionicalteration;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.CargoAPI;
+import com.fs.starfarer.api.campaign.CargoStackAPI;
 import com.fs.starfarer.api.campaign.SpecialItemData;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.characters.AdminData;
@@ -573,6 +574,14 @@ public class ba_officermanager {
 
         return false;
     }
+    public static boolean checkIfRemainEvoShardIsPossitive(String overclockId) {
+        ba_overclock overclock = ba_overclockmanager.getOverclock(overclockId);
+        float remainderCount = 0;
+        if(overclock != null) {
+            remainderCount = ba_officermanager.getEvoshardsFromPlayerInventory() - overclock.upgradeCost;
+        }
+        return remainderCount > 0;
+    }
     public static String convertToTag(@NotNull ba_bionicitemplugin bionic, @NotNull ba_limbmanager.ba_limb limb, @Nullable String overclockId) {
         if(bionic != null && limb != null) {
             if(overclockId != null) {
@@ -624,6 +633,15 @@ public class ba_officermanager {
             }
         }
         return listBionic;
+    }
+    public static int getEvoshardsFromPlayerInventory() {
+        int count = 0;
+        for(CargoStackAPI stack: Global.getSector().getPlayerFleet().getCargo().getStacksCopy()) {
+            if(stack.isSpecialStack() && stack.getSpecialItemSpecIfSpecial().getId().equals(ba_variablemanager.BA_OVERCLOCK_ITEM)) {
+                count += stack.getSize();
+            }
+        }
+        return count;
     }
     public static String getProfessionText(PersonAPI person, boolean isDisplayingOtherFleets) {
         if(isDisplayingOtherFleets) {
