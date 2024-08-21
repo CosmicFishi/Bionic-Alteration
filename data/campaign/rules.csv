@@ -7,7 +7,7 @@ id,trigger,conditions,script,text,options,notes
 ba_overclock_begin,OpenInteractionDialog,"$tag:ba_overclock_station score:9999997
 $usable","ShowDefaultVisual
 PrintDescription 1
-FireAll ba_showOverclockWorkshopOptions",,,
+FireAll ba_showOverclockWorkshopOptions","You approach the Overclocking Console, looking over all the options available on the console.",,
 ba_overclock_openWorkshopOpt,ba_showOverclockWorkshopOptions,,,,"10:ba_openOverclockWorkshop:Overclocks Workshop",
 ba_overclock_leaveWorkshopOpt,ba_showOverclockWorkshopOptions,,"SetShortcut ba_leaveWorkshop ""ESCAPE""",,"100:ba_leaveWorkshop:Leave",
 ba_overclock_openWorkshop,DialogOptionSelected,"$option == ba_openOverclockWorkshop","ba_displayOverclockUI",,,
@@ -28,10 +28,11 @@ ba_overclock_beginSalvage,BeginSalvage,"$tag:ba_overclock_station score:9999997
 !$usable","$crewReq = 300 0
 $metalsReq = 3000 0","While the vast network of gantries running along and to various different parts of the station is impressive, not all of it is of the same make. Blue and silvery white lines of more recent construction, rerouted power cables and impossibly sophisticated berthing interfaces dot the station at odd angles. 
 
-You are not the first to take interest in this station, as you recognize the telltale signs of Remnant Technology.","0:overclockSalvaging:Continue",
-ba_overclock_salvaging,DialogOptionSelected,"$option == overclockSalvaging","FireBest baOverclockCheckIfCanRepair
+You are not the first to take interest in this station, as you recognize the telltale signs of Remnant Technology.","0:overclockSalvaging:Perform salvage",
+ba_overclock_salvaging,DialogOptionSelected,"$option == overclockSalvaging"," ba_generateBionicStationLoot performSalvage",,"0:baOverclockCanRepair:Continue",
+ba_overclock_canRepair,DialogOptionSelected,"$option == baOverclockCanRepair","FireBest baOverclockCheckIfCanRepair
 FireBest baOverclockDisableRepair
-ShowResCost crew $crewReq metals $metalsReq true","Scans reveal nominal power is coursing through the station, several basic station functions are online. Despite this, the unusual modules appear unpowered, for reasons your sensors cannot discern.
+ShowResCost crew $crewReq metals $metalsReq true","Further scans reveal nominal power is coursing through the station, several basic station functions are online. Despite this, the unusual modules appear unpowered, for reasons your sensors cannot discern.
 
 As the engineers assess the condition of said modules, discussions are starting to form among them about the rumored Overclock Console that seems to resemble this structure. They await your decision.","10:baOverclockRepair: Offload resources to reroute power to the structure
 100:defaultLeave:Leave",
@@ -39,8 +40,7 @@ ba_overclock_checkIfCanRepair,baOverclockCheckIfCanRepair,"$player.metals >= $me
 $player.crew >= $crewReq","$canAfford = true 0",,,
 ba_overclock_disableRepair,baOverclockDisableRepair,"!$canAfford","SetEnabled baOverclockRepair false",,,
 ba_overclock_repair,DialogOptionSelected,"$option == baOverclockRepair","RemoveCommodity metals $metalsReq
-$usable = true
-FireBest baOverclockReroutingPowerText","Your crews finish offloading the raw materials and you send an activation signal to the structure's distributed repair nodes.
+$usable = true","Your crews finish offloading the raw materials and you send an activation signal to the structure's distributed repair nodes.
 
 Not a moment later, the rerouting process happened and ended swiftly. Flipping on the power switch, several movements from the structure’s modules were detected while the rusted monitors started to flicker and display the overclocking interface.","100:baOverclockRepaired:Continue",
 ba_overclock_repaired,DialogOptionSelected,"$option == baOverclockRepaired","FireBest OpenInteractionDialog",,,
