@@ -543,12 +543,14 @@ public class ba_officermanager {
         //Exchange the overclock if the bionic has the overclock. Get the overclock from person -> convert it
         //For item, get the special data -> remove the bionic from the player inventory -> add the new bionic with the new special data
         if(ba_overclockmanager.isBionicOverclockable(bionic)) {
-            boolean removeSuccessful = true;
+            boolean removeSuccessful = false;
             //todo: remove the evoshard
-//            SpecialItemData specialItem = new SpecialItemData(ba_variablemanager.BA_OVERCLOCK_ITEM, null);
-//            removeSuccessful = Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, selectedOverclock.upgradeCost);
+            ba_overclock selectedOverclock = ba_overclockmanager.getOverclock(overclockId);
+            if(selectedOverclock != null && ba_officermanager.getEvoshardsFromPlayerInventory() > selectedOverclock.upgradeCost) {
+                SpecialItemData specialItem = new SpecialItemData(ba_variablemanager.BA_OVERCLOCK_ITEM, null);
+                removeSuccessful = Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, selectedOverclock.upgradeCost);
+            }
             if(removeSuccessful) {
-
                 if(limb != null && person != null) {
                     //overclock bionic while the bionic is on the person
                     String removingTag = convertToTag(bionic, limb, null);
@@ -567,7 +569,7 @@ public class ba_officermanager {
                 }
             }
             if(!removeSuccessful) {
-                log.error("Can't find bionic item in player inventory => abort installing");
+                log.error("Can't find bionic item in player inventory or overclock ID => abort installing");
             }
             return removeSuccessful;
         }

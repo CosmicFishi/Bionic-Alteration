@@ -34,7 +34,6 @@ public class ba_evoshardExchange extends BaseCommandPlugin {
     static Logger log = Global.getLogger(ba_evoshardExchange.class);
     @Override
     public boolean execute(String ruleId, InteractionDialogAPI dialog, List<Misc.Token> params, Map<String, MemoryAPI> memoryMap) {
-        //todo: do the evoshard exchange similar to how project did for the special weapons
         this.dialog = dialog;
         this.memoryMap = memoryMap;
 

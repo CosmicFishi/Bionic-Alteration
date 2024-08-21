@@ -408,7 +408,6 @@ public class ba_uiplugin extends ba_uicommon {
         }
     }
     public void displaySelectedPersonInfo(ba_component creatorComponent, String creatorComponentTooltip, float cW, float cH, float cX, float cY) {
-        //todo: move the person info to somewhere better like center or something
         final float pad = 10f;
         float opad = 10f;
         Color h = Misc.getHighlightColor();
@@ -557,12 +556,6 @@ public class ba_uiplugin extends ba_uicommon {
         TooltipMakerAPI infoOverclockingTooltipContainer = infoOverclockingContainer.createTooltip(infoOverclockingTooltipKey, cW, cH, false, 0,0);
         creatorComponent.attachSubPanel(creatorComponentTooltip, infoOverclockingPanelKey,infoOverclockingContainer,0,0);
 
-        int evoshardCount = 0;
-        for(CargoStackAPI stack: Global.getSector().getPlayerFleet().getCargo().getStacksCopy()) {
-            if(stack.getType().equals(CargoAPI.CargoItemType.SPECIAL) && stack.getSpecialItemSpecIfSpecial().getId().equals(ba_variablemanager.BA_OVERCLOCK_ITEM)) {
-                evoshardCount += stack.getSize();
-            }
-        }
         //border
         float borderX = (int) (pad);
         float borderY = (int) (pad);
@@ -571,7 +564,7 @@ public class ba_uiplugin extends ba_uicommon {
         UIComponentAPI borderRight = infoOverclockingTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
         borderRight.getPosition().setSize(borderW, borderH);
         infoOverclockingContainer.mainPanel.addComponent(borderRight).setLocation(0,0).inTL(borderX, borderY);
-        float halfLeft = borderW * 20f / 100;
+        float halfLeft = borderW * 36f / 100;
         float halfRight = borderW - halfLeft;
         //--------image
         float imageW = (int) 64;

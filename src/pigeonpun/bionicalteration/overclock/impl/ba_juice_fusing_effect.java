@@ -26,7 +26,6 @@ public class ba_juice_fusing_effect extends ba_overclock {
     static final String dataKey = "ba_juice_reload_data";
     public ba_juice_fusing_effect() {}
 
-    //todo: do effects
     @Override
     public void displayEffectDescription(TooltipMakerAPI tooltip, PersonAPI person, ba_bionicitemplugin bionic, boolean inBionicTable) {
         final float pad = 10f;
