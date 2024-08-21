@@ -544,7 +544,6 @@ public class ba_officermanager {
         //For item, get the special data -> remove the bionic from the player inventory -> add the new bionic with the new special data
         if(ba_overclockmanager.isBionicOverclockable(bionic)) {
             boolean removeSuccessful = false;
-            //todo: remove the evoshard
             ba_overclock selectedOverclock = ba_overclockmanager.getOverclock(overclockId);
             if(selectedOverclock != null && ba_officermanager.getEvoshardsFromPlayerInventory() > selectedOverclock.upgradeCost) {
                 SpecialItemData specialItem = new SpecialItemData(ba_variablemanager.BA_OVERCLOCK_ITEM, null);

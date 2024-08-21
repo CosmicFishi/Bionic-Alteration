@@ -19,11 +19,31 @@ ba_openBionicWorkshop,DialogOptionSelected,"$option == ba_openBionicWorkshop","b
 "#END workshop",,,,,,
 ,,,,,,
 # defender,,,,,,
-ba_overclock_defenderDesc,TriggerAutomatedDefenses,"$tag:ba_overclock_station score:9999997
-","SalvageDefenderInteraction","Temporary place holder for the overclock defender.",,
+ba_overclock_defenderDesc,TriggerAutomatedDefenses,"$tag:ba_overclock_station score:9999997","SalvageDefenderInteraction","The station hails your fleet. 
+
+""CID-IFF not received [TARGET HOSTILE] respond null // 'Greetings from Tri-Tachyon Integrated Space Industries Station unit [MY_SERIAL]. This unit has not cleared------ ""INTERRUPTquery.     you are not the maker.     scanning.  Proprietary nano technology detected, entity danger/opportunity/terminate collect proprietary assets.""
+
+The comm-link dies. Your comms officer panics for a moment before the console reboots itself. You both exchange a look before assuming combat stations.",,
 ba_overclock_beginSalvage,BeginSalvage,"$tag:ba_overclock_station score:9999997
-!$usable",,"Temporary placeholder - something about discovering the technology which allow bionic to overclock","0:overclockSalvaging:Reroute power to structure",
-ba_overclock_salvaging,DialogOptionSelected,"$option == overclockSalvaging","$usable = true","Temporary placeholder - something about powering up the machine, need to wait a bit","100:defaultLeave:Leave",
+!$usable","$crewReq = 300 0
+$metalsReq = 3000 0","While the vast network of gantries running along and to various different parts of the station is impressive, not all of it is of the same make. Blue and silvery white lines of more recent construction, rerouted power cables and impossibly sophisticated berthing interfaces dot the station at odd angles. 
+
+You are not the first to take interest in this station, as you recognize the telltale signs of Remnant Technology.","0:overclockSalvaging:Continue",
+ba_overclock_salvaging,DialogOptionSelected,"$option == overclockSalvaging","FireBest baOverclockCheckIfCanRepair
+FireBest baOverclockDisableRepair
+ShowResCost crew $crewReq metals $metalsReq true","Scans reveal nominal power is coursing through the station, several basic station functions are online. Despite this, the unusual modules appear unpowered, for reasons your sensors cannot discern.
+
+As the engineers assess the condition of said modules, discussions are starting to form among them about the rumored Overclock Console that seems to resemble this structure. They await your decision.","10:baOverclockRepair: Offload resources to reroute power to the structure
+100:defaultLeave:Leave",
+ba_overclock_checkIfCanRepair,baOverclockCheckIfCanRepair,"$player.metals >= $metalsReq
+$player.crew >= $crewReq","$canAfford = true 0",,,
+ba_overclock_disableRepair,baOverclockDisableRepair,"!$canAfford","SetEnabled baOverclockRepair false",,,
+ba_overclock_repair,DialogOptionSelected,"$option == baOverclockRepair","RemoveCommodity metals $metalsReq
+$usable = true
+FireBest baOverclockReroutingPowerText","Your crews finish offloading the raw materials and you send an activation signal to the structure's distributed repair nodes.
+
+Not a moment later, the rerouting process happened and ended swiftly. Flipping on the power switch, several movements from the structure’s modules were detected while the rusted monitors started to flicker and display the overclocking interface.","100:baOverclockRepaired:Continue",
+ba_overclock_repaired,DialogOptionSelected,"$option == baOverclockRepaired","FireBest OpenInteractionDialog",,,
 "#END defender",,,,,,
 "#END overclock",,,,,,
 ,,,,,,
