@@ -16,6 +16,7 @@ import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bioniceffect;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
+import pigeonpun.bionicalteration.inventory.ba_inventoryhandler;
 import pigeonpun.bionicalteration.utils.ba_utils;
 
 import java.io.IOException;
@@ -115,16 +116,18 @@ public class ba_overclockmanager {
 //            }
 //        }
         if(bionic != null && overclocKId != null) {
-            SpecialItemData specialItemRemoving = null;
-            if(bionic.getAppliedOverclockOnItem() != null) {
-                specialItemRemoving = new SpecialItemData(bionic.bionicId, bionic.getAppliedOverclockOnItem().id);
-            } else {
-                specialItemRemoving = new SpecialItemData(bionic.bionicId, null);
-            }
-            boolean removed = Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItemRemoving, 1);;
+//            SpecialItemData specialItemRemoving = null;
+//            if(bionic.getAppliedOverclockOnItem() != null) {
+//                specialItemRemoving = new SpecialItemData(bionic.bionicId, bionic.getAppliedOverclockOnItem().id);
+//            } else {
+//                specialItemRemoving = new SpecialItemData(bionic.bionicId, null);
+//            }
+//            boolean removed = Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItemRemoving, 1);;
+            boolean removed = ba_inventoryhandler.removeFromContainer(bionic);
             if (removed) {
                 SpecialItemData specialItemAdd = new SpecialItemData(bionic.bionicId, overclocKId);
                 Global.getSector().getPlayerFleet().getCargo().addSpecial(specialItemAdd, 1);
+                ba_inventoryhandler.compressAllBionics();
                 return true;
             }
         }

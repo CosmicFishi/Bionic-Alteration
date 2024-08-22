@@ -82,7 +82,8 @@ public class bionicalterationplugin extends BaseModPlugin {
 
         Global.getSector().getListenerManager().addListener(salvageListener, true);
         Global.getSector().addTransientListener(campaignListener);
-        Global.getSector().addListener(campaignListener);
+        Global.getSector().addTransientScript(campaignListener);
+//        Global.getSector().addListener(campaignListener);
     }
     protected void removeListeners() {
         Global.getSector().getListenerManager().removeListener(salvageListener);

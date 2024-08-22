@@ -114,7 +114,6 @@ public class ba_procgenmanager {
                         long salvageSeed = ba_utils.getRandom().nextLong();
                         station.getMemoryWithoutUpdate().set(MemFlags.SALVAGE_SEED, salvageSeed);
 //                        station.getMemoryWithoutUpdate().set("$hasDefenders", true, 0f);
-                        //todo: add bionic t3 drop group into salvage_entity_gen_data.csv for the bionic overclock station
                         log.info("Found " + selectedPlanet.getStarSystem().getName() + " system, spawning bionic research station at " + selectedPlanet.getName());
                         spawnCount += 1;
                     }

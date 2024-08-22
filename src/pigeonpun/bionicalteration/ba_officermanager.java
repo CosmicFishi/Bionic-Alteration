@@ -21,6 +21,7 @@ import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.faction.ba_factiondata;
 import pigeonpun.bionicalteration.faction.ba_factionmanager;
+import pigeonpun.bionicalteration.inventory.ba_inventoryhandler;
 import pigeonpun.bionicalteration.overclock.ba_overclock;
 import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
 import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
@@ -444,11 +445,12 @@ public class ba_officermanager {
             boolean removeSuccessful = true;
             ba_overclock overclock = ba_overclockmanager.getOverclockFromItem(bionic);
             if(removeBionicOnInstall) {
-                SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
-                if(overclock != null) {
-                    specialItem = new SpecialItemData(bionic.bionicId, overclock.id);
-                }
-                removeSuccessful = Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, 1);
+//                SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
+//                if(overclock != null) {
+//                    specialItem = new SpecialItemData(bionic.bionicId, overclock.id);
+//                }
+//                removeSuccessful = Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, 1);
+                removeSuccessful = ba_inventoryhandler.removeFromContainer(bionic);
             }
             if(removeSuccessful) {
                 String bionicTag = convertToTag(bionic, limb, null);
@@ -505,14 +507,15 @@ public class ba_officermanager {
             }
             for(String tag: person.getTags()) {
                 if(tag.equals(removingTag)) {
+                    ba_inventoryhandler.addToContainer(bionic, person, limb);
                     person.removeTag(removingTag);
 
-                    SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
-                    if(overclock != null) {
-                        //require special item data to do the overclock things
-                        specialItem =  new SpecialItemData(bionic.bionicId, overclock.id);
-                    }
-                    Global.getSector().getPlayerFleet().getCargo().addSpecial(specialItem, 1);
+//                    SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
+//                    if(overclock != null) {
+//                        //require special item data to do the overclock things
+//                        specialItem =  new SpecialItemData(bionic.bionicId, overclock.id);
+//                    }
+//                    Global.getSector().getPlayerFleet().getCargo().addSpecial(specialItem, 1);
                     updatePersonStatsOnInteract(bionic, limb, person, false);
                     if(bionic.effectScript != null && bionic.isEffectAppliedAfterRemove) {
                         bionic.effectScript.onRemove(person, limb, bionic);

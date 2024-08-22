@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
+import pigeonpun.bionicalteration.inventory.ba_inventoryhandler;
 import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
 
 import java.awt.*;
@@ -27,7 +28,7 @@ public class ba_evoshardExchange extends BaseCommandPlugin {
     protected SectorEntityToken entity;
     protected TextPanelAPI text;
     protected OptionPanelAPI options;
-    protected CargoAPI playerCargo;
+//    protected CargoAPI playerCargo;
     protected MemoryAPI memory;
     protected InteractionDialogAPI dialog;
     protected Map<String, MemoryAPI> memoryMap;
@@ -47,7 +48,7 @@ public class ba_evoshardExchange extends BaseCommandPlugin {
         options = dialog.getOptionPanel();
 
         playerFleet = Global.getSector().getPlayerFleet();
-        playerCargo = playerFleet.getCargo();
+//        playerCargo = playerFleet.getCargo();
 
         if(command.equals("exchange")) {
             exchangeEvoshard();
@@ -56,13 +57,15 @@ public class ba_evoshardExchange extends BaseCommandPlugin {
         return true;
     }
     protected void exchangeEvoshard() {
+        ba_inventoryhandler.compressAllBionics();
         CargoAPI copy = Global.getFactory().createCargo(false);
-        for(CargoStackAPI cargo: playerCargo.getStacksCopy()) {
-            if(cargo.isSpecialStack() && cargo.getSpecialItemSpecIfSpecial() != null && ba_bionicmanager.bionicItemMap.containsKey(cargo.getSpecialDataIfSpecial().getId())) {
-                SpecialItemData data = cargo.getSpecialDataIfSpecial();
-                copy.addSpecial(data, cargo.getSize());
-            }
-        }
+//        for(CargoStackAPI cargo: playerCargo.getStacksCopy()) {
+//            if(cargo.isSpecialStack() && cargo.getSpecialItemSpecIfSpecial() != null && ba_bionicmanager.bionicItemMap.containsKey(cargo.getSpecialDataIfSpecial().getId())) {
+//                SpecialItemData data = cargo.getSpecialDataIfSpecial();
+//                copy.addSpecial(data, cargo.getSize());
+//            }
+//        }
+        copy.addAll(ba_inventoryhandler.uncompressAllBionics());
         copy.sort();
 
         final float width = 310f;
@@ -75,7 +78,8 @@ public class ba_evoshardExchange extends BaseCommandPlugin {
                 cargo.sort();
                 for (CargoStackAPI stack : cargo.getStacksCopy()) {
                     if(stack.isSpecialStack()) {
-                        playerCargo.removeItems(stack.getType(), stack.getSpecialDataIfSpecial(), stack.getSize());
+                        ba_inventoryhandler.removeFromContainer(stack);
+//                        playerCargo.removeItems(stack.getType(), stack.getSpecialDataIfSpecial(), stack.getSize());
                         AddRemoveCommodity.addItemLossText(stack.getSpecialDataIfSpecial(), (int) stack.getSize(), text);
                     }
                 }
@@ -84,7 +88,7 @@ public class ba_evoshardExchange extends BaseCommandPlugin {
                     addEvoshardsGainText((int) evoshardsGain, text);
                 }
                 SpecialItemData data = new SpecialItemData(ba_variablemanager.BA_OVERCLOCK_ITEM, null);
-                playerCargo.addSpecial(data, evoshardsGain);
+                Global.getSector().getPlayerFleet().getCargo().addSpecial(data, evoshardsGain);
             }
             public void cancelledCargoSelection() {
             }

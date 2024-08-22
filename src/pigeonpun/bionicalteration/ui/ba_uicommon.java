@@ -14,6 +14,7 @@ import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
+import pigeonpun.bionicalteration.inventory.ba_inventoryhandler;
 import pigeonpun.bionicalteration.overclock.ba_overclock;
 import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
 import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
@@ -51,12 +52,13 @@ public class ba_uicommon implements CustomUIPanelPlugin {
     protected void refresh() {
         //reset button for checking press
         cargoBionic.clear();
-        CargoAPI playerCargo = Global.getSector().getPlayerFleet().getCargo();
-        for(CargoStackAPI cargo: playerCargo.getStacksCopy()) {
-            if(cargo.isSpecialStack() && cargo.getSpecialItemSpecIfSpecial() != null && ba_bionicmanager.bionicItemMap.containsKey(cargo.getSpecialDataIfSpecial().getId())) {
-                cargoBionic.add(cargo);
-            }
-        }
+        cargoBionic = ba_inventoryhandler.uncompressAllBionics().getStacksCopy();
+//        CargoAPI playerCargo = Global.getSector().getPlayerFleet().getCargo();
+//        for(CargoStackAPI cargo: playerCargo.getStacksCopy()) {
+//            if(cargo.isSpecialStack() && cargo.getSpecialItemSpecIfSpecial() != null && ba_bionicmanager.bionicItemMap.containsKey(cargo.getSpecialDataIfSpecial().getId())) {
+//                cargoBionic.add(cargo);
+//            }
+//        }
         for (ButtonAPI b : buttons) {
             if (b.isChecked()) {
                 b.setChecked(false);
@@ -125,7 +127,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 while(rowItemCount < itemsPerRow) {
                     if(index < cargoBionic.size()) {
                         CargoStackAPI cargo = cargoBionic.get(index);
-                        final ba_bionicitemplugin bionic = (ba_bionicitemplugin) cargo.getPlugin();
+                        ba_bionicitemplugin bionic = (ba_bionicitemplugin) cargo.getPlugin();
                         float quantity = cargo.getSize();
 
                         int itemX = rowItemCount * itemW;

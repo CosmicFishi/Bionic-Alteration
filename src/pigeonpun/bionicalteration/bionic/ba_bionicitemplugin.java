@@ -311,4 +311,30 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
     public SpecialItemSpecAPI getSpec() {
         return spec;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof ba_bionicitemplugin) {
+            //todo: this need fixing
+            boolean equal = true;
+            if(!((ba_bionicitemplugin) obj).bionicId.equals(bionicId)) {
+                equal = false;
+            }
+            if(((ba_bionicitemplugin) obj).getAppliedOverclockOnItem() != null || appliedOverclock != null) {
+                String comparingStr1 = ((ba_bionicitemplugin) obj).getId();
+                if(((ba_bionicitemplugin) obj).getAppliedOverclockOnItem() != null) {
+                    comparingStr1 += ((ba_bionicitemplugin) obj).getAppliedOverclockOnItem().id;
+                }
+                String comparingStr2 = bionicId;
+                if(appliedOverclock != null) {
+                    comparingStr2 += appliedOverclock;
+                }
+                if(!comparingStr1.equals(comparingStr2)) {
+                    equal = false;
+                }
+            }
+            return equal;
+        }
+        return super.equals(obj);
+    }
 }

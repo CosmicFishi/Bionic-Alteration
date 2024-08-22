@@ -17,12 +17,14 @@ import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.faction.ba_factiondata;
 import pigeonpun.bionicalteration.faction.ba_factionmanager;
+import pigeonpun.bionicalteration.inventory.ba_inventoryhandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ba_campaignlistener extends BaseCampaignEventListener implements EveryFrameScript {
     static Logger log = Global.getLogger(ba_campaignlistener.class);
+    static CoreUITabId previousTab = CoreUITabId.MAP;
     public ba_campaignlistener(boolean permaRegister) {
         super(permaRegister);
     }
@@ -57,11 +59,21 @@ public class ba_campaignlistener extends BaseCampaignEventListener implements Ev
 
     @Override
     public boolean runWhilePaused() {
-        return false;
+        return true;
     }
 
     @Override
     public void advance(float amount) {
         //todo: advance in camapaign stuffs here
+        if(Global.getSector().getCampaignUI().getCurrentCoreTab() != null) {
+            if(!previousTab.equals(Global.getSector().getCampaignUI().getCurrentCoreTab())) {
+                if(Global.getSector().getCampaignUI().getCurrentCoreTab().equals(CoreUITabId.CARGO)) {
+                    ba_inventoryhandler.compressAllBionics();
+                }
+                previousTab = Global.getSector().getCampaignUI().getCurrentCoreTab();
+            }
+        } else {
+            previousTab = CoreUITabId.MAP;
+        }
     }
 }

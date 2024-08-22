@@ -17,6 +17,7 @@ import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
+import pigeonpun.bionicalteration.inventory.ba_inventoryhandler;
 import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
 import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
 import pigeonpun.bionicalteration.ui.ba_component;
@@ -72,6 +73,7 @@ public class ba_uiplugin extends ba_uicommon {
             isDisplayingOtherFleets = false;
         }
         ba_officermanager.refresh(personList);
+        ba_inventoryhandler.compressAllBionics();
         this.callbacks = callbacks;
         this.containerPanel = panel;
         this.dialog = dialog;

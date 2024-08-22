@@ -17,6 +17,7 @@ import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
+import pigeonpun.bionicalteration.inventory.ba_inventoryhandler;
 import pigeonpun.bionicalteration.overclock.ba_overclock;
 import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
 import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
@@ -72,6 +73,7 @@ public class ba_uiplugin extends ba_uicommon {
 //                currentPerson, currentScrollPositionInventory
 //        );
         ba_officermanager.refresh(null);
+        ba_inventoryhandler.compressAllBionics();
 
         initialUICreation();
         //change the current tab id and "focus" on it
