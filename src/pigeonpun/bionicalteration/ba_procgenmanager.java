@@ -41,10 +41,10 @@ public class ba_procgenmanager {
 //        entitiesLookingFor.add(Tags.SALVAGEABLE);
 
             int spawnCount = 0;
-            int maxTriesBeforeQuit = 1000;
+            final int maxTriesBeforeQuit = 1000;
             int tryCountBeforeQuit = 0;
             while(spawnCount < bionicStationSpawnCount && tryCountBeforeQuit < maxTriesBeforeQuit) {
-                maxTriesBeforeQuit += 1;
+                tryCountBeforeQuit += 1;
                 SectorEntityToken targetLocation = MagicCampaign.findSuitableTarget(
                         null,
                         null,
