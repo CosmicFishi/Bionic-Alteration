@@ -21,6 +21,7 @@ public class bionicalterationplugin extends BaseModPlugin {
     public static boolean isAllowBionicsToSpawnInPlayerFleetOnNewSave = false;
     public static boolean isDevmode = false;
     public static boolean isBRMCapDisable = false;
+    public static boolean isConsciousnessDisable = false;
     @Override
     public void onApplicationLoad() throws Exception {
 //        ba_manager.getInstance();
@@ -35,6 +36,8 @@ public class bionicalterationplugin extends BaseModPlugin {
         isAllowBionicsToSpawnInPlayerFleetOnNewSave = Global.getSettings().getBoolean("isAllowBionicsToSpawnInPlayerFleetOnNewSave");
         isDevmode = Global.getSettings().getBoolean("isDevmode");
         isBRMCapDisable = Global.getSettings().getBoolean("isBRMCapDisable");
+        //todo: implement consciousness disabling
+        isConsciousnessDisable = Global.getSettings().getBoolean("isConsciousnessDisable");
 
         if(isLunalibEnabled) {
             lunaconfighelper.initLunaConfig();
