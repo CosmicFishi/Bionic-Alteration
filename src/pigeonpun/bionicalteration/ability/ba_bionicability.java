@@ -23,6 +23,21 @@ public class ba_bionicability extends BaseDurationAbility {
     }
 
     @Override
+    public float getCooldownDays() {
+        return 0f;
+    }
+
+    @Override
+    public float getDeactivationDays() {
+        return 0f;
+    }
+
+    @Override
+    public float getDurationDays() {
+        return 0f;
+    }
+
+    @Override
     protected void applyEffect(float amount, float level) {
 
     }

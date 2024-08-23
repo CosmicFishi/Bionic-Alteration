@@ -87,6 +87,9 @@ public class ba_bioniccontainer implements SpecialItemPlugin {
         tooltip.addSpacer(pad * 2);
 
         CargoAPI sortedCargo = ba_inventoryhandler.uncompressAllBionics();
+        if(sortedCargo.isEmpty()) {
+            LabelAPI emptyLabel = tooltip.addPara("Empty", g,0);
+        }
         sortedCargo.sort();
         HashMap<String, CargoAPI> designType = new HashMap<>();
         for(CargoStackAPI stack: sortedCargo.getStacksCopy()) {

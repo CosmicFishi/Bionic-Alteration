@@ -54,9 +54,7 @@ public class bionicalterationplugin extends BaseModPlugin {
         ba_officermanager.onSaveLoad();
         ba_marketmanager.onSaveLoad();
         addListeners();
-        if(!Global.getSector().getCharacterData().getAbilities().contains(ba_variablemanager.BA_ABILITY_KEY)) {
-            Global.getSector().getCharacterData().addAbility(ba_variablemanager.BA_ABILITY_KEY);
-        }
+        Global.getSector().getCharacterData().addAbility(ba_variablemanager.BA_ABILITY_KEY);
     }
 
     @Override
