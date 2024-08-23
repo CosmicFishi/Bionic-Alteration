@@ -10,6 +10,7 @@ Dm my discord ``PigeonPun``
 
 ## Credits
 ```
+ComitatensSaxoni - Lore/Description help
 Wisp/Silkie - Mod template 
 LazyWizard - LazyLib 
 AtlanticAccent - Script help
