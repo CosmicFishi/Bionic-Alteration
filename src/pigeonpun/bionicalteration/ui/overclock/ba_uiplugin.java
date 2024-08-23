@@ -2,9 +2,6 @@ package pigeonpun.bionicalteration.ui.overclock;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.*;
-import com.fs.starfarer.api.campaign.econ.MarketAPI;
-import com.fs.starfarer.api.characters.PersonAPI;
-import com.fs.starfarer.api.combat.MutableStat;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.ui.*;
 import com.fs.starfarer.api.util.Misc;
@@ -24,15 +21,11 @@ import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
 import pigeonpun.bionicalteration.ui.ba_component;
 import pigeonpun.bionicalteration.ui.ba_debounceplugin;
 import pigeonpun.bionicalteration.ui.ba_uicommon;
-import pigeonpun.bionicalteration.utils.ba_utils;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-
-import static com.fs.starfarer.api.ui.Fonts.*;
 
 /**
  * @author PigeonPun
@@ -321,7 +314,7 @@ public class ba_uiplugin extends ba_uicommon {
         );
         float remaindEvoshard = -1;
         if(currentSelectedOverclock != null) {
-            remaindEvoshard = ba_officermanager.getEvoshardsFromPlayerInventory() - ba_overclockmanager.getOverclock(currentSelectedOverclock).upgradeCost;
+            remaindEvoshard = ba_inventoryhandler.getEvoshardsFromPlayerInventory() - ba_overclockmanager.getOverclock(currentSelectedOverclock).upgradeCost;
         }
         addButtonToList(overclockBtn, "overclock:");
         overclockBtn.getPosition().setLocation(0,0).inTL(overclockX, overclockY);
@@ -357,7 +350,7 @@ public class ba_uiplugin extends ba_uicommon {
                 selectOPara.setHighlightColors(currentSelectedOverclock != null? Misc.getPositiveHighlightColor(): bad, currentSelectedOverclock != null? h: g);
                 float remaindEvoshard = -1;
                 if(currentSelectedOverclock != null) {
-                    remaindEvoshard = ba_officermanager.getEvoshardsFromPlayerInventory() - ba_overclockmanager.getOverclock(currentSelectedOverclock).upgradeCost;
+                    remaindEvoshard = ba_inventoryhandler.getEvoshardsFromPlayerInventory() - ba_overclockmanager.getOverclock(currentSelectedOverclock).upgradeCost;
                 }
                 LabelAPI negativeEvoshardPara = tooltip.addPara("[ %s ] Remainder Evoshards does not fall %s: %s", pad , h, remaindEvoshard > 0 ?"O":"X" , "below 0" ,"" + Math.round(remaindEvoshard));
                 negativeEvoshardPara.setHighlightColors(remaindEvoshard > 0 ?Misc.getPositiveHighlightColor():bad, h ,remaindEvoshard > 0? h : bad);
@@ -508,6 +501,8 @@ public class ba_uiplugin extends ba_uicommon {
         int consciousnessW = (int) inforRightW;
         int conditionY = (int) (consciousnessH + consciousnessY);
         int conditionX = (int) (imageW + pad + pad);
+        int professionY = (int) (consciousnessH + conditionY);
+        int professionX = (int) (conditionX);
         String condition = ba_consciousmanager.getConsciousnessLevel(consciousness).getDisplayName() == null? "----": ba_consciousmanager.getConsciousnessLevel(consciousness).getDisplayName();
         //hover condition
         float hoverConsciousW = BRM.computeTextWidth("Condition: "+ condition) + pad;
@@ -535,7 +530,7 @@ public class ba_uiplugin extends ba_uicommon {
 
             @Override
             public float getTooltipWidth(Object tooltipParam) {
-                return 300;
+                return 350;
             }
 
             @Override
@@ -543,6 +538,12 @@ public class ba_uiplugin extends ba_uicommon {
                 ba_consciousmanager.displayConsciousEffects(tooltip, currentPerson, expanded);
             }
         }, consciousAreaChecker, TooltipMakerAPI.TooltipLocation.ABOVE);
+        //>professions: tiled with conscious
+        LabelAPI professionLabel = infoPersonTooltipContainer.addPara("" + ba_officermanager.getProfessionText(this.currentPerson, false) + "", 0);
+        professionLabel.setHighlight("" + ba_officermanager.getProfessionText(this.currentPerson, false));
+        professionLabel.setHighlightColor(Misc.getHighlightColor());
+        professionLabel.getPosition().setSize(150,30);
+        professionLabel.getPosition().inTL(professionX, professionY);
     }
     public void displayOverclockingInfo(ba_component creatorComponent, String creatorComponentTooltip, float cW, float cH, float cX, float cY) {
         final float pad = 10f;
@@ -589,13 +590,13 @@ public class ba_uiplugin extends ba_uicommon {
         gridTooltip.setGridLabelColor(h);
         gridTooltip.addToGrid(0,0, "Evoshards", "Count", h);
         gridTooltip.setGridLabelColor(t);
-        gridTooltip.addToGrid(0,1, "Available", "" + ba_officermanager.getEvoshardsFromPlayerInventory(), Misc.getPositiveHighlightColor());
+        gridTooltip.addToGrid(0,1, "Available", "" + ba_inventoryhandler.getEvoshardsFromPlayerInventory(), Misc.getPositiveHighlightColor());
         gridTooltip.addToGrid(0,2, "Require", this.currentSelectedOverclock != null ? "" + ba_overclockmanager.getOverclock(this.currentSelectedOverclock).upgradeCost : "0", this.currentSelectedOverclock != null ? bad : g);
         if(this.currentSelectedOverclock != null) {
-            float remainderCount = ba_officermanager.getEvoshardsFromPlayerInventory() - ba_overclockmanager.getOverclock(this.currentSelectedOverclock).upgradeCost;
+            float remainderCount = ba_inventoryhandler.getEvoshardsFromPlayerInventory() - ba_overclockmanager.getOverclock(this.currentSelectedOverclock).upgradeCost;
             gridTooltip.addToGrid(0,3, "Remainder", "" + Math.round(remainderCount), remainderCount > 0 ? h: bad);
         } else {
-            gridTooltip.addToGrid(0,3, "Remainder", "" + ba_officermanager.getEvoshardsFromPlayerInventory(), h);
+            gridTooltip.addToGrid(0,3, "Remainder", "" + ba_inventoryhandler.getEvoshardsFromPlayerInventory(), h);
         }
         gridTooltip.addGrid(0);
 
@@ -604,7 +605,7 @@ public class ba_uiplugin extends ba_uicommon {
         int bionicW = (int) (borderW - pad);
         int bionicX = (int) (gridX + pad/2);
         int bionicY = (int) (gridY + gridTooltip.getHeightSoFar() + pad);
-        LabelAPI bionic = infoOverclockingTooltipContainer.addPara("Current selected %s: %s", pad, t, "bionic", currentSelectOverclockBionic != null? currentSelectOverclockBionic.getName(): "None");
+        LabelAPI bionic = infoOverclockingTooltipContainer.addPara("Selected %s: %s", pad, t, "bionic", currentSelectOverclockBionic != null? currentSelectOverclockBionic.getName(): "None");
         bionic.setHighlightColors(h, currentSelectOverclockBionic != null? currentSelectOverclockBionic.displayColor : g);
         bionic.getPosition().setSize(bionicW, bionicH);
         bionic.getPosition().inTL(bionicX, bionicY);
@@ -614,7 +615,7 @@ public class ba_uiplugin extends ba_uicommon {
         int limbX = (int) (bionicX);
         int limbY = (int) (bionicY + bionicH + pad/4);
         if(currentSelectOverclockLocation.equals(PERSON_LIST)) {
-            LabelAPI limb = infoOverclockingTooltipContainer.addPara("Current selected %s: %s", pad, t, "limb", currentSelectedLimb != null ? currentSelectedLimb.name: "None");
+            LabelAPI limb = infoOverclockingTooltipContainer.addPara("Selected %s: %s", pad, t, "limb", currentSelectedLimb != null ? currentSelectedLimb.name: "None");
             limb.setHighlightColors(h, currentSelectedLimb != null ? h: g);
             limb.getPosition().setSize(limbW, limbH);
             limb.getPosition().inTL(limbX, limbY);
@@ -624,11 +625,11 @@ public class ba_uiplugin extends ba_uicommon {
         int overclockW = (int) (borderW - pad);
         int overclockX = (int) (limbX);
         int overclockY = (int) (limbY + limbH + pad/4);
-        LabelAPI overclock = infoOverclockingTooltipContainer.addPara("Current selected %s: %s", pad, t, "overclock", (currentSelectedOverclock != null) ?
+        LabelAPI overclock = infoOverclockingTooltipContainer.addPara("Selected %s: %s", pad, t, "overclock", (currentSelectedOverclock != null) ?
                 ba_overclockmanager.getOverclock(currentSelectedOverclock) != null ?
                         ba_overclockmanager.getOverclock(currentSelectedOverclock).name : "the overclock ID doesn't match any of the existing" :
                 "None");
-        overclock.setHighlightColors(h, currentSelectedOverclock != null? h: g);
+        overclock.setHighlightColors(h, currentSelectedOverclock != null? ba_variablemanager.BA_OVERCLOCK_COLOR: g);
         overclock.getPosition().setSize(overclockW, overclockH);
         overclock.getPosition().inTL(overclockX, overclockY);
     }
@@ -812,6 +813,7 @@ public class ba_uiplugin extends ba_uicommon {
                     if(ba_bionicmanager.bionicItemMap.get(tokens[1]) != null) {
                         this.currentSelectedBionic = (ba_bionicitemplugin) cargoBionic.get(Integer.parseInt(tokens[2])).getPlugin();
                         this.currentSelectOverclockBionic = (ba_bionicitemplugin) cargoBionic.get(Integer.parseInt(tokens[2])).getPlugin();
+                        this.currentSelectedOverclock = null;
                         needsReset = true;
                         break;
                     }
@@ -836,6 +838,7 @@ public class ba_uiplugin extends ba_uicommon {
                 if(tokens[0].equals("switch") && ((Objects.equals(tokens[1], PERSON_LIST)) || (Objects.equals(tokens[1], INVENTORY)))) {
                     this.currentSelectOverclockLocation = tokens[1];
                     this.currentSelectOverclockBionic = null;
+                    this.currentSelectedOverclock = null;
                     this.currentSelectedLimb = null;
                     this.currentSelectedBionic = null;
                     needsReset = true;

@@ -23,9 +23,9 @@ public class ba_conscious_weaken implements ba_conscious {
     public final static float MANEUVERABILITY_BONUS = 0.14f;
     public final static float SHIP_OVERLOAD = 0.1f;
     //admin
-    public final static float MARKET_UPKEEP = 0.16f;
-    public final static float MARKET_STABILITY = 2f;
-    public final static float MARKET_ACCESS = 0.16f;
+    public final static float MARKET_UPKEEP = 0.15f;
+    public final static float MARKET_STABILITY = 1f;
+    public final static float MARKET_ACCESS = 0.15f;
     @Override
     public Color getColor() {
         return ba_variablemanager.BA_CONSCIOUSNESS_COLOR.get(ba_variablemanager.BA_CONSCIOUSNESS_WEAKENED_THRESHOLD);
@@ -55,7 +55,7 @@ public class ba_conscious_weaken implements ba_conscious {
         if(person.isPlayer()) {
             showBoth = true;
         } else {
-            if(ba_officermanager.isOfficer(person, ba_uiplugin.isDisplayingOtherFleets)) {
+            if(ba_officermanager.isCaptainOrAdmin(person, ba_uiplugin.isDisplayingOtherFleets).equals(ba_officermanager.ba_profession.CAPTAIN)) {
                 showOfficer = true;
             }
         }

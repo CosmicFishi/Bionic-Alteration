@@ -336,6 +336,14 @@ public class ba_uiplugin extends ba_uicommon {
             personalityLabel.getPosition().inTL(0, nameLabel.getPosition().getHeight() + statsSpacer);
             //>Occupation
             String occupation = "Idle";
+            if(this.dialog.getInteractionTarget() != null && this.dialog.getInteractionTarget() instanceof CampaignFleetAPI) {
+                CampaignFleetAPI fleet = (CampaignFleetAPI) this.dialog.getInteractionTarget();
+                if(fleet.getFleetData() != null && fleet.getFleetData().getMemberWithCaptain(this.currentPerson) != null) {
+                    String shipName = fleet.getFleetData().getMemberWithCaptain(this.currentPerson).getShipName();
+                    String shipClass = fleet.getFleetData().getMemberWithCaptain(this.currentPerson).getHullSpec().getNameWithDesignationWithDashClass();
+                    occupation = "Piloting "+ shipName + " of " + shipClass;
+                }
+            }
             if(this.currentPerson.getFleet() != null || (this.currentPerson.isPlayer() && Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentPerson) != null)) {
                 if(this.currentPerson.isPlayer()) {
                     String shipName = Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(this.currentPerson).getShipName();
@@ -585,6 +593,8 @@ public class ba_uiplugin extends ba_uicommon {
         int consciousnessW = (int) infoLeftW;
         int conditionY = (int) (consciousnessH + consciousnessY);
         int conditionX = (int) (0 + pad);
+        int professionY = (int) (consciousnessH + conditionY);
+        int professionX = (int) (0 + pad);
         String condition = ba_consciousmanager.getConsciousnessLevel(consciousness).getDisplayName() == null? "----": ba_consciousmanager.getConsciousnessLevel(consciousness).getDisplayName();
         //hover condition
         float hoverConsciousW = BRM.computeTextWidth("Condition: "+ condition) + pad;
@@ -612,7 +622,7 @@ public class ba_uiplugin extends ba_uicommon {
 
             @Override
             public float getTooltipWidth(Object tooltipParam) {
-                return 300;
+                return 350;
             }
 
             @Override
@@ -620,6 +630,12 @@ public class ba_uiplugin extends ba_uicommon {
                 ba_consciousmanager.displayConsciousEffects(tooltip, currentPerson, expanded);
             }
         }, consciousAreaChecker, TooltipMakerAPI.TooltipLocation.ABOVE);
+        //>professions: tiled with conscious
+        LabelAPI professionLabel = infoPersonTooltipContainer.addPara("" + ba_officermanager.getProfessionText(this.currentPerson, isDisplayingOtherFleets) + "", 0);
+        professionLabel.setHighlight("" + ba_officermanager.getProfessionText(this.currentPerson, isDisplayingOtherFleets));
+        professionLabel.setHighlightColor(Misc.getHighlightColor());
+        professionLabel.getPosition().setSize(150,30);
+        professionLabel.getPosition().inTL(professionX, professionY);
         int btnH = 40;
         //--------upgrade button
         int installBtnH = btnH;

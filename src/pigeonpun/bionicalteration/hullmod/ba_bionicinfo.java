@@ -3,7 +3,6 @@ package pigeonpun.bionicalteration.hullmod;
 import com.fs.starfarer.api.combat.BaseHullMod;
 import com.fs.starfarer.api.combat.MutableShipStatsAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
-import com.fs.starfarer.api.ui.Alignment;
 import com.fs.starfarer.api.ui.LabelAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
@@ -46,7 +45,7 @@ public class ba_bionicinfo extends BaseHullMod {
         float lastW = 362;
 
         if(ship.getCaptain() != null) {
-            if(ba_officermanager.isOfficer(ship.getCaptain(), false)) {
+            if(ba_officermanager.isCaptainOrAdmin(ship.getCaptain(), false).equals(ba_officermanager.ba_profession.CAPTAIN)) {
                 List<ba_officermanager.ba_bionicAugmentedData> bionicData = ba_officermanager.getBionicAnatomyList(ship.getCaptain());
                 boolean isEmpty = true;
                 for(ba_officermanager.ba_bionicAugmentedData data :bionicData) {

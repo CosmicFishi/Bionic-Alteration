@@ -11,6 +11,7 @@ import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
+import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
 import pigeonpun.bionicalteration.skills.ba_bionic_augmented;
 
 import java.util.ArrayList;
@@ -47,7 +48,9 @@ public class bioniccondition extends BaseMarketConditionPlugin {
                 }
             }
             ba_consciousmanager.resetBeforeApplyEffectAdminMarket(market, id);
-            ba_consciousmanager.getConsciousnessLevel(person).applyEffectAdminMarket(market, id, 0);
+            if(!bionicalterationplugin.isConsciousnessDisable) {
+                ba_consciousmanager.getConsciousnessLevel(person).applyEffectAdminMarket(market, id, 0);
+            }
         }
     }
 

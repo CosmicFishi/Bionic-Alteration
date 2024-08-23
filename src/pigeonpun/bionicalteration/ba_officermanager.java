@@ -3,7 +3,6 @@ package pigeonpun.bionicalteration;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.CargoAPI;
-import com.fs.starfarer.api.campaign.CargoStackAPI;
 import com.fs.starfarer.api.campaign.SpecialItemData;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.characters.AdminData;
@@ -220,6 +219,9 @@ public class ba_officermanager {
     protected static int setUpBRMLimit(PersonAPI person) {
         //todo: add extra tags for person to calculate BRM/Consciousness mult ?
         int brmLimit = (int) (person.getStats().getLevel() * ba_variablemanager.BA_BRM_LIMIT_BONUS_PER_LEVEL);
+        if(isCaptainOrAdmin(person, false).equals(ba_profession.ADMIN)) {
+            brmLimit = (int) (person.getStats().getLevel() * ba_variablemanager.BA_BRM_LIMIT_BONUS_PER_LEVEL_ADMIN);
+        }
         return brmLimit;
     }
     protected static int setUpBRMCurrent(PersonAPI person) {
@@ -377,7 +379,7 @@ public class ba_officermanager {
      */
     public static boolean checkIfBionicInstallableBaseOnPersonType(ba_bionicitemplugin bionic, PersonAPI person) {
         if(person.isPlayer() || (bionic.isApplyCaptainEffect && bionic.isApplyAdminEffect)) return true;
-        return (isOfficer(person, false) && bionic.isApplyCaptainEffect) || (!isOfficer(person, false) && bionic.isApplyAdminEffect);
+        return (isCaptainOrAdmin(person, false).equals(ba_profession.CAPTAIN) && bionic.isApplyCaptainEffect) || (!isCaptainOrAdmin(person, false).equals(ba_profession.ADMIN) && bionic.isApplyAdminEffect);
     }
     public static boolean checkIfCurrentBRMLowerThanLimitOnInstall(ba_bionicitemplugin bionic, PersonAPI person) {
         float currentBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
@@ -548,7 +550,7 @@ public class ba_officermanager {
         if(ba_overclockmanager.isBionicOverclockable(bionic)) {
             boolean removeSuccessful = false;
             ba_overclock selectedOverclock = ba_overclockmanager.getOverclock(overclockId);
-            if(selectedOverclock != null && ba_officermanager.getEvoshardsFromPlayerInventory() > selectedOverclock.upgradeCost) {
+            if(selectedOverclock != null && ba_inventoryhandler.getEvoshardsFromPlayerInventory() > selectedOverclock.upgradeCost) {
                 SpecialItemData specialItem = new SpecialItemData(ba_variablemanager.BA_OVERCLOCK_ITEM, null);
                 removeSuccessful = Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, selectedOverclock.upgradeCost);
             }
@@ -578,14 +580,7 @@ public class ba_officermanager {
 
         return false;
     }
-    public static boolean checkIfRemainEvoShardIsPossitive(String overclockId) {
-        ba_overclock overclock = ba_overclockmanager.getOverclock(overclockId);
-        float remainderCount = 0;
-        if(overclock != null) {
-            remainderCount = ba_officermanager.getEvoshardsFromPlayerInventory() - overclock.upgradeCost;
-        }
-        return remainderCount > 0;
-    }
+
     public static String convertToTag(@NotNull ba_bionicitemplugin bionic, @NotNull ba_limbmanager.ba_limb limb, @Nullable String overclockId) {
         if(bionic != null && limb != null) {
             if(overclockId != null) {
@@ -638,15 +633,7 @@ public class ba_officermanager {
         }
         return listBionic;
     }
-    public static int getEvoshardsFromPlayerInventory() {
-        int count = 0;
-        for(CargoStackAPI stack: Global.getSector().getPlayerFleet().getCargo().getStacksCopy()) {
-            if(stack.isSpecialStack() && stack.getSpecialItemSpecIfSpecial().getId().equals(ba_variablemanager.BA_OVERCLOCK_ITEM)) {
-                count += stack.getSize();
-            }
-        }
-        return count;
-    }
+
     public static String getProfessionText(PersonAPI person, boolean isDisplayingOtherFleets) {
         if(isDisplayingOtherFleets) {
             return "Captain";
@@ -656,12 +643,12 @@ public class ba_officermanager {
             return "Captain/Admin";
         }
         if(person.getFleet() != null) {
-            if(isOfficer(person, false)) profString = "Captain (Idle)";
+            if(isCaptainOrAdmin(person, false).equals(ba_profession.CAPTAIN)) profString = "Captain (Idle)";
             if(Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(person) != null) {
                 profString = "Captain";
             }
         } else {
-            if(!isOfficer(person, false)) profString = "Admin (Idle)";
+            if(isCaptainOrAdmin(person, false).equals(ba_profession.ADMIN)) profString = "Admin (Idle)";
             if (person.getMarket() != null) {
                 MarketAPI market = person.getMarket();
                 if(market.getAdmin() == person) {
@@ -671,27 +658,37 @@ public class ba_officermanager {
         }
         return profString;
     }
-    public static boolean isOfficer(PersonAPI person, boolean isDisplayingOtherFleets) {
+
+    /**
+     * Return TRUE for captain, FALSE for admin
+     * @param person
+     * @param isDisplayingOtherFleets
+     * @return
+     */
+    public static ba_profession isCaptainOrAdmin(PersonAPI person, boolean isDisplayingOtherFleets) {
         //if is displaying other fleet => its always captain
-        if(isDisplayingOtherFleets) return true;
+        if(isDisplayingOtherFleets) return ba_profession.CAPTAIN;
         for (AdminData admin: Global.getSector().getCharacterData().getAdmins()) {
-            if(admin.getPerson().getId().equals(person.getId())) return false;
+            if(admin.getPerson().getId().equals(person.getId())) return ba_profession.ADMIN;
         }
         if(person.getMarket() != null && person.getMarket().getAdmin().getId().equals(person.getId())) {
-            return false;
+            return ba_profession.ADMIN;
         }
         if(person.getFleet() != null) {
             if(Global.getSector().getPlayerFleet().getFleetData().getOfficersCopy() != null) {
                 for(OfficerDataAPI member: Global.getSector().getPlayerFleet().getFleetData().getOfficersCopy()) {
-                    if(member.getPerson().getId().equals(person.getId())) return true;
+                    if(member.getPerson().getId().equals(person.getId())) return ba_profession.CAPTAIN;
                 }
-                return true;
+                return ba_profession.CAPTAIN;
             }
         }
         if(person.getMemoryWithoutUpdate().get("$ome_isAdmin") == null) {
-            return true;
+            return ba_profession.CAPTAIN;
         }
-        return false;
+        return ba_profession.ADMIN;
+    }
+    public enum ba_profession {
+        CAPTAIN, ADMIN
     }
     public static class ba_bionicAugmentedData {
         public ba_limbmanager.ba_limb limb;

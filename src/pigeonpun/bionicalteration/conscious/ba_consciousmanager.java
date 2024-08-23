@@ -6,6 +6,8 @@ import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.combat.MutableShipStatsAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
+import com.fs.starfarer.api.ui.Alignment;
+import com.fs.starfarer.api.ui.LabelAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
@@ -13,6 +15,8 @@ import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.conscious.impl.*;
+import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
+import pigeonpun.bionicalteration.utils.ba_stringhelper;
 
 import java.awt.*;
 import java.util.*;
@@ -103,18 +107,37 @@ public class ba_consciousmanager {
                 return o1.getDisplayOrder() > o2.getDisplayOrder()? 1: (o1.getDisplayOrder() < o2.getDisplayOrder())? -1: 0;
             }
         });
-        if(!isSimpleMode) {
-            //in hover view
-            conscious.displayTooltipDescription(tooltip, person, true, isSimpleMode);
-        } else {
-            //in effect list view
-            for(ba_conscious level: orderedList) {
-                if(level.equals(conscious)) {
-                    level.displayTooltipDescription(tooltip, person, true ,isSimpleMode);
-                } else {
-                    level.displayTooltipDescription(tooltip, person, false ,isSimpleMode);
+        if(!bionicalterationplugin.isConsciousnessDisable) {
+            if(!isSimpleMode) {
+                //in hover view
+                conscious.displayTooltipDescription(tooltip, person, true, isSimpleMode);
+            } else {
+                //in effect list view
+                for(ba_conscious level: orderedList) {
+                    if(level.equals(conscious)) {
+                        level.displayTooltipDescription(tooltip, person, true ,isSimpleMode);
+                    } else {
+                        level.displayTooltipDescription(tooltip, person, false ,isSimpleMode);
+                    }
+                    tooltip.addSpacer(pad);
                 }
-                tooltip.addSpacer(pad);
+            }
+        } else {
+            if(!isSimpleMode) {
+                //in hover view
+                LabelAPI disabled = tooltip.addPara("%s %s", pad, Misc.getTextColor(), conscious.getDisplayName(), "[Effects Disabled]");
+                tooltip.addPara("%s", pad, Misc.getTextColor(), ba_stringhelper.getString("conscious", "ba_fragile_person")).setHighlightColors(Misc.getTextColor());
+                disabled.setHighlightColors(conscious.getColor(), Misc.getGrayColor());
+            } else {
+                //in effect list view
+                for(ba_conscious level: orderedList) {
+                    LabelAPI disabled = tooltip.addPara("%s %s", pad, Misc.getTextColor(), level.getDisplayName(), "[Effects Disabled]");
+                    disabled.setHighlightColors(level.getColor(), Misc.getGrayColor());
+                    if(!level.equals(conscious)) {
+                        disabled.setOpacity(0.6f);
+                    }
+                    tooltip.addSpacer(pad);
+                }
             }
         }
     }

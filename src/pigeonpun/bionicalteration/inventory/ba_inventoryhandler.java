@@ -85,7 +85,7 @@ public class ba_inventoryhandler {
     public static void removeFromContainer(CargoStackAPI stack) {
         CargoAPI cargoFromMemory = getGlobalData();
         cargoFromMemory.removeItems(stack.getType(), stack.getSpecialDataIfSpecial(), stack.getSize());
-//        cargoFromMemory.removeStack(stack);
+        cargoFromMemory.sort();
         overrideGlobalData(cargoFromMemory);
     }
 
@@ -103,7 +103,7 @@ public class ba_inventoryhandler {
             specialItem = new SpecialItemData(bionic.bionicId, overclock.id);
         }
         success = cargoFromMemory.removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, 1);
-//        cargoFromMemory.removeStack(stack);
+        cargoFromMemory.sort();
         overrideGlobalData(cargoFromMemory);
         return success;
 //        return success;
@@ -111,6 +111,7 @@ public class ba_inventoryhandler {
     public static void addToContainer(CargoStackAPI stack) {
         CargoAPI cargoFromMemory = getGlobalData();
         cargoFromMemory.addFromStack(stack);
+        cargoFromMemory.sort();
         overrideGlobalData(cargoFromMemory);
     }
 
@@ -132,6 +133,26 @@ public class ba_inventoryhandler {
             }
         }
         cargoFromMemory.addSpecial(specialItem, 1);
+        cargoFromMemory.sort();
         overrideGlobalData(cargoFromMemory);
+    }
+
+    public static int getEvoshardsFromPlayerInventory() {
+        int count = 0;
+        for(CargoStackAPI stack: Global.getSector().getPlayerFleet().getCargo().getStacksCopy()) {
+            if(stack.isSpecialStack() && stack.getSpecialItemSpecIfSpecial().getId().equals(ba_variablemanager.BA_OVERCLOCK_ITEM)) {
+                count += stack.getSize();
+            }
+        }
+        return count;
+    }
+
+    public static boolean checkIfRemainEvoShardIsPossitive(String overclockId) {
+        ba_overclock overclock = ba_overclockmanager.getOverclock(overclockId);
+        float remainderCount = 0;
+        if(overclock != null) {
+            remainderCount = getEvoshardsFromPlayerInventory() - overclock.upgradeCost;
+        }
+        return remainderCount > 0;
     }
 }

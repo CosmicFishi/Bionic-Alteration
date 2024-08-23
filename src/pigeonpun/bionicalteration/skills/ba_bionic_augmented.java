@@ -24,6 +24,7 @@ import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.conscious.ba_conscious;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
+import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
 
 import java.awt.*;
 import java.util.*;
@@ -101,7 +102,9 @@ public class ba_bionic_augmented {
                     }
                 }
                 ba_consciousmanager.resetBeforeApplyEffectOfficer(stats, id);
-                ba_consciousmanager.getConsciousnessLevel(captain).applyEffectOfficer(stats, id);
+                if(!bionicalterationplugin.isConsciousnessDisable) {
+                    ba_consciousmanager.getConsciousnessLevel(captain).applyEffectOfficer(stats, id);
+                }
                 if(stats.getFleetMember() != null && stats.getFleetMember().getVariant() != null) {
                     stats.getFleetMember().getVariant().addPermaMod(ba_variablemanager.BA_BIONIC_INFO_HULLMOD);
                 }
@@ -179,7 +182,9 @@ public class ba_bionic_augmented {
                     }
                 }
                 ba_consciousmanager.resetBeforeApplyEffectAdmin(stats, id);
-                ba_consciousmanager.getConsciousnessLevel(person).applyEffectAdmin(stats, id);
+                if(!bionicalterationplugin.isConsciousnessDisable) {
+                    ba_consciousmanager.getConsciousnessLevel(person).applyEffectAdmin(stats, id);
+                }
 
             }
         }
@@ -321,8 +326,10 @@ public class ba_bionic_augmented {
         @Override
         public void advance(float amount) {
             if(Global.getCombatEngine().isPaused()) return;
-            ba_conscious conscious = ba_consciousmanager.getConsciousnessLevel(person);
-            conscious.advanceInCombat(this.ship, amount);
+            if(bionicalterationplugin.isConsciousnessDisable) {
+                ba_conscious conscious = ba_consciousmanager.getConsciousnessLevel(person);
+                conscious.advanceInCombat(this.ship, amount);
+            }
             for(ba_officermanager.ba_bionicAugmentedData anatomy: this.dataList) {
                 if (anatomy.bionicInstalled != null) {
                     if(anatomy.bionicInstalled.isAdvanceInCombat && anatomy.bionicInstalled.effectScript != null) {

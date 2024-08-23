@@ -55,7 +55,7 @@ public class ba_conscious_unsteady implements ba_conscious {
         if(person.isPlayer()) {
             showBoth = true;
         } else {
-            if(ba_officermanager.isOfficer(person, ba_uiplugin.isDisplayingOtherFleets)) {
+            if(ba_officermanager.isCaptainOrAdmin(person, ba_uiplugin.isDisplayingOtherFleets).equals(ba_officermanager.ba_profession.CAPTAIN)) {
                 showOfficer = true;
             }
         }
