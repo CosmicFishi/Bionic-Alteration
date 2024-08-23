@@ -20,7 +20,7 @@ import java.util.*;
 
 public class ba_procgenmanager {
     static Logger log = Global.getLogger(ba_procgenmanager.class);
-    static final int bionicStationSpawnCount = 6;
+    static final int bionicStationSpawnCount = 4;
     public static void generate() {
         if (!Global.getSector().getMemoryWithoutUpdate().contains(ba_variablemanager.BA_BIONIC_RESEARCH_STATION_SPAWNED_KEY)) {
             List<String> themesLookingFor = new ArrayList<>();
