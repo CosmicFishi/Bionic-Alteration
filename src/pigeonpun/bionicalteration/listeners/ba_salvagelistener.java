@@ -8,6 +8,7 @@ import com.fs.starfarer.api.impl.campaign.procgen.SalvageEntityGenDataSpec;
 import com.fs.starfarer.api.impl.campaign.procgen.themes.SalvageEntityGeneratorOld;
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.SalvageEntity;
 import com.fs.starfarer.api.util.Misc;
+import com.fs.starfarer.campaign.CustomCampaignEntity;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
@@ -43,8 +44,8 @@ public class ba_salvagelistener implements ShowLootListener {
         long randomSeed = memory.getLong(MemFlags.SALVAGE_SEED);
         Random random = Misc.getRandom(randomSeed, 100);
 
-        List<SalvageEntityGenDataSpec.DropData> dropValue = generateDropValueList(dropData);
-        List<SalvageEntityGenDataSpec.DropData> dropRandom = generateDropRandomList(dropData);
+        List<SalvageEntityGenDataSpec.DropData> dropValue = generateDropValueList(dropData, dialog.getInteractionTarget());
+        List<SalvageEntityGenDataSpec.DropData> dropRandom = generateDropRandomList(dropData, dialog.getInteractionTarget());
 
         CargoAPI salvage = SalvageEntity.generateSalvage(random,
                 1f, 1f, 1f, 1f, dropValue, dropRandom);
@@ -56,7 +57,7 @@ public class ba_salvagelistener implements ShowLootListener {
      * @param dropData
      * @return
      */
-    private List<SalvageEntityGenDataSpec.DropData> generateDropValueList(List<SalvageEntityGenDataSpec.DropData> dropData) {
+    private List<SalvageEntityGenDataSpec.DropData> generateDropValueList(List<SalvageEntityGenDataSpec.DropData> dropData, SectorEntityToken entity) {
         List<SalvageEntityGenDataSpec.DropData> dropValueList = new ArrayList<>();
         for(SalvageEntityGenDataSpec.DropData d: dropData) {
             if(d.group == null) continue;
@@ -85,10 +86,17 @@ public class ba_salvagelistener implements ShowLootListener {
                 dropValueList.add(civilDropValue);
 
                 SalvageEntityGenDataSpec.DropData militaryDropValue = new SalvageEntityGenDataSpec.DropData();
-                militaryDropValue.group = "ba_bionic_civil";
+                militaryDropValue.group = "ba_bionic_military";
                 militaryDropValue.valueMult = d.valueMult;
                 militaryDropValue.value = value;
                 dropValueList.add(militaryDropValue);
+                if(entity.getCustomEntityType().equals("station_research_remnant")) {
+                    SalvageEntityGenDataSpec.DropData domainDropValue = new SalvageEntityGenDataSpec.DropData();
+                    militaryDropValue.group = "ba_bionic_domain";
+                    militaryDropValue.valueMult = d.valueMult;
+                    militaryDropValue.value = value;
+                    dropValueList.add(militaryDropValue);
+                }
             }
         }
 
@@ -99,7 +107,7 @@ public class ba_salvagelistener implements ShowLootListener {
      * @param dropData
      * @return
      */
-    private List<SalvageEntityGenDataSpec.DropData> generateDropRandomList(List<SalvageEntityGenDataSpec.DropData> dropData) {
+    private List<SalvageEntityGenDataSpec.DropData> generateDropRandomList(List<SalvageEntityGenDataSpec.DropData> dropData, SectorEntityToken entity) {
         List<SalvageEntityGenDataSpec.DropData> dropRandomList = new ArrayList<>();
         for(SalvageEntityGenDataSpec.DropData d: dropData) {
             if(d.group == null) continue;
@@ -128,10 +136,17 @@ public class ba_salvagelistener implements ShowLootListener {
                 dropRandomList.add(civilDropValue);
 
                 SalvageEntityGenDataSpec.DropData militaryDropValue = new SalvageEntityGenDataSpec.DropData();
-                militaryDropValue.group = "ba_bionic_civil";
+                militaryDropValue.group = "ba_bionic_military";
                 militaryDropValue.maxChances = d.maxChances;
                 militaryDropValue.chances = chances;
                 dropRandomList.add(militaryDropValue);
+                if(entity.getCustomEntityType().equals("station_research_remnant")) {
+                    SalvageEntityGenDataSpec.DropData domainDropValue = new SalvageEntityGenDataSpec.DropData();
+                    militaryDropValue.group = "ba_bionic_domain";
+                    militaryDropValue.maxChances = d.maxChances;
+                    militaryDropValue.chances = chances;
+                    dropRandomList.add(militaryDropValue);
+                }
             }
         }
 

@@ -1,3 +1,18 @@
+=========== 0.0.3 ============
+Additions:
+- Add Domain bionics which can be obtains from exploration.
+- Add Evoshards which obtainable when you rip bionics.
+- Add Overclock Workshop which use Evoshards to overclock bionics.
+- Add Bionic Research Station.
+- Add Bionic Container which store bionics.
+- Add colors to bionic design type.
+- Add options to disable humanity/stability.
+Changes:
+- Rebalance consciousness effect on market.
+- BRM per level is now 6 instead of 5
+- Admin now has a different BRM scaling (3x vs officer).
+Fix:
+- Fix a bug where the player can't obtain Bionic ability when play with tutorial enabled
 0.0.2g changelog:
 - Fix bionic skill not checking the correct condition for admin
 - Fix ba_clearDuplicateCondition unable to search for market that isn't own by player

@@ -16,7 +16,11 @@ import com.fs.starfarer.api.util.Highlights;
 import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
+import org.json.JSONObject;
 import pigeonpun.bionicalteration.ba_limbmanager;
+import pigeonpun.bionicalteration.overclock.ba_overclock;
+import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
+import pigeonpun.bionicalteration.utils.ba_utils;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -25,6 +29,8 @@ import java.util.List;
 import java.util.Random;
 
 public class ba_bionicitemplugin implements SpecialItemPlugin {
+    //todo: refactor the bionic item plugin to include effect class into it.
+    // then have bionics extends this class
     static Logger log = Global.getLogger(ba_bionicitemplugin.class);
     public String bionicId;
     public String bionicLimbGroupId;
@@ -45,6 +51,9 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
     public float dropChance;
     public boolean isEffectAppliedAfterRemove;
     public HashMap<String, Object> customData = new HashMap<>();
+    public List<String> overclockList = new ArrayList<>(); //this can be empty if it is not the default in the bionic map from bionic manager.
+    public String appliedOverclock;
+//    public ba_overclock appliedOverclock = null;
     protected boolean isInitFully = false;
     public ba_bionicitemplugin() {}
     public ba_bionicitemplugin(String bionicId, SpecialItemSpecAPI spec ,String bionicLimbGroupId, String namePrefix, Color displayColor, int brmCost,
@@ -69,13 +78,14 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
         this.isEffectAppliedAfterRemove = isEffectAppliedAfterRemove;
         this.isInitFully = true;
     }
+
     public String getId() {
         return bionicId;
     }
     public void setId(String id) {
         this.bionicId = id;
         spec = Global.getSettings().getSpecialItemSpec(id);
-        log.info(spec);
+//        log.info(spec);
     }
 
     public void init(CargoStackAPI stack) {
@@ -100,8 +110,13 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
             this.isAllowedRemoveAfterInstall = bionicInMap.isAllowedRemoveAfterInstall;
             this.isEffectAppliedAfterRemove = bionicInMap.isEffectAppliedAfterRemove;
         }
+        if(stack != null) {
+            appliedOverclock = stack.getSpecialDataIfSpecial().getData();
+        }
     }
-
+//    public boolean isOverClockApplied() {
+//        return this.appliedOverclock != null;
+//    }
     @Override
     public String getName() {
         return spec.getName();
@@ -110,6 +125,18 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
     public int getPrice(MarketAPI market, SubmarketAPI submarket) {
         if (spec != null) return (int) spec.getBasePrice();
         return 0;
+    }
+
+    /**
+     * NOTE: ONLY use this for the bionic ITEM, not when displaying on the bionic table.
+     * @return null or the overclock
+     */
+    public ba_overclock getAppliedOverclockOnItem() {
+        ba_overclock overclock = null;
+        if(appliedOverclock != null && !appliedOverclock.equals("")) {
+            overclock = ba_overclockmanager.getOverclock(appliedOverclock);
+        }
+        return overclock;
     }
 
     @Override
@@ -283,5 +310,31 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
     @Override
     public SpecialItemSpecAPI getSpec() {
         return spec;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof ba_bionicitemplugin) {
+            //todo: this need fixing
+            boolean equal = true;
+            if(!((ba_bionicitemplugin) obj).bionicId.equals(bionicId)) {
+                equal = false;
+            }
+            if(((ba_bionicitemplugin) obj).getAppliedOverclockOnItem() != null || appliedOverclock != null) {
+                String comparingStr1 = ((ba_bionicitemplugin) obj).getId();
+                if(((ba_bionicitemplugin) obj).getAppliedOverclockOnItem() != null) {
+                    comparingStr1 += ((ba_bionicitemplugin) obj).getAppliedOverclockOnItem().id;
+                }
+                String comparingStr2 = bionicId;
+                if(appliedOverclock != null) {
+                    comparingStr2 += appliedOverclock;
+                }
+                if(!comparingStr1.equals(comparingStr2)) {
+                    equal = false;
+                }
+            }
+            return equal;
+        }
+        return super.equals(obj);
     }
 }

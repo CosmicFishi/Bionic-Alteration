@@ -1,4 +1,4 @@
-package pigeonpun.bionicalteration.ui;
+package pigeonpun.bionicalteration.ui.overclock;
 
 import com.fs.starfarer.api.campaign.InteractionDialogAPI;
 import com.fs.starfarer.api.campaign.InteractionDialogPlugin;
@@ -30,7 +30,7 @@ public class ba_interactiondialog implements InteractionDialogPlugin {
         if(optionData == OptionID.INIT) {
             dialog.showCustomVisualDialog(ba_uiplugin.MAIN_CONTAINER_WIDTH,
                     ba_uiplugin.MAIN_CONTAINER_HEIGHT,
-                    new ba_delegate(ba_uiplugin.createDefault(), dialog, null)
+                    new ba_delegate(ba_uiplugin.createDefault(), dialog)
                     );
         }
     }

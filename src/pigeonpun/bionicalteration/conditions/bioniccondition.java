@@ -11,6 +11,7 @@ import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
+import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
 import pigeonpun.bionicalteration.skills.ba_bionic_augmented;
 
 import java.util.ArrayList;
@@ -33,15 +34,23 @@ public class bioniccondition extends BaseMarketConditionPlugin {
         if(person != null) {
             List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
             for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
-                for(ba_bionicitemplugin bionic: anatomy.bionicInstalled) {
-                    String applyId = bionic.bionicId + anatomy.limb.limbId;
-                    if(bionic.effectScript != null && bionic.isApplyAdminEffect) {
-                        bionic.effectScript.applyEffectAdminMarket(market, applyId, 0, bionic);
+                if(anatomy.bionicInstalled != null) {
+                    String applyId = anatomy.bionicInstalled.bionicId + anatomy.limb.limbId;
+                    if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyAdminEffect) {
+                        anatomy.bionicInstalled.effectScript.applyEffectAdminMarket(market, applyId, 0, anatomy.bionicInstalled);
+                    }
+                    if(anatomy.appliedOverclock != null) {
+                        if(anatomy.appliedOverclock.isApplyAdminEffect) {
+                            String applyOverclockId = id + "_" + anatomy.bionicInstalled.bionicId + "_" + anatomy.appliedOverclock.id + "_" + anatomy.limb;
+                            anatomy.appliedOverclock.applyEffectAdminMarket(market, applyOverclockId, 0, anatomy.bionicInstalled);
+                        }
                     }
                 }
             }
             ba_consciousmanager.resetBeforeApplyEffectAdminMarket(market, id);
-            ba_consciousmanager.getConsciousnessLevel(person).applyEffectAdminMarket(market, id, 0);
+            if(!bionicalterationplugin.isConsciousnessDisable) {
+                ba_consciousmanager.getConsciousnessLevel(person).applyEffectAdminMarket(market, id, 0);
+            }
         }
     }
 
@@ -50,10 +59,16 @@ public class bioniccondition extends BaseMarketConditionPlugin {
         if(person != null) {
             List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
             for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
-                for(ba_bionicitemplugin bionic: anatomy.bionicInstalled) {
-                    if(bionic.effectScript != null && bionic.isApplyAdminEffect) {
-                        String applyId = bionic.bionicId + anatomy.limb.limbId;
-                        bionic.effectScript.unapplyEffectAdminMarket(market, applyId);
+                if(anatomy.bionicInstalled != null) {
+                    if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyAdminEffect) {
+                        String applyId = anatomy.bionicInstalled.bionicId + anatomy.limb.limbId;
+                        anatomy.bionicInstalled.effectScript.unapplyEffectAdminMarket(market, applyId);
+                    }
+                    if(anatomy.appliedOverclock != null) {
+                        if(anatomy.appliedOverclock.isApplyAdminEffect) {
+                            String applyOverclockId = id + "_" + anatomy.bionicInstalled.bionicId + "_" + anatomy.appliedOverclock.id + "_" + anatomy.limb;
+                            anatomy.appliedOverclock.unapplyEffectAdminMarket(market, applyOverclockId);
+                        }
                     }
                 }
             }

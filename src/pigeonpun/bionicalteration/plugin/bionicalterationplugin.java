@@ -3,17 +3,15 @@ package pigeonpun.bionicalteration.plugin;
 import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
 import org.lazywizard.lazylib.MathUtils;
+import pigeonpun.bionicalteration.*;
 import pigeonpun.bionicalteration.ability.ba_bionicability;
-import pigeonpun.bionicalteration.ba_marketmanager;
-import pigeonpun.bionicalteration.ba_officermanager;
-import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.faction.ba_factionmanager;
 import pigeonpun.bionicalteration.listeners.ba_campaignlistener;
 import pigeonpun.bionicalteration.listeners.ba_salvagelistener;
 import pigeonpun.bionicalteration.lunalib.lunaconfighelper;
+import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
 import pigeonpun.bionicalteration.variant.ba_variantmanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
-import pigeonpun.bionicalteration.ba_limbmanager;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
 
 public class bionicalterationplugin extends BaseModPlugin {
@@ -23,9 +21,11 @@ public class bionicalterationplugin extends BaseModPlugin {
     public static boolean isAllowBionicsToSpawnInPlayerFleetOnNewSave = false;
     public static boolean isDevmode = false;
     public static boolean isBRMCapDisable = false;
+    public static boolean isConsciousnessDisable = false;
     @Override
     public void onApplicationLoad() throws Exception {
 //        ba_manager.getInstance();
+        ba_overclockmanager.onApplicationLoad();
         ba_bionicmanager.onApplicationLoad();
         ba_variantmanager.onApplicationLoad();
         ba_limbmanager.onApplicationLoad();
@@ -36,6 +36,7 @@ public class bionicalterationplugin extends BaseModPlugin {
         isAllowBionicsToSpawnInPlayerFleetOnNewSave = Global.getSettings().getBoolean("isAllowBionicsToSpawnInPlayerFleetOnNewSave");
         isDevmode = Global.getSettings().getBoolean("isDevmode");
         isBRMCapDisable = Global.getSettings().getBoolean("isBRMCapDisable");
+        isConsciousnessDisable = Global.getSettings().getBoolean("isConsciousnessDisable");
 
         if(isLunalibEnabled) {
             lunaconfighelper.initLunaConfig();
@@ -49,12 +50,11 @@ public class bionicalterationplugin extends BaseModPlugin {
 
     @Override
     public void onGameLoad(boolean newGame) {
+        ba_procgenmanager.generate();
         ba_officermanager.onSaveLoad();
         ba_marketmanager.onSaveLoad();
         addListeners();
-        if(!Global.getSector().getCharacterData().getAbilities().contains(ba_variablemanager.BA_ABILITY_KEY)) {
-            Global.getSector().getCharacterData().addAbility(ba_variablemanager.BA_ABILITY_KEY);
-        }
+        Global.getSector().getCharacterData().addAbility(ba_variablemanager.BA_ABILITY_KEY);
     }
 
     @Override
@@ -67,6 +67,11 @@ public class bionicalterationplugin extends BaseModPlugin {
         addListeners();
     }
 
+//    @Override
+//    public void onNewGameAfterProcGen() {
+//        ba_procgenmanager.generate();
+//    }
+
     @Override
     public void onNewGameAfterEconomyLoad() {
         ba_marketmanager.onNewGameAfterEconomyLoad();
@@ -77,7 +82,8 @@ public class bionicalterationplugin extends BaseModPlugin {
 
         Global.getSector().getListenerManager().addListener(salvageListener, true);
         Global.getSector().addTransientListener(campaignListener);
-        Global.getSector().addListener(campaignListener);
+        Global.getSector().addTransientScript(campaignListener);
+//        Global.getSector().addListener(campaignListener);
     }
     protected void removeListeners() {
         Global.getSector().getListenerManager().removeListener(salvageListener);

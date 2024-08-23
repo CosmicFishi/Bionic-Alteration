@@ -8,14 +8,13 @@ import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Personalities;
 import com.fs.starfarer.api.impl.campaign.ids.Stats;
 import com.fs.starfarer.api.ui.Alignment;
-import com.fs.starfarer.api.ui.LabelAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.conscious.ba_conscious;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
-import pigeonpun.bionicalteration.ui.ba_uiplugin;
+import pigeonpun.bionicalteration.ui.bionic.ba_uiplugin;
 import pigeonpun.bionicalteration.utils.ba_stringhelper;
 
 import java.awt.*;
@@ -28,10 +27,10 @@ public class ba_conscious_critical implements ba_conscious {
     public final static float SHIP_CR = 0.15f;
     public final static String SHIP_PERSONALITY = Personalities.RECKLESS;
     //admin
-    public final static float MARKET_UPKEEP = 0.28f;
-    public final static float MARKET_STABILITY = 4f;
-    public final static float MARKET_ACCESS = 0.3f;
-    public final static float MARKET_DEFEND = 0.28f;
+    public final static float MARKET_UPKEEP = 0.25f;
+    public final static float MARKET_STABILITY = 2f;
+    public final static float MARKET_ACCESS = 0.25f;
+//    public final static float MARKET_DEFEND = 0.28f;
     @Override
     public Color getColor() {
         return ba_variablemanager.BA_CONSCIOUSNESS_COLOR.get(ba_variablemanager.BA_CONSCIOUSNESS_CRITICAL_THRESHOLD);
@@ -61,7 +60,7 @@ public class ba_conscious_critical implements ba_conscious {
         if(person.isPlayer()) {
             showBoth = true;
         } else {
-            if(ba_officermanager.isOfficer(person, ba_uiplugin.isDisplayingOtherFleets)) {
+            if(ba_officermanager.isCaptainOrAdmin(person, ba_uiplugin.isDisplayingOtherFleets).equals(ba_officermanager.ba_profession.CAPTAIN)) {
                 showOfficer = true;
             }
         }
@@ -80,7 +79,7 @@ public class ba_conscious_critical implements ba_conscious {
             tooltip.addPara("- Ship maintenance increased by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(SHIP_MAINTENANCE * 100) + "%").setOpacity(textAlpha);
             tooltip.addPara("- Ship maneuverability reduced by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(MANEUVERABILITY_BONUS * 100) + "%").setOpacity(textAlpha);
             tooltip.addPara("- Ship overload duration increased by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(SHIP_OVERLOAD * 100) + "%").setOpacity(textAlpha);
-            tooltip.addPara("- Ship peak CR reduced by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(SHIP_CR * 100) + "%").setOpacity(textAlpha);
+            tooltip.addPara("- Ship peak performance duration reduced by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(SHIP_CR * 100) + "%").setOpacity(textAlpha);
 //            tooltip.addPara("- Captain personality changed to %s", pad/2, Misc.getNegativeHighlightColor(), "" + SHIP_PERSONALITY).setOpacity(textAlpha);
         }
         if(showBoth || !showOfficer) {
@@ -128,7 +127,7 @@ public class ba_conscious_critical implements ba_conscious {
         market.getAccessibilityMod().modifyFlat(id + "conscious", -MARKET_ACCESS, ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
         market.getStability().modifyFlat(id + "conscious", -MARKET_STABILITY, ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
         market.getUpkeepMult().modifyMult(id + "conscious", 1 + MARKET_UPKEEP,  ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
-        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id + "conscious", (1 - MARKET_DEFEND), ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
+//        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id + "conscious", (1 - MARKET_DEFEND), ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
     }
 
     @Override
@@ -136,7 +135,7 @@ public class ba_conscious_critical implements ba_conscious {
         market.getAccessibilityMod().unmodifyFlat(id + "conscious");
         market.getStability().unmodifyFlat(id + "conscious");
         market.getUpkeepMult().unmodifyMult(id + "conscious");
-        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).unmodifyMult(id + "conscious");
+//        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).unmodifyMult(id + "conscious");
     }
 
     @Override

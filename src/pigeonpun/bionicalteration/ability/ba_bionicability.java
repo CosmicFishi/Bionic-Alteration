@@ -2,12 +2,11 @@ package pigeonpun.bionicalteration.ability;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.impl.campaign.abilities.BaseDurationAbility;
-import com.fs.starfarer.api.impl.campaign.abilities.BaseToggleAbility;
 import com.fs.starfarer.api.ui.LabelAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
-import pigeonpun.bionicalteration.ui.ba_interactiondialog;
+import pigeonpun.bionicalteration.ui.bionic.ba_interactiondialog;
 
 import java.awt.*;
 
@@ -20,6 +19,21 @@ public class ba_bionicability extends BaseDurationAbility {
 
     @Override
     public float getActivationDays() {
+        return 0f;
+    }
+
+    @Override
+    public float getCooldownDays() {
+        return 0f;
+    }
+
+    @Override
+    public float getDeactivationDays() {
+        return 0f;
+    }
+
+    @Override
+    public float getDurationDays() {
         return 0f;
     }
 

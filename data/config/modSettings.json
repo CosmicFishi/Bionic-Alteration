@@ -11,6 +11,12 @@
         ],
         "variant_files": [
             "data/bionic/variant_data.csv"
+        ],
+        "overclock_files": [
+            "data/bionic/overclock_data.csv"
+        ],
+        "overclocking_bionic_files": [
+            "data/bionic/overclocking_bionic_data.csv"
         ]
     }
 }

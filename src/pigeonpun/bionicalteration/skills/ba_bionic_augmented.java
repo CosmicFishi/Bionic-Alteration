@@ -24,6 +24,7 @@ import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.conscious.ba_conscious;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
+import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
 
 import java.awt.*;
 import java.util.*;
@@ -66,22 +67,19 @@ public class ba_bionic_augmented {
 
         @Override
         public void applyEffectsAfterShipCreation(ShipAPI ship, String id) {
-            PersonAPI captain = ship.getCaptain();
-            List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(captain);
-            for(ba_bionicitemplugin bionic: listBionic) {
-                if(bionic.isAdvanceInCombat) {
-                    log.info("Registering Bionic Listener");
-                    ship.addListener(new bionicInCombat(ship, listBionic, captain));
-                    break;
-                }
+            if(ship.getListeners(bionicInCombat.class).isEmpty()) {
+                PersonAPI captain = ship.getCaptain();
+                List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(captain);
+                log.info("Registering Bionic Listener");
+                ship.addListener(new bionicInCombat(ship, listAnatomy, captain));
             }
         }
 
         @Override
         public void unapplyEffectsAfterShipCreation(ShipAPI ship, String id) {
-            if(ship.getListenerManager() != null && ship.getListenerManager().hasListener(bionicInCombat.class)) {
-                ship.removeListenerOfClass(bionicInCombat.class);
-            }
+//            if(ship.getListenerManager() != null && ship.getListenerManager().hasListener(bionicInCombat.class)) {
+//                ship.removeListenerOfClass(bionicInCombat.class);
+//            }
         }
 
         @Override
@@ -90,15 +88,26 @@ public class ba_bionic_augmented {
                 PersonAPI captain = stats.getFleetMember().getCaptain();
                 List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(captain);
                 for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
-                    for(ba_bionicitemplugin bionic: anatomy.bionicInstalled) {
-                        if(bionic.effectScript != null && bionic.isApplyCaptainEffect) {
-                            String applyId = id + bionic.bionicId + anatomy.limb;
-                            bionic.effectScript.applyOfficerEffect(stats, hullSize, applyId);
+                    if(anatomy.bionicInstalled != null) {
+                        if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyCaptainEffect) {
+                            String applyId = id + anatomy.bionicInstalled.bionicId + anatomy.limb;
+                            anatomy.bionicInstalled.effectScript.applyOfficerEffect(stats, hullSize, applyId);
+                        }
+                        if(anatomy.appliedOverclock != null) {
+                            if(anatomy.appliedOverclock.isApplyCaptainEffect) {
+                                String applyId = id + "_" + anatomy.bionicInstalled.bionicId + "_" + anatomy.appliedOverclock.id + "_" + anatomy.limb;
+                                anatomy.appliedOverclock.applyOfficerEffect(stats, hullSize, applyId);
+                            }
                         }
                     }
                 }
                 ba_consciousmanager.resetBeforeApplyEffectOfficer(stats, id);
-                ba_consciousmanager.getConsciousnessLevel(captain).applyEffectOfficer(stats, id);
+                if(!bionicalterationplugin.isConsciousnessDisable) {
+                    ba_consciousmanager.getConsciousnessLevel(captain).applyEffectOfficer(stats, id);
+                }
+                if(stats.getFleetMember() != null && stats.getFleetMember().getVariant() != null) {
+                    stats.getFleetMember().getVariant().addPermaMod(ba_variablemanager.BA_BIONIC_INFO_HULLMOD);
+                }
             }
         }
 
@@ -108,14 +117,23 @@ public class ba_bionic_augmented {
                 PersonAPI captain = stats.getFleetMember().getCaptain();
                 List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(captain);
                 for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
-                    for(ba_bionicitemplugin bionic: anatomy.bionicInstalled) {
-                        if(bionic.effectScript != null && bionic.isApplyCaptainEffect) {
-                            String applyId = id + bionic.bionicId + anatomy.limb;
-                            bionic.effectScript.unapplyOfficerEffect(stats, hullSize, applyId);
+                    if(anatomy.bionicInstalled != null) {
+                        if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyCaptainEffect) {
+                            String applyId = id + anatomy.bionicInstalled.bionicId + anatomy.limb;
+                            anatomy.bionicInstalled.effectScript.unapplyOfficerEffect(stats, hullSize, applyId);
+                        }
+                        if(anatomy.appliedOverclock != null) {
+                            if(anatomy.appliedOverclock.isApplyCaptainEffect) {
+                                String applyId = id + "_" + anatomy.bionicInstalled.bionicId + "_" + anatomy.appliedOverclock.id + "_" + anatomy.limb;
+                                anatomy.appliedOverclock.unapplyOfficerEffect(stats, hullSize, applyId);
+                            }
                         }
                     }
                 }
                 ba_consciousmanager.resetBeforeApplyEffectOfficer(stats, id);
+                if(stats.getFleetMember() != null && stats.getFleetMember().getVariant() != null) {
+                    stats.getFleetMember().getVariant().removePermaMod(ba_variablemanager.BA_BIONIC_INFO_HULLMOD);
+                }
             }
         }
 
@@ -150,15 +168,24 @@ public class ba_bionic_augmented {
             if(person != null) {
                 List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
                 for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
-                    for(ba_bionicitemplugin bionic: anatomy.bionicInstalled) {
-                        if(bionic.effectScript != null && bionic.isApplyAdminEffect) {
-                            String applyId = id + bionic.bionicId + anatomy.limb;
-                            bionic.effectScript.applyAdminEffect(stats, applyId);
+                    if(anatomy.bionicInstalled != null) {
+                        if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyAdminEffect) {
+                            String applyId = id + anatomy.bionicInstalled.bionicId + anatomy.limb;
+                            anatomy.bionicInstalled.effectScript.applyAdminEffect(stats, applyId);
+                        }
+                        if(anatomy.appliedOverclock != null) {
+                            if(anatomy.appliedOverclock.isApplyAdminEffect) {
+                                String applyId = id + "_" + anatomy.bionicInstalled.bionicId + "_" + anatomy.appliedOverclock.id + "_" + anatomy.limb;
+                                anatomy.appliedOverclock.applyAdminEffect(stats, applyId);
+                            }
                         }
                     }
                 }
                 ba_consciousmanager.resetBeforeApplyEffectAdmin(stats, id);
-                ba_consciousmanager.getConsciousnessLevel(person).applyEffectAdmin(stats, id);
+                if(!bionicalterationplugin.isConsciousnessDisable) {
+                    ba_consciousmanager.getConsciousnessLevel(person).applyEffectAdmin(stats, id);
+                }
+
             }
         }
 
@@ -168,10 +195,16 @@ public class ba_bionic_augmented {
             if(person != null) {
                 List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
                 for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
-                    for(ba_bionicitemplugin bionic: anatomy.bionicInstalled) {
-                        if(bionic.effectScript != null && bionic.isApplyAdminEffect) {
-                            String applyId = id + bionic.bionicId + anatomy.limb;
-                            bionic.effectScript.unapplyAdminEffect(stats, applyId);
+                    if(anatomy.bionicInstalled != null) {
+                        if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyAdminEffect) {
+                            String applyId = id + anatomy.bionicInstalled.bionicId + anatomy.limb;
+                            anatomy.bionicInstalled.effectScript.unapplyAdminEffect(stats, applyId);
+                        }
+                        if(anatomy.appliedOverclock != null) {
+                            if(anatomy.appliedOverclock.isApplyAdminEffect) {
+                                String applyId = id + "_" + anatomy.bionicInstalled.bionicId + "_" + anatomy.appliedOverclock.id + "_" + anatomy.limb;
+                                anatomy.appliedOverclock.unapplyAdminEffect(stats, applyId);
+                            }
                         }
                     }
                 }
@@ -282,21 +315,31 @@ public class ba_bionic_augmented {
     }
     //this is for save compatibility
     public static class bionicInCombat implements AdvanceableListener {
-        protected List<ba_bionicitemplugin> bionics;
+        protected List<ba_officermanager.ba_bionicAugmentedData> dataList;
         protected ShipAPI ship;
         protected PersonAPI person;
-        public bionicInCombat(ShipAPI ship, List<ba_bionicitemplugin> bionics, PersonAPI person) {
-            this.bionics = bionics;
+        public bionicInCombat(ShipAPI ship, List<ba_officermanager.ba_bionicAugmentedData> data, PersonAPI person) {
+            this.dataList = data;
             this.ship = ship;
             this.person = person;
         }
         @Override
         public void advance(float amount) {
-            ba_conscious conscious = ba_consciousmanager.getConsciousnessLevel(person);
-            conscious.advanceInCombat(this.ship, amount);
-            for(ba_bionicitemplugin bionic: this.bionics) {
-                if (bionic.isAdvanceInCombat && bionic.effectScript != null) {
-                    bionic.effectScript.advanceInCombat(this.ship, amount);
+            if(Global.getCombatEngine().isPaused()) return;
+            if(bionicalterationplugin.isConsciousnessDisable) {
+                ba_conscious conscious = ba_consciousmanager.getConsciousnessLevel(person);
+                conscious.advanceInCombat(this.ship, amount);
+            }
+            for(ba_officermanager.ba_bionicAugmentedData anatomy: this.dataList) {
+                if (anatomy.bionicInstalled != null) {
+                    if(anatomy.bionicInstalled.isAdvanceInCombat && anatomy.bionicInstalled.effectScript != null) {
+                        anatomy.bionicInstalled.effectScript.advanceInCombat(this.ship, amount);
+                    }
+                    if(anatomy.appliedOverclock != null) {
+                        if(anatomy.appliedOverclock.isAdvanceInCombat()) {
+                            anatomy.appliedOverclock.advanceInCombat(ship, amount);
+                        }
+                    }
                 }
             }
         }

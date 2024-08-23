@@ -2,9 +2,15 @@
   "isDevmode": false,
   "isAllowBionicsToSpawnInPlayerFleetOnNewSave": true,
   "isBRMCapDisable": false, #true to disable the BRM cap, BRM cap will no longer be applied. Allowing you and others to install bionic regardless of BRM cap, sky is the limit....or so it seems,
-                            #Do note that if have this enable and generate bionic on player fleet enable, when you start a new save, you will be bombarded with bionics on start
+                            #Do note that if have this enable and generate bionic on player fleet enable, when you start a new save, you will be bombarded with bionics on start,
+  "isConsciousnessDisable": false, #True to disable humanity/stability cap. Effects of each threshold will no longer apply but the percentage is still shown.
   "plugins":{
 
+  },
+  "designTypeColors":{
+    "Civil Prosthetic": [217, 177, 255, 255],
+    "Military Bionic": [255, 177, 224, 255],
+    "Domain Augmentation": [255, 117, 134, 255]
   },
   "ruleCommandPackages":[
     "pigeonpun.bionicalteration.rulecmd"

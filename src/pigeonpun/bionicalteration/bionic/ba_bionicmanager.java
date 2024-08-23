@@ -8,6 +8,7 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,6 +17,8 @@ import org.magiclib.util.MagicSettings;
 import pigeonpun.bionicalteration.ba_limbmanager;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
+import pigeonpun.bionicalteration.overclock.ba_overclock;
+import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
 import pigeonpun.bionicalteration.utils.ba_utils;
 
 import java.awt.*;
@@ -30,7 +33,11 @@ import java.util.List;
  */
 public class ba_bionicmanager {
     static Logger log = Global.getLogger(ba_bionicmanager.class);
+    //NOTE: DO NOT MODIFY ANY OF THE BIONICS ON THIS LIST
+    //This is just a list of bionic item always available for query
     public static HashMap<String, ba_bionicitemplugin> bionicItemMap = new HashMap<>();
+    //todo: create a seperate map from the normal bionicIemMap for easier identification. Currently some bionic item will have overclock list, some wont
+    public static HashMap<String, List<String>> overclockableBionicItemMap = new HashMap<>();
     public ba_bionicmanager() {
         loadBionic();
     }
@@ -67,26 +74,27 @@ public class ba_bionicmanager {
                     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
-                    ba_bionicitemplugin bionic = new ba_bionicitemplugin(
-                            bionicId,
-                            Global.getSettings().getSpecialItemSpec(bionicId),
-                            row.getString("limbGroupId"),
-                            !row.getString("namePrefix").equals("") ? row.getString("namePrefix") : "",
-                            MagicSettings.toColor3(row.getString("colorDisplay")),
-                            row.getInt("brmCost"),
-                            (float) row.getDouble("consciousnessCost"),
-                            (float) row.getDouble("dropChance"),
-                            row.getBoolean("isApplyCaptainEffect"),
-                            row.getBoolean("isApplyAdminEffect"),
-                            row.getBoolean("isAICoreBionic"),
-                            effect,
-                            !row.getString("conflictedBionicIdList").equals("")? ba_utils.trimAndSplitString(row.getString("conflictedBionicIdList")): null,
-                            row.getBoolean("isAllowedRemoveAfterInstall"),
-                            row.getBoolean("isEffectAppliedAfterRemove")
-                    );
-                    bionicItemMap.put(bionicId, bionic);
-                    if(effect != null) effect.setBionicItem(bionic);
-
+                    if(!Objects.equals(row.getString("effectScript"), "")) {
+                        ba_bionicitemplugin bionic = new ba_bionicitemplugin(
+                                bionicId,
+                                Global.getSettings().getSpecialItemSpec(bionicId),
+                                row.getString("limbGroupId"),
+                                !row.getString("namePrefix").equals("") ? row.getString("namePrefix") : "",
+                                MagicSettings.toColor3(row.getString("colorDisplay")),
+                                row.getInt("brmCost"),
+                                (float) row.getDouble("consciousnessCost"),
+                                (float) row.getDouble("dropChance"),
+                                row.getBoolean("isApplyCaptainEffect"),
+                                row.getBoolean("isApplyAdminEffect"),
+                                row.getBoolean("isAICoreBionic"),
+                                effect,
+                                !row.getString("conflictedBionicIdList").equals("")? ba_utils.trimAndSplitString(row.getString("conflictedBionicIdList")): null,
+                                row.getBoolean("isAllowedRemoveAfterInstall"),
+                                row.getBoolean("isEffectAppliedAfterRemove")
+                        );
+                        bionicItemMap.put(bionicId, bionic);
+                        if(effect != null) effect.setBionicItem(bionic);
+                    }
                 } catch (JSONException ex) {
                     log.error(ex);
                     log.error("Invalid line, skipping");
@@ -96,6 +104,53 @@ public class ba_bionicmanager {
 //        for (Map.Entry<String, ba_bionicitemplugin> entry: bionicItemMap.entrySet()) {
 //            log.info(entry.getKey() + ": " + entry.getValue().bionicLimbGroupId + "-----" + entry.getValue().getSpec().getDesc());
 //        }
+        List<String> overclockingFiles = MagicSettings.getList(ba_variablemanager.BIONIC_ALTERATION, "overclocking_bionic_files");
+        for (String path : overclockingFiles) {
+            log.error("merging bionic overclocking files");
+            JSONArray overclockingData = new JSONArray();
+            try {
+                overclockingData = Global.getSettings().getMergedSpreadsheetDataForMod("bionicId", path, ba_variablemanager.BIONIC_ALTERATION);
+            } catch (IOException | JSONException | RuntimeException ex) {
+                log.error("unable to read " + path, ex);
+            }
+            for (int i = 0; i < overclockingData.length(); i++) {
+                try{
+                    JSONObject row = overclockingData.getJSONObject(i);
+                    try{
+                        row.getString("overclockIds");
+                    }catch (JSONException ex) {
+                        continue;
+                    }
+                    String bionicId = row.getString("bionicId");
+                    ba_bionicitemplugin bionic = getBionic(bionicId);
+                    if(bionic != null) {
+                        List<String> overclockList = ba_utils.trimAndSplitString(row.getString("overclockIds"));
+                        for(String id: overclockList) {
+                            if(ba_overclockmanager.getOverclock(id) != null) {
+                                bionic.overclockList.add(id);
+                            } else {
+                                log.error("Can't find overclock of id: " + id + " for bionic " + bionicId);
+                            }
+                        }
+                        if(!bionic.overclockList.isEmpty()) {
+                            Collections.sort(bionic.overclockList, new Comparator<String>() {
+                                @Override
+                                public int compare(String o1, String o2) {
+                                    ba_overclock overclock1 = ba_overclockmanager.getOverclock(o1);
+                                    ba_overclock overclock2 = ba_overclockmanager.getOverclock(o2);
+                                    return overclock1.order > overclock2.order ? 1 : 0;
+                                }
+                            });
+                        }
+                    }
+
+                } catch (JSONException ex) {
+                    log.error(ex);
+                    log.error("Invalid line, skipping");
+                }
+            }
+        }
+
     }
 
     /**
@@ -273,8 +328,8 @@ public class ba_bionicmanager {
      * @param person Person
      * @return The bionics and limb they are installed on.
      */
-    public static HashMap<ba_limbmanager.ba_limb, List<ba_bionicitemplugin>> getListLimbAndBionicInstalled(PersonAPI person) {
-        HashMap<ba_limbmanager.ba_limb, List<ba_bionicitemplugin>> bionicsInstalledList = new HashMap<>();
+    public static HashMap<ba_limbmanager.ba_limb, bionicData> getListLimbAndBionicInstalled(PersonAPI person) {
+        HashMap<ba_limbmanager.ba_limb, bionicData> bionicsInstalledList = new HashMap<>();
         if (!person.getTags().isEmpty()) {
             for (String tag: person.getTags()) {
                 if(tag != null && tag.contains(":")) {
@@ -283,10 +338,18 @@ public class ba_bionicmanager {
                     if(bionicInstalled == null) log.error("Can't find bionic of tag: " + tokens[0]);
                     ba_limbmanager.ba_limb sectionInstalled = ba_limbmanager.getLimb(tokens[1]);
                     if(sectionInstalled == null) log.error("Can't find limb of tag: " + tokens[1]);
+                    ba_overclock appliedOverclock = null;
+                    if(tokens.length >= 3 && tokens[2] != null) {
+                        appliedOverclock = ba_overclockmanager.getOverclock(tokens[2]);
+                        if (appliedOverclock == null) {
+                            log.error("Can't find overclock of tag: " + tokens[2]);
+                        }
+                    }
                     if(bionicsInstalledList.get(sectionInstalled) != null) {
-                        bionicsInstalledList.get(sectionInstalled).add(bionicInstalled);
+                        bionicsInstalledList.get(sectionInstalled).bionic = bionicInstalled;
+                        bionicsInstalledList.get(sectionInstalled).overclock = appliedOverclock;
                     } else {
-                        bionicsInstalledList.put(sectionInstalled, new ArrayList<ba_bionicitemplugin>(Arrays.asList(bionicInstalled)));
+                        bionicsInstalledList.put(sectionInstalled, new bionicData(appliedOverclock, bionicInstalled));
                     }
                 }
             }
@@ -361,6 +424,7 @@ public class ba_bionicmanager {
         Color bad = Misc.getNegativeHighlightColor();
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
+        final Color special = ba_variablemanager.BA_OVERCLOCK_COLOR;
 
         tooltip.setParaInsigniaLarge();
         LabelAPI nameLabel = tooltip.addPara(bionic.getName(), Misc.getHighlightColor(),0);
@@ -412,6 +476,15 @@ public class ba_bionicmanager {
         LabelAPI conflictListLabel = tooltip.addPara("%s %s", pad, t,"Conflicts:", conflictsList.toString());
         conflictListLabel.setHighlight("Conflicts:", conflictsList.toString());
         conflictListLabel.setHighlightColors(g.brighter().brighter(), conflictsList.toString().equals("None")? g: Misc.getNegativeHighlightColor());
+
+        if(ba_overclockmanager.isBionicOverclockable(bionic)) {
+            //----------overclock
+            ba_overclock overclock = ba_overclockmanager.getOverclockFromItem(bionic);
+            String overclockApplied = overclock != null ? overclock.name : "none active";
+            LabelAPI overclockLabel = tooltip.addPara("%s %s", pad, t, "Overclock:", overclockApplied);
+            overclockLabel.setHighlight("Overclock:", overclockApplied);
+            overclockLabel.setHighlightColors(special, overclock != null ? h: g);
+        }
         //----------desc
         String desc = bionic.getSpec().getDesc();
         LabelAPI descLabel = tooltip.addPara("%s %s", pad, t, "Description:", desc);
@@ -426,6 +499,14 @@ public class ba_bionicmanager {
         } else {
             LabelAPI removableLabel = tooltip.addPara("%s", pad, t, "Can not be uninstall AFTER installing");
             removableLabel.setHighlightColors(bad);
+        }
+    }
+    public static class bionicData {
+        public ba_overclock overclock;
+        public ba_bionicitemplugin bionic;
+        public bionicData(@Nullable ba_overclock overclock, @Nullable ba_bionicitemplugin bionic) {
+            this.overclock = overclock;
+            this.bionic = bionic;
         }
     }
 }

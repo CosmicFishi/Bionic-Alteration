@@ -1,8 +1,11 @@
 package pigeonpun.bionicalteration.utils;
 
 import com.fs.starfarer.api.Global;
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
+import org.lazywizard.lazylib.JSONUtils;
 import org.lwjgl.opengl.GL11;
 import pigeonpun.bionicalteration.ba_variablemanager;
 
@@ -11,6 +14,7 @@ import java.util.*;
 import java.util.List;
 
 public class ba_utils {
+    static Logger log = Global.getLogger(ba_utils.class);
     /**
      * @param x
      * @param y
@@ -97,5 +101,14 @@ public class ba_utils {
 
 
         return (Random)data.get(ba_variablemanager.PERSISTENT_RANDOM_KEY);
+    }
+    public static JSONObject getJsonFromString(String string) {
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(string);
+        } catch (Exception e) {
+            log.error("Error when converting string to JSON " + string);
+        }
+        return jsonObject;
     }
 }

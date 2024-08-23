@@ -14,7 +14,8 @@ public class ba_variablemanager {
     /**
      * Use for changing bionic's consciousness cost
      */
-    public static final float BA_BRM_LIMIT_BONUS_PER_LEVEL = 5;
+    public static final float BA_BRM_LIMIT_BONUS_PER_LEVEL = 6;
+    public static final float BA_BRM_LIMIT_BONUS_PER_LEVEL_ADMIN = BA_BRM_LIMIT_BONUS_PER_LEVEL * 3;
     /**
      * person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f)
      */
@@ -69,4 +70,11 @@ public class ba_variablemanager {
     public static final String BA_MARKET_CONDITION_ID = "bionic_condition";
     public static final String BA_MARKET_BIONIC_MEMORY_KEY = "$ba_market_bionic_effect_applied";
     public static final String BA_MARKET_ADMIN_SET_UP = "$ba_market_admin_set_up";
+    public static final Color BA_OVERCLOCK_COLOR = new Color(255, 149, 0);
+    public static final String BA_OVERCLOCK_STATION = "ba_station_overclock";
+    public static final String BA_BIONIC_RESEARCH_STATION_SPAWNED_KEY = "$ba_bionic_research_station_spawned";
+    public static final String BA_OVERCLOCK_ITEM = "ba_evoshard";
+    public static final String BA_PERSON_MEMORY_BIONIC_KEY = "$ba_bionic_key";
+    public static final String BA_BIONIC_INFO_HULLMOD = "ba_bionicinfo";
+    public static final String BA_BIONIC_CONTAINER_PERSISTENT_KEY = "ba_bionic_container";
 }

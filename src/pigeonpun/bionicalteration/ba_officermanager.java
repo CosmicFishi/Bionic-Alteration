@@ -14,10 +14,15 @@ import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.faction.ba_factiondata;
 import pigeonpun.bionicalteration.faction.ba_factionmanager;
+import pigeonpun.bionicalteration.inventory.ba_inventoryhandler;
+import pigeonpun.bionicalteration.overclock.ba_overclock;
+import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
 import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
 import pigeonpun.bionicalteration.utils.ba_utils;
 import pigeonpun.bionicalteration.variant.ba_variantmanager;
@@ -46,7 +51,8 @@ public class ba_officermanager {
     }
 
     /**
-     * Refresh the entire list person plus all the other stats set up needed
+     * Refresh the entire list person plus all the other stats set up needed <br>
+     * @param listOfficer if Null, player fleet's officers will be loaded into listPersons
      * Call when first init
      */
     public static void refresh(List<PersonAPI> listOfficer) {
@@ -99,9 +105,7 @@ public class ba_officermanager {
             if(ba_bionicmanager.checkIfHaveBionicInstalled(person)) {
                 List<ba_bionicAugmentedData> list = getBionicAnatomyList(person);
                 for(ba_bionicAugmentedData data: list) {
-                    for(ba_bionicitemplugin bionic: data.bionicInstalled) {
-                        updatePersonStatsOnInteract(bionic, data.limb, person, true);
-                    }
+                    updatePersonStatsOnInteract(data.bionicInstalled, data.limb, person, true);
                 }
             }
         }
@@ -215,6 +219,9 @@ public class ba_officermanager {
     protected static int setUpBRMLimit(PersonAPI person) {
         //todo: add extra tags for person to calculate BRM/Consciousness mult ?
         int brmLimit = (int) (person.getStats().getLevel() * ba_variablemanager.BA_BRM_LIMIT_BONUS_PER_LEVEL);
+        if(isCaptainOrAdmin(person, false).equals(ba_profession.ADMIN)) {
+            brmLimit = (int) (person.getStats().getLevel() * ba_variablemanager.BA_BRM_LIMIT_BONUS_PER_LEVEL_ADMIN);
+        }
         return brmLimit;
     }
     protected static int setUpBRMCurrent(PersonAPI person) {
@@ -267,8 +274,10 @@ public class ba_officermanager {
      * @param isInstall
      */
     public static void updatePersonStatsOnInteract(ba_bionicitemplugin bionic, ba_limbmanager.ba_limb limb, PersonAPI person, boolean isInstall) {
-        updateConsciousness(bionic, limb, person, isInstall);
-        updateCurrentBRM(bionic, limb, person, isInstall);
+        if(bionic != null) {
+            updateConsciousness(bionic, limb, person, isInstall);
+            updateCurrentBRM(bionic, limb, person, isInstall);
+        }
     }
 
     /**
@@ -306,23 +315,24 @@ public class ba_officermanager {
     }
     /**
      * Use for getting person anatomy including limb and bionic installed on the limb. Sort by person variant's limb order.
+     * Bionic and appliedOverclock can be null
      * @param person
      * @return
      */
     public static List<ba_bionicAugmentedData> getBionicAnatomyList(PersonAPI person) {
         //return list with full limb details
         List<ba_bionicAugmentedData> anatomyList = new ArrayList<>();
-        HashMap<ba_limbmanager.ba_limb, List<ba_bionicitemplugin>> bionicsInstalledList = ba_bionicmanager.getListLimbAndBionicInstalled(person);
+        HashMap<ba_limbmanager.ba_limb, ba_bionicmanager.bionicData> bionicsInstalledList = ba_bionicmanager.getListLimbAndBionicInstalled(person);
         String personGenericVariant = getPersonVariantTag(person);
         if(personGenericVariant != null && ba_variantmanager.variantList.get(personGenericVariant) != null) {
             List<String> variantAnatomy = ba_variantmanager.variantList.get(personGenericVariant).limbIdList;
             for (String limbString: variantAnatomy) {
                 ba_limbmanager.ba_limb limb = ba_limbmanager.getLimb(limbString);
                 if(bionicsInstalledList.get(limb) != null) {
-                    List<ba_bionicitemplugin> bionicsInstalled = bionicsInstalledList.get(limb);
-                    anatomyList.add(new ba_bionicAugmentedData(limb, bionicsInstalled));
+                    ba_bionicmanager.bionicData bionicsInstalled = bionicsInstalledList.get(limb);
+                    anatomyList.add(new ba_bionicAugmentedData(limb, bionicsInstalled.bionic, bionicsInstalled.overclock));
                 } else {
-                    anatomyList.add(new ba_bionicAugmentedData(limb, new ArrayList<ba_bionicitemplugin>()));
+                    anatomyList.add(new ba_bionicAugmentedData(limb, null, null));
                 }
             }
         } else {
@@ -352,7 +362,7 @@ public class ba_officermanager {
         if(limb.limbGroupList.contains(bionic.bionicLimbGroupId)) {
             for(ba_bionicAugmentedData data: getBionicAnatomyList(person)) {
                 //ONLY ONE BIONIC PER LIMB, sorry forks :d
-                if(data.limb.limbId.equals(limb.limbId) && data.bionicInstalled.size() >= ba_variablemanager.BIONIC_INSTALL_PER_LIMB) {
+                if(data.limb.limbId.equals(limb.limbId) && data.bionicInstalled != null) {
                     return true;
                 }
             }
@@ -369,7 +379,7 @@ public class ba_officermanager {
      */
     public static boolean checkIfBionicInstallableBaseOnPersonType(ba_bionicitemplugin bionic, PersonAPI person) {
         if(person.isPlayer() || (bionic.isApplyCaptainEffect && bionic.isApplyAdminEffect)) return true;
-        return (isOfficer(person, false) && bionic.isApplyCaptainEffect) || (!isOfficer(person, false) && bionic.isApplyAdminEffect);
+        return (isCaptainOrAdmin(person, false).equals(ba_profession.CAPTAIN) && bionic.isApplyCaptainEffect) || (!isCaptainOrAdmin(person, false).equals(ba_profession.ADMIN) && bionic.isApplyAdminEffect);
     }
     public static boolean checkIfCurrentBRMLowerThanLimitOnInstall(ba_bionicitemplugin bionic, PersonAPI person) {
         float currentBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
@@ -407,7 +417,7 @@ public class ba_officermanager {
         if(!bionic.isAllowedRemoveAfterInstall) return false;
         if(limb.limbGroupList.contains(bionic.bionicLimbGroupId)) {
             for(ba_bionicAugmentedData data: getBionicAnatomyList(person)) {
-                if(data.limb.limbId.equals(limb.limbId) && data.bionicInstalled.contains(bionic)) {
+                if(data.limb.limbId.equals(limb.limbId) && data.bionicInstalled.getId().equals(bionic.getId())) {
                     return true;
                 }
             }
@@ -422,15 +432,34 @@ public class ba_officermanager {
         }
         return false;
     }
+    /**
+     * Start by looking at the bionics at the player inventory, if visible => remove the bionic
+     * Then after removing => generate a new tag and put it on the person
+     * If the bionic overclocked, => override previous bionic tag, generate a new one => put it in person
+     * @param bionic
+     * @param limb
+     * @param person
+     * @param removeBionicOnInstall
+     * @return
+     */
     public static boolean installBionic(ba_bionicitemplugin bionic, ba_limbmanager.ba_limb limb, PersonAPI person, boolean removeBionicOnInstall) {
         if(checkIfCanInstallBionic(bionic, limb, person)) {
             boolean removeSuccessful = true;
+            ba_overclock overclock = ba_overclockmanager.getOverclockFromItem(bionic);
             if(removeBionicOnInstall) {
-                SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
-                removeSuccessful = Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, 1);
+//                SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
+//                if(overclock != null) {
+//                    specialItem = new SpecialItemData(bionic.bionicId, overclock.id);
+//                }
+//                removeSuccessful = Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, 1);
+                removeSuccessful = ba_inventoryhandler.removeFromContainer(bionic);
             }
             if(removeSuccessful) {
-                person.addTag(bionic.bionicId+":"+limb.limbId);
+                String bionicTag = convertToTag(bionic, limb, null);
+                if(overclock != null) {
+                    bionicTag = convertToTag(bionic, limb, overclock.id);
+                }
+                person.addTag(bionicTag);
                 updatePersonStatsOnInteract(bionic, limb, person, true);
                 if(bionic.isApplyAdminEffect && !getPersonGovernMarkets(person).isEmpty()) {
                     for(MarketAPI market: getPersonGovernMarkets(person)) {
@@ -454,6 +483,14 @@ public class ba_officermanager {
         }
         return false;
     }
+
+    /**
+     * Remove the bionic tag, if can find tag => add the bionic to player inventory
+     * @param bionic
+     * @param limb
+     * @param person
+     * @return
+     */
     public static boolean removeBionic(ba_bionicitemplugin bionic, ba_limbmanager.ba_limb limb, PersonAPI person) {
         if(checkIfCanRemoveBionic(bionic, limb, person)) {
             if(bionic.isApplyAdminEffect && !getPersonGovernMarkets(person).isEmpty()) {
@@ -464,18 +501,104 @@ public class ba_officermanager {
                 }
             }
             //remove later because the bionic tag is needed
-            person.removeTag(bionic.bionicId+":"+limb.limbId);
-            SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
-            Global.getSector().getPlayerFleet().getCargo().addSpecial(specialItem, 1);
-            updatePersonStatsOnInteract(bionic, limb, person, false);
-            if(bionic.effectScript != null && bionic.isEffectAppliedAfterRemove) {
-                bionic.effectScript.onRemove(person, limb, bionic);
+            String removingTag = convertToTag(bionic, limb, null);
+            boolean canFindTag = false;
+            ba_overclock overclock = ba_overclockmanager.getOverclockFromPerson(person, limb);
+            if(overclock != null) {
+                removingTag = convertToTag(bionic, limb, overclock.id);
             }
-            return true;
+            for(String tag: person.getTags()) {
+                if(tag.equals(removingTag)) {
+                    ba_inventoryhandler.addToContainer(bionic, person, limb);
+                    person.removeTag(removingTag);
+
+//                    SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
+//                    if(overclock != null) {
+//                        //require special item data to do the overclock things
+//                        specialItem =  new SpecialItemData(bionic.bionicId, overclock.id);
+//                    }
+//                    Global.getSector().getPlayerFleet().getCargo().addSpecial(specialItem, 1);
+                    updatePersonStatsOnInteract(bionic, limb, person, false);
+                    if(bionic.effectScript != null && bionic.isEffectAppliedAfterRemove) {
+                        bionic.effectScript.onRemove(person, limb, bionic);
+                    }
+                    canFindTag = true;
+                    break;
+                }
+            }
+            if(canFindTag) {
+                return true;
+            }
+            return false;
         } else {
             log.error("Can't remove "+ bionic.bionicId + " on " + limb.limbId);
         }
         return false;
+    }
+
+    /**
+     * Find existing bionic tag from the person => remove the existing tag => put in new tag which contains the overclock
+     * @param bionic
+     * @param overclockId
+     * @param limb can be null
+     * @param person can be null
+     * @return
+     */
+    public static boolean overclockBionic(ba_bionicitemplugin bionic, String overclockId, ba_limbmanager.ba_limb limb, PersonAPI person) {
+        //Exchange the overclock if the bionic has the overclock. Get the overclock from person -> convert it
+        //For item, get the special data -> remove the bionic from the player inventory -> add the new bionic with the new special data
+        if(ba_overclockmanager.isBionicOverclockable(bionic)) {
+            boolean removeSuccessful = false;
+            ba_overclock selectedOverclock = ba_overclockmanager.getOverclock(overclockId);
+            if(selectedOverclock != null && ba_inventoryhandler.getEvoshardsFromPlayerInventory() > selectedOverclock.upgradeCost) {
+                SpecialItemData specialItem = new SpecialItemData(ba_variablemanager.BA_OVERCLOCK_ITEM, null);
+                removeSuccessful = Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, selectedOverclock.upgradeCost);
+            }
+            if(removeSuccessful) {
+                if(limb != null && person != null) {
+                    //overclock bionic while the bionic is on the person
+                    String removingTag = convertToTag(bionic, limb, null);
+                    ba_overclock addedOverclock = ba_overclockmanager.getOverclockFromPerson(person, limb);
+                    if(addedOverclock != null) {
+                        removingTag = convertToTag(bionic, limb, addedOverclock.id);
+                    }
+                    if(person.getTags().contains(removingTag)) {
+                        person.getTags().remove(removingTag);
+                        String newTag = convertToTag(bionic, limb, overclockId);
+                        person.addTag(newTag);
+                    }
+                    updatePersonStatsOnInteract(bionic, limb, person, true);
+                } else {
+                    ba_overclockmanager.overclockBionicItem(bionic, overclockId);
+                }
+            }
+            if(!removeSuccessful) {
+                log.error("Can't find bionic item in player inventory or overclock ID => abort installing");
+            }
+            return removeSuccessful;
+        }
+
+        return false;
+    }
+
+    public static String convertToTag(@NotNull ba_bionicitemplugin bionic, @NotNull ba_limbmanager.ba_limb limb, @Nullable String overclockId) {
+        if(bionic != null && limb != null) {
+            if(overclockId != null) {
+                return bionic.bionicId+":"+limb.limbId + ":" + overclockId;
+            }
+            return bionic.bionicId+":"+limb.limbId;
+        }
+        return "";
+    }
+    /**
+     * To get all person tag related to bionic augmentation and put it in person memory <br>
+     * @param person
+     */
+    public static void convertPersonBionicTagToPersonMemory(PersonAPI person) {
+        //todo: Convert all tag to memory in 0.0.4
+//        if(person.getMemoryWithoutUpdate().get(ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY) == null) {
+//            person.getMemoryWithoutUpdate().set(ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY, new ba_personmemorydata());
+//        }
     }
     public static List<MarketAPI> getPersonGovernMarkets(PersonAPI person) {
         List<MarketAPI> governMarkets = new ArrayList<>();
@@ -510,6 +633,7 @@ public class ba_officermanager {
         }
         return listBionic;
     }
+
     public static String getProfessionText(PersonAPI person, boolean isDisplayingOtherFleets) {
         if(isDisplayingOtherFleets) {
             return "Captain";
@@ -519,12 +643,12 @@ public class ba_officermanager {
             return "Captain/Admin";
         }
         if(person.getFleet() != null) {
-            if(isOfficer(person, false)) profString = "Captain (Idle)";
+            if(isCaptainOrAdmin(person, false).equals(ba_profession.CAPTAIN)) profString = "Captain (Idle)";
             if(Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(person) != null) {
                 profString = "Captain";
             }
         } else {
-            if(!isOfficer(person, false)) profString = "Admin (Idle)";
+            if(isCaptainOrAdmin(person, false).equals(ba_profession.ADMIN)) profString = "Admin (Idle)";
             if (person.getMarket() != null) {
                 MarketAPI market = person.getMarket();
                 if(market.getAdmin() == person) {
@@ -534,34 +658,58 @@ public class ba_officermanager {
         }
         return profString;
     }
-    public static boolean isOfficer(PersonAPI person, boolean isDisplayingOtherFleets) {
+
+    /**
+     * Return TRUE for captain, FALSE for admin
+     * @param person
+     * @param isDisplayingOtherFleets
+     * @return
+     */
+    public static ba_profession isCaptainOrAdmin(PersonAPI person, boolean isDisplayingOtherFleets) {
         //if is displaying other fleet => its always captain
-        if(isDisplayingOtherFleets) return true;
+        if(isDisplayingOtherFleets) return ba_profession.CAPTAIN;
         for (AdminData admin: Global.getSector().getCharacterData().getAdmins()) {
-            if(admin.getPerson().getId().equals(person.getId())) return false;
+            if(admin.getPerson().getId().equals(person.getId())) return ba_profession.ADMIN;
         }
         if(person.getMarket() != null && person.getMarket().getAdmin().getId().equals(person.getId())) {
-            return false;
+            return ba_profession.ADMIN;
         }
         if(person.getFleet() != null) {
             if(Global.getSector().getPlayerFleet().getFleetData().getOfficersCopy() != null) {
                 for(OfficerDataAPI member: Global.getSector().getPlayerFleet().getFleetData().getOfficersCopy()) {
-                    if(member.getPerson().getId().equals(person.getId())) return true;
+                    if(member.getPerson().getId().equals(person.getId())) return ba_profession.CAPTAIN;
                 }
-                return true;
+                return ba_profession.CAPTAIN;
             }
         }
         if(person.getMemoryWithoutUpdate().get("$ome_isAdmin") == null) {
-            return true;
+            return ba_profession.CAPTAIN;
         }
-        return false;
+        return ba_profession.ADMIN;
+    }
+    public enum ba_profession {
+        CAPTAIN, ADMIN
     }
     public static class ba_bionicAugmentedData {
         public ba_limbmanager.ba_limb limb;
-        public List<ba_bionicitemplugin> bionicInstalled;
-        ba_bionicAugmentedData(ba_limbmanager.ba_limb limb, List<ba_bionicitemplugin> bionic) {
+        public ba_bionicitemplugin bionicInstalled;
+        public ba_overclock appliedOverclock = null;
+        public ba_bionicAugmentedData(ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic, ba_overclock appliedOverclock) {
             this.limb = limb;
             this.bionicInstalled = bionic;
+            this.appliedOverclock = appliedOverclock;
+        }
+    }
+    //todo: this in 0.0.4
+    public class ba_personmemorydata {
+        public HashMap<String, ba_bionicData> bionicInstalled = new HashMap<>();
+        public class ba_bionicData {
+            public String bionicId;
+            public String overclockId;
+            public ba_bionicData(String bionicId, String overclockId) {
+                this.bionicId = bionicId;
+                this.overclockId = overclockId;
+            }
         }
     }
 }
