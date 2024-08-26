@@ -90,7 +90,7 @@ public class ba_salvagelistener implements ShowLootListener {
                 militaryDropValue.valueMult = d.valueMult;
                 militaryDropValue.value = value;
                 dropValueList.add(militaryDropValue);
-                if(entity.getCustomEntityType().equals("station_research_remnant")) {
+                if(entity.getCustomEntityType() != null && entity.getCustomEntityType().equals("station_research_remnant")) {
                     SalvageEntityGenDataSpec.DropData domainDropValue = new SalvageEntityGenDataSpec.DropData();
                     militaryDropValue.group = "ba_bionic_domain";
                     militaryDropValue.valueMult = d.valueMult;
@@ -140,7 +140,7 @@ public class ba_salvagelistener implements ShowLootListener {
                 militaryDropValue.maxChances = d.maxChances;
                 militaryDropValue.chances = chances;
                 dropRandomList.add(militaryDropValue);
-                if(entity.getCustomEntityType().equals("station_research_remnant")) {
+                if(entity.getCustomEntityType() != null && entity.getCustomEntityType().equals("station_research_remnant")) {
                     SalvageEntityGenDataSpec.DropData domainDropValue = new SalvageEntityGenDataSpec.DropData();
                     militaryDropValue.group = "ba_bionic_domain";
                     militaryDropValue.maxChances = d.maxChances;
