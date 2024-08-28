@@ -379,7 +379,7 @@ public class ba_officermanager {
      */
     public static boolean checkIfBionicInstallableBaseOnPersonType(ba_bionicitemplugin bionic, PersonAPI person) {
         if(person.isPlayer() || (bionic.isApplyCaptainEffect && bionic.isApplyAdminEffect)) return true;
-        return (isCaptainOrAdmin(person, false).equals(ba_profession.CAPTAIN) && bionic.isApplyCaptainEffect) || (!isCaptainOrAdmin(person, false).equals(ba_profession.ADMIN) && bionic.isApplyAdminEffect);
+        return (isCaptainOrAdmin(person, false).equals(ba_profession.CAPTAIN) && bionic.isApplyCaptainEffect) || (isCaptainOrAdmin(person, false).equals(ba_profession.ADMIN) && bionic.isApplyAdminEffect);
     }
     public static boolean checkIfCurrentBRMLowerThanLimitOnInstall(ba_bionicitemplugin bionic, PersonAPI person) {
         float currentBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);

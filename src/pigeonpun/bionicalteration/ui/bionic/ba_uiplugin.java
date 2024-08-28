@@ -1100,7 +1100,7 @@ public class ba_uiplugin extends ba_uicommon {
                         break;
                     }
                 }
-                if(tokens[0].equals("hover") && !isDisplayingOtherFleets) {
+                if(tokens[0].equals("hover_person") && !isDisplayingOtherFleets) {
                     if(!this.currentPerson.getId().equals(tokens[1])) {
                         for(PersonAPI person: ba_officermanager.listPersons) {
                             if(tokens[1].equals(person.getId())) {
