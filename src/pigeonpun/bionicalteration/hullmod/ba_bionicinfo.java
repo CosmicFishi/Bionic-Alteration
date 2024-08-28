@@ -44,7 +44,7 @@ public class ba_bionicinfo extends BaseHullMod {
         float col1W = 50;
         float lastW = 362;
 
-        if(ship != null && ship.getCaptain() != null) {
+        if(ship != null && ship.getCaptain() != null && !isForModSpec) {
             if(ba_officermanager.isCaptainOrAdmin(ship.getCaptain(), false).equals(ba_officermanager.ba_profession.CAPTAIN) || ship.getCaptain().isPlayer()) {
                 List<ba_officermanager.ba_bionicAugmentedData> bionicData = ba_officermanager.getBionicAnatomyList(ship.getCaptain());
                 boolean isEmpty = true;
@@ -65,7 +65,7 @@ public class ba_bionicinfo extends BaseHullMod {
                 //save spot for the AI fleet
             }
         } else {
-            LabelAPI info = tooltip.addPara("Somehow displaying bionic information on a ship without captain ???? IDK", pad);
+            LabelAPI info = tooltip.addPara("You shouldn't be able to get this item at the first place :(", pad);
         }
     }
 }
