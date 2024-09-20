@@ -70,8 +70,9 @@ public class ba_bionic_augmented {
             if(ship.getListeners(bionicInCombat.class).isEmpty()) {
                 PersonAPI captain = ship.getCaptain();
                 List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(captain);
-                log.info("Registering Bionic Listener");
+//                log.info("Registering Bionic Listener");
                 ship.addListener(new bionicInCombat(ship, listAnatomy, captain));
+//                log.info("aaaa");
             }
         }
 

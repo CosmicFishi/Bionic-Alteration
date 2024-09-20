@@ -48,7 +48,7 @@ public class ba_inventoryhandler {
                 ba_bionicitemplugin bionic = (ba_bionicitemplugin) stack.getPlugin();
 //                boolean removed = true;
                 CargoStackAPI stackCopyOver = stack;
-                boolean removed = removeBionicFromPersonCargo(bionic);
+                boolean removed = removeBionicFromPersonCargo(bionic, stack.getSize());
                 if(removed) addToContainer(stackCopyOver);
             }
         }
@@ -66,14 +66,14 @@ public class ba_inventoryhandler {
         }
         return cargo;
     }
-    public static boolean removeBionicFromPersonCargo(ba_bionicitemplugin bionic) {
+    public static boolean removeBionicFromPersonCargo(ba_bionicitemplugin bionic, float size) {
         boolean success = false;
         ba_overclock overclock = ba_overclockmanager.getOverclockFromItem(bionic);
         SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
         if(overclock != null) {
             specialItem = new SpecialItemData(bionic.bionicId, overclock.id);
         }
-        success = Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, 1);
+        success = Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, size);
         return success;
     }
     protected static void overrideGlobalData(CargoAPI cargo) {
