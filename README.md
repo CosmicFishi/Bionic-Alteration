@@ -1,7 +1,5 @@
 # Bionic Alteration
 
-v0.0.1
-
 ## Description
 This is a Starsector mod using Java.
 
