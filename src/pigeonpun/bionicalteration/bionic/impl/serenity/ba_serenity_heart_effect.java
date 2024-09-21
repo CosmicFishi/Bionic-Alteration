@@ -18,15 +18,12 @@ import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
 
 import java.awt.*;
 
-public class ba_serenity_heart_effect implements ba_bioniceffect {
+public class ba_serenity_heart_effect extends ba_bionicitemplugin {
     public static float MARKET_UPKEEP_MULT = 0.9f;
     public static float MARKET_ACCESS_FLAT = 0.05f;
     static Logger log = Global.getLogger(ba_serenity_heart_effect.class);
 
-    @Override
-    public void setBionicItem(ba_bionicitemplugin bionic) {
 
-    }
 
     @Override
     public void displayEffectDescription(TooltipMakerAPI tooltip, PersonAPI person, ba_bionicitemplugin bionic, boolean isItem) {

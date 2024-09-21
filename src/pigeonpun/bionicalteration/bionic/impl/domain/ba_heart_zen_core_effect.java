@@ -21,13 +21,10 @@ import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 
 import java.awt.*;
 
-public class ba_heart_zen_core_effect implements ba_bioniceffect {
+public class ba_heart_zen_core_effect extends ba_bionicitemplugin {
     public static final float MANEUVERABILITY = 1.6f;
     static Logger log = Global.getLogger(ba_heart_zen_core_effect.class);
-    @Override
-    public void setBionicItem(ba_bionicitemplugin bionic) {
 
-    }
 
     @Override
     public void displayEffectDescription(TooltipMakerAPI tooltip, PersonAPI person, ba_bionicitemplugin bionic, boolean isItem) {

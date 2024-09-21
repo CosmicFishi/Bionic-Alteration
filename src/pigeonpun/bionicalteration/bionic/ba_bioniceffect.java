@@ -16,11 +16,6 @@ import java.util.List;
  */
 public interface ba_bioniceffect{
     /**
-     * Return bionic item if needed
-     * @param bionic
-     */
-    public void setBionicItem(ba_bionicitemplugin bionic);
-    /**
      * Use to display the effect of bionic on the bionic item and on bionics effects description in workshop.
      * @return text
      */

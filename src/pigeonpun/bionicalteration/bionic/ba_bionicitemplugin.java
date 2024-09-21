@@ -6,6 +6,7 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.SubmarketAPI;
 import com.fs.starfarer.api.campaign.impl.items.BaseSpecialItemPlugin;
 import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
+import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.combat.MutableShipStatsAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.graphics.SpriteAPI;
@@ -28,9 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-public class ba_bionicitemplugin implements SpecialItemPlugin {
-    //todo: refactor the bionic item plugin to include effect class into it.
-    // then have bionics extends this class
+public class ba_bionicitemplugin implements SpecialItemPlugin, ba_bioniceffect {
     static Logger log = Global.getLogger(ba_bionicitemplugin.class);
     public String bionicId;
     public String bionicLimbGroupId;
@@ -38,7 +37,7 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
     public Color displayColor;
     public float brmCost;
     public float consciousnessCost;
-    public ba_bioniceffect effectScript;
+//    public ba_bioniceffect effectScript;
 //    public boolean isCaptainBionic;
     public boolean isApplyCaptainEffect;
     public boolean isApplyAdminEffect;
@@ -57,7 +56,7 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
     protected boolean isInitFully = false;
     public ba_bionicitemplugin() {}
     public ba_bionicitemplugin(String bionicId, SpecialItemSpecAPI spec ,String bionicLimbGroupId, String namePrefix, Color displayColor, int brmCost,
-                               float consciousnessCost, float dropChance, boolean isApplyCaptainEffect, boolean isApplyAdminEffect, boolean isAICoreBionic, ba_bioniceffect effectScript,
+                               float consciousnessCost, float dropChance, boolean isApplyCaptainEffect, boolean isApplyAdminEffect, boolean isAICoreBionic,
                                List<String> conflictedBionicIdList, boolean isAllowedRemoveAfterInstall, boolean isEffectAppliedAfterRemove) {
         this.bionicId = bionicId;
         this.spec = spec;
@@ -70,7 +69,7 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
         this.isAICoreBionic = isAICoreBionic;
         this.isApplyAdminEffect = isApplyAdminEffect;
         this.isApplyCaptainEffect = isApplyCaptainEffect;
-        this.effectScript = effectScript;
+//        this = effectScript;
         if(conflictedBionicIdList != null) {
             this.conflictedBionicIdList = conflictedBionicIdList;
         }
@@ -103,7 +102,7 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
             this.isAICoreBionic = bionicInMap.isAICoreBionic;
             this.isApplyAdminEffect = bionicInMap.isApplyAdminEffect;
             this.isApplyCaptainEffect = bionicInMap.isApplyCaptainEffect;
-            this.effectScript = bionicInMap.effectScript;
+//            this = bionicInMap;
             if(bionicInMap.conflictedBionicIdList != null) {
                 this.conflictedBionicIdList = bionicInMap.conflictedBionicIdList;
             }
@@ -292,9 +291,7 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
 
         renderer.renderScanlinesWithCorners(blX, blY, tlX, tlY, trX, trY, brX, brY, alphaMult, false);
         //do effect render ?
-        if(this.effectScript != null) {
-            effectScript.renderExtraOnItem(x,y,w,h,alphaMult,glowMult,renderer);
-        }
+        this.renderExtraOnItem(x,y,w,h,alphaMult,glowMult,renderer);
     }
 
     @Override
@@ -336,5 +333,70 @@ public class ba_bionicitemplugin implements SpecialItemPlugin {
             return equal;
         }
         return super.equals(obj);
+    }
+
+    @Override
+    public void displayEffectDescription(TooltipMakerAPI tooltip, PersonAPI person, ba_bionicitemplugin bionic, boolean isItem) {
+
+    }
+
+    @Override
+    public String getShortOnRemoveEffectDescription() {
+        return null;
+    }
+
+    @Override
+    public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
+
+    }
+
+    @Override
+    public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
+
+    }
+
+    @Override
+    public void applyAdminEffect(MutableCharacterStatsAPI stats, String id) {
+
+    }
+
+    @Override
+    public void unapplyAdminEffect(MutableCharacterStatsAPI stats, String id) {
+
+    }
+
+    @Override
+    public void applyEffectAdminMarket(MarketAPI market, String id, float level, ba_bionicitemplugin bionic) {
+
+    }
+
+    @Override
+    public void unapplyEffectAdminMarket(MarketAPI market, String id) {
+
+    }
+
+    @Override
+    public boolean isAdvanceInCombat() {
+        return false;
+    }
+
+    @Override
+    public void advanceInCombat(ShipAPI ship, float amount) {
+
+    }
+
+    @Override
+    public void onRemove(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {
+
+    }
+
+    @Override
+    public void onInstall(PersonAPI person, ba_limbmanager.ba_limb limb, ba_bionicitemplugin bionic) {
+
+    }
+
+    @Override
+    public void renderExtraOnItem(float x, float y, float w, float h, float alphaMult, float glowMult, SpecialItemRendererAPI renderer) {
+
     }
 }

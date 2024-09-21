@@ -468,8 +468,8 @@ public class ba_officermanager {
                         }
                     }
                 }
-                if(bionic.effectScript != null) {
-                    bionic.effectScript.onInstall(person, limb, bionic);
+                if(bionic != null) {
+                    bionic.onInstall(person, limb, bionic);
                 }
             }
             if(!removeSuccessful) {
@@ -519,8 +519,8 @@ public class ba_officermanager {
 //                    }
 //                    Global.getSector().getPlayerFleet().getCargo().addSpecial(specialItem, 1);
                     updatePersonStatsOnInteract(bionic, limb, person, false);
-                    if(bionic.effectScript != null && bionic.isEffectAppliedAfterRemove) {
-                        bionic.effectScript.onRemove(person, limb, bionic);
+                    if(bionic != null && bionic.isEffectAppliedAfterRemove) {
+                        bionic.onRemove(person, limb, bionic);
                     }
                     canFindTag = true;
                     break;

@@ -360,7 +360,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                     tooltip.addSectionHeading("Bionics", Alignment.MID, 0);
                     if(augmentData.bionicInstalled != null) {
                         ba_bionicitemplugin b = augmentData.bionicInstalled;
-                        b.effectScript.displayEffectDescription(tooltip, currentPerson, b, false);
+                        b.displayEffectDescription(tooltip, currentPerson, b, false);
                         //---------Overclock
                         if(ba_overclockmanager.isBionicOverclockable(b)) {
                             ba_overclock overclock = augmentData.appliedOverclock;
@@ -391,10 +391,10 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                         }
                         if(expanded) {
 //                                if(!isWorkshopMode) {
-//                                    b.effectScript.displayEffectDescription(tooltip, currentPerson, b);
+//                                    b.displayEffectDescription(tooltip, currentPerson, b);
 ////                                    LabelAPI expandedTooltip = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Effects:", effect);
 ////                                    expandedTooltip.setHighlight("Effects:", effect);
-////                                    expandedTooltip.setHighlightColors(Misc.getGrayColor().brighter(), b.effectScript != null ? Misc.getHighlightColor() :Misc.getGrayColor());
+////                                    expandedTooltip.setHighlightColors(Misc.getGrayColor().brighter(), b != null ? Misc.getHighlightColor() :Misc.getGrayColor());
 //                                } else {
 //
 //                                }

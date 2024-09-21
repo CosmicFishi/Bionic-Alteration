@@ -17,17 +17,14 @@ import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 
 import java.awt.*;
 
-public class ba_guardian_heart_effect implements ba_bioniceffect {
+public class ba_guardian_heart_effect extends ba_bionicitemplugin {
     public static float OFFICER_SHIP_ARMOR = 1.2f;
     public static float OFFICER_SHIP_MANEUVERABILITY = 0.75f;
     public static float ADMIN_ACCESS_FLAT = 0.2f;
     public static float ADMIN_UPKEEP_MULT = 1.25f;
     static Logger log = Global.getLogger(ba_guardian_heart_effect.class);
 
-    @Override
-    public void setBionicItem(ba_bionicitemplugin bionic) {
 
-    }
 
     @Override
     public void displayEffectDescription(TooltipMakerAPI tooltip, PersonAPI person, ba_bionicitemplugin bionic, boolean isItem) {

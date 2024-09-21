@@ -836,7 +836,7 @@ public class ba_uiplugin extends ba_uicommon {
         int i = 0;
         for(ba_officermanager.ba_bionicAugmentedData bionicAugmentedDatas: currentAnatomyList) {
             if(bionicAugmentedDatas.bionicInstalled != null) {
-                bionicAugmentedDatas.bionicInstalled.effectScript.displayEffectDescription(subEffectListTooltipContainer, currentPerson, bionicAugmentedDatas.bionicInstalled, false);
+                bionicAugmentedDatas.bionicInstalled.displayEffectDescription(subEffectListTooltipContainer, currentPerson, bionicAugmentedDatas.bionicInstalled, false);
 
                 subEffectListTooltipContainer.addSpacer(spacerY);
                 if(bionicAugmentedDatas.appliedOverclock != null) {
@@ -907,9 +907,9 @@ public class ba_uiplugin extends ba_uicommon {
                 bionicName.setHighlightColors(Misc.getBasePlayerColor() ,bionic.displayColor);
                 //>Remove warn
                 String warnText = "No effect on remove";
-                if(bionic.effectScript != null && bionic.isEffectAppliedAfterRemove) {
-                    if(bionic.effectScript.getShortOnRemoveEffectDescription() != null && !bionic.effectScript.getShortOnRemoveEffectDescription().equals("")) {
-                        warnText = bionic.effectScript.getShortOnRemoveEffectDescription();
+                if(bionic != null && bionic.isEffectAppliedAfterRemove) {
+                    if(bionic.getShortOnRemoveEffectDescription() != null && !bionic.getShortOnRemoveEffectDescription().equals("")) {
+                        warnText = bionic.getShortOnRemoveEffectDescription();
                     } else {
                         warnText = "No description on removing yet...";
                     }

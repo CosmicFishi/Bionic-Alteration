@@ -90,9 +90,9 @@ public class ba_bionic_augmented {
                 List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(captain);
                 for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
                     if(anatomy.bionicInstalled != null) {
-                        if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyCaptainEffect) {
+                        if(anatomy.bionicInstalled != null && anatomy.bionicInstalled.isApplyCaptainEffect) {
                             String applyId = id + anatomy.bionicInstalled.bionicId + anatomy.limb;
-                            anatomy.bionicInstalled.effectScript.applyOfficerEffect(stats, hullSize, applyId);
+                            anatomy.bionicInstalled.applyOfficerEffect(stats, hullSize, applyId);
                         }
                         if(anatomy.appliedOverclock != null) {
                             if(anatomy.appliedOverclock.isApplyCaptainEffect) {
@@ -119,9 +119,9 @@ public class ba_bionic_augmented {
                 List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(captain);
                 for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
                     if(anatomy.bionicInstalled != null) {
-                        if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyCaptainEffect) {
+                        if(anatomy.bionicInstalled != null && anatomy.bionicInstalled.isApplyCaptainEffect) {
                             String applyId = id + anatomy.bionicInstalled.bionicId + anatomy.limb;
-                            anatomy.bionicInstalled.effectScript.unapplyOfficerEffect(stats, hullSize, applyId);
+                            anatomy.bionicInstalled.unapplyOfficerEffect(stats, hullSize, applyId);
                         }
                         if(anatomy.appliedOverclock != null) {
                             if(anatomy.appliedOverclock.isApplyCaptainEffect) {
@@ -170,9 +170,9 @@ public class ba_bionic_augmented {
                 List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
                 for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
                     if(anatomy.bionicInstalled != null) {
-                        if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyAdminEffect) {
+                        if(anatomy.bionicInstalled != null && anatomy.bionicInstalled.isApplyAdminEffect) {
                             String applyId = id + anatomy.bionicInstalled.bionicId + anatomy.limb;
-                            anatomy.bionicInstalled.effectScript.applyAdminEffect(stats, applyId);
+                            anatomy.bionicInstalled.applyAdminEffect(stats, applyId);
                         }
                         if(anatomy.appliedOverclock != null) {
                             if(anatomy.appliedOverclock.isApplyAdminEffect) {
@@ -197,9 +197,9 @@ public class ba_bionic_augmented {
                 List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
                 for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
                     if(anatomy.bionicInstalled != null) {
-                        if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyAdminEffect) {
+                        if(anatomy.bionicInstalled != null && anatomy.bionicInstalled.isApplyAdminEffect) {
                             String applyId = id + anatomy.bionicInstalled.bionicId + anatomy.limb;
-                            anatomy.bionicInstalled.effectScript.unapplyAdminEffect(stats, applyId);
+                            anatomy.bionicInstalled.unapplyAdminEffect(stats, applyId);
                         }
                         if(anatomy.appliedOverclock != null) {
                             if(anatomy.appliedOverclock.isApplyAdminEffect) {
@@ -333,8 +333,8 @@ public class ba_bionic_augmented {
             }
             for(ba_officermanager.ba_bionicAugmentedData anatomy: this.dataList) {
                 if (anatomy.bionicInstalled != null) {
-                    if(anatomy.bionicInstalled.isAdvanceInCombat && anatomy.bionicInstalled.effectScript != null) {
-                        anatomy.bionicInstalled.effectScript.advanceInCombat(this.ship, amount);
+                    if(anatomy.bionicInstalled.isAdvanceInCombat && anatomy.bionicInstalled != null) {
+                        anatomy.bionicInstalled.advanceInCombat(this.ship, amount);
                     }
                     if(anatomy.appliedOverclock != null) {
                         if(anatomy.appliedOverclock.isAdvanceInCombat()) {
