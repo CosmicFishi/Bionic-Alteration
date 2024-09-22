@@ -77,4 +77,5 @@ public class ba_variablemanager {
     public static final String BA_PERSON_MEMORY_BIONIC_KEY = "$ba_bionic_key";
     public static final String BA_BIONIC_INFO_HULLMOD = "ba_bionicinfo";
     public static final String BA_BIONIC_CONTAINER_PERSISTENT_KEY = "ba_bionic_container";
+    public static final String BA_OVERCLOCK_STATION_TAG_NAME = "Overclock station";
 }

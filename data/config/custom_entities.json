@@ -4,7 +4,7 @@
 		"defaultRadius":40, # used if radius<0 in addCustomEntity()
 		"customDescriptionId":"ba_station_overclock",
 		"interactionImage":"graphics/illustrations/orbital.jpg",
-		"icon":"graphics/icons/station0.png",
+		"icon":"graphics/icons/intel/ba_bionic_station.png",
 		"iconWidth":24,
 		"iconHeight":24,
 		"sprite":"graphics/stations/ba_overclock_station.png",
