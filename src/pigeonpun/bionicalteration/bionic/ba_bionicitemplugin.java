@@ -344,6 +344,10 @@ public class ba_bionicitemplugin implements SpecialItemPlugin, ba_bioniceffect {
     public String getShortOnRemoveEffectDescription() {
         return null;
     }
+    @Override
+    public void getLongOnRemoveEffectDescription(TooltipMakerAPI tooltip) {
+        tooltip.addPara("No long description on removing yet...", Misc.getTextColor(),0);
+    }
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {

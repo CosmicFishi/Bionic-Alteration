@@ -21,10 +21,16 @@ public interface ba_bioniceffect{
      */
     public void displayEffectDescription(TooltipMakerAPI tooltip, PersonAPI person, ba_bionicitemplugin bionic, boolean isItem);
     /**
-     * Use to display the effect of bionic on remove, will be display in bionic description inside bionic workshop inventory.
+     * Use to display the effect of bionic on remove, will be display in bionic description inside bionic workshop inventory. In short form
      * @return text
      */
     public String getShortOnRemoveEffectDescription();
+    /**
+     * Use to display the effect of bionic on remove, will be display in bionic description inside bionic workshop inventory. In long form.
+     * Will pop up on hovering confirm remove button.
+     * @return text
+     */
+    public void getLongOnRemoveEffectDescription(TooltipMakerAPI tooltip);
 
     /**
      * As the name implies, apply effects for officer
