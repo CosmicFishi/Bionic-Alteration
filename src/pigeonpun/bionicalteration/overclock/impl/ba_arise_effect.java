@@ -69,6 +69,7 @@ public class ba_arise_effect extends ba_overclock {
     @Override
     public void advanceInCombat(ShipAPI ship, float amount) {
         if(Global.getCombatEngine().isPaused()) return;
+        if(!ship.isAlive() && !Global.getCombatEngine().isEntityInPlay(ship)) return;
         if(!ship.getListenerManager().hasListenerOfClass(ariseDamageListener.class)) {
             ship.addListener(new ariseDamageListener(ship));
         }

@@ -475,6 +475,7 @@ public class ba_officermanager {
             if(!removeSuccessful) {
                 log.error("Can't find bionic item in player inventory => abort installing");
             }
+            refresh(null);
             return removeSuccessful;
         } else {
             if(bionicalterationplugin.isDevmode) {
