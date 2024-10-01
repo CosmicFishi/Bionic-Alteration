@@ -23,6 +23,7 @@ import java.util.*;
 import java.util.List;
 
 public class ba_consciousmanager {
+    //todo: tile consciousness to the colony major event ?
     static Logger log = Global.getLogger(ba_consciousmanager.class);
     public static HashMap<ba_variablemanager.ba_consciousnessLevel, ba_conscious> consciousMap = new HashMap<>();
     public static void onApplicationLoad() {

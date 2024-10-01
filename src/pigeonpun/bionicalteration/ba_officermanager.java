@@ -251,7 +251,10 @@ public class ba_officermanager {
             }
         } else {
             listP.add(Global.getSector().getPlayerPerson());
-            List<OfficerDataAPI> listPlayerMember = Global.getSector().getPlayerFleet().getFleetData().getOfficersCopy();
+            List<OfficerDataAPI> listPlayerMember = new ArrayList<>();
+            if(Global.getSector().getPlayerFleet() != null) {
+                listPlayerMember = Global.getSector().getPlayerFleet().getFleetData().getOfficersCopy();
+            }
             for (OfficerDataAPI officer: listPlayerMember) {
                 if(!officer.getPerson().isAICore() && !officer.getPerson().isDefault()) {
                     listP.add(officer.getPerson());

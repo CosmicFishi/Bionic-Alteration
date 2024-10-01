@@ -244,7 +244,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         final float pad = 10f;
         float opad = 10f;
         final Color h = Misc.getHighlightColor();
-        Color bad = Misc.getNegativeHighlightColor();
+        final Color bad = Misc.getNegativeHighlightColor();
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
         final Color special = ba_variablemanager.BA_OVERCLOCK_COLOR;
@@ -388,6 +388,10 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                             LabelAPI conflictListLabel = tooltip.addPara("%s %s", pad, t,"Conflicts:", conflictsList.toString());
                             conflictListLabel.setHighlight("Conflicts:", conflictsList.toString());
                             conflictListLabel.setHighlightColors(g.brighter().brighter(), conflictsList.toString().equals("None")? g : Misc.getNegativeHighlightColor());
+                            if(!augmentData.bionicInstalled.isAllowedRemoveAfterInstall) {
+                                LabelAPI removableLabel = tooltip.addPara("%s", pad, t,"[ UNREMOVEABLE ]");
+                                removableLabel.setHighlightColors(bad);
+                            }
                         }
                         if(expanded) {
 //                                if(!isWorkshopMode) {

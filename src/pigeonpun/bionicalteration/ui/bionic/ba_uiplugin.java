@@ -785,11 +785,11 @@ public class ba_uiplugin extends ba_uicommon {
         int selectedBionicX = (int) (selectedLimbX);
         int selectedBionicY = (int) (removeBtnY + selectedH);
         String bionicName = this.currentSelectedBionic != null ? this.currentSelectedBionic.getName(): "None";
-        LabelAPI selectedBionicLabel = infoPersonTooltipContainer.addPara("%s %s", 0, t,"Selected:",  bionicName);
+        LabelAPI selectedBionicLabel = infoPersonTooltipContainer.addPara("%s %s %s", 0, t,"Selected:",  bionicName, (this. currentSelectedBionic != null && !this.currentSelectedBionic.isAllowedRemoveAfterInstall)? "[ UNREMOVEABLE ]": "");
         selectedBionicLabel.getPosition().inTL(selectedBionicX,selectedBionicY);
         selectedBionicLabel.getPosition().setSize(selectedW, selectedH);
-        selectedBionicLabel.setHighlight("Selected:", bionicName);
-        selectedBionicLabel.setHighlightColors(Misc.getBrightPlayerColor(), this.currentSelectedBionic != null ? this.currentSelectedBionic.displayColor: Misc.getGrayColor());
+        selectedBionicLabel.setHighlight("Selected:", bionicName, "[ UNREMOVEABLE ]");
+        selectedBionicLabel.setHighlightColors(Misc.getBrightPlayerColor(), this.currentSelectedBionic != null ? this.currentSelectedBionic.displayColor: Misc.getGrayColor(), bad);
     }
     public void displayEffectListWorkshop(ba_component creatorComponent, String creatorComponentTooltip, float effectListW, float effectListH, float effectListX, float effectListY) {
         float pad = 10f;
