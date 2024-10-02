@@ -51,9 +51,13 @@ public class ba_bionicinfo extends BaseHullMod {
                 for(ba_officermanager.ba_bionicAugmentedData data :bionicData) {
                     if(data.bionicInstalled != null) {
                         isEmpty = false;
+                        tooltip.addSpacer(pad);
                         data.bionicInstalled.displayEffectDescription(tooltip, ship.getCaptain(), data.bionicInstalled, false);
                         if(data.appliedOverclock != null) {
                             data.appliedOverclock.displayEffectDescription(tooltip, ship.getCaptain(), data.bionicInstalled, true);
+                            if(data.appliedOverclock.hasCustomHullmodInfo()) {
+                                data.appliedOverclock.customHullmodInfo(tooltip, ship, data.bionicInstalled);
+                            }
                         }
                     }
                 }

@@ -83,4 +83,24 @@ public class ba_overclock implements ba_overclockeffect{
 
         LabelAPI descriptions = tooltip.addPara("Nothing here yet.....", pad, t);
     }
+    public boolean hasCustomHullmodInfo() {
+        return false;
+    }
+
+    /**
+     * hasCustomHullmodInfo() need to be true for this to take effect
+     * @param tooltip
+     * @param ship
+     * @param bionic
+     */
+    public void customHullmodInfo(TooltipMakerAPI tooltip, ShipAPI ship, ba_bionicitemplugin bionic) {
+        final float pad = 10f;
+        float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        final Color t = Misc.getTextColor();
+        final Color g = Misc.getGrayColor();
+        final Color special = ba_variablemanager.BA_OVERCLOCK_COLOR;
+        LabelAPI descriptions = tooltip.addPara("Nothing here yet.....", pad, t);
+    }
 }
