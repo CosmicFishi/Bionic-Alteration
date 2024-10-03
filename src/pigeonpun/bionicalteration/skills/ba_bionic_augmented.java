@@ -14,10 +14,12 @@ import com.fs.starfarer.api.impl.campaign.ids.Stats;
 import com.fs.starfarer.api.impl.campaign.skills.BaseSkillEffectDescription;
 import com.fs.starfarer.api.ui.LabelAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
+import com.fs.starfarer.api.ui.UIComponentAPI;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.campaign.fleet.MutableMarketStats;
 import com.fs.starfarer.util.DynamicStats;
 import org.apache.log4j.Logger;
+import org.lwjgl.input.Keyboard;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
@@ -275,43 +277,57 @@ public class ba_bionic_augmented {
     }
     public static void displayBionicDescriptions(PersonAPI person, TooltipMakerAPI info, float opad) {
         if(person != null) {
-            //bionics
-            info.setParaOrbitronLarge();
             List<ba_bionicitemplugin> listBionic = ba_bionicmanager.getListBionicInstalled(person);
-            Color[] listBionicColor = new Color[listBionic.size()+1];
-            StringBuilder description = new StringBuilder();
-            listBionicColor[0] = Misc.getBrightPlayerColor();
-            int colorIndex = 1;
-            description.append("Bionics").append(", ");
-            if(!listBionic.isEmpty()) {
-                for(ba_bionicitemplugin bionic: listBionic) {
-                    description.append(bionic.getName()).append(", ");
-                    listBionicColor[colorIndex] = bionic.displayColor;
-                    colorIndex++;
+            if(Keyboard.isKeyDown(Keyboard.KEY_F1)) {
+                if(!listBionic.isEmpty()) {
+                    for(ba_bionicitemplugin bionic: listBionic) {
+                        UIComponentAPI border = info.createRect(Misc.getGrayColor().darker().darker(), 1);
+                        border.getPosition().setSize(info.getWidthSoFar(), 1);
+                        info.addCustom(border, 10f);
+                        ba_bionicmanager.getBionic(bionic.getId()).displayEffectDescription(info, person, bionic, false);
+                    }
+                } else {
+                    info.addPara("No bionic...yet", 10f);
                 }
-                description.setLength(description.length()-2);
             } else {
-                description.append("No bionic...yet");
-                listBionicColor = new Color[2];
+                //bionics
+                info.setParaOrbitronLarge();
+                Color[] listBionicColor = new Color[listBionic.size()+1];
+                StringBuilder description = new StringBuilder();
                 listBionicColor[0] = Misc.getBrightPlayerColor();
-                listBionicColor[1] = Misc.getGrayColor();
-            }
-            String[] stringArray = description.toString().split(", ");
-            StringBuilder formatString = new StringBuilder("%s: ");
-            if(!listBionic.isEmpty()) {
-                int i = 0;
-                while(i < listBionic.size()) {
-                    formatString.append("%s, ");
-                    i++;
+                int colorIndex = 1;
+                description.append("Bionics").append(", ");
+                if(!listBionic.isEmpty()) {
+                    for(ba_bionicitemplugin bionic: listBionic) {
+                        description.append(bionic.getName()).append(", ");
+                        listBionicColor[colorIndex] = bionic.displayColor;
+                        colorIndex++;
+                    }
+                    description.setLength(description.length()-2);
+                } else {
+                    description.append("No bionic...yet");
+                    listBionicColor = new Color[2];
+                    listBionicColor[0] = Misc.getBrightPlayerColor();
+                    listBionicColor[1] = Misc.getGrayColor();
                 }
-                formatString.setLength(formatString.length() - 2);
-            } else {
-                formatString.append("%s");
+                String[] stringArray = description.toString().split(", ");
+                StringBuilder formatString = new StringBuilder("%s: ");
+                if(!listBionic.isEmpty()) {
+                    int i = 0;
+                    while(i < listBionic.size()) {
+                        formatString.append("%s, ");
+                        i++;
+                    }
+                    formatString.setLength(formatString.length() - 2);
+                } else {
+                    formatString.append("%s");
+                }
+                LabelAPI descriptionLabel = info.addPara(formatString.toString(), opad, listBionicColor , stringArray);
+                //conscious
+                info.setParaFontDefault();
+                ba_consciousmanager.getConsciousnessLevel(person).displayTooltipDescription(info, person, true, true);
+                LabelAPI f1Label = info.addPara("To display the full bionic list, press F1 while hovering this skill.", Misc.getGrayColor().darker(), opad);
             }
-            LabelAPI descriptionLabel = info.addPara(formatString.toString(), opad, listBionicColor , stringArray);
-            //conscious
-            info.setParaFontDefault();
-            ba_consciousmanager.getConsciousnessLevel(person).displayTooltipDescription(info, person, true, true);
         }
     }
     //this is for save compatibility

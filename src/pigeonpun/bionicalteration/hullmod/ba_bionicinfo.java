@@ -9,6 +9,7 @@ import com.fs.starfarer.api.ui.UIComponentAPI;
 import com.fs.starfarer.api.util.Misc;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
+import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
 
 import java.awt.*;
 import java.util.List;
@@ -47,6 +48,7 @@ public class ba_bionicinfo extends BaseHullMod {
 
         if(ship != null && ship.getCaptain() != null && !isForModSpec) {
             if(ba_officermanager.isCaptainOrAdmin(ship.getCaptain(), false).equals(ba_officermanager.ba_profession.CAPTAIN) || ship.getCaptain().isPlayer()) {
+                ba_consciousmanager.getConsciousnessLevel(ship.getCaptain()).displayTooltipDescription(tooltip, ship.getCaptain(), true, true);
                 List<ba_officermanager.ba_bionicAugmentedData> bionicData = ba_officermanager.getBionicAnatomyList(ship.getCaptain());
                 boolean isEmpty = true;
                 for(ba_officermanager.ba_bionicAugmentedData data :bionicData) {
