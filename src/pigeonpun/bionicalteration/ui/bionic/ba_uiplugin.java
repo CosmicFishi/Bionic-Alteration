@@ -68,6 +68,7 @@ public class ba_uiplugin extends ba_uicommon {
      * @param personList Null for displaying the player fleet
      */
     public void init(CustomPanelAPI panel, CustomVisualDialogDelegate.DialogCallbacks callbacks, InteractionDialogAPI dialog, String moveToTabId, List<PersonAPI> personList) {
+        super.init(panel, callbacks, dialog);
         if(personList != null) {
             isDisplayingOtherFleets = true;
         } else {
