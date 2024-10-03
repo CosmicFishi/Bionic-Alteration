@@ -433,7 +433,7 @@ public class ba_bionicmanager {
         String design = bionic.getDesignType();
         Misc.addDesignTypePara(tooltip, design, opad);
         //---------effect
-        bionic.displayEffectDescription(tooltip, null, null, true);
+        ba_bionicmanager.getBionic(bionic.getId()).displayEffectDescription(tooltip, null, null, true);
         //---------Install type
         StringBuilder effectType = new StringBuilder();
         if(bionic.isApplyAdminEffect) {

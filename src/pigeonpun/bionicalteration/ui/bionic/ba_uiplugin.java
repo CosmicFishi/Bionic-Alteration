@@ -65,6 +65,7 @@ public class ba_uiplugin extends ba_uicommon {
      * @param callbacks callbacks
      * @param dialog dialog
      * @param moveToTabId tab id, get from uiPlugin class
+     * @param personList Null for displaying the player fleet
      */
     public void init(CustomPanelAPI panel, CustomVisualDialogDelegate.DialogCallbacks callbacks, InteractionDialogAPI dialog, String moveToTabId, List<PersonAPI> personList) {
         if(personList != null) {
@@ -123,6 +124,14 @@ public class ba_uiplugin extends ba_uicommon {
         displayOverview();
         displayWorkshop();
         focusContent("");
+    }
+    public void setCurrentPerson(PersonAPI focusingPerson) {
+        for(PersonAPI person: ba_officermanager.listPersons) {
+            if(focusingPerson.getId().equals(person.getId())) {
+                this.currentPerson = person;
+            }
+        }
+        refresh();
     }
     protected void displayOverview() {
 
@@ -336,7 +345,7 @@ public class ba_uiplugin extends ba_uicommon {
             personalityLabel.getPosition().inTL(0, nameLabel.getPosition().getHeight() + statsSpacer);
             //>Occupation
             String occupation = "Idle";
-            if(this.dialog.getInteractionTarget() != null && this.dialog.getInteractionTarget() instanceof CampaignFleetAPI) {
+            if(this.dialog != null && this.dialog.getInteractionTarget() != null && this.dialog.getInteractionTarget() instanceof CampaignFleetAPI) {
                 CampaignFleetAPI fleet = (CampaignFleetAPI) this.dialog.getInteractionTarget();
                 if(fleet.getFleetData() != null && fleet.getFleetData().getMemberWithCaptain(this.currentPerson) != null) {
                     String shipName = fleet.getFleetData().getMemberWithCaptain(this.currentPerson).getShipName();
@@ -1244,7 +1253,7 @@ public class ba_uiplugin extends ba_uicommon {
                 }
             }
             //is ESC is pressed, close the custom UI panel and the blank IDP we used to create it
-            if (event.isKeyDownEvent() && event.getEventValue() == Keyboard.KEY_ESCAPE) {
+            if (this.dialog != null && event.isKeyDownEvent() && event.getEventValue() == Keyboard.KEY_ESCAPE) {
                 event.consume();
                 callbacks.dismissDialog();
                 if(!isDisplayingOtherFleets && (dialog.getInteractionTarget() == null || (dialog.getInteractionTarget() != null && !dialog.getInteractionTarget().getTags().contains("ba_overclock_station")))) {
