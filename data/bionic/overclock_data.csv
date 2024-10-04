@@ -9,5 +9,5 @@ ba_i_see_you,I See You,TRUE,FALSE,130,0,pigeonpun.bionicalteration.overclock.imp
 ba_cyclobs,Cyclobs,TRUE,FALSE,70,0,pigeonpun.bionicalteration.overclock.impl.ba_cyclobs_effect,2
 ba_steel_shackles,Steel Shackles,TRUE,FALSE,150,0,pigeonpun.bionicalteration.overclock.impl.ba_steel_shackles,1
 ba_all_cycle,I Can Do This All Cycle,TRUE,FALSE,120,0,pigeonpun.bionicalteration.overclock.impl.ba_all_cycle,2
-ba_let_dance,Let's Dance,TRUE,FALSE,130,0,,
-ba_burn_bright,Burn Bright,TRUE,FALSE,140,0,,
+ba_let_dance,Let's Dance,TRUE,FALSE,130,0,pigeonpun.bionicalteration.overclock.impl.ba_let_dance,1
+ba_bright_charge,Bright Charge,TRUE,FALSE,140,0,pigeonpun.bionicalteration.overclock.impl.ba_bright_charge,2
