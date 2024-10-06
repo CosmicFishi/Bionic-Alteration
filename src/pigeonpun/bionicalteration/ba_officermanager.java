@@ -604,6 +604,35 @@ public class ba_officermanager {
 //            person.getMemoryWithoutUpdate().set(ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY, new ba_personmemorydata());
 //        }
     }
+    public static FleetMemberAPI getFleetMemberFromFleet(PersonAPI person, List<CampaignFleetAPI> fleets, boolean isPlayer) {
+        List<PersonAPI> listP = new ArrayList<>();
+        if(!isPlayer) {
+            for (CampaignFleetAPI fleet : fleets) {
+                if(!fleet.isPlayerFleet()) {
+                    for (FleetMemberAPI member : fleet.getMembersWithFightersCopy()) {
+                        if (member.isFighterWing()) continue;
+                        if (!member.getCaptain().isDefault() && !member.getCaptain().isAICore()) {
+                            if(person.getId().equals(member.getCaptain().getId())) {
+                                return member;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            listP.add(Global.getSector().getPlayerPerson());
+            if(Global.getSector().getPlayerFleet() != null) {
+                for(FleetMemberAPI member: Global.getSector().getPlayerFleet().getMembersWithFightersCopy()) {
+                    if (!member.getCaptain().isDefault() && !member.getCaptain().isAICore()) {
+                        if(person.getId().equals(member.getCaptain().getId())) {
+                            return member;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
     public static List<MarketAPI> getPersonGovernMarkets(PersonAPI person) {
         List<MarketAPI> governMarkets = new ArrayList<>();
         if(person.getFaction() != null) {
@@ -640,6 +669,10 @@ public class ba_officermanager {
 
     public static String getProfessionText(PersonAPI person, boolean isDisplayingOtherFleets) {
         if(isDisplayingOtherFleets) {
+            //admin for hire
+            if(isCaptainOrAdmin(person, true).equals(ba_profession.ADMIN)) {
+                return "Admin (For hire)";
+            }
             return "Captain";
         }
         String profString = "";
@@ -664,14 +697,12 @@ public class ba_officermanager {
     }
 
     /**
-     * Return TRUE for captain, FALSE for admin
+     * Return ADMIN or CAPTAIN
      * @param person
      * @param isDisplayingOtherFleets
      * @return
      */
     public static ba_profession isCaptainOrAdmin(PersonAPI person, boolean isDisplayingOtherFleets) {
-        //if is displaying other fleet => its always captain
-        if(isDisplayingOtherFleets) return ba_profession.CAPTAIN;
         for (AdminData admin: Global.getSector().getCharacterData().getAdmins()) {
             if(admin.getPerson().getId().equals(person.getId())) return ba_profession.ADMIN;
         }
@@ -686,10 +717,12 @@ public class ba_officermanager {
                 return ba_profession.CAPTAIN;
             }
         }
-        if(person.getMemoryWithoutUpdate().get("$ome_isAdmin") == null) {
-            return ba_profession.CAPTAIN;
+        if(person.getMemoryWithoutUpdate().get("$ome_isAdmin") != null) {
+            return ba_profession.ADMIN;
         }
-        return ba_profession.ADMIN;
+        //if is displaying other fleet => its always captain
+        if(isDisplayingOtherFleets) return ba_profession.CAPTAIN;
+        return ba_profession.CAPTAIN;
     }
     public enum ba_profession {
         CAPTAIN, ADMIN
