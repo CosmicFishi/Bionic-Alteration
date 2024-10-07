@@ -6,6 +6,8 @@ import com.fs.starfarer.api.campaign.CargoStackAPI;
 import com.fs.starfarer.api.campaign.SpecialItemData;
 import com.fs.starfarer.api.characters.PersonAPI;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pigeonpun.bionicalteration.ba_limbmanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bioniccontainer;
@@ -127,6 +129,26 @@ public class ba_inventoryhandler {
         SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
         if(person != null && limb != null) {
             ba_overclock overclock = ba_overclockmanager.getOverclockFromPerson(person, limb);
+            if(overclock != null) {
+                //require special item data to do the overclock things
+                specialItem =  new SpecialItemData(bionic.bionicId, overclock.id);
+            }
+        }
+        cargoFromMemory.addSpecial(specialItem, 1);
+        cargoFromMemory.sort();
+        overrideGlobalData(cargoFromMemory);
+    }
+
+    /**
+     * For adding bionic to the container inventory alone
+     * @param bionic
+     */
+    public static void addToContainer(@NotNull ba_bionicitemplugin bionic, @Nullable String overclockId) {
+        CargoAPI cargoFromMemory = getGlobalData();
+//        cargoFromMemory.addFromStack(stack);
+        SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
+        if(overclockId != null && overclockId != "" && ba_overclockmanager.isBionicOverclockable(bionic)) {
+            ba_overclock overclock = ba_overclockmanager.getOverclock(overclockId);
             if(overclock != null) {
                 //require special item data to do the overclock things
                 specialItem =  new SpecialItemData(bionic.bionicId, overclock.id);

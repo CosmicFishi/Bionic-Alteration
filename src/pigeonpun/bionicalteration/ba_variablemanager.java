@@ -78,4 +78,5 @@ public class ba_variablemanager {
     public static final String BA_BIONIC_INFO_HULLMOD = "ba_bionicinfo";
     public static final String BA_BIONIC_CONTAINER_PERSISTENT_KEY = "ba_bionic_container";
     public static final String BA_OVERCLOCK_STATION_TAG_NAME = "Overclock station";
+    public static final String BA_ACHIEVEMENT_ZERO_CONSCIOUSNESS_ITEM_KEY = "$ba_zero_consciousness_reward";
 }
