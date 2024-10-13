@@ -13,7 +13,7 @@ import pigeonpun.bionicalteration.overclock.ba_overclock;
 import java.awt.*;
 
 public class ba_false_visage_tank extends ba_overclock {
-    public static final float MANEUVERABILITY = 0.4f, SHIELD_EFF = 0.6f, ARMOR = 1.4f;
+    public static final float MANEUVERABILITY = 0.3f, SHIELD_EFF = 0.6f, ARMOR = 1.4f;
     public void displayEffectDescription(TooltipMakerAPI tooltip, PersonAPI person, ba_bionicitemplugin bionic, boolean inBionicTable) {
         final float pad = 10f;
         float opad = 10f;
@@ -26,12 +26,12 @@ public class ba_false_visage_tank extends ba_overclock {
             LabelAPI descriptions = tooltip.addPara("" +
                             "Increase ship's shield efficiency by %s and armor by %s but reduce ship maneuverability by %s",
                     pad, t, "" + Math.round((1-SHIELD_EFF) * 100) + "%", "" + Math.round((ARMOR - 1) * 100) + "%","" + Math.round((1-MANEUVERABILITY) * 100) + "%");
-            descriptions.setHighlightColors(h,bad);
+            descriptions.setHighlightColors(h,h,bad);
         } else {
             LabelAPI overclockLabel = tooltip.addPara("%s %s: " +
                             "Increase ship's shield efficiency by %s and armor by %s but reduce ship maneuverability by %s",
                     pad, t, this.name, "[O]", "" + Math.round((1-SHIELD_EFF) * 100) + "%", "" + Math.round((ARMOR - 1) * 100) + "%","" + Math.round((1-MANEUVERABILITY) * 100) + "%");
-            overclockLabel.setHighlightColors(h,special,h,bad);
+            overclockLabel.setHighlightColors(h,special,h,h,bad);
         }
     }
 

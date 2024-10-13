@@ -26,12 +26,12 @@ public class ba_false_visage_phaser extends ba_overclock {
             LabelAPI descriptions = tooltip.addPara("" +
                             "Increase ship's max speed by %s and ship flux capacity by %s but reduce ship hull by %s",
                     pad, t, "" + Math.round((SPEED-1) * 100) + "%", "" + Math.round((FLUX_CAP-1) * 100) + "%", "" + Math.round((1-HULL) * 100) + "%");
-            descriptions.setHighlightColors(h,bad);
+            descriptions.setHighlightColors(h,h,bad);
         } else {
             LabelAPI overclockLabel = tooltip.addPara("%s %s: " +
                             "Increase ship's max speed by %s and ship flux capacity by %s but reduce ship hull by %s",
                     pad, t, this.name, "[O]", "" + Math.round((SPEED-1) * 100) + "%", "" + Math.round((FLUX_CAP-1) * 100) + "%", "" + Math.round((1-HULL) * 100) + "%");
-            overclockLabel.setHighlightColors(h,special,h,bad);
+            overclockLabel.setHighlightColors(h,special,h,h,bad);
         }
     }
 

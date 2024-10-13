@@ -58,6 +58,7 @@ public class ba_zeroconsciousness extends MagicAchievement {
     }
 
     protected void addSpecialItem() {
-        ba_inventoryhandler.addToContainer(ba_bionicmanager.getBionic("ba_false_visage"), null);
+        ba_inventoryhandler.compressAllBionics();
+        ba_inventoryhandler.addToContainer(ba_bionicmanager.getBionic("ba_brain_false_visage"), null);
     }
 }
