@@ -10,5 +10,5 @@
       "patch": 0 # Can be a number, character or string (1, 2, a, b, "-RC2", etc)
     },
   "modThreadId": 30383, # eg 8181
-  "directDownloadURL": "https://github.com/CosmicFishi/Bionic-Alteration/releases/download/0.0.3/Bionic-Alteration-0.0.3.zip"
+  "directDownloadURL": "https://github.com/CosmicFishi/Bionic-Alteration/releases/download/0.1.0/Bionic-Alteration-0.1.0.zip"
 }
