@@ -140,27 +140,40 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                         String spriteName = bionic.getSpec().getIconName();
                         TooltipMakerAPI personImageTooltip = rowContainer.createTooltip("ITEM_IMAGE", imageW, imageH, false, 0, 0);
                         personImageTooltip.addImage(spriteName, imageW * 0.9f, imageH * 0.9f, 0);
-                        //name
-                        String name = ba_utils.getShortenBionicName(bionic.getName());
-                        LabelAPI nameLabel = rowTooltipContainer.addPara(name, 0);
-                        nameLabel.getPosition().inTL(itemX + 5, itemY + itemH - nameLabel.getPosition().getHeight() - 5);
-                        //---------quantity
-                        LabelAPI quantityLabel = rowTooltipContainer.addPara(String.valueOf((int) quantity), Misc.getBrightPlayerColor(), 0);
-                        quantityLabel.getPosition().inTL(itemX + itemW - quantityLabel.computeTextWidth(String.valueOf((int) quantity)) - pad / 2, itemY + pad / 2);
                         //---------hover
                         ButtonAPI areaChecker = rowTooltipContainer.addAreaCheckbox("", null,Misc.getBasePlayerColor(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), itemW, itemH, 0);
                         addButtonToList(areaChecker, "hover_bionic_item:"+bionic.getId()+":"+index);
                         areaChecker.getPosition().setLocation(0,0).inTL(itemX, itemY);
                         if(currentSelectedBionic != null) {
                             if(currentSelectedBionic.equals(bionic)) {
+                                areaChecker.setHighlightBrightness(0.6f);
                                 areaChecker.highlight();
                             }
                         }
+//                        if(currentSelectedLimb != null) {
+//                            if(ba_bionicmanager.checkIfBionicConflicted(bionic, currentPerson)) {
+//                                areaChecker.setEnabled(false);
+//                            }
+//                            if(ba_limbmanager.isLimbInGroup(bionic.bionicLimbGroupId, currentSelectedLimb.limbId) && (currentSelectedBionic == null || !currentSelectedBionic.equals(bionic))) {
+//                                areaChecker.setHighlightBrightness(0.25f);
+//                                areaChecker.highlight();
+//                            }
+//                        }
+                        //name
+                        String name = ba_utils.getShortenBionicName(bionic.getName());
+                        LabelAPI nameLabel = rowTooltipContainer.addPara(name, 0);
+                        nameLabel.setOpacity(0.7f);
                         if(currentSelectedLimb != null) {
-                            if(ba_bionicmanager.checkIfBionicConflicted(bionic, currentPerson)) {
-                                areaChecker.setEnabled(false);
+                            if(ba_limbmanager.isLimbInGroup(bionic.bionicLimbGroupId, currentSelectedLimb.limbId)) {
+                                nameLabel.setOpacity(1);
+                                nameLabel.setColor(Misc.getPositiveHighlightColor());
                             }
                         }
+                        //---------quantity
+                        LabelAPI quantityLabel = rowTooltipContainer.addPara(String.valueOf((int) quantity), Misc.getBrightPlayerColor(), 0);
+                        quantityLabel.getPosition().inTL(itemX + itemW - quantityLabel.computeTextWidth(String.valueOf((int) quantity)) - pad / 2, itemY + pad / 2);
+                        nameLabel.getPosition().inTL(itemX + 5, itemY + itemH - nameLabel.getPosition().getHeight() - 5);
+                        quantityLabel.setOpacity(0.7f);
                         //hover thingy
                         personImageTooltip.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
                             @Override
@@ -244,7 +257,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         final float pad = 10f;
         float opad = 10f;
         final Color h = Misc.getHighlightColor();
-        Color bad = Misc.getNegativeHighlightColor();
+        final Color bad = Misc.getNegativeHighlightColor();
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
         final Color special = ba_variablemanager.BA_OVERCLOCK_COLOR;
@@ -360,7 +373,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                     tooltip.addSectionHeading("Bionics", Alignment.MID, 0);
                     if(augmentData.bionicInstalled != null) {
                         ba_bionicitemplugin b = augmentData.bionicInstalled;
-                        b.effectScript.displayEffectDescription(tooltip, currentPerson, b, false);
+                        b.displayEffectDescription(tooltip, currentPerson, b, false);
                         //---------Overclock
                         if(ba_overclockmanager.isBionicOverclockable(b)) {
                             ba_overclock overclock = augmentData.appliedOverclock;
@@ -388,13 +401,17 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                             LabelAPI conflictListLabel = tooltip.addPara("%s %s", pad, t,"Conflicts:", conflictsList.toString());
                             conflictListLabel.setHighlight("Conflicts:", conflictsList.toString());
                             conflictListLabel.setHighlightColors(g.brighter().brighter(), conflictsList.toString().equals("None")? g : Misc.getNegativeHighlightColor());
+                            if(!augmentData.bionicInstalled.isAllowedRemoveAfterInstall) {
+                                LabelAPI removableLabel = tooltip.addPara("%s", pad, t,"[ UNREMOVEABLE ]");
+                                removableLabel.setHighlightColors(bad);
+                            }
                         }
                         if(expanded) {
 //                                if(!isWorkshopMode) {
-//                                    b.effectScript.displayEffectDescription(tooltip, currentPerson, b);
+//                                    b.displayEffectDescription(tooltip, currentPerson, b);
 ////                                    LabelAPI expandedTooltip = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Effects:", effect);
 ////                                    expandedTooltip.setHighlight("Effects:", effect);
-////                                    expandedTooltip.setHighlightColors(Misc.getGrayColor().brighter(), b.effectScript != null ? Misc.getHighlightColor() :Misc.getGrayColor());
+////                                    expandedTooltip.setHighlightColors(Misc.getGrayColor().brighter(), b != null ? Misc.getHighlightColor() :Misc.getGrayColor());
 //                                } else {
 //
 //                                }

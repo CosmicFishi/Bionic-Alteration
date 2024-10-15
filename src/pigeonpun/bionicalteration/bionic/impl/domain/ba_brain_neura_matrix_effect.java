@@ -15,12 +15,9 @@ import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 
 import java.awt.*;
 
-public class ba_brain_neura_matrix_effect implements ba_bioniceffect {
+public class ba_brain_neura_matrix_effect extends ba_bionicitemplugin {
     public static float MAX_SPEED_MULT = 1.35f;
-    @Override
-    public void setBionicItem(ba_bionicitemplugin bionic) {
 
-    }
 
     @Override
     public void displayEffectDescription(TooltipMakerAPI tooltip, PersonAPI person, ba_bionicitemplugin bionic, boolean isItem) {

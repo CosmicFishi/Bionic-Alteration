@@ -3,6 +3,7 @@ package pigeonpun.bionicalteration.listeners;
 import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.*;
+import com.fs.starfarer.api.campaign.listeners.DiscoverEntityListener;
 import com.fs.starfarer.api.campaign.rules.MemKeys;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.characters.OfficerDataAPI;
@@ -10,6 +11,7 @@ import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.FleetEncounterContext;
 import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl;
+import com.fs.starfarer.api.impl.campaign.intel.misc.WarningBeaconIntel;
 import com.fs.starfarer.campaign.CampaignPlanet;
 import com.fs.starfarer.campaign.CustomCampaignEntity;
 import org.apache.log4j.Logger;
@@ -18,12 +20,13 @@ import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
 import pigeonpun.bionicalteration.faction.ba_factiondata;
 import pigeonpun.bionicalteration.faction.ba_factionmanager;
+import pigeonpun.bionicalteration.intel.ba_bionicstationintel;
 import pigeonpun.bionicalteration.inventory.ba_inventoryhandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ba_campaignlistener extends BaseCampaignEventListener implements EveryFrameScript {
+public class ba_campaignlistener extends BaseCampaignEventListener implements EveryFrameScript, DiscoverEntityListener {
     static Logger log = Global.getLogger(ba_campaignlistener.class);
     static CoreUITabId previousTab = CoreUITabId.MAP;
     public ba_campaignlistener(boolean permaRegister) {
@@ -75,6 +78,14 @@ public class ba_campaignlistener extends BaseCampaignEventListener implements Ev
             }
         } else {
             previousTab = CoreUITabId.MAP;
+        }
+    }
+
+    @Override
+    public void reportEntityDiscovered(SectorEntityToken entity) {
+        if(entity.hasTag("ba_overclock_station")) {
+            ba_bionicstationintel intel = new ba_bionicstationintel(entity);
+            Global.getSector().getIntelManager().addIntel(intel);
         }
     }
 }

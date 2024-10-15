@@ -12,7 +12,12 @@
     "Military Bionic": [255, 177, 224, 255],
     "Domain Augmentation": [255, 117, 134, 255]
   },
+  "graphics":{
+    "intel": {
+      "ba_bionic_station": "graphics/icons/intel/ba_bionic_station.png"
+    }
+  },
   "ruleCommandPackages":[
     "pigeonpun.bionicalteration.rulecmd"
   ]
-}
+},

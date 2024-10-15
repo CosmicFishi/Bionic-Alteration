@@ -5,4 +5,13 @@ ba_concentration,Concentration,TRUE,FALSE,65,0,pigeonpun.bionicalteration.overcl
 ba_arise,Arise,TRUE,FALSE,90,0,pigeonpun.bionicalteration.overclock.impl.ba_arise_effect,2
 ba_juice_fusing,Juice Fusing,TRUE,FALSE,85,0,pigeonpun.bionicalteration.overclock.impl.ba_juice_fusing_effect,1
 ba_urgent_filling,Urgent Filling,TRUE,FALSE,75,0,pigeonpun.bionicalteration.overclock.impl.ba_urgent_filling_effect,2
-,,,,,,,
+ba_i_see_you,I See You,TRUE,FALSE,130,0,pigeonpun.bionicalteration.overclock.impl.ba_i_see_you_effect,1
+ba_cyclobs,Cyclobs,TRUE,FALSE,70,0,pigeonpun.bionicalteration.overclock.impl.ba_cyclobs_effect,2
+ba_steel_shackles,Steel Shackles,TRUE,FALSE,150,0,pigeonpun.bionicalteration.overclock.impl.ba_steel_shackles,1
+ba_all_cycle,I Can Do This All Cycle,TRUE,FALSE,120,0,pigeonpun.bionicalteration.overclock.impl.ba_all_cycle,2
+ba_let_dance,Let's Dance,TRUE,FALSE,130,0,pigeonpun.bionicalteration.overclock.impl.ba_let_dance,1
+ba_bright_charge,Bright Charge,TRUE,FALSE,140,0,pigeonpun.bionicalteration.overclock.impl.ba_bright_charge,2
+ba_false_visage_bruiser,Bruiser Visage,TRUE,FALSE,160,0,pigeonpun.bionicalteration.overclock.impl.ba_false_visage_bruiser,1
+ba_false_visage_carrier,Carrier Visage,TRUE,FALSE,160,0,pigeonpun.bionicalteration.overclock.impl.ba_false_visage_carrier,2
+ba_false_visage_tank,Tank Visage,TRUE,FALSE,160,0,pigeonpun.bionicalteration.overclock.impl.ba_false_visage_tank,3
+ba_false_visage_phaser,Phase Visage,TRUE,FALSE,160,0,pigeonpun.bionicalteration.overclock.impl.ba_false_visage_phaser,4

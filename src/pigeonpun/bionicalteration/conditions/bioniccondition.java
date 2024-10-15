@@ -36,8 +36,8 @@ public class bioniccondition extends BaseMarketConditionPlugin {
             for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
                 if(anatomy.bionicInstalled != null) {
                     String applyId = anatomy.bionicInstalled.bionicId + anatomy.limb.limbId;
-                    if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyAdminEffect) {
-                        anatomy.bionicInstalled.effectScript.applyEffectAdminMarket(market, applyId, 0, anatomy.bionicInstalled);
+                    if(anatomy.bionicInstalled != null && anatomy.bionicInstalled.isApplyAdminEffect) {
+                        anatomy.bionicInstalled.applyEffectAdminMarket(market, applyId, 0, anatomy.bionicInstalled);
                     }
                     if(anatomy.appliedOverclock != null) {
                         if(anatomy.appliedOverclock.isApplyAdminEffect) {
@@ -60,9 +60,9 @@ public class bioniccondition extends BaseMarketConditionPlugin {
             List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
             for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
                 if(anatomy.bionicInstalled != null) {
-                    if(anatomy.bionicInstalled.effectScript != null && anatomy.bionicInstalled.isApplyAdminEffect) {
+                    if(anatomy.bionicInstalled != null && anatomy.bionicInstalled.isApplyAdminEffect) {
                         String applyId = anatomy.bionicInstalled.bionicId + anatomy.limb.limbId;
-                        anatomy.bionicInstalled.effectScript.unapplyEffectAdminMarket(market, applyId);
+                        anatomy.bionicInstalled.unapplyEffectAdminMarket(market, applyId);
                     }
                     if(anatomy.appliedOverclock != null) {
                         if(anatomy.appliedOverclock.isApplyAdminEffect) {

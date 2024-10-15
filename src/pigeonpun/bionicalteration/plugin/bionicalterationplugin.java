@@ -2,12 +2,14 @@ package pigeonpun.bionicalteration.plugin;
 
 import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
+import lunalib.lunaRefit.LunaRefitManager;
 import org.lazywizard.lazylib.MathUtils;
 import pigeonpun.bionicalteration.*;
 import pigeonpun.bionicalteration.ability.ba_bionicability;
 import pigeonpun.bionicalteration.faction.ba_factionmanager;
 import pigeonpun.bionicalteration.listeners.ba_campaignlistener;
 import pigeonpun.bionicalteration.listeners.ba_salvagelistener;
+import pigeonpun.bionicalteration.lunalib.ba_bionic_refit_btn;
 import pigeonpun.bionicalteration.lunalib.lunaconfighelper;
 import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
 import pigeonpun.bionicalteration.variant.ba_variantmanager;
@@ -40,6 +42,7 @@ public class bionicalterationplugin extends BaseModPlugin {
 
         if(isLunalibEnabled) {
             lunaconfighelper.initLunaConfig();
+            LunaRefitManager.addRefitButton(new ba_bionic_refit_btn());
         }
     }
 
@@ -82,11 +85,13 @@ public class bionicalterationplugin extends BaseModPlugin {
 
         Global.getSector().getListenerManager().addListener(salvageListener, true);
         Global.getSector().addTransientListener(campaignListener);
+        Global.getSector().getListenerManager().addListener(campaignListener, true);
         Global.getSector().addTransientScript(campaignListener);
 //        Global.getSector().addListener(campaignListener);
     }
     protected void removeListeners() {
         Global.getSector().getListenerManager().removeListener(salvageListener);
+        Global.getSector().getListenerManager().removeListener(campaignListener);
         Global.getSector().removeTransientScript(campaignListener);
         Global.getSector().removeListener(campaignListener);
     }

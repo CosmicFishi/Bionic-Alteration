@@ -17,16 +17,13 @@ import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 
 import java.awt.*;
 
-public class ba_guardian_torso_effect implements ba_bioniceffect {
+public class ba_guardian_torso_effect extends ba_bionicitemplugin {
     public static float SHIP_SHIELD_EFF = 0.9f;
     public static float SHIP_HULL = 1.1f;
     public static float SHIP_MAX_SPEED = 0.85f;
     static Logger log = Global.getLogger(ba_guardian_torso_effect.class);
 
-    @Override
-    public void setBionicItem(ba_bionicitemplugin bionic) {
 
-    }
 
     @Override
     public void displayEffectDescription(TooltipMakerAPI tooltip, PersonAPI person, ba_bionicitemplugin bionic, boolean isItem) {

@@ -19,17 +19,14 @@ import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
 
 import java.awt.*;
 
-public class ba_stellar_brain_effect implements ba_bioniceffect {
+public class ba_stellar_brain_effect extends ba_bionicitemplugin {
     public static float OFFICER_FIGHTER_RATE_INCREASE_MULT = 1.15f;
     public static float OFFICER_MAINT_MULT = 1.2f;
     public static float ADMIN_DEFENSE_MULT = 1.1f;
     public static float ADMIN_UPKEEP_MULT = 1.15f;
     static Logger log = Global.getLogger(ba_stellar_brain_effect.class);
 
-    @Override
-    public void setBionicItem(ba_bionicitemplugin bionic) {
 
-    }
 
     @Override
     public void displayEffectDescription(TooltipMakerAPI tooltip, PersonAPI person, ba_bionicitemplugin bionic, boolean isItem) {

@@ -18,14 +18,11 @@ import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 
 import java.awt.*;
 
-public class ba_harmony_torso_effect implements ba_bioniceffect {
+public class ba_harmony_torso_effect extends ba_bionicitemplugin {
     public static float SHIP_PEAK_CR = 1.1f;
     static Logger log = Global.getLogger(ba_harmony_torso_effect.class);
 
-    @Override
-    public void setBionicItem(ba_bionicitemplugin bionic) {
 
-    }
 
     @Override
     public void displayEffectDescription(TooltipMakerAPI tooltip, PersonAPI person, ba_bionicitemplugin bionic, boolean isItem) {

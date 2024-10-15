@@ -65,35 +65,34 @@ public class ba_bionicmanager {
                         continue;
                     }
                     String bionicId = row.getString("id");
-                    ba_bioniceffect effect = null;
+                    ba_bionicitemplugin bionic = null;
                     try {
                         if(!Objects.equals(row.getString("effectScript"), "")) {
                             Class<?> clazz = Global.getSettings().getScriptClassLoader().loadClass(row.getString("effectScript"));
-                            effect = (ba_bioniceffect) clazz.newInstance(); //check if this is created ?
+                            bionic = (ba_bionicitemplugin) clazz.newInstance(); //check if this is created ?
                         }
                     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
-                    if(!Objects.equals(row.getString("effectScript"), "")) {
-                        ba_bionicitemplugin bionic = new ba_bionicitemplugin(
-                                bionicId,
-                                Global.getSettings().getSpecialItemSpec(bionicId),
-                                row.getString("limbGroupId"),
-                                !row.getString("namePrefix").equals("") ? row.getString("namePrefix") : "",
-                                MagicSettings.toColor3(row.getString("colorDisplay")),
-                                row.getInt("brmCost"),
-                                (float) row.getDouble("consciousnessCost"),
-                                (float) row.getDouble("dropChance"),
-                                row.getBoolean("isApplyCaptainEffect"),
-                                row.getBoolean("isApplyAdminEffect"),
-                                row.getBoolean("isAICoreBionic"),
-                                effect,
-                                !row.getString("conflictedBionicIdList").equals("")? ba_utils.trimAndSplitString(row.getString("conflictedBionicIdList")): null,
-                                row.getBoolean("isAllowedRemoveAfterInstall"),
-                                row.getBoolean("isEffectAppliedAfterRemove")
-                        );
+                    if(bionic != null) {
+                        bionic.setId(bionicId);
+                        bionic.spec = Global.getSettings().getSpecialItemSpec(bionicId);
+                        bionic.bionicLimbGroupId = row.getString("limbGroupId");
+                        bionic.namePrefix = !row.getString("namePrefix").equals("") ? row.getString("namePrefix") : "";
+                        bionic.displayColor = MagicSettings.toColor3(row.getString("colorDisplay"));
+                        bionic.brmCost = row.getInt("brmCost");
+                        bionic.consciousnessCost = (float) row.getDouble("consciousnessCost");
+                        bionic.dropChance = (float) row.getDouble("dropChance");
+                        bionic.isApplyCaptainEffect = row.getBoolean("isApplyCaptainEffect");
+                        bionic.isApplyAdminEffect = row.getBoolean("isApplyAdminEffect");
+                        bionic.isAICoreBionic = row.getBoolean("isAICoreBionic");
+                        if(!row.getString("conflictedBionicIdList").equals("")) {
+                            bionic.conflictedBionicIdList = ba_utils.trimAndSplitString(row.getString("conflictedBionicIdList"));
+                        }
+                        bionic.isAllowedRemoveAfterInstall = row.getBoolean("isAllowedRemoveAfterInstall");
+                        bionic.isEffectAppliedAfterRemove = row.getBoolean("isEffectAppliedAfterRemove");
                         bionicItemMap.put(bionicId, bionic);
-                        if(effect != null) effect.setBionicItem(bionic);
+//                        if(effect != null) effect.setBionicItem(bionic);
                     }
                 } catch (JSONException ex) {
                     log.error(ex);
@@ -434,7 +433,7 @@ public class ba_bionicmanager {
         String design = bionic.getDesignType();
         Misc.addDesignTypePara(tooltip, design, opad);
         //---------effect
-        bionic.effectScript.displayEffectDescription(tooltip, null, null, true);
+        ba_bionicmanager.getBionic(bionic.getId()).displayEffectDescription(tooltip, null, null, true);
         //---------Install type
         StringBuilder effectType = new StringBuilder();
         if(bionic.isApplyAdminEffect) {

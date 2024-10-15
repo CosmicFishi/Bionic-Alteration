@@ -1,3 +1,18 @@
+=========== 0.1.0 ============
+- t3 bionics:
+  - Holovision
+  - Nexa harmonizer
+  - Anti-G implant
+- Bionic Station now has a "reminder" intel after discovery
+- Simply the effects of consciousness
+- Added a new achievement: 0 consciousness. Reward will be given to the player after completeing this.
+- Bionic info hullmod now display consciousness information as well.
+- Skill now display the bionic list if the player hold F1 while hovering the bionic skill.
+- RAT's integration with the Refit UI to directly access the bionic UI while inside Refit screen. Yes, you can change bionics on officers while in that screen. For default, it will always target the captain of the ship being refitted.
+- Overview page now display the person's ship if they are captain, the planet of they are admin. A tiny bit of touch up on the UI as well.
+bug fixes:
+- Fix a bug where skill isn't applying when the player first install a bionic
+- Refactor bionic item codes
 =========== 0.0.3 ============
 Additions:
 - Add Domain bionics which can be obtains from exploration.

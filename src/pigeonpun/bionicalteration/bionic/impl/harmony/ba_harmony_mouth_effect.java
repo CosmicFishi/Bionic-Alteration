@@ -17,14 +17,11 @@ import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 
 import java.awt.*;
 
-public class ba_harmony_mouth_effect implements ba_bioniceffect {
+public class ba_harmony_mouth_effect extends ba_bionicitemplugin {
     public static float SHIP_TURRET_SPIN = 15f;
     static Logger log = Global.getLogger(ba_harmony_mouth_effect.class);
 
-    @Override
-    public void setBionicItem(ba_bionicitemplugin bionic) {
 
-    }
 
     @Override
     public void displayEffectDescription(TooltipMakerAPI tooltip, PersonAPI person, ba_bionicitemplugin bionic, boolean isItem) {

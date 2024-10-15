@@ -15,13 +15,10 @@ import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 
 import java.awt.*;
 
-public class ba_mouth_flavor_synthesizer_effect implements ba_bioniceffect {
+public class ba_mouth_flavor_synthesizer_effect extends ba_bionicitemplugin {
     public static final float TURN_RATE_BONUS = 50f;
     public static final float HEALTH_BONUS = 20f;
-    @Override
-    public void setBionicItem(ba_bionicitemplugin bionic) {
 
-    }
 
     @Override
     public void displayEffectDescription(TooltipMakerAPI tooltip, PersonAPI person, ba_bionicitemplugin bionic, boolean isItem) {

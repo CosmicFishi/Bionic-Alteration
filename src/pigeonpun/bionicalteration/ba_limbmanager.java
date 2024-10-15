@@ -120,6 +120,17 @@ public class ba_limbmanager {
         }
         return list;
     }
+    public static boolean isLimbInGroup(String groupId, String limbId) {
+        List<ba_limb> listLimb = getListLimbFromGroup(groupId);
+        if(listLimb != null) {
+            for(ba_limb limb: listLimb) {
+                if(limb.limbId.equals(limbId)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     public static class ba_limb {
         public String limbId;
         public String name;

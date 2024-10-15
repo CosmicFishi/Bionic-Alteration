@@ -20,14 +20,14 @@ import java.awt.*;
 
 public class ba_conscious_fragile implements ba_conscious {
     //officer
-    public final static float SHIP_MAINTENANCE = 0.18f;
-    public final static float MANEUVERABILITY_BONUS = 0.18f;
-    public final static float SHIP_OVERLOAD = 0.15f;
-    public final static float SHIP_CR = 0.1f;
+    public final static float SHIP_MAINTENANCE = 0.40f;
+//    public final static float MANEUVERABILITY_BONUS = 0.18f;
+    public final static float SHIP_OVERLOAD = 0.30f;
+//    public final static float SHIP_CR = 0.1f;
     //admin
-    public final static float MARKET_UPKEEP = 0.20f;
-    public final static float MARKET_STABILITY = 2f;
-    public final static float MARKET_ACCESS = 0.20f;
+    public final static float MARKET_UPKEEP = 0.30f;
+//    public final static float MARKET_STABILITY = 2f;
+//    public final static float MARKET_ACCESS = 0.20f;
 //    public final static float MARKET_DEFEND = 0.14f;
     @Override
     public Color getColor() {
@@ -75,37 +75,37 @@ public class ba_conscious_fragile implements ba_conscious {
         tooltip.setParaFontDefault();
         if(showBoth || showOfficer) {
             tooltip.addPara("- Ship maintenance increased by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(SHIP_MAINTENANCE * 100) + "%").setOpacity(textAlpha);
-            tooltip.addPara("- Ship maneuverability reduced by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(MANEUVERABILITY_BONUS * 100) + "%").setOpacity(textAlpha);
+//            tooltip.addPara("- Ship maneuverability reduced by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(MANEUVERABILITY_BONUS * 100) + "%").setOpacity(textAlpha);
             tooltip.addPara("- Ship overload duration increased by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(SHIP_OVERLOAD * 100) + "%").setOpacity(textAlpha);
-            tooltip.addPara("- Ship peak performance duration reduced by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(SHIP_CR * 100) + "%").setOpacity(textAlpha);
+//            tooltip.addPara("- Ship peak performance duration reduced by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(SHIP_CR * 100) + "%").setOpacity(textAlpha);
         }
         if(showBoth || !showOfficer) {
             tooltip.addPara("- Market upkeep increased by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(MARKET_UPKEEP * 100) + "%").setOpacity(textAlpha);
-            tooltip.addPara("- Market stability reduced by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(MARKET_STABILITY)).setOpacity(textAlpha);
-            tooltip.addPara("- Market accessibility reduced by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(MARKET_ACCESS * 100) + "%").setOpacity(textAlpha);
+//            tooltip.addPara("- Market stability reduced by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(MARKET_STABILITY)).setOpacity(textAlpha);
+//            tooltip.addPara("- Market accessibility reduced by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(MARKET_ACCESS * 100) + "%").setOpacity(textAlpha);
         }
     }
 
     @Override
     public void applyEffectOfficer(MutableShipStatsAPI stats, String id) {
-        stats.getAcceleration().modifyMult(id + "conscious", 1 - MANEUVERABILITY_BONUS);
-        stats.getDeceleration().modifyMult(id + "conscious", 1 - MANEUVERABILITY_BONUS);
-        stats.getTurnAcceleration().modifyMult(id + "conscious", 1 - MANEUVERABILITY_BONUS);
-        stats.getMaxTurnRate().modifyMult(id + "conscious", 1 - MANEUVERABILITY_BONUS);
+//        stats.getAcceleration().modifyMult(id + "conscious", 1 - MANEUVERABILITY_BONUS);
+//        stats.getDeceleration().modifyMult(id + "conscious", 1 - MANEUVERABILITY_BONUS);
+//        stats.getTurnAcceleration().modifyMult(id + "conscious", 1 - MANEUVERABILITY_BONUS);
+//        stats.getMaxTurnRate().modifyMult(id + "conscious", 1 - MANEUVERABILITY_BONUS);
         stats.getSuppliesPerMonth().modifyPercent(id + "conscious", SHIP_MAINTENANCE * 100);
         stats.getOverloadTimeMod().modifyPercent(id + "conscious", SHIP_OVERLOAD * 100);
-        stats.getPeakCRDuration().modifyMult(id + "conscious", 1 - SHIP_CR);
+//        stats.getPeakCRDuration().modifyMult(id + "conscious", 1 - SHIP_CR);
     }
 
     @Override
     public void unapplyEffectOfficer(MutableShipStatsAPI stats, String id) {
-        stats.getAcceleration().unmodifyMult(id + "conscious");
-        stats.getDeceleration().unmodifyMult(id + "conscious");
-        stats.getTurnAcceleration().unmodifyMult(id + "conscious");
-        stats.getMaxTurnRate().unmodifyMult(id + "conscious");
+//        stats.getAcceleration().unmodifyMult(id + "conscious");
+//        stats.getDeceleration().unmodifyMult(id + "conscious");
+//        stats.getTurnAcceleration().unmodifyMult(id + "conscious");
+//        stats.getMaxTurnRate().unmodifyMult(id + "conscious");
         stats.getSuppliesPerMonth().unmodifyPercent(id + "conscious");
         stats.getOverloadTimeMod().unmodifyPercent(id + "conscious");
-        stats.getPeakCRDuration().unmodifyMult(id + "conscious");
+//        stats.getPeakCRDuration().unmodifyMult(id + "conscious");
     }
 
     @Override
@@ -121,16 +121,16 @@ public class ba_conscious_fragile implements ba_conscious {
 
     @Override
     public void applyEffectAdminMarket(MarketAPI market, String id, float level) {
-        market.getAccessibilityMod().modifyFlat(id + "conscious", -MARKET_ACCESS, ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
-        market.getStability().modifyFlat(id + "conscious", -MARKET_STABILITY, ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
+//        market.getAccessibilityMod().modifyFlat(id + "conscious", -MARKET_ACCESS, ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
+//        market.getStability().modifyFlat(id + "conscious", -MARKET_STABILITY, ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
         market.getUpkeepMult().modifyMult(id + "conscious", 1 + MARKET_UPKEEP,  ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
 //        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id + "conscious", 1 - MARKET_DEFEND, ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
     }
 
     @Override
     public void unapplyEffectAdminMarket(MarketAPI market, String id) {
-        market.getAccessibilityMod().unmodifyFlat(id + "conscious");
-        market.getStability().unmodifyFlat(id + "conscious");
+//        market.getAccessibilityMod().unmodifyFlat(id + "conscious");
+//        market.getStability().unmodifyFlat(id + "conscious");
         market.getUpkeepMult().unmodifyMult(id + "conscious");
 //        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).unmodifyMult(id + "conscious");
     }

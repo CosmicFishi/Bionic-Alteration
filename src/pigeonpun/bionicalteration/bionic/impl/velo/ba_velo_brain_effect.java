@@ -17,15 +17,12 @@ import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 
 import java.awt.*;
 
-public class ba_velo_brain_effect implements ba_bioniceffect {
+public class ba_velo_brain_effect extends ba_bionicitemplugin {
     public static float MANEUVER_MULT = 1.40f;
     public static float SHIP_HULL_DAMAGE_MULT = 1.2f;
     static Logger log = Global.getLogger(ba_velo_brain_effect.class);
 
-    @Override
-    public void setBionicItem(ba_bionicitemplugin bionic) {
 
-    }
 
     @Override
     public void displayEffectDescription(TooltipMakerAPI tooltip, PersonAPI person, ba_bionicitemplugin bionic, boolean isItem) {

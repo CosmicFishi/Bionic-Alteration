@@ -7,7 +7,7 @@
     "ba_critical_person": "I..I’m starting to enjoy it."
   },
   "ps_lunasettings": {
-    "header_generate": "Generate",
+    "header_Generate": "Generate",
     "name_isAllowBionicsToSpawnInPlayerFleetOnNewSave": "Allow bionics to spawn on player's fleet on new game",
     "tooltip_isAllowBionicsToSpawnInPlayerFleetOnNewSave": "Self explanatory",
     "name_isBRMCapDisable": "Disable the BRM cap.",
