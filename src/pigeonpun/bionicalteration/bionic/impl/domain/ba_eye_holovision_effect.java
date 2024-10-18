@@ -55,7 +55,7 @@ public class ba_eye_holovision_effect extends ba_bionicitemplugin {
                 float endCR = member.getRepairTracker().getCR() - cost;;
                 float cr = member.getRepairTracker().getBaseCR();
                 if (cr > endCR) {
-                    member.getRepairTracker().applyCREvent(-(cr - endCR), "Removed " + bionic.getName());
+                    member.getRepairTracker().applyCREvent(-(cr - endCR), "Removed " + bionic.getName() + " bionic");
                 }
             }
         }
