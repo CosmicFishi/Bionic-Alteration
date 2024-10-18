@@ -82,6 +82,7 @@ public class ba_bionic_refit_btn extends BaseRefitButton {
                 if(ba_bionicmanager.checkIfHaveBionicInstalled(member.getCaptain())) {
                     if(!member.getVariant().hasHullMod(ba_variablemanager.BA_BIONIC_INFO_HULLMOD)) {
                         member.getVariant().addPermaMod(ba_variablemanager.BA_BIONIC_INFO_HULLMOD);
+                        ba_officermanager.refresh(null);
                         refreshVariant();
                     }
                 }
