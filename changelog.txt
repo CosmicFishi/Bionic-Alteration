@@ -1,3 +1,7 @@
+=========== 0.1.1 ============
+- Hopefully fix the crash
+- Added some tips
+- Fix the missing on remove description and effect for the new bionic (Oops)
 =========== 0.1.0 ============
 - t3 bionics:
   - Holovision
