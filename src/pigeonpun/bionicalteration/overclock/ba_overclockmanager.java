@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CargoAPI;
 import com.fs.starfarer.api.campaign.SpecialItemData;
 import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.impl.campaign.ids.Commodities;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -171,5 +172,21 @@ public class ba_overclockmanager {
     }
     public static float computeEvoshardForBionic(ba_bionicitemplugin bionic) {
         return bionic.brmCost * evoshardToBRMRate;
+    }
+    public static float computeEvoshardForAICore(String coreType) {
+        int base = (int) 20f;
+        if (Commodities.OMEGA_CORE.equals(coreType)) {
+            return 15f * base;
+        }
+        if (Commodities.ALPHA_CORE.equals(coreType)) {
+            return 5f * base;
+        }
+        if (Commodities.BETA_CORE.equals(coreType)) {
+            return 2f * base;
+        }
+        if (Commodities.GAMMA_CORE.equals(coreType)) {
+            return 1f * base;
+        }
+        return 1f;
     }
 }

@@ -65,11 +65,18 @@ public class ba_evoshardExchange extends BaseCommandPlugin {
 //                copy.addSpecial(data, cargo.getSize());
 //            }
 //        }
+        //add AI cores
+        for(CargoStackAPI stack: Global.getSector().getPlayerFleet().getCargo().getStacksCopy()) {
+            CommoditySpecAPI spec = stack.getResourceIfResource();
+            if (spec != null && spec.getDemandClass().equals(Commodities.AI_CORES)) {
+                copy.addFromStack(stack);
+            }
+        }
         copy.addAll(ba_inventoryhandler.uncompressAllBionics());
         copy.sort();
 
         final float width = 310f;
-        dialog.showCargoPickerDialog("Select bionics to exchange to Evoshard", "Confirm", "Cancel", true, width, copy, new CargoPickerListener() {
+        dialog.showCargoPickerDialog("Select bionics/Cores to exchange for Evoshard", "Confirm", "Cancel", true, width, copy, new CargoPickerListener() {
             public void pickedCargo(CargoAPI cargo) {
                 if (cargo.isEmpty()) {
                     cancelledCargoSelection();
@@ -81,6 +88,9 @@ public class ba_evoshardExchange extends BaseCommandPlugin {
                         ba_inventoryhandler.removeFromContainer(stack);
 //                        playerCargo.removeItems(stack.getType(), stack.getSpecialDataIfSpecial(), stack.getSize());
                         AddRemoveCommodity.addItemLossText(stack.getSpecialDataIfSpecial(), (int) stack.getSize(), text);
+                    }
+                    if(stack.isCommodityStack()) {
+                        AddRemoveCommodity.addCommodityLossText(stack.getCommodityId(), (int) stack.getSize(), text);
                     }
                 }
                 float evoshardsGain = computeEvoshardValue(cargo);
@@ -105,26 +115,36 @@ public class ba_evoshardExchange extends BaseCommandPlugin {
                 final float maxListHeight = 300f;
 
                 panel.setParaOrbitronLarge();
-                LabelAPI info = panel.addPara("%s", opad, h, "Ripping bionics for Evoshards");
+                LabelAPI info = panel.addPara("%s", opad, h, "Ripping Evoshards");
                 panel.setParaFontDefault();
 
-                LabelAPI warning = panel.addPara("%s Bionics in the list below %s on confirmation.", opad, t , "Note:","WILL BE DESTROYED");
+                LabelAPI warning = panel.addPara("%s Bionics/Cores in the list below %s on confirmation.", opad, t , "Note:","WILL BE DESTROYED");
                 warning.setHighlightColors(Misc.getGrayColor(), Color.red);
                 panel.addSpacer(pad);
 
                 panel.beginGrid(width, 2, t);
-                panel.addToGrid(0, 0, "Bionic name", "Evoshards");
+                panel.addToGrid(0, 0, "Names", "Evoshards");
                 if(!cargo.isEmpty()) {
                     int i = 1;
                     int maxI = 19;
                     for(CargoStackAPI stack: cargo.getStacksCopy()) {
-                        SpecialItemSpecAPI spec = stack.getSpecialItemSpecIfSpecial();
-                        if (spec != null && ba_bionicmanager.getBionic(spec.getId()) != null && i < maxI) {
-                            ba_bionicitemplugin bionic = ba_bionicmanager.getBionic(spec.getId());
-                            panel.setGridLabelColor(bionic.displayColor);
-                            panel.addToGrid(0, i, bionic.getName() + (stack.getSize() > 1? " ("+Math.round(stack.getSize())+")": ""), "" + Math.round(ba_overclockmanager.computeEvoshardForBionic(bionic)) + "");
-                            i++;
+                        if(stack.isSpecialStack()) {
+                            SpecialItemSpecAPI spec = stack.getSpecialItemSpecIfSpecial();
+                            if (spec != null && ba_bionicmanager.getBionic(spec.getId()) != null && i < maxI) {
+                                ba_bionicitemplugin bionic = ba_bionicmanager.getBionic(spec.getId());
+                                panel.setGridLabelColor(bionic.displayColor);
+                                panel.addToGrid(0, i, bionic.getName() + (stack.getSize() > 1? " ("+Math.round(stack.getSize())+")": ""), "" + Math.round(ba_overclockmanager.computeEvoshardForBionic(bionic)) + "");
+                                i++;
+                            }
+                        } else {
+                            if(stack.isCommodityStack()) {
+                                CommoditySpecAPI spec = stack.getResourceIfResource();
+                                panel.setGridLabelColor(Misc.getBrightPlayerColor());
+                                panel.addToGrid(0, i, stack.getDisplayName() + (stack.getSize() > 1? " ("+Math.round(stack.getSize())+")": ""), "" + Math.round(ba_overclockmanager.computeEvoshardForAICore(spec.getId())) + "");
+                                i++;
+                            }
                         }
+
                         if(i == maxI) {
                             panel.setGridValueColor(Misc.getHighlightColor());
                             panel.setGridLabelColor(Misc.getHighlightColor());
@@ -151,10 +171,19 @@ public class ba_evoshardExchange extends BaseCommandPlugin {
     public float computeEvoshardValue(CargoAPI cargo) {
         float evoshard = 0;
         for (CargoStackAPI stack : cargo.getStacksCopy()) {
-            SpecialItemSpecAPI spec = stack.getSpecialItemSpecIfSpecial();
-            if (spec != null && ba_bionicmanager.getBionic(spec.getId()) != null) {
-                ba_bionicitemplugin bionic = ba_bionicmanager.getBionic(spec.getId());
-                evoshard += bionic.brmCost * stack.getSize();
+            if(stack.isSpecialStack()) {
+                SpecialItemSpecAPI spec = stack.getSpecialItemSpecIfSpecial();
+                if (spec != null && ba_bionicmanager.getBionic(spec.getId()) != null) {
+                    ba_bionicitemplugin bionic = ba_bionicmanager.getBionic(spec.getId());
+                    evoshard += bionic.brmCost * stack.getSize();
+                }
+            } else {
+                if(stack.isCommodityStack()) {
+                    CommoditySpecAPI spec = stack.getResourceIfResource();
+                    if(spec != null) {
+                        evoshard += Math.round(ba_overclockmanager.computeEvoshardForAICore(spec.getId())) * stack.getSize();
+                    }
+                }
             }
         }
         evoshard *= ba_overclockmanager.evoshardToBRMRate;
