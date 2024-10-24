@@ -17,7 +17,6 @@ import java.awt.*;
 import java.util.List;
 
 public class ba_bionicinfo extends BaseHullMod {
-    //todo: Add apply effect before/after ship creation to the bionic
     public static final float tooltipWitdth = 500f;
     @Override
     public float getTooltipWidth() {
@@ -29,7 +28,7 @@ public class ba_bionicinfo extends BaseHullMod {
 
     public void applyEffectsBeforeShipCreation(ShipAPI.HullSize hullSize,
                                                MutableShipStatsAPI stats, String id) {
-        if(stats.getFleetMember() != null) {
+        if(stats.getFleetMember() != null && !stats.getFleetMember().getCaptain().isDefault()) {
             PersonAPI captain = stats.getFleetMember().getCaptain();
             List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(captain);
             for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
@@ -66,7 +65,7 @@ public class ba_bionicinfo extends BaseHullMod {
         float col1W = 50;
         float lastW = 362;
 
-        if(ship != null && ship.getCaptain() != null && !isForModSpec) {
+        if(ship != null && ship.getCaptain() != null && !ship.getCaptain().isDefault() && !isForModSpec) {
             if(ba_officermanager.isCaptainOrAdmin(ship.getCaptain(), false).equals(ba_officermanager.ba_profession.CAPTAIN) || ship.getCaptain().isPlayer()) {
                 ba_consciousmanager.getConsciousnessLevel(ship.getCaptain()).displayTooltipDescription(tooltip, ship.getCaptain(), true, true);
                 List<ba_officermanager.ba_bionicAugmentedData> bionicData = ba_officermanager.getBionicAnatomyList(ship.getCaptain());
@@ -97,7 +96,7 @@ public class ba_bionicinfo extends BaseHullMod {
                 //save spot for the AI fleet
             }
         } else {
-            LabelAPI info = tooltip.addPara("You shouldn't be able to get this item at the first place :(", pad);
+            LabelAPI info = tooltip.addPara("No information found.", pad);
         }
     }
 }

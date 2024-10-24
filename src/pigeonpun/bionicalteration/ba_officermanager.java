@@ -392,7 +392,7 @@ public class ba_officermanager {
     }
     public static boolean checkIfConsciousnessReduceAboveZeroOnInstall(ba_bionicitemplugin bionic, PersonAPI person) {
         float conscious = person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
-        return conscious - bionic.consciousnessCost > 0;
+        return (conscious - bionic.consciousnessCost) >= 0;
     }
 
     /**
