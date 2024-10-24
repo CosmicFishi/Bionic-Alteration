@@ -21,7 +21,7 @@ public class ba_guardian_heart_effect extends ba_bionicitemplugin {
     public static float OFFICER_SHIP_ARMOR = 1.2f;
     public static float OFFICER_SHIP_MANEUVERABILITY = 0.75f;
     public static float ADMIN_ACCESS_FLAT = 0.2f;
-    public static float ADMIN_UPKEEP_MULT = 1.25f;
+    public static float ADMIN_UPKEEP_MULT = 1.10f;
     static Logger log = Global.getLogger(ba_guardian_heart_effect.class);
 
 

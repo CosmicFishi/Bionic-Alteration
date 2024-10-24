@@ -57,7 +57,7 @@ public class ba_stellar_heart_effect extends ba_bionicitemplugin {
         stats.getTurnAcceleration().modifyMult(id, SHIP_MANEUVERABILITY * 2f);
         stats.getMaxTurnRate().modifyMult(id, SHIP_MANEUVERABILITY);
         stats.getArmorBonus().modifyMult(id, SHIP_ARMOR);
-        stats.getHullBonus().modifyMult(id, SHIP_HULL);
+//        stats.getHullBonus().modifyMult(id, SHIP_HULL);
     }
 
     @Override
@@ -67,7 +67,12 @@ public class ba_stellar_heart_effect extends ba_bionicitemplugin {
         stats.getTurnAcceleration().unmodifyMult(id);
         stats.getMaxTurnRate().unmodifyMult(id);
         stats.getArmorBonus().unmodifyMult(id);
-        stats.getHullBonus().unmodifyMult(id);
+//        stats.getHullBonus().unmodifyMult(id);
+    }
+
+    @Override
+    public void applyOfficerEffectBeforeShipCreation(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
+        stats.getHullBonus().modifyPercent(id, (SHIP_HULL - 1) * 100);
     }
 
     @Override

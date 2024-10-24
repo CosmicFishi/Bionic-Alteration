@@ -18,8 +18,8 @@ import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import java.awt.*;
 
 public class ba_velo_hand_effect extends ba_bionicitemplugin {
-    public static float SHIP_SHIELD_EFF = 0.88f;
-    public static float SHIP_MAINT = 1.18f;
+    public static float SHIP_SHIELD_EFF = 0.9f;
+    public static float SHIP_MAINT = 1.3f;
     static Logger log = Global.getLogger(ba_velo_hand_effect.class);
 
 

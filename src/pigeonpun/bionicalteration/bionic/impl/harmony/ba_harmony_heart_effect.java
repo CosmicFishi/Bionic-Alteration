@@ -46,12 +46,17 @@ public class ba_harmony_heart_effect extends ba_bionicitemplugin {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getHullBonus().modifyMult(id, SHIP_HULL);
+//        stats.getHullBonus().modifyMult(id, SHIP_HULL);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getHullBonus().unmodifyMult(id);
+//        stats.getHullBonus().unmodifyMult(id);
+    }
+
+    @Override
+    public void applyOfficerEffectBeforeShipCreation(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
+        stats.getHullBonus().modifyPercent(id, (SHIP_HULL - 1) * 100);
     }
 
     @Override

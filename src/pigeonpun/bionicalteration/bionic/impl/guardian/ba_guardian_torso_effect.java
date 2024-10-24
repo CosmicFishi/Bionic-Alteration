@@ -53,15 +53,20 @@ public class ba_guardian_torso_effect extends ba_bionicitemplugin {
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
         stats.getShieldAbsorptionMult().modifyMult(id, SHIP_SHIELD_EFF);
-        stats.getHullBonus().modifyMult(id, SHIP_HULL);
+//        stats.getHullBonus().modifyMult(id, SHIP_HULL);
         stats.getMaxSpeed().modifyMult(id, SHIP_MAX_SPEED);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
         stats.getShieldAbsorptionMult().unmodifyMult(id);
-        stats.getHullBonus().unmodifyMult(id);
+//        stats.getHullBonus().unmodifyMult(id);
         stats.getMaxSpeed().unmodifyMult(id);
+    }
+
+    @Override
+    public void applyOfficerEffectBeforeShipCreation(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
+        stats.getHullBonus().modifyPercent(id, (SHIP_HULL - 1) * 100);
     }
 
     @Override

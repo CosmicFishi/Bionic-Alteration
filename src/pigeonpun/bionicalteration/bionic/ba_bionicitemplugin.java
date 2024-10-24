@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import pigeonpun.bionicalteration.ba_limbmanager;
+import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.overclock.ba_overclock;
 import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
 import pigeonpun.bionicalteration.utils.ba_utils;
@@ -360,6 +361,11 @@ public class ba_bionicitemplugin implements SpecialItemPlugin, ba_bioniceffect {
     }
 
     @Override
+    public void applyOfficerEffectBeforeShipCreation(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
+
+    }
+
+    @Override
     public void applyAdminEffect(MutableCharacterStatsAPI stats, String id) {
 
     }
@@ -402,5 +408,54 @@ public class ba_bionicitemplugin implements SpecialItemPlugin, ba_bioniceffect {
     @Override
     public void renderExtraOnItem(float x, float y, float w, float h, float alphaMult, float glowMult, SpecialItemRendererAPI renderer) {
 
+    }
+    public boolean hasCustomHullmodInfo() {
+        return false;
+    }
+
+    /**
+     * hasCustomHullmodInfo() need to be true for this to take effect
+     * @param tooltip
+     * @param ship
+     * @param bionic
+     */
+    public void customHullmodInfo(TooltipMakerAPI tooltip, ShipAPI ship, ba_bionicitemplugin bionic) {
+        final float pad = 10f;
+        float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        final Color t = Misc.getTextColor();
+        final Color g = Misc.getGrayColor();
+        final Color special = ba_variablemanager.BA_OVERCLOCK_COLOR;
+        LabelAPI descriptions = tooltip.addPara("Nothing here yet.....", pad, t);
+    }
+    public void customBountyBionicHullmodState(TooltipMakerAPI tooltip, ShipAPI ship, boolean isFrigate, boolean isDestroyer, boolean isCruiser, boolean isCapital) {
+        final float pad = 10f;
+        float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        final Color t = Misc.getTextColor();
+        final Color g = Misc.getGrayColor();
+        final Color special = ba_variablemanager.BA_OVERCLOCK_COLOR;
+        String stateText = isHullSizeCorrect(ship, isFrigate, isDestroyer, isCruiser, isCapital)? "Active": "Inactive";
+        LabelAPI state = tooltip.addPara("- State: %s", pad, t, stateText);
+        state.setHighlightColors(isHullSizeCorrect(ship, isFrigate, isDestroyer, isCruiser, isCapital)? h: bad);
+    }
+    protected boolean isHullSizeCorrect(ShipAPI ship, boolean isFrigate, boolean isDestroyer, boolean isCruiser, boolean isCapital) {
+        if(ship != null && ship.getHullSize() != null) {
+            switch (ship.getHullSize()) {
+                case FRIGATE:
+                    return isFrigate;
+                case DESTROYER:
+                    return isDestroyer;
+                case CRUISER:
+                    return isCruiser;
+                case CAPITAL_SHIP:
+                    return isCapital;
+                default:
+                    break;
+            }
+        }
+        return false;
     }
 }
