@@ -17,7 +17,7 @@ import java.awt.*;
 import java.util.List;
 
 public class ba_bionicinfo extends BaseHullMod {
-    public static final float tooltipWitdth = 500f;
+    public static final float tooltipWitdth = 600f;
     @Override
     public float getTooltipWidth() {
         return tooltipWitdth;
@@ -62,8 +62,6 @@ public class ba_bionicinfo extends BaseHullMod {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
         final Color special = ba_variablemanager.BA_OVERCLOCK_COLOR;
-        float col1W = 50;
-        float lastW = 362;
 
         if(ship != null && ship.getCaptain() != null && !ship.getCaptain().isDefault() && !isForModSpec) {
             if(ba_officermanager.isCaptainOrAdmin(ship.getCaptain(), false).equals(ba_officermanager.ba_profession.CAPTAIN) || ship.getCaptain().isPlayer()) {

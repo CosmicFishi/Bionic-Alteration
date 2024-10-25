@@ -1,5 +1,6 @@
 package pigeonpun.bionicalteration.bionic.impl.bounty;
 
+import com.fs.starfarer.api.campaign.CargoStackAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.combat.MutableShipStatsAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
@@ -14,6 +15,10 @@ import java.awt.*;
 public class ba_brain_infusion_pain_effect extends ba_bionicitemplugin{
     public static final float HULL_BONUS_CRUISER = 20f, HULL_BONUS_CAPITAL = 40f;
     public static final float FLUX_PERC_CRUISER = 10f, FLUX_PERC_CAPITAL = 20f;
+    @Override
+    public void afterInit() {
+        super.setApplicable(false, false, true, true);
+    }
     @Override
     public void displayEffectDescription(TooltipMakerAPI tooltip, PersonAPI person, ba_bionicitemplugin bionic, boolean isItem) {
         final float pad = 10f;
@@ -41,14 +46,14 @@ public class ba_brain_infusion_pain_effect extends ba_bionicitemplugin{
 
     @Override
     public void customHullmodInfo(TooltipMakerAPI tooltip, ShipAPI ship, ba_bionicitemplugin bionic) {
-        customBountyBionicHullmodState(tooltip, ship, false, false, true, true);
+        customBountyBionicHullmodState(tooltip, ship);
     }
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
         if(stats.getEntity() != null) {
             ShipAPI ship = (ShipAPI) stats.getEntity();
-            if(isHullSizeCorrect(ship, false, false, true, true)) {
+            if(isHullSizeCorrect(ship)) {
                 if(ship.getHullSize().equals(ShipAPI.HullSize.CRUISER)) {
 //                    stats.getHullBonus().modifyPercent(id, HULL_BONUS_CRUISER);
                     stats.getBallisticWeaponFluxCostMod().modifyPercent(id, FLUX_PERC_CRUISER);

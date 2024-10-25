@@ -1,5 +1,6 @@
 package pigeonpun.bionicalteration.bionic.impl.bounty;
 
+import com.fs.starfarer.api.campaign.CargoStackAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.combat.MutableShipStatsAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
@@ -13,6 +14,10 @@ import java.awt.*;
 public class ba_heart_infusion_pulse_effect extends ba_bionicitemplugin{
     public static final float EMP_BONUS_DESTROYER = 30f,EMP_BONUS_CRUISER = 40f, EMP_BONUS_CAPITAL = 50f;
     public static final float SHIELD_ARC_DESTROYER = 10f, SHIELD_ARC_CRUISER = 20f, SHIELD_ARC_CAPITAL = 30f;
+    @Override
+    public void afterInit() {
+        super.setApplicable(false, true, true ,true);
+    }
     @Override
     public void displayEffectDescription(TooltipMakerAPI tooltip, PersonAPI person, ba_bionicitemplugin bionic, boolean isItem) {
         final float pad = 10f;
@@ -40,14 +45,14 @@ public class ba_heart_infusion_pulse_effect extends ba_bionicitemplugin{
 
     @Override
     public void customHullmodInfo(TooltipMakerAPI tooltip, ShipAPI ship, ba_bionicitemplugin bionic) {
-        customBountyBionicHullmodState(tooltip, ship, false, true, true ,true);
+        customBountyBionicHullmodState(tooltip, ship);
     }
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
         if(stats.getEntity() != null) {
             ShipAPI ship = (ShipAPI) stats.getEntity();
-            if(isHullSizeCorrect(ship, false, true, true ,true)) {
+            if(isHullSizeCorrect(ship)) {
                 if(ship.getHullSize().equals(ShipAPI.HullSize.DESTROYER)) {
                     stats.getEmpDamageTakenMult().modifyMult(id, 1-(EMP_BONUS_DESTROYER/100));
 //                    stats.getShieldArcBonus().modifyFlat(id, -SHIELD_ARC_DESTROYER);

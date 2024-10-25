@@ -11,13 +11,15 @@ import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 
 import java.awt.*;
 
-public class ba_eye_infustion_chip_effect extends ba_bionicitemplugin{
-    public static final float RANGE_BONUS_FRIGATE = 30f, RANGE_BONUS_DESTROYER = 20f;
-    public static final float SHIELD_EFF_FRIGATE = 15f, SHIELD_EFF_DESTROYER = 10f;
+public class ba_torso_exo_dermal_effect extends ba_bionicitemplugin {
+    public static final float ARMOR_DMG_BONUS_FRIGATE = 30f, ARMOR_DMG_BONUS_DESTROYER = 25f, ARMOR_DMG_BONUS_CRUISER = 20f;
+    public static final float FLUX_CAP_FRIGATE = 20f, FLUX_CAP_DESTROYER = 15f, FLUX_CAP_CRUISER = 10f;
+
     @Override
     public void afterInit() {
-        super.setApplicable(true, true, false ,false);
+        super.setApplicable(true, true, true ,false);
     }
+
     @Override
     public void displayEffectDescription(TooltipMakerAPI tooltip, PersonAPI person, ba_bionicitemplugin bionic, boolean isItem) {
         final float pad = 10f;
@@ -27,12 +29,12 @@ public class ba_eye_infustion_chip_effect extends ba_bionicitemplugin{
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Increase piloting ship's max ballistic/energy weapon range by";
-        String textNum = Math.round(RANGE_BONUS_FRIGATE) + "%/" + Math.round(RANGE_BONUS_DESTROYER) + "%";
-        String text2 = "but decrease shield efficiency by";
-        String text2Num = Math.round(SHIELD_EFF_FRIGATE) + "%/" + Math.round(SHIELD_EFF_DESTROYER) + "%";
+        String text = "Decrease piloting ship's armor damage taken by";
+        String textNum = Math.round(ARMOR_DMG_BONUS_FRIGATE) + "%/" + Math.round(ARMOR_DMG_BONUS_DESTROYER) + "%/" + Math.round(ARMOR_DMG_BONUS_CRUISER) + "%";
+        String text2 = "but decrease ship's flux capacity by";
+        String text2Num = Math.round(FLUX_CAP_FRIGATE) + "%/" + Math.round(FLUX_CAP_DESTROYER) + "%/" + Math.round(FLUX_CAP_CRUISER) + "%";
         String text3 = "Only has effects on";
-        String text3Num = "Frigate/Destroyer";
+        String text3Num = super.getApplicableHullSizeText();
         String name = isItem ? "Effect:" : bionic.getName() + ":";
         LabelAPI descriptions = tooltip.addPara("%s %s %s %s %s. %s %s", pad, t, name, text, textNum, text2, text2Num, text3, text3Num);
         descriptions.setHighlightColors(isItem ? g.brighter().brighter() : bionic.displayColor, t, h, t, bad, t, h);
@@ -53,14 +55,15 @@ public class ba_eye_infustion_chip_effect extends ba_bionicitemplugin{
         if(stats.getEntity() != null) {
             ShipAPI ship = (ShipAPI) stats.getEntity();
             if(isHullSizeCorrect(ship)) {
-                if(ship.getHullSize().equals(ShipAPI.HullSize.FRIGATE)) {
-                    stats.getBallisticWeaponRangeBonus().modifyPercent(id, RANGE_BONUS_FRIGATE);
-                    stats.getEnergyWeaponRangeBonus().modifyPercent(id, RANGE_BONUS_FRIGATE);
-                    stats.getShieldAbsorptionMult().modifyMult(id, 1+(SHIELD_EFF_FRIGATE/100));
-                } else if (ship.getHullSize().equals(ShipAPI.HullSize.DESTROYER)) {
-                    stats.getBallisticWeaponRangeBonus().modifyPercent(id, RANGE_BONUS_DESTROYER);
-                    stats.getEnergyWeaponRangeBonus().modifyPercent(id, RANGE_BONUS_DESTROYER);
-                    stats.getShieldAbsorptionMult().modifyMult(id, 1+(SHIELD_EFF_DESTROYER/100));
+                if(ship.getHullSize().equals(ShipAPI.HullSize.DESTROYER)) {
+                    stats.getArmorDamageTakenMult().modifyMult(id, 1-(ARMOR_DMG_BONUS_DESTROYER/100));
+                    stats.getFluxCapacity().modifyMult(id, 1-(FLUX_CAP_DESTROYER/100));
+                } else if (ship.getHullSize().equals(ShipAPI.HullSize.CRUISER)) {
+                    stats.getArmorDamageTakenMult().modifyMult(id, 1-(ARMOR_DMG_BONUS_CRUISER/100));
+                    stats.getFluxCapacity().modifyMult(id, 1-(FLUX_CAP_CRUISER/100));
+                } else if (ship.getHullSize().equals(ShipAPI.HullSize.FRIGATE)) {
+                    stats.getArmorDamageTakenMult().modifyMult(id, 1-(ARMOR_DMG_BONUS_FRIGATE/100));
+                    stats.getFluxCapacity().modifyMult(id, 1-(FLUX_CAP_FRIGATE/100));
                 }
             }
         }
@@ -68,8 +71,7 @@ public class ba_eye_infustion_chip_effect extends ba_bionicitemplugin{
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getBallisticWeaponRangeBonus().unmodifyPercent(id);
-        stats.getEnergyWeaponRangeBonus().unmodifyPercent(id);
-        stats.getShieldAbsorptionMult().unmodifyPercent(id);
+        stats.getArmorDamageTakenMult().unmodifyMult(id);
+        stats.getFluxCapacity().unmodifyMult(id);
     }
 }

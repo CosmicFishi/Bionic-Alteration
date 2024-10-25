@@ -55,6 +55,7 @@ public class ba_bionicitemplugin implements SpecialItemPlugin, ba_bioniceffect {
     public String appliedOverclock;
 //    public ba_overclock appliedOverclock = null;
     protected boolean isInitFully = false;
+    protected boolean isApplicableOnFrigate = true, isApplicableOnDestroyer = true, isApplicableOnCruiser = true, isApplicableOnCapital = true;
     public ba_bionicitemplugin() {}
     public ba_bionicitemplugin(String bionicId, SpecialItemSpecAPI spec ,String bionicLimbGroupId, String namePrefix, Color displayColor, int brmCost,
                                float consciousnessCost, float dropChance, boolean isApplyCaptainEffect, boolean isApplyAdminEffect, boolean isAICoreBionic,
@@ -79,6 +80,13 @@ public class ba_bionicitemplugin implements SpecialItemPlugin, ba_bioniceffect {
         this.isInitFully = true;
     }
 
+    /**
+     * After item has been init and before added to the shared data
+     */
+    protected void afterInit() {
+
+    }
+
     public String getId() {
         return bionicId;
     }
@@ -88,6 +96,10 @@ public class ba_bionicitemplugin implements SpecialItemPlugin, ba_bioniceffect {
 //        log.info(spec);
     }
 
+    /**
+     * Init in inventory UI
+     * @param stack
+     */
     public void init(CargoStackAPI stack) {
         this.stack = stack;
         if(!ba_bionicmanager.bionicItemMap.isEmpty() && !this.isInitFully && ba_bionicmanager.bionicItemMap.containsKey(getSpec().getId())) {
@@ -429,7 +441,7 @@ public class ba_bionicitemplugin implements SpecialItemPlugin, ba_bioniceffect {
         final Color special = ba_variablemanager.BA_OVERCLOCK_COLOR;
         LabelAPI descriptions = tooltip.addPara("Nothing here yet.....", pad, t);
     }
-    public void customBountyBionicHullmodState(TooltipMakerAPI tooltip, ShipAPI ship, boolean isFrigate, boolean isDestroyer, boolean isCruiser, boolean isCapital) {
+    public void customBountyBionicHullmodState(TooltipMakerAPI tooltip, ShipAPI ship) {
         final float pad = 10f;
         float opad = 10f;
         Color h = Misc.getHighlightColor();
@@ -437,25 +449,53 @@ public class ba_bionicitemplugin implements SpecialItemPlugin, ba_bioniceffect {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
         final Color special = ba_variablemanager.BA_OVERCLOCK_COLOR;
-        String stateText = isHullSizeCorrect(ship, isFrigate, isDestroyer, isCruiser, isCapital)? "Active": "Inactive";
+        String stateText = isHullSizeCorrect(ship)? "Active": "Inactive";
         LabelAPI state = tooltip.addPara("- State: %s", pad, t, stateText);
-        state.setHighlightColors(isHullSizeCorrect(ship, isFrigate, isDestroyer, isCruiser, isCapital)? h: bad);
+        state.setHighlightColors(isHullSizeCorrect(ship)? h: bad);
     }
-    protected boolean isHullSizeCorrect(ShipAPI ship, boolean isFrigate, boolean isDestroyer, boolean isCruiser, boolean isCapital) {
+
+    protected void setApplicable(boolean isFrigate, boolean isDestroyer, boolean isCruiser, boolean isCapital) {
+        this.isApplicableOnFrigate = isFrigate;
+        this.isApplicableOnDestroyer = isDestroyer;
+        this.isApplicableOnCruiser = isCruiser;
+        this.isApplicableOnCapital = isCapital;
+    }
+    protected boolean isHullSizeCorrect(ShipAPI ship) {
         if(ship != null && ship.getHullSize() != null) {
             switch (ship.getHullSize()) {
                 case FRIGATE:
-                    return isFrigate;
+                    return this.isApplicableOnFrigate;
                 case DESTROYER:
-                    return isDestroyer;
+                    return this.isApplicableOnDestroyer;
                 case CRUISER:
-                    return isCruiser;
+                    return this.isApplicableOnCruiser;
                 case CAPITAL_SHIP:
-                    return isCapital;
+                    return isApplicableOnCapital;
                 default:
                     break;
             }
         }
         return false;
+    }
+    protected String getApplicableHullSizeText() {
+        StringBuilder str = new StringBuilder("None");
+        str.append("None");
+        if(this.isApplicableOnFrigate || this.isApplicableOnDestroyer || this.isApplicableOnCruiser || this.isApplicableOnCapital) {
+            str.setLength(0);
+            if(isApplicableOnFrigate) {
+                str.append("Frigate/");
+            }
+            if(isApplicableOnDestroyer) {
+                str.append("Destroyer/");
+            }
+            if(isApplicableOnCruiser) {
+                str.append("Cruiser/");
+            }
+            if(isApplicableOnCapital) {
+                str.append("Capital/");
+            }
+            str.setLength(str.length()-1);
+        }
+        return str.toString();
     }
 }
