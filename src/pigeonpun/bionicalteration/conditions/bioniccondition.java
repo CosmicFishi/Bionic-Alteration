@@ -37,11 +37,13 @@ public class bioniccondition extends BaseMarketConditionPlugin {
                 if(anatomy.bionicInstalled != null) {
                     String applyId = anatomy.bionicInstalled.bionicId + anatomy.limb.limbId;
                     if(anatomy.bionicInstalled != null && anatomy.bionicInstalled.isApplyAdminEffect) {
+                        anatomy.bionicInstalled.applyAdminEffect(market.getAdmin().getStats(), id);
                         anatomy.bionicInstalled.applyEffectAdminMarket(market, applyId, 0, anatomy.bionicInstalled);
                     }
                     if(anatomy.appliedOverclock != null) {
                         if(anatomy.appliedOverclock.isApplyAdminEffect) {
                             String applyOverclockId = id + "_" + anatomy.bionicInstalled.bionicId + "_" + anatomy.appliedOverclock.id + "_" + anatomy.limb;
+                            anatomy.appliedOverclock.applyAdminEffect(market.getAdmin().getStats(), id);
                             anatomy.appliedOverclock.applyEffectAdminMarket(market, applyOverclockId, 0, anatomy.bionicInstalled);
                         }
                     }
@@ -62,11 +64,13 @@ public class bioniccondition extends BaseMarketConditionPlugin {
                 if(anatomy.bionicInstalled != null) {
                     if(anatomy.bionicInstalled != null && anatomy.bionicInstalled.isApplyAdminEffect) {
                         String applyId = anatomy.bionicInstalled.bionicId + anatomy.limb.limbId;
+                        anatomy.bionicInstalled.unapplyAdminEffect(market.getAdmin().getStats(), id);
                         anatomy.bionicInstalled.unapplyEffectAdminMarket(market, applyId);
                     }
                     if(anatomy.appliedOverclock != null) {
                         if(anatomy.appliedOverclock.isApplyAdminEffect) {
                             String applyOverclockId = id + "_" + anatomy.bionicInstalled.bionicId + "_" + anatomy.appliedOverclock.id + "_" + anatomy.limb;
+                            anatomy.appliedOverclock.unapplyAdminEffect(market.getAdmin().getStats(), id);
                             anatomy.appliedOverclock.unapplyEffectAdminMarket(market, applyOverclockId);
                         }
                     }
