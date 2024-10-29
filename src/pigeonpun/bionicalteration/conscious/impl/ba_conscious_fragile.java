@@ -11,6 +11,7 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
+import pigeonpun.bionicalteration.conscious.ba_base_conscious;
 import pigeonpun.bionicalteration.conscious.ba_conscious;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
 import pigeonpun.bionicalteration.ui.bionic.ba_uiplugin;
@@ -18,7 +19,7 @@ import pigeonpun.bionicalteration.utils.ba_stringhelper;
 
 import java.awt.*;
 
-public class ba_conscious_fragile implements ba_conscious {
+public class ba_conscious_fragile extends ba_base_conscious {
     //officer
     public final static float SHIP_MAINTENANCE = 0.60f;
 //    public final static float MANEUVERABILITY_BONUS = 0.18f;
@@ -144,4 +145,8 @@ public class ba_conscious_fragile implements ba_conscious {
 
     }
 
+    @Override
+    public float getConsciousTreatmentFee() {
+        return ADMIN_FUND;
+    }
 }

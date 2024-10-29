@@ -9,12 +9,13 @@ import com.fs.starfarer.api.ui.Alignment;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import pigeonpun.bionicalteration.ba_variablemanager;
+import pigeonpun.bionicalteration.conscious.ba_base_conscious;
 import pigeonpun.bionicalteration.conscious.ba_conscious;
 import pigeonpun.bionicalteration.utils.ba_stringhelper;
 
 import java.awt.*;
 
-public class ba_conscious_stable implements ba_conscious {
+public class ba_conscious_stable extends ba_base_conscious {
     @Override
     public Color getColor() {
         return ba_variablemanager.BA_CONSCIOUSNESS_COLOR.get(ba_variablemanager.BA_CONSCIOUSNESS_STABLE_THRESHOLD);

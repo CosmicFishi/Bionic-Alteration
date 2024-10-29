@@ -52,6 +52,9 @@ public class bioniccondition extends BaseMarketConditionPlugin {
             ba_consciousmanager.resetBeforeApplyEffectAdminMarket(market, id);
             if(!bionicalterationplugin.isConsciousnessDisable) {
                 ba_consciousmanager.getConsciousnessLevel(person).applyEffectAdminMarket(market, id, 0);
+                if(!market.hasIndustry("ba_mental_unit")) {
+                    market.addIndustry("ba_mental_unit");
+                }
             }
         }
     }
