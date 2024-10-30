@@ -92,14 +92,21 @@ public class ba_salvagelistener implements ShowLootListener {
                 dropValueList.add(militaryDropValue);
                 if(entity.getCustomEntityType() != null && entity.getCustomEntityType().equals("station_research_remnant")) {
                     SalvageEntityGenDataSpec.DropData domainDropValue = new SalvageEntityGenDataSpec.DropData();
-                    militaryDropValue.group = "ba_bionic_domain";
-                    militaryDropValue.valueMult = d.valueMult;
-                    militaryDropValue.value = value;
-                    dropValueList.add(militaryDropValue);
+                    domainDropValue.group = "ba_bionic_domain";
+                    domainDropValue.valueMult = d.valueMult;
+                    domainDropValue.value = value;
+                    dropValueList.add(domainDropValue);
                 }
             }
         }
-
+        //todo: add in drop for custom bounty from magiclib
+        if(entity.getMemoryWithoutUpdate().get("$fleetType") != null && entity.getMemoryWithoutUpdate().get("$fleetType").equals("personBounty")) {
+            SalvageEntityGenDataSpec.DropData bountyDropValue = new SalvageEntityGenDataSpec.DropData();
+            bountyDropValue.group = "ba_bionic_bounty";
+            bountyDropValue.valueMult = 1f;
+            bountyDropValue.value = 10;
+            dropValueList.add(bountyDropValue);
+        }
         return dropValueList;
     }
     /**
@@ -142,14 +149,21 @@ public class ba_salvagelistener implements ShowLootListener {
                 dropRandomList.add(militaryDropValue);
                 if(entity.getCustomEntityType() != null && entity.getCustomEntityType().equals("station_research_remnant")) {
                     SalvageEntityGenDataSpec.DropData domainDropValue = new SalvageEntityGenDataSpec.DropData();
-                    militaryDropValue.group = "ba_bionic_domain";
-                    militaryDropValue.maxChances = d.maxChances;
-                    militaryDropValue.chances = chances;
-                    dropRandomList.add(militaryDropValue);
+                    domainDropValue.group = "ba_bionic_domain";
+                    domainDropValue.maxChances = d.maxChances;
+                    domainDropValue.chances = chances;
+                    dropRandomList.add(domainDropValue);
                 }
             }
         }
-
+        //todo: add in drop for custom bounty from magiclib
+        if(entity.getMemoryWithoutUpdate().get("$fleetType") != null && entity.getMemoryWithoutUpdate().get("$fleetType").equals("personBounty")) {
+            SalvageEntityGenDataSpec.DropData bountyDropValue = new SalvageEntityGenDataSpec.DropData();
+            bountyDropValue.group = "ba_bionic_bounty";
+            bountyDropValue.maxChances = 1;
+            bountyDropValue.chances = (int) 0.5;
+            dropRandomList.add(bountyDropValue);
+        }
         return dropRandomList;
     }
 
