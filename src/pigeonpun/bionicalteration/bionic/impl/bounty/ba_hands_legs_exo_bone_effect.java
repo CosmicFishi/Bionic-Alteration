@@ -11,7 +11,6 @@ import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import java.awt.*;
 
 public class ba_hands_legs_exo_bone_effect extends ba_bionicitemplugin {
-    //todo: test this
     public static final float HULL_BONUS_FRIGATE = 20f, HULL_BONUS_DESTROYER = 30f;
     public static final float WPN_REPAIR_RATE_FRIGATE = 20f, WPN_REPAIR_RATE_DESTROYER = 30f;
     @Override

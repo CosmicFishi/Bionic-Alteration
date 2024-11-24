@@ -327,7 +327,7 @@ public class ba_officermanager {
         List<ba_bionicAugmentedData> anatomyList = new ArrayList<>();
         HashMap<ba_limbmanager.ba_limb, ba_bionicmanager.bionicData> bionicsInstalledList = ba_bionicmanager.getListLimbAndBionicInstalled(person);
         String personGenericVariant = getPersonVariantTag(person);
-        if(personGenericVariant != null && ba_variantmanager.variantList.get(personGenericVariant) != null) {
+        if(personGenericVariant != null && ba_variantmanager.variantList.get(personGenericVariant) != null && ba_variantmanager.variantList.get(personGenericVariant).limbIdList != null) {
             List<String> variantAnatomy = ba_variantmanager.variantList.get(personGenericVariant).limbIdList;
             for (String limbString: variantAnatomy) {
                 ba_limbmanager.ba_limb limb = ba_limbmanager.getLimb(limbString);

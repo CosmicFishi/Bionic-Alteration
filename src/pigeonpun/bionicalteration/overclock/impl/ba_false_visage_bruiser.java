@@ -13,7 +13,6 @@ import pigeonpun.bionicalteration.overclock.ba_overclock;
 import java.awt.*;
 
 public class ba_false_visage_bruiser extends ba_overclock {
-    //todo: test this
     public static final float ROF_MULT = 1.3f;
     public static final float PROJ_SPEED_MULT = 1.4f;
     public static final float MAX_SPEED_MULT = 0.6f;

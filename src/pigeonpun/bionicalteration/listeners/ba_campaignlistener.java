@@ -68,7 +68,7 @@ public class ba_campaignlistener extends BaseCampaignEventListener implements Ev
 
     @Override
     public void advance(float amount) {
-        //todo: advance in camapaign stuffs here
+        //advance in camapaign stuffs here
         if(Global.getSector().getCampaignUI().getCurrentCoreTab() != null) {
             if(!previousTab.equals(Global.getSector().getCampaignUI().getCurrentCoreTab())) {
                 if(Global.getSector().getCampaignUI().getCurrentCoreTab().equals(CoreUITabId.CARGO)) {
