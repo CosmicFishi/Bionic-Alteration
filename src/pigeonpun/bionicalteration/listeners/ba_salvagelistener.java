@@ -99,12 +99,14 @@ public class ba_salvagelistener implements ShowLootListener {
                 }
             }
         }
-        //todo: add in drop for custom bounty from magiclib
         if(entity.getMemoryWithoutUpdate().get("$fleetType") != null && entity.getMemoryWithoutUpdate().get("$fleetType").equals("personBounty")) {
             SalvageEntityGenDataSpec.DropData bountyDropValue = new SalvageEntityGenDataSpec.DropData();
             bountyDropValue.group = "ba_bionic_bounty";
             bountyDropValue.valueMult = 1f;
             bountyDropValue.value = 10;
+            if(entity.getMemoryWithoutUpdate().get("$MagicLib_Bounty_target_fleet") != null) {
+                bountyDropValue.valueMult = 2f;
+            }
             dropValueList.add(bountyDropValue);
         }
         return dropValueList;
@@ -162,6 +164,9 @@ public class ba_salvagelistener implements ShowLootListener {
             bountyDropValue.group = "ba_bionic_bounty";
             bountyDropValue.maxChances = 1;
             bountyDropValue.chances = (int) 0.5;
+            if(entity.getMemoryWithoutUpdate().get("$MagicLib_Bounty_target_fleet") != null) {
+                bountyDropValue.chances = 1;
+            }
             dropRandomList.add(bountyDropValue);
         }
         return dropRandomList;

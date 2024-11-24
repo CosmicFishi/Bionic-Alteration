@@ -113,32 +113,39 @@ public class ba_bioniccontainer implements SpecialItemPlugin {
                 }
             }
         }
+        int maxDesign = 5;
+        int designCount = 0;
         for(Map.Entry<String, CargoAPI> setCargo: designType.entrySet()) {
-            tooltip.beginGrid(getTooltipWidth()/2 - 5, 2);
-            tooltip.addToGrid(0, 0, setCargo.getKey(), "");
             int i = 1;
-            int maxRowNotExpanded = 8;
-            for(CargoStackAPI stack: setCargo.getValue().getStacksCopy()) {
-                if(stack.getPlugin() instanceof ba_bionicitemplugin && maxRowNotExpanded >= i) {
-                    ba_bionicitemplugin bionic = (ba_bionicitemplugin) stack.getPlugin();
+            int maxRowNotExpanded = 4;
+            if(designCount <= maxDesign) {
+                tooltip.beginGrid(getTooltipWidth()/3 - 5, 3);
+                tooltip.addToGrid(0, 0, setCargo.getKey(), "");
+                tooltip.setGridRowHeight(15);
+                for(CargoStackAPI stack: setCargo.getValue().getStacksCopy()) {
+                    if(stack.getPlugin() instanceof ba_bionicitemplugin && maxRowNotExpanded >= i) {
+                        ba_bionicitemplugin bionic = (ba_bionicitemplugin) stack.getPlugin();
 //                LabelAPI subName = tooltip.addPara("%s [ %s ] ( x%s )", 0, t, bionic.getName(),
 //                        bionic.getAppliedOverclockOnItem() != null ? bionic.getAppliedOverclockOnItem().name: "---", "" + Math.round(stack.getSize()));
 //                subName.setHighlightColors(bionic.displayColor, bionic.getAppliedOverclockOnItem() != null ? special : g, h);
-                    tooltip.setGridLabelColor(bionic.displayColor);
-                    tooltip.addToGrid(0, i, bionic.getName() + "    ( x" + Math.round(stack.getSize()) + " )", "", bionic.displayColor);
-                    tooltip.setGridLabelColor(t);
-                    tooltip.addToGrid(1, i, "", bionic.getAppliedOverclockOnItem() != null ? bionic.getAppliedOverclockOnItem().name: "---", bionic.getAppliedOverclockOnItem() != null ? special: g);
-                    i++;
-                } else {
-                    tooltip.addToGrid(0, i, "... and more", "", g);
+                        tooltip.setGridLabelColor(bionic.displayColor);
+                        tooltip.addToGrid(0, i, "  " + bionic.getName() , "", Misc.getTextColor());
+                        tooltip.addToGrid(1, i, "", "x" + Math.round(stack.getSize()), t);
+                        tooltip.setGridLabelColor(t);
+                        tooltip.addToGrid(2, i, "", bionic.getAppliedOverclockOnItem() != null ? bionic.getAppliedOverclockOnItem().name: "[ - ]", bionic.getAppliedOverclockOnItem() != null ? special: g);
+                        i++;
+                    } else {
+                        tooltip.addToGrid(0, i, "... and more", "", g);
+                    }
                 }
+                tooltip.addGrid(0);
+                tooltip.addSpacer(pad*2);
+                designCount += 1;
             }
-            tooltip.setGridRowHeight(15);
-            tooltip.addGrid(0);
-            tooltip.addSpacer(pad*2);
         }
-
-
+        if(designCount > maxDesign) {
+            tooltip.addPara(".. and much much more bionics, viewable in Bionic Workshop UI", g, 0);
+        }
     }
 
     @Override
