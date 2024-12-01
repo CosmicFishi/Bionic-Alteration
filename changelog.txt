@@ -1,3 +1,20 @@
+=========== 0.2.0 (NOT compatible) ============
+- gammar/beta core as overclocking material
+- Change from 2 leg to "one pair of leg", 2 eyes to "eyes", 2 hands to "hands"
+- Added 6 new bounty bionics.
+- Rebalance the consciousness effects again
+Bug fix:
+- False Visage bruiser overclock not displaying correct effect in hullmod
+- Fix Guardian Defense Matrix, Harmony Biometric Monitor and Stellar Rhythmic Stabilizer hull bonus not applying correctly (It was applying multiplicative instead of percentage)
+- Change Harmony Digestive Processor text to the correct effect
+- Fix a bug prevent player from going to 0% consciousness (Math is not my strong suit)
+- Fixed the spamming log message when there are no captain piloting a ship
+- Fix crash bug duo to modular ship not taking in the main ship module's captain (hopefully)
+- Change unknown design type prefix
+Changes/balancing:
+- Velo Hand Module: Shield efficiency: 12% -> 10%,  maintenance cost: 18% -> 30%
+- Serenity Adaptation Module: BRM increase from 4 -> 6
+- Guardian Artificial Network: Market upkeep: 25% -> 10%
 =========== 0.1.1 ============
 - Hopefully fix the crash
 - Added some tips

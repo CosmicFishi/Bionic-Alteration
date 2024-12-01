@@ -84,7 +84,7 @@ public class ba_bioniccontainer implements SpecialItemPlugin {
         tooltip.addSpacer(5);
 
         LabelAPI guideLabel = tooltip.addPara("The full list of bionics can be view inside the Bionic Workshop UI (Bionic Alteration ABILITY).", g,0);
-        tooltip.addSpacer(pad * 2);
+        tooltip.addSpacer(pad);
 
         CargoAPI sortedCargo = ba_inventoryhandler.uncompressAllBionics();
         if(sortedCargo.isEmpty()) {
