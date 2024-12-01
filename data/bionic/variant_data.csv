@@ -1,4 +1,4 @@
 variantId,variantName,limbIdList,allowPlayerChangeTo
-GENERIC_HUMAN,Human,"brain,heart,eye_left,eye_right,mouth,torso,hand_left,hand_right,leg_left,leg_right",TRUE
-GENERIC_HALF_BORN,Half Born,"brain,heart,heart_2,eye_left,eye_right,mouth,torso,hand_left,hand_right,leg_left,leg_right",TRUE
+GENERIC_HUMAN,Human,"brain,heart,eyes,mouth,torso,hands,legs",TRUE
+GENERIC_HALF_BORN,Half Born,"brain,heart,heart_2,eyes,mouth,torso,hands,legs",TRUE
 ,,,

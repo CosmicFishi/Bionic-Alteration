@@ -22,4 +22,5 @@ public interface ba_conscious {
     public void applyEffectAdminMarket(MarketAPI market, String id, float level);
     public void unapplyEffectAdminMarket(MarketAPI market, String id);
     public void advanceInCombat(ShipAPI ship, float amount);
+    public float getConsciousTreatmentFee();
 }

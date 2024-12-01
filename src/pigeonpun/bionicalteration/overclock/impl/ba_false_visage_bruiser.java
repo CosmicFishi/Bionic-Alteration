@@ -13,7 +13,6 @@ import pigeonpun.bionicalteration.overclock.ba_overclock;
 import java.awt.*;
 
 public class ba_false_visage_bruiser extends ba_overclock {
-    //todo: test this
     public static final float ROF_MULT = 1.3f;
     public static final float PROJ_SPEED_MULT = 1.4f;
     public static final float MAX_SPEED_MULT = 0.6f;
@@ -33,7 +32,7 @@ public class ba_false_visage_bruiser extends ba_overclock {
             descriptions.setHighlightColors(h,h,bad,bad);
         } else {
             LabelAPI overclockLabel = tooltip.addPara("%s %s: " +
-                            "Increase Ballistic/Energy/Missile weapon RoF by %s, increase projectile speed by %s but reduce max speed by %s and increase weapon's flux by %s",
+                            "Increase Ballistic/Energy/Missile weapon RoF by %s, increase projectile speed by %s but reduce max speed by %s and armor by %s",
                     pad, t, this.name, "[O]", "" + Math.round((ROF_MULT -1) * 100) + "%", "" + Math.round((PROJ_SPEED_MULT -1) * 100) + "%", "" + Math.round((1-MAX_SPEED_MULT) * 100) + "%", "" + Math.round((1-ARMOR_MULT) * 100) + "%");
             overclockLabel.setHighlightColors(h,special,h,h,bad,bad);
         }

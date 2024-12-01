@@ -1,5 +1,6 @@
 package pigeonpun.bionicalteration.hullmod;
 
+import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.combat.BaseHullMod;
 import com.fs.starfarer.api.combat.MutableShipStatsAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
@@ -10,13 +11,13 @@ import com.fs.starfarer.api.util.Misc;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
+import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
 
 import java.awt.*;
 import java.util.List;
 
 public class ba_bionicinfo extends BaseHullMod {
-    //todo: Add apply effect before/after ship creation to the bionic
-    public static final float tooltipWitdth = 500f;
+    public static final float tooltipWitdth = 600f;
     @Override
     public float getTooltipWidth() {
         return tooltipWitdth;
@@ -27,6 +28,24 @@ public class ba_bionicinfo extends BaseHullMod {
 
     public void applyEffectsBeforeShipCreation(ShipAPI.HullSize hullSize,
                                                MutableShipStatsAPI stats, String id) {
+        if(stats.getFleetMember() != null && !stats.getFleetMember().getCaptain().isDefault()) {
+            PersonAPI captain = stats.getFleetMember().getCaptain();
+            List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(captain);
+            for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
+                if(anatomy.bionicInstalled != null) {
+                    if(anatomy.bionicInstalled != null && anatomy.bionicInstalled.isApplyCaptainEffect) {
+                        String applyId = id + anatomy.bionicInstalled.bionicId + anatomy.limb;
+                        anatomy.bionicInstalled.applyOfficerEffectBeforeShipCreation(stats, hullSize, applyId);
+                    }
+                    if(anatomy.appliedOverclock != null) {
+                        if(anatomy.appliedOverclock.isApplyCaptainEffect) {
+                            String applyId = id + "_" + anatomy.bionicInstalled.bionicId + "_" + anatomy.appliedOverclock.id + "_" + anatomy.limb;
+                            anatomy.appliedOverclock.applyOfficerEffectBeforeShipCreation(stats, hullSize, applyId);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -43,10 +62,8 @@ public class ba_bionicinfo extends BaseHullMod {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
         final Color special = ba_variablemanager.BA_OVERCLOCK_COLOR;
-        float col1W = 50;
-        float lastW = 362;
 
-        if(ship != null && ship.getCaptain() != null && !isForModSpec) {
+        if(ship != null && ship.getCaptain() != null && !ship.getCaptain().isDefault() && !isForModSpec) {
             if(ba_officermanager.isCaptainOrAdmin(ship.getCaptain(), false).equals(ba_officermanager.ba_profession.CAPTAIN) || ship.getCaptain().isPlayer()) {
                 ba_consciousmanager.getConsciousnessLevel(ship.getCaptain()).displayTooltipDescription(tooltip, ship.getCaptain(), true, true);
                 List<ba_officermanager.ba_bionicAugmentedData> bionicData = ba_officermanager.getBionicAnatomyList(ship.getCaptain());
@@ -58,6 +75,9 @@ public class ba_bionicinfo extends BaseHullMod {
                         border.getPosition().setSize(tooltipWitdth, 1);
                         tooltip.addCustom(border, pad);
                         data.bionicInstalled.displayEffectDescription(tooltip, ship.getCaptain(), data.bionicInstalled, false);
+                        if(data.bionicInstalled.hasCustomHullmodInfo()) {
+                            data.bionicInstalled.customHullmodInfo(tooltip, ship, data.bionicInstalled);
+                        }
                         if(data.appliedOverclock != null) {
                             data.appliedOverclock.displayEffectDescription(tooltip, ship.getCaptain(), data.bionicInstalled, true);
                             if(data.appliedOverclock.hasCustomHullmodInfo()) {
@@ -74,7 +94,7 @@ public class ba_bionicinfo extends BaseHullMod {
                 //save spot for the AI fleet
             }
         } else {
-            LabelAPI info = tooltip.addPara("You shouldn't be able to get this item at the first place :(", pad);
+            LabelAPI info = tooltip.addPara("No information found.", pad);
         }
     }
 }

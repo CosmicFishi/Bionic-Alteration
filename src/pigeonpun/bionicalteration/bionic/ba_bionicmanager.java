@@ -91,6 +91,7 @@ public class ba_bionicmanager {
                         }
                         bionic.isAllowedRemoveAfterInstall = row.getBoolean("isAllowedRemoveAfterInstall");
                         bionic.isEffectAppliedAfterRemove = row.getBoolean("isEffectAppliedAfterRemove");
+                        bionic.afterInit();
                         bionicItemMap.put(bionicId, bionic);
 //                        if(effect != null) effect.setBionicItem(bionic);
                     }

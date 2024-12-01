@@ -167,52 +167,52 @@ public class ba_bionic_augmented {
         }
         @Override
         public void apply(MutableCharacterStatsAPI stats, String id, float level) {
-            PersonAPI person = findPerson(stats);
-            if(person != null) {
-                List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
-                for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
-                    if(anatomy.bionicInstalled != null) {
-                        if(anatomy.bionicInstalled != null && anatomy.bionicInstalled.isApplyAdminEffect) {
-                            String applyId = id + anatomy.bionicInstalled.bionicId + anatomy.limb;
-                            anatomy.bionicInstalled.applyAdminEffect(stats, applyId);
-                        }
-                        if(anatomy.appliedOverclock != null) {
-                            if(anatomy.appliedOverclock.isApplyAdminEffect) {
-                                String applyId = id + "_" + anatomy.bionicInstalled.bionicId + "_" + anatomy.appliedOverclock.id + "_" + anatomy.limb;
-                                anatomy.appliedOverclock.applyAdminEffect(stats, applyId);
-                            }
-                        }
-                    }
-                }
-                ba_consciousmanager.resetBeforeApplyEffectAdmin(stats, id);
-                if(!bionicalterationplugin.isConsciousnessDisable) {
-                    ba_consciousmanager.getConsciousnessLevel(person).applyEffectAdmin(stats, id);
-                }
-
-            }
+//            PersonAPI person = findPerson(stats);
+//            if(person != null) {
+//                List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
+//                for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
+//                    if(anatomy.bionicInstalled != null) {
+//                        if(anatomy.bionicInstalled != null && anatomy.bionicInstalled.isApplyAdminEffect) {
+//                            String applyId = id + anatomy.bionicInstalled.bionicId + anatomy.limb;
+//                            anatomy.bionicInstalled.applyAdminEffect(stats, applyId);
+//                        }
+//                        if(anatomy.appliedOverclock != null) {
+//                            if(anatomy.appliedOverclock.isApplyAdminEffect) {
+//                                String applyId = id + "_" + anatomy.bionicInstalled.bionicId + "_" + anatomy.appliedOverclock.id + "_" + anatomy.limb;
+//                                anatomy.appliedOverclock.applyAdminEffect(stats, applyId);
+//                            }
+//                        }
+//                    }
+//                }
+//                ba_consciousmanager.resetBeforeApplyEffectAdmin(stats, id);
+//                if(!bionicalterationplugin.isConsciousnessDisable) {
+//                    ba_consciousmanager.getConsciousnessLevel(person).applyEffectAdmin(stats, id);
+//                }
+//
+//            }
         }
 
         @Override
         public void unapply(MutableCharacterStatsAPI stats, String id) {
-            PersonAPI person = findPerson(stats);
-            if(person != null) {
-                List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
-                for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
-                    if(anatomy.bionicInstalled != null) {
-                        if(anatomy.bionicInstalled != null && anatomy.bionicInstalled.isApplyAdminEffect) {
-                            String applyId = id + anatomy.bionicInstalled.bionicId + anatomy.limb;
-                            anatomy.bionicInstalled.unapplyAdminEffect(stats, applyId);
-                        }
-                        if(anatomy.appliedOverclock != null) {
-                            if(anatomy.appliedOverclock.isApplyAdminEffect) {
-                                String applyId = id + "_" + anatomy.bionicInstalled.bionicId + "_" + anatomy.appliedOverclock.id + "_" + anatomy.limb;
-                                anatomy.appliedOverclock.unapplyAdminEffect(stats, applyId);
-                            }
-                        }
-                    }
-                }
-                ba_consciousmanager.resetBeforeApplyEffectAdmin(stats, id);
-            }
+//            PersonAPI person = findPerson(stats);
+//            if(person != null) {
+//                List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
+//                for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
+//                    if(anatomy.bionicInstalled != null) {
+//                        if(anatomy.bionicInstalled != null && anatomy.bionicInstalled.isApplyAdminEffect) {
+//                            String applyId = id + anatomy.bionicInstalled.bionicId + anatomy.limb;
+//                            anatomy.bionicInstalled.unapplyAdminEffect(stats, applyId);
+//                        }
+//                        if(anatomy.appliedOverclock != null) {
+//                            if(anatomy.appliedOverclock.isApplyAdminEffect) {
+//                                String applyId = id + "_" + anatomy.bionicInstalled.bionicId + "_" + anatomy.appliedOverclock.id + "_" + anatomy.limb;
+//                                anatomy.appliedOverclock.unapplyAdminEffect(stats, applyId);
+//                            }
+//                        }
+//                    }
+//                }
+//                ba_consciousmanager.resetBeforeApplyEffectAdmin(stats, id);
+//            }
         }
 
         @Override

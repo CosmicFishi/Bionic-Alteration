@@ -44,6 +44,11 @@ public class ba_overclock implements ba_overclockeffect{
     }
 
     @Override
+    public void applyOfficerEffectBeforeShipCreation(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
+
+    }
+
+    @Override
     public void applyAdminEffect(MutableCharacterStatsAPI stats, String id) {
 
     }

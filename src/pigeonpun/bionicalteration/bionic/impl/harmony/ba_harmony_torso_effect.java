@@ -33,7 +33,7 @@ public class ba_harmony_torso_effect extends ba_bionicitemplugin {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Increase piloting ship's max peak CR by";
+        String text = "Increase piloting ship's peak performance by";
         String textNum = Math.round(SHIP_PEAK_CR * 100 - 100) + "%";
         String name = isItem ? "Effect:" : bionic.getName() + ":";
         LabelAPI descriptions = tooltip.addPara("%s %s %s", pad, t, name, text, textNum);

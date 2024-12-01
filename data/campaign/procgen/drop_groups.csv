@@ -9,3 +9,8 @@ nothing,ba_bionic_military,100
 nothing,ba_bionic_domain,100
 "item_:{tags:[ba_bionic_t2, !no_drop]}",ba_bionic_domain,25
 "item_:{tags:[ba_bionic_t3, !no_drop]}",ba_bionic_domain,10
+,,
+nothing,ba_bionic_bounty,100
+"item_:{tags:[ba_bionic_t2, !no_drop]}",ba_bionic_bounty,25
+"item_:{tags:[ba_bionic_bounty, !no_drop]}",ba_bionic_bounty,10
+,,

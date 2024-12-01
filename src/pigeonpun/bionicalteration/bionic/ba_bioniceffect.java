@@ -33,7 +33,8 @@ public interface ba_bioniceffect{
     public void getLongOnRemoveEffectDescription(TooltipMakerAPI tooltip);
 
     /**
-     * As the name implies, apply effects for officer
+     * As the name implies, apply effects for officer. <br>
+     * NOTE: This is AFTER ship creation. Use applyOfficerEffectBeforeShipCreation for before ship creation
      * @param stats
      * @param hullSize
      * @param id
@@ -47,7 +48,7 @@ public interface ba_bioniceffect{
      * @param id
      */
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id);
-
+    public void applyOfficerEffectBeforeShipCreation(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id);
     /**
      * As the name implies, apply effects for admin
      * @param stats

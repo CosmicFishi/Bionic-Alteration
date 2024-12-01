@@ -7,15 +7,23 @@ import com.fs.starfarer.api.combat.ShipAPI;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 
 public interface ba_overclockeffect {
+    /**
+     * NOTE: This is AFTER ship creation. Use applyOfficerEffectBeforeShipCreation for before ship creation
+     * @param stats
+     * @param hullSize
+     * @param id
+     */
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id);
 
     /**
-     * As the name implies, unapply effects for officer
+     * As the name implies, unapply effects for officer <br>
      * @param stats
      * @param hullSize
      * @param id
      */
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id);
+    public void applyOfficerEffectBeforeShipCreation(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id);
+
 
     /**
      * As the name implies, apply effects for admin

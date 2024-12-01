@@ -10,6 +10,7 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
+import pigeonpun.bionicalteration.conscious.ba_base_conscious;
 import pigeonpun.bionicalteration.conscious.ba_conscious;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
 import pigeonpun.bionicalteration.ui.bionic.ba_uiplugin;
@@ -17,13 +18,15 @@ import pigeonpun.bionicalteration.utils.ba_stringhelper;
 
 import java.awt.*;
 
-public class ba_conscious_weaken implements ba_conscious {
+public class ba_conscious_weaken extends ba_base_conscious {
     //officer
-    public final static float SHIP_MAINTENANCE = 0.25f;
+    public final static float SHIP_MAINTENANCE = 0.3f;
 //    public final static float MANEUVERABILITY_BONUS = 0.14f;
-    public final static float SHIP_OVERLOAD = 0.2f;
+    public final static float SHIP_OVERLOAD = 0.25f;
     //admin
-    public final static float MARKET_UPKEEP = 0.2f;
+//    public final static float MARKET_UPKEEP = 0.2f;
+    public final static float ADMIN_FUND = 3000f;
+
 //    public final static float MARKET_STABILITY = 1f;
 //    public final static float MARKET_ACCESS = 0.15f;
     @Override
@@ -76,7 +79,8 @@ public class ba_conscious_weaken implements ba_conscious {
             tooltip.addPara("- Ship overload duration increased by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(SHIP_OVERLOAD * 100) + "%").setOpacity(textAlpha);
         }
         if(showBoth || !showOfficer) {
-            tooltip.addPara("- Market upkeep increased by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(MARKET_UPKEEP * 100) + "%").setOpacity(textAlpha);
+            tooltip.addPara("- Admin mentality stabilization fund: %s", pad/2, Misc.getNegativeHighlightColor(), "" + Misc.getDGSCredits(ADMIN_FUND)).setOpacity(textAlpha);
+//            tooltip.addPara("- Market upkeep increased by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(MARKET_UPKEEP * 100) + "%").setOpacity(textAlpha);
 //            tooltip.addPara("- Market stability reduced by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(MARKET_STABILITY)).setOpacity(textAlpha);
 //            tooltip.addPara("- Market accessibility reduced by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(MARKET_ACCESS * 100) + "%").setOpacity(textAlpha);
         }
@@ -117,18 +121,23 @@ public class ba_conscious_weaken implements ba_conscious {
     public void applyEffectAdminMarket(MarketAPI market, String id, float level) {
 //        market.getAccessibilityMod().modifyFlat(id + "conscious", -(MARKET_ACCESS), ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
 //        market.getStability().modifyFlat(id + "conscious", -MARKET_STABILITY, ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
-        market.getUpkeepMult().modifyMult(id + "conscious", 1 + MARKET_UPKEEP,  ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
+//        market.getUpkeepMult().modifyMult(id + "conscious", 1 + MARKET_UPKEEP,  ba_consciousmanager.getConsciousnessLevel(market.getAdmin()).getDisplayName() + " (Admins " + ba_consciousmanager.getDisplayConditionLabel(market.getAdmin()) + ")");
     }
 
     @Override
     public void unapplyEffectAdminMarket(MarketAPI market, String id) {
 //        market.getAccessibilityMod().unmodifyFlat(id + "conscious");
 //        market.getStability().unmodifyFlat(id + "conscious");
-        market.getUpkeepMult().unmodifyMult(id + "conscious");
+//        market.getUpkeepMult().unmodifyMult(id + "conscious");
     }
 
     @Override
     public void advanceInCombat(ShipAPI ship, float amount) {
 
+    }
+
+    @Override
+    public float getConsciousTreatmentFee() {
+        return ADMIN_FUND;
     }
 }

@@ -12,6 +12,7 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
+import pigeonpun.bionicalteration.conscious.ba_base_conscious;
 import pigeonpun.bionicalteration.conscious.ba_conscious;
 import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
 import pigeonpun.bionicalteration.ui.bionic.ba_uiplugin;
@@ -19,15 +20,18 @@ import pigeonpun.bionicalteration.utils.ba_stringhelper;
 
 import java.awt.*;
 
-public class ba_conscious_critical implements ba_conscious {
+public class ba_conscious_critical extends ba_base_conscious {
     //officer
-    public final static float SHIP_MAINTENANCE = 0.55f;
+    public final static float SHIP_MAINTENANCE = 1f;
 //    public final static float MANEUVERABILITY_BONUS = 0.22f;
-    public final static float SHIP_OVERLOAD = 0.4f;
+    public final static float SHIP_OVERLOAD = 0.75f;
+    public final static float VENTING = 0.5f;
+    public final static float EMP = 0.5f;
 //    public final static float SHIP_CR = 0.15f;
-    public final static String SHIP_PERSONALITY = Personalities.RECKLESS;
+//    public final static String SHIP_PERSONALITY = Personalities.RECKLESS;
     //admin
-    public final static float MARKET_UPKEEP = 0.4f;
+    public final static float MARKET_UPKEEP = 0.2f;
+    public final static float ADMIN_FUND = 7000f;
 //    public final static float MARKET_STABILITY = 2f;
 //    public final static float MARKET_ACCESS = 0.25f;
 //    public final static float MARKET_DEFEND = 0.28f;
@@ -77,13 +81,15 @@ public class ba_conscious_critical implements ba_conscious {
         tooltip.setParaFontDefault();
         if(showBoth || showOfficer) {
             tooltip.addPara("- Ship maintenance increased by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(SHIP_MAINTENANCE * 100) + "%").setOpacity(textAlpha);
-//            tooltip.addPara("- Ship maneuverability reduced by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(MANEUVERABILITY_BONUS * 100) + "%").setOpacity(textAlpha);
             tooltip.addPara("- Ship overload duration increased by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(SHIP_OVERLOAD * 100) + "%").setOpacity(textAlpha);
+            tooltip.addPara("- Flux venting rate decrease by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(VENTING * 100) + "%").setOpacity(textAlpha);
+            tooltip.addPara("- EMP damage taken increase by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(EMP * 100) + "%").setOpacity(textAlpha);
 //            tooltip.addPara("- Ship peak performance duration reduced by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(SHIP_CR * 100) + "%").setOpacity(textAlpha);
 //            tooltip.addPara("- Captain personality changed to %s", pad/2, Misc.getNegativeHighlightColor(), "" + SHIP_PERSONALITY).setOpacity(textAlpha);
         }
         if(showBoth || !showOfficer) {
             tooltip.addPara("- Market upkeep increased by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(MARKET_UPKEEP * 100) + "%").setOpacity(textAlpha);
+            tooltip.addPara("- Admin mentality stabilization fund: %s", pad/2, Misc.getNegativeHighlightColor(), "" + Misc.getDGSCredits(ADMIN_FUND)).setOpacity(textAlpha);
 //            tooltip.addPara("- Market stability reduced by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(MARKET_STABILITY)).setOpacity(textAlpha);
 //            tooltip.addPara("- Market accessibility reduced by %s", pad/2, Misc.getNegativeHighlightColor(), "" + Math.round(MARKET_ACCESS * 100) + "%").setOpacity(textAlpha);
         }
@@ -97,6 +103,8 @@ public class ba_conscious_critical implements ba_conscious {
 //        stats.getMaxTurnRate().modifyMult(id + "conscious", 1 - MANEUVERABILITY_BONUS);
         stats.getSuppliesPerMonth().modifyPercent(id + "conscious", SHIP_MAINTENANCE * 100);
         stats.getOverloadTimeMod().modifyPercent(id + "conscious", SHIP_OVERLOAD * 100);
+        stats.getVentRateMult().modifyMult(id + "conscious", 1-VENTING);
+        stats.getEmpDamageTakenMult().modifyPercent(id + "conscious", EMP);
 //        stats.getPeakCRDuration().modifyMult(id + "conscious", 1 - SHIP_CR);
     }
 
@@ -108,6 +116,8 @@ public class ba_conscious_critical implements ba_conscious {
 //        stats.getMaxTurnRate().unmodifyMult(id + "conscious");
         stats.getSuppliesPerMonth().unmodifyPercent(id + "conscious");
         stats.getOverloadTimeMod().unmodifyPercent(id + "conscious");
+        stats.getVentRateMult().unmodifyMult(id + "conscious");
+        stats.getEmpDamageTakenMult().unmodifyPercent(id + "conscious");
 //        stats.getPeakCRDuration().unmodifyMult(id + "conscious");
     }
 
@@ -144,5 +154,10 @@ public class ba_conscious_critical implements ba_conscious {
 //        if(ship.getCaptain() != null) {
 //            ship.getCaptain().setPersonality(SHIP_PERSONALITY);
 //        }
+    }
+
+    @Override
+    public float getConsciousTreatmentFee() {
+        return ADMIN_FUND;
     }
 }

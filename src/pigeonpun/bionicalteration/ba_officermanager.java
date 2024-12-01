@@ -327,7 +327,7 @@ public class ba_officermanager {
         List<ba_bionicAugmentedData> anatomyList = new ArrayList<>();
         HashMap<ba_limbmanager.ba_limb, ba_bionicmanager.bionicData> bionicsInstalledList = ba_bionicmanager.getListLimbAndBionicInstalled(person);
         String personGenericVariant = getPersonVariantTag(person);
-        if(personGenericVariant != null && ba_variantmanager.variantList.get(personGenericVariant) != null) {
+        if(personGenericVariant != null && ba_variantmanager.variantList.get(personGenericVariant) != null && ba_variantmanager.variantList.get(personGenericVariant).limbIdList != null) {
             List<String> variantAnatomy = ba_variantmanager.variantList.get(personGenericVariant).limbIdList;
             for (String limbString: variantAnatomy) {
                 ba_limbmanager.ba_limb limb = ba_limbmanager.getLimb(limbString);
@@ -339,7 +339,7 @@ public class ba_officermanager {
                 }
             }
         } else {
-            log.info("Error, can't find anatomy of variant: " + personGenericVariant + " for officer from " + (person.getFaction() != null ? person.getFaction().getDisplayName(): "(No faction)") + " with tags " + person.getTags());
+            log.error("Error, can't find anatomy of variant: " + personGenericVariant + " for officer from " + (person.getFaction() != null ? person.getFaction().getDisplayName(): "(No faction)") + " with tags " + person.getTags());
         }
         return anatomyList;
     }
@@ -392,7 +392,7 @@ public class ba_officermanager {
     }
     public static boolean checkIfConsciousnessReduceAboveZeroOnInstall(ba_bionicitemplugin bionic, PersonAPI person) {
         float conscious = person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
-        return conscious - bionic.consciousnessCost > 0;
+        return (conscious - bionic.consciousnessCost) >= 0;
     }
 
     /**

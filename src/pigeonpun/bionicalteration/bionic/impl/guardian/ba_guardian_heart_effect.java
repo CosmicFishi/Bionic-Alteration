@@ -7,6 +7,7 @@ import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.combat.MutableShipStatsAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
+import com.fs.starfarer.api.impl.campaign.ids.Stats;
 import com.fs.starfarer.api.ui.LabelAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
@@ -21,7 +22,7 @@ public class ba_guardian_heart_effect extends ba_bionicitemplugin {
     public static float OFFICER_SHIP_ARMOR = 1.2f;
     public static float OFFICER_SHIP_MANEUVERABILITY = 0.75f;
     public static float ADMIN_ACCESS_FLAT = 0.2f;
-    public static float ADMIN_UPKEEP_MULT = 1.25f;
+    public static float ADMIN_UPKEEP_MULT = 1.10f;
     static Logger log = Global.getLogger(ba_guardian_heart_effect.class);
 
 
