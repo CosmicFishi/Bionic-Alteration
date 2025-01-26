@@ -339,7 +339,7 @@ public class ba_officermanager {
                 }
             }
         } else {
-            log.error("Error, can't find anatomy of variant: " + personGenericVariant + " for officer from " + (person.getFaction() != null ? person.getFaction().getDisplayName(): "(No faction)") + " with tags " + person.getTags());
+            log.warn("Warning, can't find anatomy of variant: " + personGenericVariant + " for officer from " + (person.getFaction() != null ? person.getFaction().getDisplayName(): "(No faction)") + " with tags " + person.getTags());
         }
         return anatomyList;
     }

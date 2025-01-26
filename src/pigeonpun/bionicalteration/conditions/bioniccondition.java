@@ -24,6 +24,7 @@ public class bioniccondition extends BaseMarketConditionPlugin {
     @Override
     public void init(MarketAPI market, MarketConditionAPI condition) {
         super.init(market, condition);
+        if(market == null || market.getStats() == null) return; //Thanks alaricdragon :3
         if(market.getAdmin() != null) {
             this.person = market.getAdmin();
         }

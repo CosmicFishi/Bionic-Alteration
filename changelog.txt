@@ -1,3 +1,6 @@
+=========== 0.2.1 (Save compatible) ============
+- Fix crash from Bionic condition on market. Thanks to alaricdragon and null for helping me!
+- Change spamming error for officer without a default variant. (Now its a warning)
 =========== 0.2.0 (NOT compatible) ============
 - gammar/beta core as overclocking material
 - Change from 2 leg to "one pair of leg", 2 eyes to "eyes", 2 hands to "hands"
