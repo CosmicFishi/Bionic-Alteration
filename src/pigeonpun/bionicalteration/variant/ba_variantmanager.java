@@ -33,7 +33,7 @@ public class ba_variantmanager {
     public static void loadAnatomyVariantList() {
         List<String> limbFiles = MagicSettings.getList(ba_variablemanager.BIONIC_ALTERATION, "variant_files");
         for (String path : limbFiles) {
-            log.error("merging anatomy variant files");
+            log.warn("merging anatomy variant files");
             JSONArray variantData = new JSONArray();
             try {
                 variantData = Global.getSettings().getMergedSpreadsheetDataForMod("variantId", path, ba_variablemanager.BIONIC_ALTERATION);

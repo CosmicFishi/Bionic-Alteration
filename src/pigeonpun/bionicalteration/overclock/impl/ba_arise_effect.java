@@ -83,7 +83,7 @@ public class ba_arise_effect extends ba_overclock {
             data.activeDuration += amount;
             ship.setJitterUnder(this, ba_variablemanager.BA_OVERCLOCK_COLOR, 1f, 5, 0f, 15f);
             if(data.activeDuration > DURATION_INVINCIBLE) {
-                log.error("After activation");
+                log.info("After activation");
                 data.state = ariseInvincibleState.CD;
                 data.activeDuration = 0;
             }
@@ -94,7 +94,7 @@ public class ba_arise_effect extends ba_overclock {
             data.cdDuration += amount;
             ship.setJitterUnder(this, Color.red, 0.6f, 5, 0f, 12f);
             if(data.cdDuration > CD_AFTER_TRIGGER) {
-                log.error("After cooldown");
+                log.info("After cooldown");
                 data.state = ariseInvincibleState.NONE_ACTIVE;
                 data.cdDuration = 0;
             }
@@ -130,7 +130,7 @@ public class ba_arise_effect extends ba_overclock {
                     Random rand = new Random();
                     boolean willTrigger = rand.nextDouble() < CHANCE_TRIGGERING_INVINCIBLE;
                     if(willTrigger && data.state == ariseInvincibleState.NONE_ACTIVE) {
-                        log.error("Activate");
+                        log.info("Activate");
                         data.state = ariseInvincibleState.ACTIVE;
                     }
                 }

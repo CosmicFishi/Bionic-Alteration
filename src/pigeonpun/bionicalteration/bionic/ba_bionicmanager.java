@@ -106,7 +106,7 @@ public class ba_bionicmanager {
 //        }
         List<String> overclockingFiles = MagicSettings.getList(ba_variablemanager.BIONIC_ALTERATION, "overclocking_bionic_files");
         for (String path : overclockingFiles) {
-            log.error("merging bionic overclocking files");
+            log.warn("merging bionic overclocking files");
             JSONArray overclockingData = new JSONArray();
             try {
                 overclockingData = Global.getSettings().getMergedSpreadsheetDataForMod("bionicId", path, ba_variablemanager.BIONIC_ALTERATION);

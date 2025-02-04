@@ -140,7 +140,7 @@ public class ba_factionmanager {
                     factionVariantMap.put(factionId, factionData);
                 } catch (Exception e) {
                     log.info(e);
-                    log.error("Unable to find faction bionic data for " + factionId + ". Skipping");
+                    log.warn("Unable to find faction bionic data for " + factionId + ". Skipping");
                 }
             }
         } catch (IOException | JSONException e) {
@@ -158,7 +158,7 @@ public class ba_factionmanager {
         if(data == null) {
             //fallback on faction that haven't been defined in faction_data.json
             data = factionVariantMap.get("ba_default");
-            log.error("Can not find faction data of faction id: "+ factionId + ". Replacing with default faction profile.");
+            log.warn("Can not find faction data of faction id: "+ factionId + ". Replacing with default faction profile.");
         }
         return data;
     }
