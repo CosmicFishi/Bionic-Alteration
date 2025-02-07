@@ -2,4 +2,4 @@ command,class,tags,syntax,help
 ba_addCryoPerson,pigeonpun.bionicalteration.commands.ba_addCryoPerson,"pigeonpun_bionicalteration, campaign",ba_addCryoPerson <admin|officer>,Add cryopod officer/admin for testing purpose.
 ba_clearDuplicateCondition,pigeonpun.bionicalteration.commands.clearDuplicateCondition,"pigeonpun_bionicalteration, campaign",ba_clearDuplicateCondition <market_name>,Clear duplicating market condition for save compatibility
 ba_addAllBionics,pigeonpun.bionicalteration.commands.ba_addAllBionics,"pigeonpun_bionicalteration, cheat",ba_addAllBionics,Add all bionics to inventory. Use for debugging
-,,,,
+ba_findBionicStations,pigeonpun.bionicalteration.commands.ba_findBionicStations,"pigeonpun_bionicalteration, cheat",ba_findBionicStations,Find bionic stations
