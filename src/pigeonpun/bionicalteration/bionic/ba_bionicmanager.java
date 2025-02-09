@@ -369,6 +369,11 @@ public class ba_bionicmanager {
         }
         return randomBionic;
     }
+
+    /**
+     * @param tag
+     * @return
+     */
     public static List<String> getListBionicsIdFromTag(String tag) {
         List<String> bionics = new ArrayList<>();
         for(ba_bionicitemplugin item: bionicItemMap.values()) {
@@ -380,29 +385,20 @@ public class ba_bionicmanager {
         }
         return bionics;
     }
-    public static List<ba_bionicitemplugin> getListBionicsFromTag(String tag) {
-        List<ba_bionicitemplugin> bionics = new ArrayList<>();
-        for(ba_bionicitemplugin item: bionicItemMap.values()) {
-            for(String t: item.getSpec().getTags()) {
-                if(t.equals(tag)) {
-                    bionics.add(item);
+    public static boolean checkIfPersonHasBionicDataSavedAsTag(PersonAPI person) {
+        log.info("Converting bionic data from tag to memory ===== ");
+        boolean found = false;
+        if (!person.getTags().isEmpty()) {
+            log.info(person.getName().getFullName() + ", tags: " + person.getTags().toString());
+            for (String tag: person.getTags()) {
+                if(tag != null && tag.contains(":")) {
+                    String[] tokens = tag.split(":");
+                    ba_bionicitemplugin bionicInstalled = bionicItemMap.get(tokens[0]);
+                    if(bionicInstalled != null) found = true;
                 }
             }
         }
-        return bionics;
-    }
-    public static List<String> getBionicFromListTag(List<String> tags) {
-        List<String> randomBionic = new ArrayList<>();
-        for(String tag: tags) {
-            for(ba_bionicitemplugin item: bionicItemMap.values()) {
-                for(String t: item.getSpec().getTags()) {
-                    if(t.equals(tag)) {
-                        randomBionic.add(item.bionicId);
-                    }
-                }
-            }
-        }
-        return randomBionic;
+        return found;
     }
     public static List<String> getRandomBionicFromListId(List<String> ids) {
         List<String> randomBionic = new ArrayList<>();
