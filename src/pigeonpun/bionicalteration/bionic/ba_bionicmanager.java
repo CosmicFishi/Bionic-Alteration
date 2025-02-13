@@ -328,47 +328,47 @@ public class ba_bionicmanager {
      * @param person Person
      * @return The bionics and limb they are installed on.
      */
-    public static HashMap<ba_limbmanager.ba_limb, bionicData> getListLimbAndBionicInstalled(PersonAPI person) {
-        HashMap<ba_limbmanager.ba_limb, bionicData> bionicsInstalledList = new HashMap<>();
-        if (!person.getTags().isEmpty()) {
-            for (String tag: person.getTags()) {
-                if(tag != null && tag.contains(":")) {
-                    String[] tokens = tag.split(":");
-                    ba_bionicitemplugin bionicInstalled = bionicItemMap.get(tokens[0]);
-                    if(bionicInstalled == null) log.error("Can't find bionic of tag: " + tokens[0]);
-                    ba_limbmanager.ba_limb sectionInstalled = ba_limbmanager.getLimb(tokens[1]);
-                    if(sectionInstalled == null) log.error("Can't find limb of tag: " + tokens[1]);
-                    ba_overclock appliedOverclock = null;
-                    if(tokens.length >= 3 && tokens[2] != null) {
-                        appliedOverclock = ba_overclockmanager.getOverclock(tokens[2]);
-                        if (appliedOverclock == null) {
-                            log.error("Can't find overclock of tag: " + tokens[2]);
-                        }
-                    }
-                    if(bionicsInstalledList.get(sectionInstalled) != null) {
-                        bionicsInstalledList.get(sectionInstalled).bionic = bionicInstalled;
-                        bionicsInstalledList.get(sectionInstalled).overclock = appliedOverclock;
-                    } else {
-                        bionicsInstalledList.put(sectionInstalled, new bionicData(appliedOverclock, bionicInstalled));
-                    }
-                }
-            }
-        }
-        return bionicsInstalledList;
-    }
-    public static List<String> getRandomBionic(int count) {
-        List<String> randomBionic = new ArrayList<>();
-        WeightedRandomPicker<String> random = new WeightedRandomPicker<>();
-        random.addAll(getListBionicKeys());
-        int i = 0;
-        while(i < count && !random.isEmpty()) {
-            String picked = random.pick();
-            random.remove(picked);
-            randomBionic.add(picked);
-            i++;
-        }
-        return randomBionic;
-    }
+//    public static HashMap<ba_limbmanager.ba_limb, bionicData> getListLimbAndBionicInstalled(PersonAPI person) {
+//        HashMap<ba_limbmanager.ba_limb, bionicData> bionicsInstalledList = new HashMap<>();
+//        if (!person.getTags().isEmpty()) {
+//            for (String tag: person.getTags()) {
+//                if(tag != null && tag.contains(":")) {
+//                    String[] tokens = tag.split(":");
+//                    ba_bionicitemplugin bionicInstalled = bionicItemMap.get(tokens[0]);
+//                    if(bionicInstalled == null) log.error("Can't find bionic of tag: " + tokens[0]);
+//                    ba_limbmanager.ba_limb sectionInstalled = ba_limbmanager.getLimb(tokens[1]);
+//                    if(sectionInstalled == null) log.error("Can't find limb of tag: " + tokens[1]);
+//                    ba_overclock appliedOverclock = null;
+//                    if(tokens.length >= 3 && tokens[2] != null) {
+//                        appliedOverclock = ba_overclockmanager.getOverclock(tokens[2]);
+//                        if (appliedOverclock == null) {
+//                            log.error("Can't find overclock of tag: " + tokens[2]);
+//                        }
+//                    }
+//                    if(bionicsInstalledList.get(sectionInstalled) != null) {
+//                        bionicsInstalledList.get(sectionInstalled).bionic = bionicInstalled;
+//                        bionicsInstalledList.get(sectionInstalled).overclock = appliedOverclock;
+//                    } else {
+//                        bionicsInstalledList.put(sectionInstalled, new bionicData(appliedOverclock, bionicInstalled));
+//                    }
+//                }
+//            }
+//        }
+//        return bionicsInstalledList;
+//    }
+//    public static List<String> getRandomBionic(int count) {
+//        List<String> randomBionic = new ArrayList<>();
+//        WeightedRandomPicker<String> random = new WeightedRandomPicker<>();
+//        random.addAll(getListBionicKeys());
+//        int i = 0;
+//        while(i < count && !random.isEmpty()) {
+//            String picked = random.pick();
+//            random.remove(picked);
+//            randomBionic.add(picked);
+//            i++;
+//        }
+//        return randomBionic;
+//    }
 
     /**
      * @param tag
@@ -385,6 +385,7 @@ public class ba_bionicmanager {
         }
         return bionics;
     }
+    //todo: should i keep this ?
     public static boolean checkIfPersonHasBionicDataSavedAsTag(PersonAPI person) {
         log.info("Converting bionic data from tag to memory ===== ");
         boolean found = false;
@@ -399,15 +400,6 @@ public class ba_bionicmanager {
             }
         }
         return found;
-    }
-    public static List<String> getRandomBionicFromListId(List<String> ids) {
-        List<String> randomBionic = new ArrayList<>();
-        for(String id: ids) {
-            if(getBionic(id) != null) {
-                randomBionic.add(id);
-            }
-        }
-        return randomBionic;
     }
     public static List<String> getListBionicKeys() {
         return new ArrayList<>(bionicItemMap.keySet());
@@ -495,14 +487,6 @@ public class ba_bionicmanager {
         } else {
             LabelAPI removableLabel = tooltip.addPara("%s", pad, t, "Can not be uninstall AFTER installing");
             removableLabel.setHighlightColors(bad);
-        }
-    }
-    public static class bionicData {
-        public ba_overclock overclock;
-        public ba_bionicitemplugin bionic;
-        public bionicData(@Nullable ba_overclock overclock, @Nullable ba_bionicitemplugin bionic) {
-            this.overclock = overclock;
-            this.bionic = bionic;
         }
     }
 }
