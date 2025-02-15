@@ -127,7 +127,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 while(rowItemCount < itemsPerRow) {
                     if(index < cargoBionic.size()) {
                         CargoStackAPI cargo = cargoBionic.get(index);
-                        ba_bionicitemplugin bionic = (ba_bionicitemplugin) cargo.getPlugin();
+                        final ba_bionicitemplugin bionic = (ba_bionicitemplugin) cargo.getPlugin();
                         float quantity = cargo.getSize();
 
                         int itemX = rowItemCount * itemW;
@@ -189,7 +189,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                             @Override
                             public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
                                 if(currentHoveredBionic == null) {
-                                    tooltip.addPara("Somehow the hover isn't registering the bionic ????? Im clueless LMAO. Try hovering again", Misc.getHighlightColor(),0);
+//                                    tooltip.addPara("Somehow the hover isn't registering the bionic ????? Im clueless LMAO. Try hovering again", Misc.getHighlightColor(),0);
                                     return;
                                 }
                                 ba_bionicmanager.displayBionicItemDescription(tooltip, currentHoveredBionic);
@@ -841,7 +841,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                                 if(ba_bionicmanager.bionicItemMap.get(tokens[1]) != null && (this.currentHoveredBionic == null || !this.currentHoveredBionic.bionicId.equals(tokens[1]))) {
                                     this.currentHoveredBionic = (ba_bionicitemplugin) cargoBionic.get(Integer.parseInt(tokens[2])).getPlugin();
 //                                    this.currentHoveredBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
-                                    shouldRefresh = true;
+//                                    shouldRefresh = true;
                                 }
                             }
                         }

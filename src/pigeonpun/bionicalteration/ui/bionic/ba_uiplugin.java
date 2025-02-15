@@ -1241,12 +1241,13 @@ public class ba_uiplugin extends ba_uicommon {
                             }
                         }
 //                        if(currentTabId.equals(WORKSHOP)) {
-//                            ba_component component = componentMap.get("WORKSHOP_INVENTORY_PANEL");
+//                            ba_component component = componentMap.get("INVENTORY_PANEL");
 //                            //hover bionic item in inventory
-//                            if(component != null && component.tooltipMap.get("WORKSHOP_INVENTORY_TOOLTIP") != null) {
-//                                if(tokens[0].equals("hover_bionic_item") && debounceplugin.isDebounceOver("WORKSHOP_INVENTORY_TOOLTIP", 0, component.tooltipMap.get("WORKSHOP_INVENTORY_TOOLTIP").getExternalScroller().getYOffset())) {
+//                            if(component != null && component.tooltipMap.get("INVENTORY_TOOLTIP") != null) {
+//                                if(tokens[0].equals("hover_bionic_item") && debounceplugin.isDebounceOver("INVENTORY_TOOLTIP", 0, component.tooltipMap.get("INVENTORY_TOOLTIP").getExternalScroller().getYOffset())) {
 //                                    if(ba_bionicmanager.bionicItemMap.get(tokens[1]) != null && (this.currentHoveredBionic == null || !this.currentHoveredBionic.bionicId.equals(tokens[1]))) {
-//                                        this.currentHoveredBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
+//                                        this.currentHoveredBionic = (ba_bionicitemplugin) cargoBionic.get(Integer.parseInt(tokens[2])).getPlugin();
+////                                    this.currentHoveredBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
 //                                        shouldRefresh = true;
 //                                    }
 //                                }

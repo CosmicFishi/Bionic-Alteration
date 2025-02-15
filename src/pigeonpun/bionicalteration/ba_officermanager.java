@@ -882,6 +882,7 @@ public class ba_officermanager {
         public List<ba_bionicAugmentedData> anatomy = new ArrayList<>();
         public int BRMTier;
         public String variant;
+        public Object custom;
         public ba_personmemorydata(int brmTier) {
             if(brmTier < 0) {
                 brmTier = 1;
