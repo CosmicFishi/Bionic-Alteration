@@ -168,26 +168,26 @@ public class ba_bionicmanager {
     public static boolean checkIfHaveBionicInstalled(PersonAPI person) {
         return getListStringBionicInstalled(person).size() > 0;
     }
-
-    /**
-     * Check the entire person limbs. Want to check specific limb? use ba_officermanager.checkIfCanInstallBionic()
-     * @param bionic the bionic
-     * @param person the person
-     * @return
-     */
-    public static boolean checkIfHaveBionicInstalled(ba_bionicitemplugin bionic, PersonAPI person) {
-        if (!person.getTags().isEmpty()) {
-            for (String tag: person.getTags()) {
-                if(tag != null && tag.contains(":")) {
-                    String[] tokens = tag.split(":");
-                    if(tokens[0].equals(bionic.bionicId)) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
+//
+//    /**
+//     * Check the entire person limbs. Want to check specific limb? use ba_officermanager.checkIfCanInstallBionic()
+//     * @param bionic the bionic
+//     * @param person the person
+//     * @return
+//     */
+//    public static boolean checkIfHaveBionicInstalled(ba_bionicitemplugin bionic, PersonAPI person) {
+//        if (!person.getTags().isEmpty()) {
+//            for (String tag: person.getTags()) {
+//                if(tag != null && tag.contains(":")) {
+//                    String[] tokens = tag.split(":");
+//                    if(tokens[0].equals(bionic.bionicId)) {
+//                        return true;
+//                    }
+//                }
+//            }
+//        }
+//        return false;
+//    }
 
     /**
      * check the entire person limbs to see the bionic conflicts with any bionics installed on person
@@ -257,16 +257,24 @@ public class ba_bionicmanager {
     }
     public static List<String> getListStringBionicInstalled(PersonAPI person) {
         List<String> bionics = new ArrayList<>();
-        if (person.getTags() != null && !person.getTags().isEmpty() ) {
-            for (String tag: person.getTags()) {
-                if(tag != null && tag.contains(":")) {
-                    String[] tokens = tag.split(":");
-                    ba_bionicitemplugin bionicInstalled = bionicItemMap.get(tokens[0]);
-                    if(bionicInstalled == null) {
-                        log.error("Can't find bionic of tag: " + tokens[0] + ". Skipping");
-                    } else {
-                        bionics.add(tag);
-                    }
+//        if (person.getTags() != null && !person.getTags().isEmpty() ) {
+//            for (String tag: person.getTags()) {
+//                if(tag != null && tag.contains(":")) {
+//                    String[] tokens = tag.split(":");
+//                    ba_bionicitemplugin bionicInstalled = bionicItemMap.get(tokens[0]);
+//                    if(bionicInstalled == null) {
+//                        log.error("Can't find bionic of tag: " + tokens[0] + ". Skipping");
+//                    } else {
+//                        bionics.add(tag);
+//                    }
+//                }
+//            }
+//        }
+        ba_officermanager.ba_personmemorydata data = ba_officermanager.getPersonMemoryData(person);
+        if(data != null) {
+            for(ba_officermanager.ba_bionicAugmentedData bionicData: data.anatomy) {
+                if(bionicData.bionicInstalled != null) {
+                    bionics.add(bionicData.bionicInstalled.bionicId);
                 }
             }
         }
@@ -281,18 +289,26 @@ public class ba_bionicmanager {
      */
     public static List<ba_bionicitemplugin> getListBionicInstalledOnLimb(ba_limbmanager.ba_limb limb, PersonAPI person) {
         List<ba_bionicitemplugin> bionicsInstalledList = new ArrayList<>();
-        if(limb != null && !person.getTags().isEmpty()) {
-            for (String tag: person.getTags()) {
-                if(tag != null && tag.contains(":")) {
-                    String[] tokens = tag.split(":");
-                    if(tokens[1].equals(limb.limbId)) {
-                        ba_bionicitemplugin bionicInstalled = bionicItemMap.get(tokens[0]);
-                        if(bionicInstalled == null) {
-                            log.error("Can't find bionic of tag: " + tokens[0]);
-                        } else {
-                            bionicsInstalledList.add(bionicInstalled);
-                        }
-                    }
+//        if(limb != null && !person.getTags().isEmpty()) {
+//            for (String tag: person.getTags()) {
+//                if(tag != null && tag.contains(":")) {
+//                    String[] tokens = tag.split(":");
+//                    if(tokens[1].equals(limb.limbId)) {
+//                        ba_bionicitemplugin bionicInstalled = bionicItemMap.get(tokens[0]);
+//                        if(bionicInstalled == null) {
+//                            log.error("Can't find bionic of tag: " + tokens[0]);
+//                        } else {
+//                            bionicsInstalledList.add(bionicInstalled);
+//                        }
+//                    }
+//                }
+//            }
+//        }
+        ba_officermanager.ba_personmemorydata data = ba_officermanager.getPersonMemoryData(person);
+        if(data != null) {
+            for(ba_officermanager.ba_bionicAugmentedData bionicData: data.anatomy) {
+                if(bionicData.limb.limbId.equals(limb.limbId) && bionicData.bionicInstalled != null) {
+                    bionicsInstalledList.add(bionicData.bionicInstalled);
                 }
             }
         }
@@ -307,16 +323,24 @@ public class ba_bionicmanager {
      */
     public static List<ba_bionicitemplugin> getListBionicInstalled(PersonAPI person) {
         List<ba_bionicitemplugin> bionicsInstalledList = new ArrayList<>();
-        if (!person.getTags().isEmpty()) {
-            for (String tag: person.getTags()) {
-                if(tag != null && tag.contains(":")) {
-                    String[] tokens = tag.split(":");
-                    ba_bionicitemplugin bionicInstalled = bionicItemMap.get(tokens[0]);
-                    if(bionicInstalled == null) {
-                        log.error("Can't find bionic of tag: " + tokens[0] + ". Skipping");
-                    } else {
-                        bionicsInstalledList.add(bionicInstalled);
-                    }
+//        if (!person.getTags().isEmpty()) {
+//            for (String tag: person.getTags()) {
+//                if(tag != null && tag.contains(":")) {
+//                    String[] tokens = tag.split(":");
+//                    ba_bionicitemplugin bionicInstalled = bionicItemMap.get(tokens[0]);
+//                    if(bionicInstalled == null) {
+//                        log.error("Can't find bionic of tag: " + tokens[0] + ". Skipping");
+//                    } else {
+//                        bionicsInstalledList.add(bionicInstalled);
+//                    }
+//                }
+//            }
+//        }
+        ba_officermanager.ba_personmemorydata data = ba_officermanager.getPersonMemoryData(person);
+        if(data != null) {
+            for(ba_officermanager.ba_bionicAugmentedData bionicData: data.anatomy) {
+                if(bionicData.bionicInstalled != null) {
+                    bionicsInstalledList.add(bionicData.bionicInstalled);
                 }
             }
         }
@@ -371,6 +395,7 @@ public class ba_bionicmanager {
 //    }
 
     /**
+     * Get bionics based on special item TAG
      * @param tag
      * @return
      */

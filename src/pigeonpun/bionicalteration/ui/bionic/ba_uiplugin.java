@@ -733,8 +733,11 @@ public class ba_uiplugin extends ba_uicommon {
         addButtonToList(removeButton, "bionic:edit");
         removeButton.setEnabled(false);
         if(this.currentSelectedLimb != null && ba_officermanager.checkIfCanEditLimb(this.currentSelectedLimb, this.currentPerson)) {
-            removeButton.setEnabled(true);
-            removeButton.flash(false);
+            List<ba_bionicitemplugin> availableRemovingBionics = ba_bionicmanager.getListBionicInstalledOnLimb(this.currentSelectedLimb, this.currentPerson);
+            if(!availableRemovingBionics.isEmpty()) {
+                removeButton.setEnabled(true);
+                removeButton.flash(false);
+            }
         }
         infoPersonTooltipContainer.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
             @Override
@@ -774,7 +777,8 @@ public class ba_uiplugin extends ba_uicommon {
         int tableY = (int) (0 + pad);
         int tableW = (int) (infoRightW - pad - pad);
         int tableH = (int) (personInfoH - pad - pad - btnH);
-        displayBionicTableWithKeyPreset(infoPersonContainer, infoPersonTooltipKey, "WORKSHOP",true, true, tableW, tableH, tableX, tableY);
+        String highlightLimbId = this.currentSelectedBionic != null? this.currentSelectedBionic.bionicLimbGroupId: "";
+        displayBionicTableWithKeyPresetHighLight(infoPersonContainer, infoPersonTooltipKey, "WORKSHOP",true, true, tableW, tableH, tableX, tableY, highlightLimbId);
         //--------selected
         int selectedH = btnH / 2;
         int selectedW = (int) (infoRightW - removeBtnW - installBtnW - pad);
@@ -1186,6 +1190,10 @@ public class ba_uiplugin extends ba_uicommon {
                         }
                         if(tokens[2].equals(this.currentRemovingBionic.bionicId)) {
                             removeBionic();
+                            List<ba_bionicitemplugin> availableRemovingBionics = ba_bionicmanager.getListBionicInstalledOnLimb(this.currentSelectedLimb, this.currentPerson);
+                            if(availableRemovingBionics.isEmpty()) {
+                                this.currentWorkShopMode = INSTALL_WORKSHOP;
+                            }
                             needsReset = true;
                             break;
                         }
