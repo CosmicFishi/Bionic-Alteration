@@ -79,6 +79,7 @@ public class ba_officermanager {
      * @param fleetFP
      */
     public static void setUpListOfficers(@NotNull List<PersonAPI> listOfficers, int fleetFP) {
+        //todo: problem with spawning admin -> admin always stuck at BRM tier 1
         for(PersonAPI person: listOfficers) {
             if(person.getMemoryWithoutUpdate().get(ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY) == null) {
                 ba_personmemorydata memoryData = new ba_personmemorydata(1);
