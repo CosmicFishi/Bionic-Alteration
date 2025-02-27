@@ -3,6 +3,7 @@ package pigeonpun.bionicalteration.listeners;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.listeners.ShowLootListener;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
+import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.impl.campaign.procgen.SalvageEntityGenDataSpec;
 import com.fs.starfarer.api.impl.campaign.procgen.themes.SalvageEntityGeneratorOld;
@@ -37,6 +38,14 @@ public class ba_salvagelistener implements ShowLootListener {
                     }
                 }
             }
+            //check for Guardian
+            for(FleetMemberAPI member: fleet.getMembersWithFightersCopy()) {
+                if(member.getVariant().getHullSpec().getBaseHullId().equals("guardian")) {
+                    //todo: sprite chip
+                    loot.addSpecial(new SpecialItemData("", null), 1);
+                }
+            }
+
         }
         List<SalvageEntityGenDataSpec.DropData> dropData = getDropDataFromEntity(dialog.getInteractionTarget());
 
