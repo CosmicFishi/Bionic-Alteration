@@ -375,6 +375,18 @@ public class ba_officermanager {
             person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).unmodifyFlat(key);
         }
     }
+
+    /**
+     * Update limit BRM after upgrading to new tier
+     * @param person
+     */
+    public static void updateLimitBRM(PersonAPI person) {
+        String key = "ba_upgraded_limit_BRM";
+        ba_personmemorydata data = getPersonMemoryData(person);
+        if(data != null) {
+            person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).modifyFlat(key, data.BRMTier * ba_variablemanager.BA_BRM_LIMIT_BONUS_PER_LEVEL);
+        }
+    }
     /**
      * Use for getting person anatomy including limb and bionic installed on the limb. Sort by person variant's limb order.
      * Bionic and appliedOverclock can be null

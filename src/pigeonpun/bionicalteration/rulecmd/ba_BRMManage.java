@@ -1,22 +1,30 @@
 package pigeonpun.bionicalteration.rulecmd;
 
+import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.InteractionDialogAPI;
+import com.fs.starfarer.api.campaign.OptionPanelAPI;
 import com.fs.starfarer.api.campaign.TextPanelAPI;
 import com.fs.starfarer.api.campaign.rules.MemKeys;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
+import com.fs.starfarer.api.characters.AdminData;
 import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.rulecmd.Nex_BlueprintSwap;
 import com.fs.starfarer.api.impl.campaign.rulecmd.PaginatedOptions;
 import com.fs.starfarer.api.ui.LabelAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
+import com.fs.starfarer.api.ui.UIComponentAPI;
 import com.fs.starfarer.api.util.Misc;
 import exerelin.utilities.StringHelper;
 import org.lwjgl.input.Keyboard;
+import pigeonpun.bionicalteration.ba_marketmanager;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -36,10 +44,22 @@ public class ba_BRMManage extends PaginatedOptions {
                 showOptions();
                 break;
             case "select":
-                displayInfo(dialog.getTextPanel());
+                int index = Integer.parseInt(memoryMap.get(MemKeys.LOCAL).getString("$option").substring(BRM_OFFICER_OPT_PREFIX.length()));
+                memoryMap.get(MemKeys.LOCAL).set("$ba_officerIndex", index);
+                PersonAPI person = personList.get(index);
+                displayInfo(person, dialog.getTextPanel());
+                updateMemoryAndRenameOption(person);
+                displayUpgradeCost(person, dialog.getTextPanel());
+                disableUpgradeIfNeeded(person);
                 break;
             case "upgrade":
-                //todo: this, upgrade, remove credit from player, increase BRM Tier
+                int indexUpgrade = Integer.parseInt(memoryMap.get(MemKeys.LOCAL).getString("$ba_officerIndex"));
+                PersonAPI currentPerson = personList.get(indexUpgrade);
+                upgradeBRMTier(currentPerson);
+                updateMemoryAndRenameOption(currentPerson);
+                displayUpgradeCost(currentPerson, dialog.getTextPanel());
+                disableUpgradeIfNeeded(currentPerson);
+                ba_officermanager.updateLimitBRM(currentPerson);
                 break;
         }
         return false;
@@ -47,6 +67,7 @@ public class ba_BRMManage extends PaginatedOptions {
     public void updatePersonList() {
         personList = ba_officermanager.getListOfficerFromFleet(null, true);
     }
+
     /**
      * To be called only when paginated dialog options are required.
      * Otherwise we get nested dialogs that take multiple clicks of the exit option to actually exit.
@@ -62,12 +83,71 @@ public class ba_BRMManage extends PaginatedOptions {
     @Override
     public void showOptions() {
         super.showOptions();
-//        for (String optId : disabledOpts)
-        //todo: set up dsisable option for officer with max BRm
-//        {
-//            dialog.getOptionPanel().setEnabled(optId, false);
-//        }
         dialog.getOptionPanel().setShortcut("ba_BRMSwapMenuReturn", Keyboard.KEY_ESCAPE, false, false, false, false);
+    }
+    public void upgradeBRMTier(PersonAPI person) {
+        ba_officermanager.ba_personmemorydata memoryData = ba_officermanager.getPersonMemoryData(person);
+        if(memoryData != null) {
+            int nextTier = memoryMap.get(MemKeys.LOCAL).get("$ba_nextBRMTier") != null? (int) memoryMap.get(MemKeys.LOCAL).get("$ba_nextBRMTier") : 2;
+            float upgradeCost = nextTier * bionicalterationplugin.academyBRMUpgradeBase;
+            memoryData.BRMTier = nextTier;
+            Global.getSector().getPlayerFleet().getCargo().getCredits().set(Global.getSector().getPlayerFleet().getCargo().getCredits().get() - upgradeCost);
+            ba_officermanager.savePersonMemoryData(memoryData, person);
+            dialog.getTextPanel().addPara("Upgraded BRM Tier to Tier " + nextTier);
+        }
+    }
+    public void updateMemoryAndRenameOption(PersonAPI person) {
+        ba_officermanager.ba_personmemorydata data = ba_officermanager.getPersonMemoryData(person);
+        int nextTier = 2;
+        if(data != null) {
+            nextTier = data.BRMTier+1;
+            if(nextTier > bionicalterationplugin.maxAcademyBRMTier) {
+                nextTier = bionicalterationplugin.maxAcademyBRMTier;
+            }
+        }
+        memoryMap.get(MemKeys.LOCAL).set("$ba_nextBRMTier", nextTier);
+        dialog.getOptionPanel().setOptionText("Upgrade to BRM Tier " + nextTier, "ba_BRMTier_showOpt_upgradeSelect_Opt");
+    }
+    public void disableUpgradeIfNeeded(PersonAPI person) {
+        ba_officermanager.ba_personmemorydata memoryData = ba_officermanager.getPersonMemoryData(person);
+        if(memoryData != null) {
+            int nextTier = memoryMap.get(MemKeys.LOCAL).get("$ba_nextBRMTier") != null? (int) memoryMap.get(MemKeys.LOCAL).get("$ba_nextBRMTier") : 2;
+            final float upgradeCost = nextTier * bionicalterationplugin.academyBRMUpgradeBase;
+            if(memoryData.BRMTier >= bionicalterationplugin.maxAcademyBRMTier || Global.getSector().getPlayerFleet().getCargo().getCredits().get() <= upgradeCost) {
+                dialog.getOptionPanel().setEnabled("ba_BRMTier_showOpt_upgradeSelect_Opt", false);
+                dialog.getOptionPanel().addOptionTooltipAppender("ba_BRMTier_showOpt_upgradeSelect_Opt", new OptionPanelAPI.OptionTooltipCreator() {
+                    @Override
+                    public void createTooltip(TooltipMakerAPI tooltip, boolean hadOtherText) {
+                        if(Global.getSector().getPlayerFleet().getCargo().getCredits().get() <= upgradeCost) {
+                            tooltip.addPara("Not enough credit to continue upgrading", 5f);
+                        } else {
+                            tooltip.addPara("Max BRM Tier reached, can't upgrade further", 5f);
+                        }
+                    }
+                });
+            }
+        }
+    }
+    public void displayUpgradeCost(PersonAPI person, TextPanelAPI text) {
+        float pad = 10f;
+        float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        Color t = Misc.getTextColor();
+        Color g = Misc.getGrayColor();
+
+        ba_officermanager.ba_personmemorydata memoryData = ba_officermanager.getPersonMemoryData(person);
+        int nextTier = memoryMap.get(MemKeys.LOCAL).get("$ba_nextBRMTier") != null? (int) memoryMap.get(MemKeys.LOCAL).get("$ba_nextBRMTier") : 2;
+        float upgradeCost = nextTier * bionicalterationplugin.academyBRMUpgradeBase;
+        text.setFontSmallInsignia();
+        text.setFontOrbitronUnnecessarilyLarge();
+        text.addPara("BRM Upgrade Information Tier " + nextTier);
+        text.setFontSmallInsignia();
+        LabelAPI currentLabel = text.addPara("Current credit: %s", t,  "" +Misc.getDGSCredits(Global.getSector().getPlayerFleet().getCargo().getCredits().get()));
+        currentLabel.setHighlightColors(h);
+        LabelAPI costLabel = text.addPara("Upgrade cost: %s", t, "" + Misc.getDGSCredits(upgradeCost));
+        costLabel.setHighlightColors(bad);
+        text.setFontInsignia();
     }
     public void displayOfficersList() {
         //add officers into the list
@@ -76,29 +156,72 @@ public class ba_BRMManage extends PaginatedOptions {
         int index = 0;
         for (PersonAPI person : personList)
         {
-            //todo: set up list officers
-            addOption(person.getNameString(), BRM_OFFICER_OPT_PREFIX + index);
+            ba_officermanager.ba_personmemorydata data = ba_officermanager.getPersonMemoryData(person);
+            String tierText = "Tier ";
+            if(data != null) {
+                tierText += data.BRMTier;
+            } else {
+                tierText += "1";
+            }
+            addOption( tierText + " - " + person.getNameString() + (person.isPlayer()? " (You)": ""), BRM_OFFICER_OPT_PREFIX + index);
             index++;
         }
 
         addOptionAllPages(StringHelper.getString("back", true), "ba_BRMSwapMenuReturn");
     }
-    public void displayInfo(TextPanelAPI text) {
+    public void displayInfo(PersonAPI person, TextPanelAPI text) {
         float pad = 10f;
         float opad = 10f;
         Color h = Misc.getHighlightColor();
         Color bad = Misc.getNegativeHighlightColor();
         Color t = Misc.getTextColor();
         Color g = Misc.getGrayColor();
-        int index = Integer.parseInt(memoryMap.get(MemKeys.LOCAL).getString("$option").substring(BRM_OFFICER_OPT_PREFIX.length()));
-        PersonAPI person = personList.get(index);
+
         ba_officermanager.ba_personmemorydata memoryData = ba_officermanager.getPersonMemoryData(person);
         text.setFontSmallInsignia();
 
-        text.addImage(person.getPortraitSprite());
-        LabelAPI name = text.addPara(person.getName().getFullName() + (person.isPlayer() ? " (" + "You" + ")": ""));
-        name.setHighlight(person.getName().getFullName());
-        name.setHighlightColors(Misc.getBrightPlayerColor());
+        //display ship or planet for selected officer/admin
+        if(ba_officermanager.isCaptainOrAdmin(person, false).equals(ba_officermanager.ba_profession.CAPTAIN)) {
+            //display ship for the officer in player's fleet
+            List<FleetMemberAPI> temp = new ArrayList<>();
+            FleetMemberAPI member = ba_officermanager.getFleetMemberFromFleet(person, Collections.singletonList(Global.getSector().getPlayerFleet()), true);
+            if(member != null) {
+                temp.add(member);
+                text.beginTooltip().addShipList(1, 1, 150, Global.getSettings().getBasePlayerColor(), temp, 0);
+                text.addTooltip();
+            } else {
+                //display the person pfp if idle
+                String spriteName = person.getPortraitSprite();
+                text.addImage(spriteName);
+            }
+        } else {
+            AdminData selectedAdmin = null;
+            for (AdminData admin: Global.getSector().getCharacterData().getAdmins()) {
+                if(!admin.getPerson().isDefault() && !admin.getPerson().isAICore()) {
+                    if(admin.getPerson().getId().equals(person.getId())) {
+                        selectedAdmin = admin;
+                        break;
+                    }
+                }
+            }
+            if(selectedAdmin != null && selectedAdmin.getMarket() != null) {
+                //display planet
+                if(selectedAdmin.getMarket().getPlanetEntity() != null) {
+                    text.beginTooltip().showPlanetInfo(selectedAdmin.getMarket().getPlanetEntity(), 150,150,true,0);
+                    text.addTooltip();
+                } else {
+                    //display whatever the market connected to
+
+                    //display the person pfp if idle
+                    String spriteName = selectedAdmin.getMarket().getPrimaryEntity().getCustomEntitySpec().getSpriteName();;
+                    text.addImage(spriteName);
+                }
+            } else {
+                //display the person pfp if idle
+                String spriteName = person.getPortraitSprite();
+                text.addImage(spriteName);
+            }
+        }
 
         boolean isAdmin = ba_officermanager.isCaptainOrAdmin(person, false).equals(ba_officermanager.ba_profession.ADMIN);
 
@@ -122,5 +245,7 @@ public class ba_BRMManage extends PaginatedOptions {
         text.addSkillPanel(person, isAdmin);
 
         text.setFontInsignia();
+
+
     }
 }

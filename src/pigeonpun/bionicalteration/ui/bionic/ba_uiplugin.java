@@ -234,8 +234,8 @@ public class ba_uiplugin extends ba_uicommon {
                     //display ship for the officer in player's fleet
                     List<FleetMemberAPI> temp = new ArrayList<>();
                     FleetMemberAPI member = ba_officermanager.getFleetMemberFromFleet(currentPerson, Collections.singletonList(Global.getSector().getPlayerFleet()), true);
-                    if(member != null) {
-                        temp.add(member);
+                        if(member != null) {
+                            temp.add(member);
                     } else {
                         //display the person pfp if idle
                         int imageX = (int) 0;

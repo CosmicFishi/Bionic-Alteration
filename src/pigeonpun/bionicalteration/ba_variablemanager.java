@@ -79,4 +79,9 @@ public class ba_variablemanager {
     public static final String BA_BIONIC_CONTAINER_PERSISTENT_KEY = "ba_bionic_container";
     public static final String BA_OVERCLOCK_STATION_TAG_NAME = "Overclock station";
     public static final String BA_ACHIEVEMENT_ZERO_CONSCIOUSNESS_ITEM_KEY = "$ba_zero_consciousness_reward";
+    /**
+     * Default value, can be change in settings.json
+     */
+    public static final int BA_ACADEMIC_MAX_BRM_TIER = 7;
+    public static final int BA_ACADEMIC_UPGRADE_BASE_CREDIT = 20000;
 }

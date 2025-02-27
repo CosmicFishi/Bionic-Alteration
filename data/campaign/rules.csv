@@ -66,7 +66,7 @@ ba_fleetEncoutner_BionicScanDisplay,DialogOptionSelected,"$option == ba_fleetEnc
 ba_hasBionics score:9999997","ba_displayBionicUI otherFleet",,,
 "#END fleet interaction",,,,,,
 ,,,,,,
-# Galatia Academy,,,,,,
+# BRM management,,,,,,
 ba_BRMTier_showOpt,PopulateOptions,"$id == station_galatia_academy",,,"3:ba_BRMTier_showOpt_info:Ask about BRM",
 ba_BRMTier_showOpt_info,DialogOptionSelected,"$option == ba_BRMTier_showOpt_info","FireAll ba_showBRMManageOptions","BRM, short for Bionic Right Management, is a digital license that each citizen of the Sector has when they first born.
 Hardcoded by the system before the collapse, we right now have no way to remove such limitation of the digital certificate and force to abide by it.
@@ -77,9 +77,8 @@ ba_BRMTier_showOpt_leave_Opt,DialogOptionSelected,"$option == ba_leaveBRM","Fire
 ba_BRMTier_showOpt_upgrade,ba_showBRMManageOptions,,,,"0:ba_BRMTier_showOpt_upgrade:Upgrade License",
 ba_BRMTier_showOpt_upgrade_Opt,DialogOptionSelected,"$option == ba_BRMTier_showOpt_upgrade","ba_BRMManage displayOfficersList","Select the officer/admin to upgrade BRM tier.",,
 ba_BRMTier_showOpt_upgadeSelect,DialogOptionSelected,"ba_OptionStartWith ba_officer_selection_","ba_BRMManage select
-","Current Credits:
-Needed Credits:","ba_BRMTier_showOpt_upgradeConfirm_Opt:Upgrade BRM Tier
+",,"ba_BRMTier_showOpt_upgradeSelect_Opt:Upgrade to BRM Tier 
 ba_BRMTier_showOpt_upgrade:Go back",
-ba_BRMTier_showOpt_upgradeConfirm_Opt,DialogOptionSelected,"$option == ba_BRMTier_showOpt_upgradeConfirm_Opt","AddTextSmall ""You have $credits left""",,,
-"#END Galatia Academy",,,,,,
+ba_BRMTier_showOpt_upgradeSelect_Opt,DialogOptionSelected,"$option == ba_BRMTier_showOpt_upgradeSelect_Opt","ba_BRMManage upgrade",,,
+"#END BRM management",,,,,,
 

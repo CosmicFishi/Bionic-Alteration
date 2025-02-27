@@ -24,6 +24,8 @@ public class bionicalterationplugin extends BaseModPlugin {
     public static boolean isDevmode = false;
     public static boolean isBRMCapDisable = false;
     public static boolean isConsciousnessDisable = false;
+    public static int maxAcademyBRMTier = ba_variablemanager.BA_ACADEMIC_MAX_BRM_TIER;
+    public static int academyBRMUpgradeBase = ba_variablemanager.BA_ACADEMIC_MAX_BRM_TIER;
     @Override
     public void onApplicationLoad() throws Exception {
 //        ba_manager.getInstance();
@@ -39,6 +41,8 @@ public class bionicalterationplugin extends BaseModPlugin {
         isDevmode = Global.getSettings().getBoolean("isDevmode");
         isBRMCapDisable = Global.getSettings().getBoolean("isBRMCapDisable");
         isConsciousnessDisable = Global.getSettings().getBoolean("isConsciousnessDisable");
+        maxAcademyBRMTier = Global.getSettings().getInt("maxAcademyBRMTier");
+        academyBRMUpgradeBase = Global.getSettings().getInt("brmUpgradeBaseCredit");
 
         if(isLunalibEnabled) {
             lunaconfighelper.initLunaConfig();
