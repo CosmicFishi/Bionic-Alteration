@@ -9,6 +9,7 @@ import com.fs.starfarer.api.impl.campaign.procgen.SalvageEntityGenDataSpec;
 import com.fs.starfarer.api.impl.campaign.procgen.themes.SalvageEntityGeneratorOld;
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.SalvageEntity;
 import com.fs.starfarer.api.util.Misc;
+import com.fs.starfarer.api.util.WeightedRandomPicker;
 import com.fs.starfarer.campaign.CustomCampaignEntity;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
@@ -41,8 +42,11 @@ public class ba_salvagelistener implements ShowLootListener {
             //check for Guardian
             for(FleetMemberAPI member: fleet.getMembersWithFightersCopy()) {
                 if(member.getVariant().getHullSpec().getBaseHullId().equals("guardian")) {
-                    //todo: sprite chip
-                    loot.addSpecial(new SpecialItemData("", null), 1);
+                    WeightedRandomPicker<String> randomCVEText = new WeightedRandomPicker<>();
+                    for (String text: ba_variablemanager.BA_CVE.values()) {
+                        randomCVEText.add(text);
+                    }
+                    loot.addSpecial(new SpecialItemData("ba_blind_entry", randomCVEText.pick()), 1);
                 }
             }
 

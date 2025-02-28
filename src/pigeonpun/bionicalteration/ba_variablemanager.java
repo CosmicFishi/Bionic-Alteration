@@ -84,4 +84,13 @@ public class ba_variablemanager {
      */
     public static final int BA_ACADEMIC_MAX_BRM_TIER = 7;
     public static final int BA_ACADEMIC_UPGRADE_BASE_CREDIT = 20000;
+    public static final HashMap<Integer, String> BA_CVE = new HashMap<>();
+    static {
+        BA_CVE.put(0, "CVE-2024-47611");
+        BA_CVE.put(1, "CVE-2021-44228");
+        BA_CVE.put(2, "CVE-2014-0160");
+        BA_CVE.put(3, "CVE-2022-0609");
+        BA_CVE.put(4, "CVE-2025-20124");
+    }
+
 }

@@ -53,5 +53,6 @@ False Visage,ba_brain_false_visage,"ba_bionic_t4, ba_bionic_unknown",Unknown Pro
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 #Evoshard,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 Evoshard,ba_evoshard,ba_evoshard,,,,1000,1,,graphics/cargo/ba_evoshard.png,ui_chip_pickup,ui_cargo_special_ultratech_drop,com.fs.starfarer.api.campaign.impl.items.GenericSpecialItemPlugin,,"A magnetized material which is obtainable by feeding bionics to the shard reaper at the Bionic Research Station. When combined with a bionic, it will either alter or enhance the functionality of said augmentation.",1100,,,,,,,,,,,,,
+Blind Entry,ba_blind_entry,ba_blind_entry,,,300000,1000,1,,graphics/cargo/ba_blind_entry.png,ui_chip_pickup,ui_cargo_special_ultratech_drop,pigeonpun.bionicalteration.inventory.ba_blindentry,,TO BE UPDATED,1101,,,,,,,,,,,,,
 #Container,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 Bionic Container,ba_bionic_container,"ba_bionic_container, mission_item",,,,1,1,,graphics/cargo/ba_bionic_container.png,,,pigeonpun.bionicalteration.bionic.ba_bioniccontainer,,“Would you like to free up your cargo space or to prepare for a lengthy expedition? Head down to the nearest dock where we have the best titanium transplant tank just for you with a low low price of #!!$@...”,1050,,,,,,,,,,,,,
