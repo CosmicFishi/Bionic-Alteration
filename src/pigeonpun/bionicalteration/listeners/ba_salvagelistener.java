@@ -46,7 +46,7 @@ public class ba_salvagelistener implements ShowLootListener {
                     for (String text: ba_variablemanager.BA_CVE.values()) {
                         randomCVEText.add(text);
                     }
-                    loot.addSpecial(new SpecialItemData("ba_blind_entry", randomCVEText.pick()), 1);
+                    loot.addSpecial(new SpecialItemData(ba_variablemanager.BA_BLIND_ENTRY_ITEM_ID, randomCVEText.pick()), 1);
                 }
             }
 

@@ -77,8 +77,10 @@ ba_BRMTier_showOpt_leave_Opt,DialogOptionSelected,"$option == ba_leaveBRM","Fire
 ba_BRMTier_showOpt_upgrade,ba_showBRMManageOptions,,,,"0:ba_BRMTier_showOpt_upgrade:Upgrade License",
 ba_BRMTier_showOpt_upgrade_Opt,DialogOptionSelected,"$option == ba_BRMTier_showOpt_upgrade","ba_BRMManage displayOfficersList","Select the officer/admin to upgrade BRM tier.",,
 ba_BRMTier_showOpt_upgadeSelect,DialogOptionSelected,"ba_OptionStartWith ba_officer_selection_","ba_BRMManage select
-",,"ba_BRMTier_showOpt_upgradeSelect_Opt:Upgrade to BRM Tier 
+","A terminal displayed, waiting for you to select options for upgrading BRM.","ba_BRMTier_showOpt_upgradeSelect_Opt:Upgrade to BRM Tier
+ba_BRMTier_showOpt_upgradeSelected_blindEntry_Opt: Upgrade using Blind Entry
 ba_BRMTier_showOpt_upgrade:Go back",
-ba_BRMTier_showOpt_upgradeSelect_Opt,DialogOptionSelected,"$option == ba_BRMTier_showOpt_upgradeSelect_Opt","ba_BRMManage upgrade",,,
+ba_BRMTier_showOpt_upgradeSelect_Opt,DialogOptionSelected,"$option == ba_BRMTier_showOpt_upgradeSelect_Opt","ba_BRMManage upgrade","Transfered the credits over the terminal and not a moment later, a notification shows up congratulate you on the BRM Tier upgrade.",,
+ba_BRMTier_showOpt_upgradeSelected_blindEntry_Opt,DialogOptionSelected,"$option == ba_BRMTier_showOpt_upgradeSelected_blindEntry_Opt","ba_BRMManage upgrade_blindEntry","You sneakily plug in the entry in one of the many available ports, <sfx>. After a brief moment, a notification pop up congratulates you for the successful BRM upgrade.",,
 "#END BRM management",,,,,,
 

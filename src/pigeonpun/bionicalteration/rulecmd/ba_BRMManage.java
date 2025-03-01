@@ -1,6 +1,7 @@
 package pigeonpun.bionicalteration.rulecmd;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.CargoStackAPI;
 import com.fs.starfarer.api.campaign.InteractionDialogAPI;
 import com.fs.starfarer.api.campaign.OptionPanelAPI;
 import com.fs.starfarer.api.campaign.TextPanelAPI;
@@ -20,6 +21,7 @@ import org.lwjgl.input.Keyboard;
 import pigeonpun.bionicalteration.ba_marketmanager;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
+import pigeonpun.bionicalteration.inventory.ba_inventoryhandler;
 import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
 
 import java.awt.*;
@@ -61,6 +63,13 @@ public class ba_BRMManage extends PaginatedOptions {
                 disableUpgradeIfNeeded(currentPerson);
                 ba_officermanager.updateLimitBRM(currentPerson);
                 break;
+            case "upgrade_blindEntry":
+                int indexUpgradeBlindEntry = Integer.parseInt(memoryMap.get(MemKeys.LOCAL).getString("$ba_officerIndex"));
+                PersonAPI currentPersonBlindEntry = personList.get(indexUpgradeBlindEntry);
+                upgradeBRMTier_viaBlindEntry(currentPersonBlindEntry);
+                displayUpgradeCost(currentPersonBlindEntry, dialog.getTextPanel());
+                disableUpgradeIfNeeded(currentPersonBlindEntry);
+                break;
         }
         return false;
     }
@@ -85,6 +94,19 @@ public class ba_BRMManage extends PaginatedOptions {
         super.showOptions();
         dialog.getOptionPanel().setShortcut("ba_BRMSwapMenuReturn", Keyboard.KEY_ESCAPE, false, false, false, false);
     }
+    public void upgradeBRMTier_viaBlindEntry(PersonAPI person) {
+        if(ba_inventoryhandler.removeBlindEntryFromPersonCargo(1)) {
+            int brmBeforeBlindEntryUpgrade = (int) person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);
+            String modifyId = ba_variablemanager.BA_BLIND_ENTRY_ITEM_ID + ":" + Global.getSector().getClock().getTimestamp();
+            person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).modifyFlat(modifyId, ba_variablemanager.BA_BLIND_ENTRY_BRM_INCREMENT);
+            int brmAfterBlindEntryUpgrade = (int) person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);
+            dialog.getTextPanel().setFontSmallInsignia();
+            dialog.getTextPanel().addPara("Removed %s from inventory", Misc.getNegativeHighlightColor(), "1 Blind Entry");
+            dialog.getTextPanel().addPara("BRM capacity increased by %s", Misc.getHighlightColor(), "" + ba_variablemanager.BA_BLIND_ENTRY_BRM_INCREMENT);
+            dialog.getTextPanel().addPara("BRM capacity changed from %s -> %s", Misc.getPositiveHighlightColor(), "" + brmBeforeBlindEntryUpgrade, "" + brmAfterBlindEntryUpgrade);
+            dialog.getTextPanel().setFontInsignia();
+        }
+    }
     public void upgradeBRMTier(PersonAPI person) {
         ba_officermanager.ba_personmemorydata memoryData = ba_officermanager.getPersonMemoryData(person);
         if(memoryData != null) {
@@ -93,7 +115,7 @@ public class ba_BRMManage extends PaginatedOptions {
             memoryData.BRMTier = nextTier;
             Global.getSector().getPlayerFleet().getCargo().getCredits().set(Global.getSector().getPlayerFleet().getCargo().getCredits().get() - upgradeCost);
             ba_officermanager.savePersonMemoryData(memoryData, person);
-            dialog.getTextPanel().addPara("Upgraded BRM Tier to Tier " + nextTier);
+            dialog.getTextPanel().addPara("Upgraded BRM Tier to Tier " + nextTier + " using credits");
         }
     }
     public void updateMemoryAndRenameOption(PersonAPI person) {
@@ -126,6 +148,22 @@ public class ba_BRMManage extends PaginatedOptions {
                     }
                 });
             }
+        }
+        boolean hasBlindEntry = false;
+        for( CargoStackAPI cargoStackAPI: Global.getSector().getPlayerFleet().getCargo().getStacksCopy()) {
+            if (cargoStackAPI.isSpecialStack() && cargoStackAPI.getSpecialItemSpecIfSpecial().getId().equals(ba_variablemanager.BA_BLIND_ENTRY_ITEM_ID)) {
+                hasBlindEntry = true;
+                break;
+            }
+        }
+        if(!hasBlindEntry) {
+            dialog.getOptionPanel().setEnabled("ba_BRMTier_showOpt_upgradeSelected_blindEntry_Opt", false);
+            dialog.getOptionPanel().addOptionTooltipAppender("ba_BRMTier_showOpt_upgradeSelected_blindEntry_Opt", new OptionPanelAPI.OptionTooltipCreator() {
+                @Override
+                public void createTooltip(TooltipMakerAPI tooltip, boolean hadOtherText) {
+                    tooltip.addPara("No available item", 5f);
+                }
+            });
         }
     }
     public void displayUpgradeCost(PersonAPI person, TextPanelAPI text) {
@@ -239,8 +277,8 @@ public class ba_BRMManage extends PaginatedOptions {
 
         int currentBRM = (int) person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
         int limitBRM = (int) person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);
-        LabelAPI BRM = text.addPara("BRM: " + limitBRM);
-        BRM.setHighlight("BRM: ", "" +limitBRM);
+        LabelAPI BRM = text.addPara("BRM Capacity: " + limitBRM);
+        BRM.setHighlight("BRM Capacity: ", "" +limitBRM);
         BRM.setHighlightColors(t,h);
         text.addSkillPanel(person, isAdmin);
 
