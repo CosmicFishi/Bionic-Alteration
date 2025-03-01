@@ -21,18 +21,19 @@ import java.util.List;
 public class bioniccondition extends BaseMarketConditionPlugin {
     protected PersonAPI person;
 
-    @Override
-    public void init(MarketAPI market, MarketConditionAPI condition) {
-        super.init(market, condition);
-        if(market == null || market.getStats() == null) return; //Thanks alaricdragon :3
-        if(market.getAdmin() != null) {
-            this.person = market.getAdmin();
-        }
-    }
+//    @Override
+//    public void init(MarketAPI market, MarketConditionAPI condition) {
+//        super.init(market, condition);
+//        if(market == null || market.getStats() == null) return; //Thanks alaricdragon :3
+//        if(market.getAdmin() != null) {
+//            this.person = market.getAdmin();
+//        }
+//    }
 
     @Override
     public void apply(String id) {
-        if(person != null) {
+        if(market != null && market.getAdmin() != null) {
+            this.person = market.getAdmin();
             List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
             for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
                 if(anatomy.bionicInstalled != null) {
@@ -62,7 +63,8 @@ public class bioniccondition extends BaseMarketConditionPlugin {
 
     @Override
     public void unapply(String id) {
-        if(person != null) {
+        if(market != null && market.getAdmin() != null) {
+            this.person = market.getAdmin();
             List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
             for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
                 if(anatomy.bionicInstalled != null) {
