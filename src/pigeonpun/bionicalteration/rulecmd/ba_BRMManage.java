@@ -113,7 +113,7 @@ public class ba_BRMManage extends PaginatedOptions {
             int nextTier = memoryMap.get(MemKeys.LOCAL).get("$ba_nextBRMTier") != null? (int) memoryMap.get(MemKeys.LOCAL).get("$ba_nextBRMTier") : 2;
             float upgradeCost = nextTier * bionicalterationplugin.academyBRMUpgradeBase;
             memoryData.BRMTier = nextTier;
-            Global.getSector().getPlayerFleet().getCargo().getCredits().set(Global.getSector().getPlayerFleet().getCargo().getCredits().get() - upgradeCost);
+            Global.getSector().getPlayerFleet().getCargo().getCredits().subtract(upgradeCost);
             ba_officermanager.savePersonMemoryData(memoryData, person);
             dialog.getTextPanel().addPara("Upgraded BRM Tier to Tier " + nextTier + " using credits");
         }
