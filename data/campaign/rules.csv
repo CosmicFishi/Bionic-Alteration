@@ -92,6 +92,6 @@ ba_ripperBionicOptionBar,ba_ripperBionic_optionBar,,,,"ba_ripperBionic_startOpti
 ba_ripperBionicBlurbBar,ba_ripperBionic_blurbBar,,,"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",,
 ba_ripperBionicStartOption,DialogOptionSelected,"$option == ba_ripperBionic_startOption",,"I sure hope it works
 ""<description of the person>, hey i got some good stuffs, just for you only, with a mere markup price of $ba_markupBionicPrice""","ba_ripperBionic_selectBionics:Take a look at the offer",
-ba_ripperBionic_selectBionics,DialogOptionSelected,"$option == ba_ripperBionic_selectBionics",,,,
+ba_ripperBionic_selectBionics,DialogOptionSelected,"$option == ba_ripperBionic_selectBionics","ba_ripperDoc_clinic displayClinic",,,
 "#END ripperDoc",,,,,,
 
