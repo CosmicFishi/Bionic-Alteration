@@ -3,7 +3,7 @@
 	"name":"Bionic Alteration", # Displayed to the player
 	"author":"PigeonPun",
     "utility":"false",
-    "version": { "major":"0", "minor": "2", "patch": "2" },
+    "version": { "major":"0", "minor": "2", "patch": "3" },
 	"description":"Modify and fight against foe with bionics",
     "gameVersion": "0.97a-RC6",
   	"jars":["jars/bionicalteration.jar"],
