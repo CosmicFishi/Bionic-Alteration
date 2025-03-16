@@ -83,6 +83,7 @@ public class ba_procgenmanager {
                         if(entity instanceof PlanetAPI || entity.getTags() == null) continue;
                         if(entity.getTags() != null && !entity.getTags().contains(Tags.SALVAGEABLE)) continue;
                         if(entity.getCustomEntityType() != null &&  ignoredType.contains(entity.getCustomEntityType())) continue;
+                        if(entity.getOrbitFocus() == null) continue;
                         if(Objects.equals(entity.getOrbitFocus().getId(), selectedPlanet.getId())) {
                             listOrbittingEntities.add(entity);
                         }

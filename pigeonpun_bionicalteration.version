@@ -6,9 +6,9 @@
   "modVersion":
     {
       "major": 0,
-      "minor": 2,
-      "patch": 1 # Can be a number, character or string (1, 2, a, b, "-RC2", etc)
+      "minor": 3,
+      "patch": 0 # Can be a number, character or string (1, 2, a, b, "-RC2", etc)
     },
   "modThreadId": 30383, # eg 8181
-  "directDownloadURL": "https://github.com/CosmicFishi/Bionic-Alteration/releases/download/0.2.1/Bionic-Alteration-0.2.1.zip"
+  "directDownloadURL": "https://github.com/CosmicFishi/Bionic-Alteration/releases/download/0.3.0/Bionic-Alteration-0.3.0.zip"
 }
