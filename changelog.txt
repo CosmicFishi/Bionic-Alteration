@@ -1,4 +1,4 @@
-=========== 0.2.2 (Save compatible) ============
+=========== 0.2.3 (Save compatible) ============
 - Fix crash related to bionic station generation returning null.
 =========== 0.2.2 (Not sure if save compatible) ============
 - Fix crash related to market condition being weird. (I still don't know why its weird but ok)
