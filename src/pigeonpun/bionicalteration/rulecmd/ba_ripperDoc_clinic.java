@@ -34,6 +34,7 @@ public class ba_ripperDoc_clinic extends BaseCommandPlugin {
     protected CargoAPI clinicShopInv;
     protected String clinicShopMemKey = "$ba_clinicShopInv_key";
     protected String toPurchaseCargoMemKey = "$ba_toPurchaseCargo_key";
+    protected String markupBionicPriceMemKey = "$ba_markupBionicPrice";
     protected float markUp = 3f;
     @Override
     public boolean execute(String ruleId, InteractionDialogAPI dialog, List<Misc.Token> params, Map<String, MemoryAPI> memoryMap) {
@@ -50,6 +51,9 @@ public class ba_ripperDoc_clinic extends BaseCommandPlugin {
 
         playerFleet = Global.getSector().getPlayerFleet();
         switch (arg) {
+            case "initMemKey":
+                initMemKey();
+                break;
             case "displayClinic":
                 displayClinicInv();
                 break;
@@ -66,6 +70,9 @@ public class ba_ripperDoc_clinic extends BaseCommandPlugin {
                 break;
         }
         return false;
+    }
+    public void initMemKey() {
+        memory.set(markupBionicPriceMemKey, "" + Math.round(markUp * 100) + "%");
     }
     public void disabledPurchaseIfNeeded(CargoAPI cargo) {
         if(cargo == null) return;
@@ -120,7 +127,26 @@ public class ba_ripperDoc_clinic extends BaseCommandPlugin {
         if (memory.get(toPurchaseCargoMemKey) != null && memory.get(toPurchaseCargoMemKey) instanceof CargoAPI) {
             toPurchaseCargo = (CargoAPI) memory.get(toPurchaseCargoMemKey);
         }
-        //todo: this
+        if(toPurchaseCargo == null) return;
+        float availableCredits = Global.getSector().getPlayerFleet().getCargo().getCredits().get();
+        float neededCredits = computeTotalCreditsNeeded(toPurchaseCargo);
+        if(availableCredits < neededCredits) return;
+
+        Global.getSector().getPlayerFleet().getCargo().getCredits().subtract(neededCredits);
+        CargoAPI clinicInv = null;
+        if(memory.get(clinicShopMemKey) != null && memory.get(clinicShopMemKey) instanceof CargoAPI) {
+            clinicInv = (CargoAPI) memory.get(clinicShopMemKey);
+        }
+        if(clinicInv != null) {
+            for(CargoStackAPI stack :toPurchaseCargo.getStacksCopy()) {
+                clinicInv.removeItems(CargoAPI.CargoItemType.SPECIAL,stack.getSpecialDataIfSpecial(),stack.getSize());
+                ba_inventoryhandler.addToContainer(stack);
+            }
+            memory.set(clinicShopMemKey, clinicInv);
+            toPurchaseCargo.clear();
+            memory.unset(toPurchaseCargoMemKey);
+            text.addPara("\"Transaction successful, pleasure doing business with you.\"");
+        }
         //todo: figure out a way to reset the clinic inv once a month
     }
     public void displayClinicInv() {

@@ -90,12 +90,12 @@ Suddenly terminal screen returns to normal, light coming from the entry no longe
 # ripperDoc,,,,,,
 ba_ripperBionicOptionBar,ba_ripperBionic_optionBar,,,,"ba_ripperBionic_startOption:Approach the person at the back of local clinic",
 ba_ripperBionicBlurbBar,ba_ripperBionic_blurbBar,,,"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",,
-ba_ripperBionicStartOption,DialogOptionSelected,"$option == ba_ripperBionic_startOption",,"I sure hope it works
-""<description of the person>, hey i got some good stuffs, just for you only, with a mere markup price of $ba_markupBionicPrice""","ba_ripperBionic_selectBionics:Take a look at the offer
+ba_ripperBionicStartOption,DialogOptionSelected,"$option == ba_ripperBionic_startOption","ba_ripperDoc_clinic initMemKey","""<description of the person>, hey i got some good stuffs, just for you only, with a mere markup price of $ba_markupBionicPrice""","ba_ripperBionic_selectBionics:Take a look at the offer
 contact_declineBarNoContinue:Decline",
 ba_ripperBionic_selectBionics,DialogOptionSelected,"$option == ba_ripperBionic_selectBionics","ba_ripperDoc_clinic displayClinic",,,
 ba_ripperBionic_confirmPurchase,ba_ripperBionicConfirmPurchase,,"ba_ripperDoc_clinic purchaseInfo",,"ba_ripperBionic_purchase_opt:Purchase
 ba_ripperBionic_selectBionics:Reconsider your choice",
-ba_ripperBionic_purchase_opt,DialogOptionSelected,"$option == ba_ripperBionic_purchase_opt","ba_ripperDoc_clinic purchase",,,
+ba_ripperBionic_purchase_opt,DialogOptionSelected,"$option == ba_ripperBionic_purchase_opt","ba_ripperDoc_clinic purchase
+BarCMD returnFromEvent false",,,
 "#END ripperDoc",,,,,,
 
