@@ -1,3 +1,5 @@
+=========== 0.2.4 (Save compatible) ============
+- Fix crash related to bionic condition when loading into save with deciv market.
 =========== 0.2.3 (Save compatible) ============
 - Fix crash related to bionic station generation returning null.
 =========== 0.2.2 (Not sure if save compatible) ============

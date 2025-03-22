@@ -4,6 +4,7 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.MarketConditionAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.impl.campaign.econ.BaseMarketConditionPlugin;
+import com.fs.starfarer.api.impl.campaign.ids.Conditions;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import pigeonpun.bionicalteration.ba_limbmanager;
 import pigeonpun.bionicalteration.ba_officermanager;
@@ -32,7 +33,7 @@ public class bioniccondition extends BaseMarketConditionPlugin {
 
     @Override
     public void apply(String id) {
-        if(market != null && market.getAdmin() != null) {
+        if(market != null && market.getAdmin() != null && !market.hasCondition(Conditions.DECIVILIZED) && !market.getAdmin().isDefault()) {
             this.person = market.getAdmin();
             List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
             for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {

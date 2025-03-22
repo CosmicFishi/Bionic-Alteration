@@ -10,6 +10,7 @@ import com.fs.starfarer.api.combat.listeners.AdvanceableListener;
 import com.fs.starfarer.api.combat.listeners.DamageTakenModifier;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.fleet.MutableMarketStatsAPI;
+import com.fs.starfarer.api.impl.campaign.ids.Conditions;
 import com.fs.starfarer.api.impl.campaign.ids.Stats;
 import com.fs.starfarer.api.impl.campaign.skills.BaseSkillEffectDescription;
 import com.fs.starfarer.api.ui.LabelAPI;
@@ -242,7 +243,7 @@ public class ba_bionic_augmented {
         }
         @Override
         public void apply(MarketAPI market, String id, float level) {
-            if(market.getAdmin() != null && market.getConditions() != null) {
+            if(market.getAdmin() != null && market.getConditions() != null && !market.hasCondition(Conditions.DECIVILIZED) && !market.getAdmin().isDefault()) {
                 PersonAPI person = market.getAdmin();
                 if(ba_bionicmanager.checkIfHaveBionicInstalled(person) && !market.hasCondition(ba_variablemanager.BA_MARKET_CONDITION_ID)) {
                     market.addCondition(ba_variablemanager.BA_MARKET_CONDITION_ID);
