@@ -36,6 +36,7 @@ public class ba_ripperDoc_clinic extends BaseCommandPlugin {
     protected String toPurchaseCargoMemKey = "$ba_toPurchaseCargo_key";
     protected String markupBionicPriceMemKey = "$ba_markupBionicPrice";
     protected float markUp = 3f;
+    protected float IN_STOCK_DAY = 30f;
     @Override
     public boolean execute(String ruleId, InteractionDialogAPI dialog, List<Misc.Token> params, Map<String, MemoryAPI> memoryMap) {
         String arg = params.get(0).getString(memoryMap);
@@ -142,7 +143,7 @@ public class ba_ripperDoc_clinic extends BaseCommandPlugin {
                 clinicInv.removeItems(CargoAPI.CargoItemType.SPECIAL,stack.getSpecialDataIfSpecial(),stack.getSize());
                 ba_inventoryhandler.addToContainer(stack);
             }
-            memory.set(clinicShopMemKey, clinicInv);
+            setShopInvMemKey(clinicInv, false);
             toPurchaseCargo.clear();
             memory.unset(toPurchaseCargoMemKey);
             text.addPara("\"Transaction successful, pleasure doing business with you.\"");
@@ -248,9 +249,16 @@ public class ba_ripperDoc_clinic extends BaseCommandPlugin {
         } else {
             CargoAPI clinicInv = generateClinicShopInv();
             clinicShopInv.addAll(clinicInv);
-            memory.set(clinicShopMemKey, clinicInv);
+            setShopInvMemKey(clinicInv, true);
             clinicShopInv.sort();
         }
+    }
+    public void setShopInvMemKey(CargoAPI cargo, boolean refreshTime) {
+        float timeLeft = IN_STOCK_DAY;
+        if(!refreshTime && memory.contains(clinicShopMemKey)) {
+            timeLeft = memory.getExpire(clinicShopMemKey);
+        }
+        memory.set(clinicShopMemKey, cargo, timeLeft);
     }
     public CargoAPI generateClinicShopInv() {
         CargoAPI cargo = Global.getFactory().createCargo(true);
@@ -271,7 +279,7 @@ public class ba_ripperDoc_clinic extends BaseCommandPlugin {
 
         int maxPicked = 10;
         int minPicked = 5;
-        int maxQuantity = 3;
+        int maxQuantity = 2;
         int minQuantity = 1;
         int actualPicked = MathUtils.getRandomNumberInRange(minPicked, maxPicked);
         int added = 0;
