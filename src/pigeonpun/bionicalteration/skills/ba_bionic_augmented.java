@@ -243,7 +243,7 @@ public class ba_bionic_augmented {
         }
         @Override
         public void apply(MarketAPI market, String id, float level) {
-            if(market.getAdmin() != null && market.getConditions() != null && !market.hasCondition(Conditions.DECIVILIZED) && !market.getAdmin().isDefault()) {
+            if(market != null && !market.hasCondition(Conditions.DECIVILIZED) && market.getAdmin() != null &&  !market.getAdmin().isDefault()) {
                 PersonAPI person = market.getAdmin();
                 if(ba_bionicmanager.checkIfHaveBionicInstalled(person) && !market.hasCondition(ba_variablemanager.BA_MARKET_CONDITION_ID)) {
                     market.addCondition(ba_variablemanager.BA_MARKET_CONDITION_ID);
@@ -253,12 +253,12 @@ public class ba_bionic_augmented {
 
         @Override
         public void unapply(MarketAPI market, String id) {
-            if(market.getAdmin() != null && market.getConditions() != null) {
-                PersonAPI person = market.getAdmin();
-                if(market.hasCondition(ba_variablemanager.BA_MARKET_CONDITION_ID)) {
-                    market.removeCondition(ba_variablemanager.BA_MARKET_CONDITION_ID);
-                }
-            }
+//            if(market.getAdmin() != null && market.getConditions() != null) {
+//                PersonAPI person = market.getAdmin();
+//                if(market.hasCondition(ba_variablemanager.BA_MARKET_CONDITION_ID)) {
+//                    market.removeCondition(ba_variablemanager.BA_MARKET_CONDITION_ID);
+//                }
+//            }
         }
 
         @Override
