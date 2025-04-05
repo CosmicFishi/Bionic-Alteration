@@ -161,6 +161,11 @@ public class ba_bionicitemplugin implements SpecialItemPlugin, ba_bioniceffect {
     }
 
     @Override
+    public void performRightClickAction(RightClickActionHelper helper) {
+
+    }
+
+    @Override
     public boolean shouldRemoveOnRightClickAction() {
         return false;
     }
