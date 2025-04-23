@@ -14,7 +14,7 @@ public class ba_variablemanager {
     /**
      * Use for changing bionic's consciousness cost
      */
-    public static final float BA_BRM_LIMIT_BONUS_PER_LEVEL = 6;
+    public static final int BA_BRM_LIMIT_BONUS_PER_LEVEL = 6;
     public static final float BA_BRM_LIMIT_BONUS_PER_LEVEL_ADMIN = BA_BRM_LIMIT_BONUS_PER_LEVEL * 3;
     /**
      * person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f)

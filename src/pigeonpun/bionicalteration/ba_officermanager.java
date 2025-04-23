@@ -276,11 +276,11 @@ public class ba_officermanager {
         return true;
     }
     protected static int setUpBRMLimit(PersonAPI person, int tier) {
-//        int brmLimit = (int) (person.getStats().getLevel() * ba_variablemanager.BA_BRM_LIMIT_BONUS_PER_LEVEL);
+//        int brmLimit = (int) (person.getStats().getLevel() * bionicalterationplugin.brmUpgradePerTier);
 //        if(isCaptainOrAdmin(person, false).equals(ba_profession.ADMIN)) {
-//            brmLimit = (int) (person.getStats().getLevel() * ba_variablemanager.BA_BRM_LIMIT_BONUS_PER_LEVEL_ADMIN);
+//            brmLimit = (int) (person.getStats().getLevel() * bionicalterationplugin.brmUpgradePerTier_ADMIN);
 //        }
-        int brmLimit = (int) (ba_variablemanager.BA_BRM_LIMIT_BONUS_PER_LEVEL * tier);
+        int brmLimit = (int) (bionicalterationplugin.brmUpgradePerTier * tier);
         return brmLimit;
     }
     protected static int setUpBRMCurrent(PersonAPI person) {
@@ -384,7 +384,7 @@ public class ba_officermanager {
         String key = "ba_upgraded_limit_BRM";
         ba_personmemorydata data = getPersonMemoryData(person);
         if(data != null) {
-            person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).modifyFlat(key, data.BRMTier * ba_variablemanager.BA_BRM_LIMIT_BONUS_PER_LEVEL);
+            person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).modifyFlat(key, data.BRMTier * bionicalterationplugin.brmUpgradePerTier);
         }
     }
     /**

@@ -2,8 +2,12 @@
   <library name="LunaLib-1.8">
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/../LunaLib-2.0.2/jars/LunaLib.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../LunaLib-2.0.2/jars/LunaLib-Kotlin.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../LunaLib-2.0.2/src/LunaLib-Core" />
+      <root url="file://$PROJECT_DIR$/../LunaLib-2.0.2/src/LunaLib-Core" />
+    </SOURCES>
   </library>
 </component>

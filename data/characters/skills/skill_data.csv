@@ -1,4 +1,4 @@
 id,name,order,tier,reqPoints,reqPointsPerExtraSkill,description,author,combat officer,admiral,admin,tags,icon,
 # COMBAT,,,,,,,,,,,,,
-ba_bionic_augmented,Bionic Augmented,1,1,0,,Freshly made augmentations filled the emptiness of the person with power and chaos.,Unknow Ripperdoc,TRUE,TRUE,TRUE,"ba_bionic, npc_only, deprecated",graphics/icons/skills/EW.png,
+ba_bionic_augmented,Bionic Augmented,1,1,0,,Freshly made augmentations filled the emptiness of the person with power and chaos.,Unknown Ripperdoc,TRUE,TRUE,TRUE,"ba_bionic, npc_only, deprecated",graphics/icons/skills/EW.png,
 ba_aptitude_bionic,,0,,,,,,,,,npc_only,graphics/icons/skills/category_technology.png,

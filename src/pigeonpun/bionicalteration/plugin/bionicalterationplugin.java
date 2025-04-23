@@ -2,7 +2,7 @@ package pigeonpun.bionicalteration.plugin;
 
 import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
-import lunalib.lunaRefit.LunaRefitManager;
+import lunalib.lunaRefit.*;
 import org.lazywizard.lazylib.MathUtils;
 import pigeonpun.bionicalteration.*;
 import pigeonpun.bionicalteration.ability.ba_bionicability;
@@ -26,6 +26,7 @@ public class bionicalterationplugin extends BaseModPlugin {
     public static boolean isConsciousnessDisable = false;
     public static int maxAcademyBRMTier = ba_variablemanager.BA_ACADEMIC_MAX_BRM_TIER;
     public static int academyBRMUpgradeBase = ba_variablemanager.BA_ACADEMIC_UPGRADE_BASE_CREDIT;
+    public static float brmUpgradePerTier = ba_variablemanager.BA_BRM_LIMIT_BONUS_PER_LEVEL;
     @Override
     public void onApplicationLoad() throws Exception {
 //        ba_manager.getInstance();
@@ -43,6 +44,7 @@ public class bionicalterationplugin extends BaseModPlugin {
         isConsciousnessDisable = Global.getSettings().getBoolean("isConsciousnessDisable");
         maxAcademyBRMTier = Global.getSettings().getInt("maxAcademyBRMTier");
         academyBRMUpgradeBase = Global.getSettings().getInt("brmUpgradeBaseCredit");
+        brmUpgradePerTier = Global.getSettings().getInt("brmUpgradePerTier");
 
         if(isLunalibEnabled) {
             lunaconfighelper.initLunaConfig();
