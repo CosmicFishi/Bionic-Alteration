@@ -8,6 +8,7 @@ Dm my discord ``PigeonPun``
 
 ## Credits
 ```
+Simbach A. Vazo - Lore/Description help
 ComitatensSaxoni - Lore/Description help
 Wisp/Silkie - Mod template 
 LazyWizard - LazyLib 
