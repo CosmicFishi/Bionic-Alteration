@@ -1,3 +1,14 @@
+=========== 0.3.0 ============
+- Overhaul backend logistic. (I should have done it earlier)
+- New obtainable item: Blind Entry.
+- New bar event for bionic buying with just a slight price increase.
+- New console command for find bionic stations - ba_findBionicStations
+- Reworked BRM
+  - Officer/Admin now always start at BRM tier 1, BRM capacity of 7
+  - Each tier increase will increase BRM capacity by 6
+  - To increase BRM tier, go to Academy
+- More configurations related to BRM.
+- Fix bug related to assigning AI core to automated ship after assigning player to the ship.
 =========== 0.2.6 (0.98 Game version change) ============
 - Update to 0.98
 =========== 0.2.5 (Save compatible) ============
