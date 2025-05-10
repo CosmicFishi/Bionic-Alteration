@@ -8,7 +8,10 @@
   - Each tier increase will increase BRM capacity by 6
   - To increase BRM tier, go to Academy
 - More configurations related to BRM.
+- Adjust overclock UI.
+- Added codex unlockable bionic entry.
 - Fix bug related to assigning AI core to automated ship after assigning player to the ship.
+- Fix bug related to overclocking when remainder Evoshards count is 0.
 =========== 0.2.6 (0.98 Game version change) ============
 - Update to 0.98
 =========== 0.2.5 (Save compatible) ============
