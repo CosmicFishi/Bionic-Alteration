@@ -65,4 +65,37 @@ ba_hasBionics score:9999997","Highlight ""bionics""","Bioscanner indicates multi
 ba_fleetEncoutner_BionicScanDisplay,DialogOptionSelected,"$option == ba_fleetEncoutner_BionicScanDisplay
 ba_hasBionics score:9999997","ba_displayBionicUI otherFleet",,,
 "#END fleet interaction",,,,,,
+,,,,,,
+# BRM management,,,,,,
+ba_BRMTier_showOpt,PopulateOptions,"$id == station_galatia_academy",,,"3:ba_BRMTier_showOpt_info:Ask about BRM",
+ba_BRMTier_showOpt_info,DialogOptionSelected,"$option == ba_BRMTier_showOpt_info","FireAll ba_showBRMManageOptions","A BRM license is an artificial limit on how many bionics you can install, set in place by Domain-era megacorps and maintained on most surgical software and hardware. The records are tied to a person's genetics, and cannot be traded around like a usual blueprint license. The common known way to upgrade one's limits is to send credits through the BRM to a presumably dormant account.
+",,
+ba_BRMTier_showOpt_infoReturn,DialogOptionSelected,"$option == ba_BRMSwapMenuReturn","FireAll ba_showBRMManageOptions",,,
+ba_BRMTier_showOpt_leave,ba_showBRMManageOptions,,"SetShortcut ba_leaveBRM ""ESCAPE""",,"100:ba_leaveBRM:Leave",
+ba_BRMTier_showOpt_leave_Opt,DialogOptionSelected,"$option == ba_leaveBRM","FireBest GAPostOpen",,,
+ba_BRMTier_showOpt_upgrade,ba_showBRMManageOptions,,,,"0:ba_BRMTier_showOpt_upgrade:Upgrade License",
+ba_BRMTier_showOpt_upgrade_Opt,DialogOptionSelected,"$option == ba_BRMTier_showOpt_upgrade","ba_BRMManage displayOfficersList","Select the officer/admin to upgrade BRM tier.",,
+ba_BRMTier_showOpt_upgadeSelect,DialogOptionSelected,"ba_OptionStartWith ba_officer_selection_","ba_BRMManage select
+","A terminal displayed, waiting for you to select options for upgrading BRM.","ba_BRMTier_showOpt_upgradeSelect_Opt:Upgrade to BRM Tier
+ba_BRMTier_showOpt_upgradeSelected_blindEntry_Opt: Upgrade using Blind Entry
+ba_BRMTier_showOpt_upgrade:Go back",
+ba_BRMTier_showOpt_upgradeSelect_Opt,DialogOptionSelected,"$option == ba_BRMTier_showOpt_upgradeSelect_Opt","ba_BRMManage upgrade","Transfered the credits over the terminal and not a moment later, a notification shows up congratulate you on the BRM Tier upgrade.",,
+ba_BRMTier_showOpt_upgradeSelected_blindEntry_Opt,DialogOptionSelected,"$option == ba_BRMTier_showOpt_upgradeSelected_blindEntry_Opt","ba_BRMManage upgrade_blindEntry","As the entry plugged into in one of the many available ports, the terminal screen starts flickering uncontrollably. 
+
+""$$#$%#%$ -- SUBJECT ALT#### %#$##%"" - the terminal displayed briefly. 
+
+Suddenly terminal screen returns to normal, light coming from the entry no longer blinks. A unusual message appears, congratulating you for the successful BRM capacity increase, by administrator #@#A$%#.",,
+"#END BRM management",,,,,,
+,,,,,,
+# ripperDoc,,,,,,
+ba_ripperBionicOptionBar,ba_ripperBionic_optionBar,,,,"ba_ripperBionic_startOption:Approach the person at the back of local clinic",
+ba_ripperBionicBlurbBar,ba_ripperBionic_blurbBar,,,"Standing beside a dark alley, a sketchy street vendor covered in augments eyes the area, looking for their next buyer.",,
+ba_ripperBionicStartOption,DialogOptionSelected,"$option == ba_ripperBionic_startOption","ba_ripperDoc_clinic initMemKey","You approach the individual. With a grin, they pitch their offer immediately. ""Hey, I got some good stuff, just for you, with a mere markup price of  $ba_markupBionicPrice. Quite a deal, don't you think?""","ba_ripperBionic_selectBionics:Take a look at the offer
+contact_declineBarNoContinue:Decline",
+ba_ripperBionic_selectBionics,DialogOptionSelected,"$option == ba_ripperBionic_selectBionics","ba_ripperDoc_clinic displayClinic",,,
+ba_ripperBionic_confirmPurchase,ba_ripperBionicConfirmPurchase,,"ba_ripperDoc_clinic purchaseInfo",,"ba_ripperBionic_purchase_opt:Purchase
+ba_ripperBionic_selectBionics:Reconsider your choice",
+ba_ripperBionic_purchase_opt,DialogOptionSelected,"$option == ba_ripperBionic_purchase_opt","ba_ripperDoc_clinic purchase
+BarCMD returnFromEvent false",,,
+"#END ripperDoc",,,,,,
 

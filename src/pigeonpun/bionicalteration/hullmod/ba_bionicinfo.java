@@ -64,10 +64,11 @@ public class ba_bionicinfo extends BaseHullMod {
         final Color special = ba_variablemanager.BA_OVERCLOCK_COLOR;
 
         if(ship != null && ship.getCaptain() != null && !ship.getCaptain().isDefault() && !isForModSpec) {
+            boolean isEmpty = true;
             if(ba_officermanager.isCaptainOrAdmin(ship.getCaptain(), false).equals(ba_officermanager.ba_profession.CAPTAIN) || ship.getCaptain().isPlayer()) {
                 ba_consciousmanager.getConsciousnessLevel(ship.getCaptain()).displayTooltipDescription(tooltip, ship.getCaptain(), true, true);
                 List<ba_officermanager.ba_bionicAugmentedData> bionicData = ba_officermanager.getBionicAnatomyList(ship.getCaptain());
-                boolean isEmpty = true;
+
                 for(ba_officermanager.ba_bionicAugmentedData data :bionicData) {
                     if(data.bionicInstalled != null) {
                         isEmpty = false;
@@ -86,12 +87,9 @@ public class ba_bionicinfo extends BaseHullMod {
                         }
                     }
                 }
-                if(isEmpty) {
-                    LabelAPI empty = tooltip.addPara("No augmentation information found.", pad);
-                }
-
-            } else {
-                //save spot for the AI fleet
+            }
+            if(isEmpty) {
+                LabelAPI empty = tooltip.addPara("No augmentation information found.", pad);
             }
         } else {
             LabelAPI info = tooltip.addPara("No information found.", pad);

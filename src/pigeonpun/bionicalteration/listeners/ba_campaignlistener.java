@@ -24,6 +24,7 @@ import pigeonpun.bionicalteration.intel.ba_bionicstationintel;
 import pigeonpun.bionicalteration.inventory.ba_inventoryhandler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ba_campaignlistener extends BaseCampaignEventListener implements EveryFrameScript, DiscoverEntityListener {
@@ -41,8 +42,12 @@ public class ba_campaignlistener extends BaseCampaignEventListener implements Ev
         if(plugin instanceof FleetInteractionDialogPluginImpl) {
             FleetEncounterContext context = (FleetEncounterContext) plugin.getContext();
             List<CampaignFleetAPI> fleets = context.getBattle().getBothSides();
-            List<PersonAPI> listPerson = new ArrayList<>(ba_officermanager.getListOfficerFromFleet(fleets, false));
-            ba_officermanager.setUpListOfficers(listPerson);
+            for(CampaignFleetAPI fleet: fleets) {
+                List<PersonAPI> listPerson = new ArrayList<>(ba_officermanager.getListOfficerFromFleet(Arrays.asList(fleet), false));
+                ba_officermanager.setUpListOfficers(listPerson, fleet.getFleetPoints());
+            }
+//            List<PersonAPI> listPerson = new ArrayList<>(ba_officermanager.getListOfficerFromFleet(fleets, false));
+//            ba_officermanager.setUpListOfficers(listPerson);
             CampaignFleetAPI otherFleet = context.getBattle().getCombinedTwo();
             otherFleet.getMemoryWithoutUpdate().set("$ba_bionic_dropList", ba_officermanager.getListPotentialBionicDrop(otherFleet));
             log.info("Set up for officers completed");

@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.magiclib.util.MagicSettings;
+import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.faction.ba_factiondata;
@@ -33,7 +34,7 @@ public class ba_variantmanager {
     public static void loadAnatomyVariantList() {
         List<String> limbFiles = MagicSettings.getList(ba_variablemanager.BIONIC_ALTERATION, "variant_files");
         for (String path : limbFiles) {
-            log.error("merging anatomy variant files");
+            log.warn("merging anatomy variant files");
             JSONArray variantData = new JSONArray();
             try {
                 variantData = Global.getSettings().getMergedSpreadsheetDataForMod("variantId", path, ba_variablemanager.BIONIC_ALTERATION);
@@ -86,19 +87,23 @@ public class ba_variantmanager {
      * @return the Generic Variant tag of a person. A person must only have 1 variant, return null if cant find variant
      */
     public static String getPersonVariantTag(PersonAPI person) {
-        List<String> anatomyVariantList = getListAnatomyKeys();
-        String personVariant = null;
-        Set<String> tags = person.getTags();
-        if(tags != null && !tags.isEmpty()) {
-            for (String k: tags) {
-                for(String variant: anatomyVariantList) {
-                    if(variant.equals(k)) {
-                        personVariant = k;
-                    }
-                }
-            }
+//        List<String> anatomyVariantList = getListAnatomyKeys();
+//        String personVariant = null;
+//        Set<String> tags = person.getTags();
+//        if(tags != null && !tags.isEmpty()) {
+//            for (String k: tags) {
+//                for(String variant: anatomyVariantList) {
+//                    if(variant.equals(k)) {
+//                        personVariant = k;
+//                    }
+//                }
+//            }
+//        }
+        if(ba_officermanager.checkIfPersonHasBionicMemoryData(person)) {
+            ba_officermanager.ba_personmemorydata data = ba_officermanager.getPersonMemoryData(person);
+            return data.variant;
         }
-        return personVariant;
+        return null;
     }
 
     /**

@@ -19,6 +19,11 @@ public class lunaconfighelper implements LunaSettingsListener {
         addSetting("isAllowBionicsToSpawnInPlayerFleetOnNewSave", "boolean", null, bionicalterationplugin.isAllowBionicsToSpawnInPlayerFleetOnNewSave);
         addSetting("isBRMCapDisable", "boolean", null, bionicalterationplugin.isBRMCapDisable);
         addSetting("isConsciousnessDisable", "boolean", null, bionicalterationplugin.isConsciousnessDisable);
+        addHeader("BRM", null);
+        addSetting("maxAcademyBRMTier", "int", null, bionicalterationplugin.maxAcademyBRMTier, 1, 100);
+        addSetting("brmUpgradeBaseCredit", "int", null, bionicalterationplugin.academyBRMUpgradeBase, 0, 10000000);
+        addSetting("brmUpgradePerTier", "int", null, bionicalterationplugin.brmUpgradePerTier, 1, 100);
+
         addHeader("debug", null);
         addSetting("isDevmode", "boolean", null, bionicalterationplugin.isDevmode);
 
@@ -42,6 +47,9 @@ public class lunaconfighelper implements LunaSettingsListener {
         bionicalterationplugin.isBRMCapDisable = (boolean) loadSetting("isBRMCapDisable", "boolean");
         bionicalterationplugin.isConsciousnessDisable = (boolean) loadSetting("isConsciousnessDisable", "boolean");
         bionicalterationplugin.isDevmode = (boolean) loadSetting("isDevmode", "boolean");
+        bionicalterationplugin.maxAcademyBRMTier = (int) loadSetting("maxAcademyBRMTier", "int");
+        bionicalterationplugin.academyBRMUpgradeBase = (int) loadSetting("brmUpgradeBaseCredit", "int");
+        bionicalterationplugin.brmUpgradePerTier = (int) loadSetting("brmUpgradePerTier", "int");
     }
 
     public static Object loadSetting(String var, String type) {

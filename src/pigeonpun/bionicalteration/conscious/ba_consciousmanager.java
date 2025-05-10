@@ -34,6 +34,10 @@ public class ba_consciousmanager {
         consciousMap.put(ba_variablemanager.ba_consciousnessLevel.CRITICAL, new ba_conscious_critical());
     }
     public static ba_conscious getConsciousnessLevel(PersonAPI person) {
+        //In case of player assigning to a AI ship and switched back to AI core as captain.
+        if(person.isAICore()) {
+            return consciousMap.get(ba_variablemanager.ba_consciousnessLevel.STABLE);
+        }
         float conscious = person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
         return getConsciousnessLevel(conscious);
     }

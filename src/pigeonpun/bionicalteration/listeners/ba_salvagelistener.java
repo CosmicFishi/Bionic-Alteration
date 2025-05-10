@@ -3,12 +3,17 @@ package pigeonpun.bionicalteration.listeners;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.listeners.ShowLootListener;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
+import com.fs.starfarer.api.fleet.FleetMemberAPI;
+import com.fs.starfarer.api.impl.SharedUnlockData;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
+import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import com.fs.starfarer.api.impl.campaign.procgen.SalvageEntityGenDataSpec;
 import com.fs.starfarer.api.impl.campaign.procgen.themes.SalvageEntityGeneratorOld;
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.SalvageEntity;
 import com.fs.starfarer.api.util.Misc;
+import com.fs.starfarer.api.util.WeightedRandomPicker;
 import com.fs.starfarer.campaign.CustomCampaignEntity;
+import org.apache.log4j.Logger;
 import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
@@ -20,6 +25,8 @@ import java.util.List;
 import java.util.Random;
 //Credits to President Matt Damon since I copied some part of their codes.
 public class ba_salvagelistener implements ShowLootListener {
+    private static final Logger log = Logger.getLogger(ba_salvagelistener.class);
+
     @Override
     public void reportAboutToShowLootToPlayer(CargoAPI loot, InteractionDialogAPI dialog) {
         if(dialog.getInteractionTarget() == null) return;
@@ -37,6 +44,17 @@ public class ba_salvagelistener implements ShowLootListener {
                     }
                 }
             }
+            //check for Guardian
+            for(FleetMemberAPI member: fleet.getMembersWithFightersCopy()) {
+                if(member.getVariant().getHullSpec().getBaseHullId().equals("guardian")) {
+                    WeightedRandomPicker<String> randomCVEText = new WeightedRandomPicker<>();
+                    for (String text: ba_variablemanager.BA_CVE.values()) {
+                        randomCVEText.add(text);
+                    }
+                    loot.addSpecial(new SpecialItemData(ba_variablemanager.BA_BLIND_ENTRY_ITEM_ID, randomCVEText.pick()), 1);
+                }
+            }
+
         }
         List<SalvageEntityGenDataSpec.DropData> dropData = getDropDataFromEntity(dialog.getInteractionTarget());
 
@@ -50,6 +68,15 @@ public class ba_salvagelistener implements ShowLootListener {
         CargoAPI salvage = SalvageEntity.generateSalvage(random,
                 1f, 1f, 1f, 1f, dropValue, dropRandom);
         loot.addAll(salvage);
+
+        for(CargoStackAPI stack: loot.getStacksCopy()) {
+            if(stack.isSpecialStack() && stack.getPlugin() instanceof ba_bionicitemplugin) {
+                ba_bionicitemplugin bionic = (ba_bionicitemplugin) stack.getPlugin();
+                if (bionic.getSpec().hasTag(Tags.CODEX_UNLOCKABLE)) {
+                    SharedUnlockData.get().reportPlayerAwareOfSpecialItem(bionic.getId().toString(), true);
+                }
+            }
+        }
     }
 
     /**

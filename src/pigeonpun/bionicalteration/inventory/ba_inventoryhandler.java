@@ -78,6 +78,23 @@ public class ba_inventoryhandler {
         success = Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, size);
         return success;
     }
+
+    /**
+     * Blind Entry item removal when upgrading BRM
+     * @param size
+     * @return
+     */
+    public static boolean removeBlindEntryFromPersonCargo(float size) {
+        boolean success = false;
+        for( CargoStackAPI cargoStackAPI: Global.getSector().getPlayerFleet().getCargo().getStacksCopy()) {
+            if(cargoStackAPI.isSpecialStack() && cargoStackAPI.getSpecialItemSpecIfSpecial().getId().equals(ba_variablemanager.BA_BLIND_ENTRY_ITEM_ID)) {
+                SpecialItemData specialItem = new SpecialItemData(ba_variablemanager.BA_BLIND_ENTRY_ITEM_ID, cargoStackAPI.getSpecialDataIfSpecial().getData());
+                success = Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, size);
+                break;
+            }
+        }
+        return success;
+    }
     protected static void overrideGlobalData(CargoAPI cargo) {
         Global.getSector().getPersistentData().put(ba_variablemanager.BA_BIONIC_CONTAINER_PERSISTENT_KEY, cargo);
     }

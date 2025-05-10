@@ -127,7 +127,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 while(rowItemCount < itemsPerRow) {
                     if(index < cargoBionic.size()) {
                         CargoStackAPI cargo = cargoBionic.get(index);
-                        ba_bionicitemplugin bionic = (ba_bionicitemplugin) cargo.getPlugin();
+                        final ba_bionicitemplugin bionic = (ba_bionicitemplugin) cargo.getPlugin();
                         float quantity = cargo.getSize();
 
                         int itemX = rowItemCount * itemW;
@@ -189,7 +189,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                             @Override
                             public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
                                 if(currentHoveredBionic == null) {
-                                    tooltip.addPara("Somehow the hover isn't registering the bionic ????? Im clueless LMAO. Try hovering again", Misc.getHighlightColor(),0);
+//                                    tooltip.addPara("Somehow the hover isn't registering the bionic ????? Im clueless LMAO. Try hovering again", Misc.getHighlightColor(),0);
                                     return;
                                 }
                                 ba_bionicmanager.displayBionicItemDescription(tooltip, currentHoveredBionic);
@@ -235,7 +235,6 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 tableX, tableY
         );
     }
-
     /**
      * Use this for the preset keys inside the component
      * Note: You will have to set up custom input detection with this
@@ -254,6 +253,33 @@ public class ba_uicommon implements CustomUIPanelPlugin {
             String preset,
             final boolean isWorkshopMode,
             boolean isScroll , float tableW, float tableH, float tableX, float tableY) {
+        displayBionicTableWithKeyPresetHighLight(
+                creatorComponent,
+                creatorComponentTooltip, preset,
+                isWorkshopMode, isScroll,
+                tableW, tableH,
+                tableX, tableY,
+                ""
+        );
+    }
+
+    /**
+     * This one highlight LIMB if needed
+     * @param creatorComponent
+     * @param creatorComponentTooltip
+     * @param isWorkshopMode
+     * @param isScroll
+     * @param tableW
+     * @param tableH
+     * @param tableX
+     * @param tableY
+     */
+    protected void displayBionicTableWithKeyPresetHighLight(
+            ba_component creatorComponent,
+            String creatorComponentTooltip,
+            String preset,
+            final boolean isWorkshopMode,
+            boolean isScroll , float tableW, float tableH, float tableX, float tableY, String highlightLimbGroupID) {
         final float pad = 10f;
         float opad = 10f;
         final Color h = Misc.getHighlightColor();
@@ -434,7 +460,19 @@ public class ba_uicommon implements CustomUIPanelPlugin {
             bionicLimbNameTooltip.getPosition().inTL(nameX, 0);
             LabelAPI limbName = bionicLimbNameTooltip.addPara(augmentData.limb.name, pad);
             limbName.setHighlight(augmentData.limb.name);
-            limbName.setHighlightColors(t);
+            if(highlightLimbGroupID != "") {
+                List<ba_limbmanager.ba_limb> limbList = ba_limbmanager.getListLimbFromGroup(highlightLimbGroupID);
+                for (ba_limbmanager.ba_limb limb: limbList) {
+                    if(limb.limbId.equals(augmentData.limb.limbId)) {
+                        limbName.setHighlightColors(Misc.getPositiveHighlightColor());
+                    } else {
+                        limbName.setHighlightColors(t);
+                    }
+                }
+            } else {
+                limbName.setHighlightColors(t);
+            }
+
             //---------Bionic
             int bionicInstalledI = 0;
             if(augmentData.bionicInstalled != null) {
@@ -446,10 +484,10 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 TooltipMakerAPI bionicNameTooltip = bionicDisplayContainer.createTooltip("BIONIC_NAME"+bionicInstalledI, sectionW, sectionH, false, sectionX, sectionSpacerY);
                 bionicNameTooltip.getPosition().inTL(sectionX, sectionSpacerY);
                 //>name
-                LabelAPI bionicName = bionicNameTooltip.addPara("(%s) %s", pad, h, !Objects.equals(b.namePrefix, "") ? b.namePrefix: " ", "" + b.getName());
+                LabelAPI bionicName = bionicNameTooltip.addPara("%s  -  %s", pad, g, "" + b.getName(), !Objects.equals(b.namePrefix, "") ? b.namePrefix: " ");
                 bionicName.getPosition().setSize(bionicNameW,sectionH);
 //                bionicName.setHighlight(b.name, b.namePrefix);
-                bionicName.setHighlightColors(Misc.getBasePlayerColor() ,b.displayColor);
+                bionicName.setHighlightColors(b.displayColor, Misc.getBasePlayerColor() );
                 //>BRM
 //                int brmX = (int) (bionicName.getPosition().getWidth());
                 LabelAPI bionicBRM = bionicNameTooltip.addPara("" + Math.round(b.brmCost), pad);
@@ -803,7 +841,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                                 if(ba_bionicmanager.bionicItemMap.get(tokens[1]) != null && (this.currentHoveredBionic == null || !this.currentHoveredBionic.bionicId.equals(tokens[1]))) {
                                     this.currentHoveredBionic = (ba_bionicitemplugin) cargoBionic.get(Integer.parseInt(tokens[2])).getPlugin();
 //                                    this.currentHoveredBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
-                                    shouldRefresh = true;
+//                                    shouldRefresh = true;
                                 }
                             }
                         }

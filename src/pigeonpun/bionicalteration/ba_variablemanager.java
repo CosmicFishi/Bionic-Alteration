@@ -14,7 +14,7 @@ public class ba_variablemanager {
     /**
      * Use for changing bionic's consciousness cost
      */
-    public static final float BA_BRM_LIMIT_BONUS_PER_LEVEL = 6;
+    public static final int BA_BRM_LIMIT_BONUS_PER_LEVEL = 6;
     public static final float BA_BRM_LIMIT_BONUS_PER_LEVEL_ADMIN = BA_BRM_LIMIT_BONUS_PER_LEVEL * 3;
     /**
      * person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f)
@@ -79,4 +79,19 @@ public class ba_variablemanager {
     public static final String BA_BIONIC_CONTAINER_PERSISTENT_KEY = "ba_bionic_container";
     public static final String BA_OVERCLOCK_STATION_TAG_NAME = "Overclock station";
     public static final String BA_ACHIEVEMENT_ZERO_CONSCIOUSNESS_ITEM_KEY = "$ba_zero_consciousness_reward";
+    /**
+     * Default value, can be change in settings.json
+     */
+    public static final int BA_ACADEMIC_MAX_BRM_TIER = 7;
+    public static final int BA_ACADEMIC_UPGRADE_BASE_CREDIT = 20000;
+    public static final HashMap<Integer, String> BA_CVE = new HashMap<>();
+    static {
+        BA_CVE.put(0, "CVE-2024-47611");
+        BA_CVE.put(1, "CVE-2021-44228");
+        BA_CVE.put(2, "CVE-2014-0160");
+        BA_CVE.put(3, "CVE-2022-0609");
+        BA_CVE.put(4, "CVE-2025-20124");
+    }
+    public static final String BA_BLIND_ENTRY_ITEM_ID = "ba_blind_entry";
+    public static final int BA_BLIND_ENTRY_BRM_INCREMENT = (int) (BA_BRM_LIMIT_BONUS_PER_LEVEL * 2);
 }

@@ -234,8 +234,8 @@ public class ba_uiplugin extends ba_uicommon {
                     //display ship for the officer in player's fleet
                     List<FleetMemberAPI> temp = new ArrayList<>();
                     FleetMemberAPI member = ba_officermanager.getFleetMemberFromFleet(currentPerson, Collections.singletonList(Global.getSector().getPlayerFleet()), true);
-                    if(member != null) {
-                        temp.add(member);
+                        if(member != null) {
+                            temp.add(member);
                     } else {
                         //display the person pfp if idle
                         int imageX = (int) 0;
@@ -733,8 +733,11 @@ public class ba_uiplugin extends ba_uicommon {
         addButtonToList(removeButton, "bionic:edit");
         removeButton.setEnabled(false);
         if(this.currentSelectedLimb != null && ba_officermanager.checkIfCanEditLimb(this.currentSelectedLimb, this.currentPerson)) {
-            removeButton.setEnabled(true);
-            removeButton.flash(false);
+            List<ba_bionicitemplugin> availableRemovingBionics = ba_bionicmanager.getListBionicInstalledOnLimb(this.currentSelectedLimb, this.currentPerson);
+            if(!availableRemovingBionics.isEmpty()) {
+                removeButton.setEnabled(true);
+                removeButton.flash(false);
+            }
         }
         infoPersonTooltipContainer.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
             @Override
@@ -774,7 +777,8 @@ public class ba_uiplugin extends ba_uicommon {
         int tableY = (int) (0 + pad);
         int tableW = (int) (infoRightW - pad - pad);
         int tableH = (int) (personInfoH - pad - pad - btnH);
-        displayBionicTableWithKeyPreset(infoPersonContainer, infoPersonTooltipKey, "WORKSHOP",true, true, tableW, tableH, tableX, tableY);
+        String highlightLimbId = this.currentSelectedBionic != null? this.currentSelectedBionic.bionicLimbGroupId: "";
+        displayBionicTableWithKeyPresetHighLight(infoPersonContainer, infoPersonTooltipKey, "WORKSHOP",true, true, tableW, tableH, tableX, tableY, highlightLimbId);
         //--------selected
         int selectedH = btnH / 2;
         int selectedW = (int) (infoRightW - removeBtnW - installBtnW - pad);
@@ -1186,6 +1190,10 @@ public class ba_uiplugin extends ba_uicommon {
                         }
                         if(tokens[2].equals(this.currentRemovingBionic.bionicId)) {
                             removeBionic();
+                            List<ba_bionicitemplugin> availableRemovingBionics = ba_bionicmanager.getListBionicInstalledOnLimb(this.currentSelectedLimb, this.currentPerson);
+                            if(availableRemovingBionics.isEmpty()) {
+                                this.currentWorkShopMode = INSTALL_WORKSHOP;
+                            }
                             needsReset = true;
                             break;
                         }
@@ -1233,12 +1241,13 @@ public class ba_uiplugin extends ba_uicommon {
                             }
                         }
 //                        if(currentTabId.equals(WORKSHOP)) {
-//                            ba_component component = componentMap.get("WORKSHOP_INVENTORY_PANEL");
+//                            ba_component component = componentMap.get("INVENTORY_PANEL");
 //                            //hover bionic item in inventory
-//                            if(component != null && component.tooltipMap.get("WORKSHOP_INVENTORY_TOOLTIP") != null) {
-//                                if(tokens[0].equals("hover_bionic_item") && debounceplugin.isDebounceOver("WORKSHOP_INVENTORY_TOOLTIP", 0, component.tooltipMap.get("WORKSHOP_INVENTORY_TOOLTIP").getExternalScroller().getYOffset())) {
+//                            if(component != null && component.tooltipMap.get("INVENTORY_TOOLTIP") != null) {
+//                                if(tokens[0].equals("hover_bionic_item") && debounceplugin.isDebounceOver("INVENTORY_TOOLTIP", 0, component.tooltipMap.get("INVENTORY_TOOLTIP").getExternalScroller().getYOffset())) {
 //                                    if(ba_bionicmanager.bionicItemMap.get(tokens[1]) != null && (this.currentHoveredBionic == null || !this.currentHoveredBionic.bionicId.equals(tokens[1]))) {
-//                                        this.currentHoveredBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
+//                                        this.currentHoveredBionic = (ba_bionicitemplugin) cargoBionic.get(Integer.parseInt(tokens[2])).getPlugin();
+////                                    this.currentHoveredBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
 //                                        shouldRefresh = true;
 //                                    }
 //                                }
