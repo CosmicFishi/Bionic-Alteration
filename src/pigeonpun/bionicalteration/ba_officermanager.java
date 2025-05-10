@@ -687,6 +687,14 @@ public class ba_officermanager {
         return false;
     }
 
+    public static int getRemainderEvoshards(int shardsCount) {
+        int remainder = 0;
+        remainder = ba_inventoryhandler.getEvoshardsFromPlayerInventory() - shardsCount;
+        return remainder;
+    }
+    public static boolean checkIfRemainderEvoshardsAboveZero(int remainderCount) {
+        return remainderCount >= 0;
+    }
     /**
      * Find existing bionic tag from the person => remove the existing tag => put in new tag which contains the overclock
      * @param bionic
@@ -701,7 +709,7 @@ public class ba_officermanager {
         if(ba_overclockmanager.isBionicOverclockable(bionic)) {
             boolean removeSuccessful = false;
             ba_overclock selectedOverclock = ba_overclockmanager.getOverclock(overclockId);
-            if(selectedOverclock != null && ba_inventoryhandler.getEvoshardsFromPlayerInventory() >= selectedOverclock.upgradeCost) {
+            if(selectedOverclock != null && checkIfRemainderEvoshardsAboveZero(getRemainderEvoshards(selectedOverclock.upgradeCost))) {
                 SpecialItemData specialItem = new SpecialItemData(ba_variablemanager.BA_OVERCLOCK_ITEM, null);
                 removeSuccessful = Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, selectedOverclock.upgradeCost);
             }
