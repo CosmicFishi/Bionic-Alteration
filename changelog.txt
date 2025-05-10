@@ -12,6 +12,7 @@
 - Added codex unlockable bionic entry.
 - Fix bug related to assigning AI core to automated ship after assigning player to the ship.
 - Fix bug related to overclocking when remainder Evoshards count is 0.
+- Fix inventory UI flashing when hovering
 =========== 0.2.6 (0.98 Game version change) ============
 - Update to 0.98
 =========== 0.2.5 (Save compatible) ============
