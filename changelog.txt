@@ -1,3 +1,5 @@
+=========== 0.3.1 ============
+- Fix typo for bar event.
 =========== 0.3.0 ============
 - Overhaul backend logistic. (I should have done it earlier)
 - New obtainable item: Blind Entry.
