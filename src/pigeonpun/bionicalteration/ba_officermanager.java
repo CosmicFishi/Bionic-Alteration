@@ -701,7 +701,7 @@ public class ba_officermanager {
         if(ba_overclockmanager.isBionicOverclockable(bionic)) {
             boolean removeSuccessful = false;
             ba_overclock selectedOverclock = ba_overclockmanager.getOverclock(overclockId);
-            if(selectedOverclock != null && ba_inventoryhandler.getEvoshardsFromPlayerInventory() > selectedOverclock.upgradeCost) {
+            if(selectedOverclock != null && ba_inventoryhandler.getEvoshardsFromPlayerInventory() >= selectedOverclock.upgradeCost) {
                 SpecialItemData specialItem = new SpecialItemData(ba_variablemanager.BA_OVERCLOCK_ITEM, null);
                 removeSuccessful = Global.getSector().getPlayerFleet().getCargo().removeItems(CargoAPI.CargoItemType.SPECIAL, specialItem, selectedOverclock.upgradeCost);
             }
