@@ -1,5 +1,6 @@
 =========== 0.3.1 ============
 - Fix typo for bar event.
+- Fix crash related to Nex string helper.
 =========== 0.3.0 ============
 - Overhaul backend logistic. (I should have done it earlier)
 - New obtainable item: Blind Entry.
