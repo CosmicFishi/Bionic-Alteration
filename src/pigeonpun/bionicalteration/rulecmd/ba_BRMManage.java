@@ -10,7 +10,6 @@ import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.characters.AdminData;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
-import com.fs.starfarer.api.impl.campaign.rulecmd.Nex_BlueprintSwap;
 import com.fs.starfarer.api.impl.campaign.rulecmd.PaginatedOptions;
 import com.fs.starfarer.api.ui.LabelAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
@@ -205,7 +204,7 @@ public class ba_BRMManage extends PaginatedOptions {
             index++;
         }
 
-        addOptionAllPages(StringHelper.getString("back", true), "ba_BRMSwapMenuReturn");
+        addOptionAllPages("Returns", "ba_BRMSwapMenuReturn");
     }
     public void displayInfo(PersonAPI person, TextPanelAPI text) {
         float pad = 10f;
