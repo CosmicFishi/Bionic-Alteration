@@ -17,6 +17,7 @@ public class ba_limbmanager {
     static Logger log = Global.getLogger(ba_limbmanager.class);
     protected static HashMap<String, ba_limbmanager.ba_limb> limbMap = new HashMap<>();
     protected static HashMap<String, List<ba_limb>> limbGroupMap = new HashMap<>();
+    public static final String DYNAMIC_LIMB_ID_CUSTOM_DIVIDER = "|";
     public static void onApplicationLoad() {
         loadLimbs();
     }
@@ -40,15 +41,28 @@ public class ba_limbmanager {
                     String limbGroup = row.getString("groupId");
                     if(!Objects.equals(limbId, "") && !Objects.equals(limbGroup, "")) {
                         List<String> limbGroupList = ba_utils.trimAndSplitString(limbGroup);
-                        limbMap.put(
-                                limbId,
-                                new ba_limb(
-                                        limbId,
-                                        row.getString("name"),
-                                        row.getString("description"),
-                                        limbGroupList
-                                )
-                        );
+                        if(row.getString("tags") != null && row.getString("tags") != "") {
+                            limbMap.put(
+                                    limbId,
+                                    new ba_limb(
+                                            limbId,
+                                            row.getString("name"),
+                                            row.getString("description"),
+                                            limbGroupList,
+                                            ba_utils.trimAndSplitString(row.getString("tags"))
+                                    )
+                            );
+                        } else {
+                            limbMap.put(
+                                    limbId,
+                                    new ba_limb(
+                                            limbId,
+                                            row.getString("name"),
+                                            row.getString("description"),
+                                            limbGroupList
+                                    )
+                            );
+                        }
                         for (String limbGroupId: limbGroupList) {
                             if(limbGroupMap.get(limbGroupId) != null) {
                                 limbGroupMap.get(limbGroupId).add(limbMap.get(limbId));
@@ -131,17 +145,50 @@ public class ba_limbmanager {
         }
         return false;
     }
+    public static ba_limb createDynamicLimb(ba_limbmanager.ba_limb baseLimb, String prefix) {
+        String dynamicId = baseLimb.limbId + DYNAMIC_LIMB_ID_CUSTOM_DIVIDER + prefix;
+        return new ba_limb(dynamicId, baseLimb);
+    }
+    protected static ba_limbmanager.ba_limb getBaseLimb(ba_limbmanager.ba_limb dynamicLimb) {
+        String[] limbIds = dynamicLimb.limbId.split(DYNAMIC_LIMB_ID_CUSTOM_DIVIDER.toString());
+        if(ba_limbmanager.getLimb(limbIds[0]) != null) {
+            return ba_limbmanager.getLimb(limbIds[0]);
+        }
+        return null;
+    }
     public static class ba_limb {
         public String limbId;
         public String name;
         public String description;
         public List<String> limbGroupList;
+        public List<String> tags = new ArrayList<>();
         public HashMap<String, Object> customData = new HashMap<>();
         public ba_limb(String limbId, String name, String description, List<String> limbGroupId) {
             this.limbId = limbId;
             this.name = name;
             this.description = description;
             this.limbGroupList = limbGroupId;
+        }
+        public ba_limb(String limbId, String name, String description, List<String> limbGroupId, List<String> tags) {
+            this.limbId = limbId;
+            this.name = name;
+            this.description = description;
+            this.limbGroupList = limbGroupId;
+            this.tags = tags;
+        }
+
+        /**
+         * Use for creating dynamic limb
+         * @param limbId
+         * @param baseLimb
+         */
+        public ba_limb(String limbId, ba_limb baseLimb) {
+            this.limbId = limbId;
+            this.name = baseLimb.name;
+            this.description = baseLimb.description;
+            this.limbGroupList = baseLimb.limbGroupList;
+            this.tags = baseLimb.tags;
+            this.tags.add(ba_variablemanager.BA_DYNAMICALLY_CREATE_LIMB);
         }
     }
 }

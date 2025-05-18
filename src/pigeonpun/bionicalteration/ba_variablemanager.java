@@ -94,4 +94,5 @@ public class ba_variablemanager {
     }
     public static final String BA_BLIND_ENTRY_ITEM_ID = "ba_blind_entry";
     public static final int BA_BLIND_ENTRY_BRM_INCREMENT = (int) (BA_BRM_LIMIT_BONUS_PER_LEVEL * 2);
+    public static final String BA_DYNAMICALLY_CREATE_LIMB = "ba_dynamically_created_limb";
 }

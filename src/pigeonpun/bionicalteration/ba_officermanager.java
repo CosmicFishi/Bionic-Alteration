@@ -925,6 +925,25 @@ public class ba_officermanager {
             this.appliedOverclock = appliedOverclock;
         }
     }
+
+    /**
+     * Script is the "bionic" that will be installed on the AI
+     */
+    public static class ba_scriptAugmentedData extends ba_bionicAugmentedData {
+        public ba_limbmanager.ba_limb baseLimb;
+
+        /**
+         * With this constructor, limb variable from ba_bionicAugmentedData is the dynamic limb. <br>
+         * To find the actual limb that dynamic limb based on, use baseLimb.
+         * @param dynamicLimb
+         * @param bionic
+         * @param appliedOverclock
+         */
+        public ba_scriptAugmentedData(@NotNull ba_limbmanager.ba_limb dynamicLimb, @Nullable ba_bionicitemplugin bionic, @Nullable ba_overclock appliedOverclock) {
+            super(dynamicLimb, bionic, appliedOverclock);
+            this.baseLimb = ba_limbmanager.getBaseLimb(dynamicLimb);
+        }
+    }
     public static class ba_personmemorydata {
         public List<ba_bionicAugmentedData> anatomy = new ArrayList<>();
         public int BRMTier;
@@ -938,7 +957,7 @@ public class ba_officermanager {
         }
     }
     public static class ba_aimemorydata extends ba_personmemorydata {
-        public List<ba_bionicAugmentedData> anatomy = new ArrayList<>();
+        public List<ba_scriptAugmentedData> anatomy = new ArrayList<>();
         public int shellTier;
 
         public ba_aimemorydata(int tier) {
