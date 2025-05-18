@@ -9,6 +9,8 @@ import com.fs.starfarer.api.characters.AdminData;
 import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import com.fs.starfarer.api.characters.OfficerDataAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.combat.ShipAPI;
+import com.fs.starfarer.api.combat.ShipVariantAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.util.Misc;
@@ -79,8 +81,17 @@ public class ba_officermanager {
      * @param fleetFP
      */
     public static void setUpListOfficers(@NotNull List<PersonAPI> listOfficers, int fleetFP) {
-        //todo: problem with spawning admin -> admin always stuck at BRM tier 1
+        //todo: problem with spawning admin -> admin always spawn with 1 skill
         for(PersonAPI person: listOfficers) {
+            if(person.isAICore()) {
+
+            } else {
+                setupForPeople(person, fleetFP);
+            }
+        }
+    }
+    public static void setupForPeople(@NotNull PersonAPI person, float fleetFP) {
+        if(!person.isAICore()) {
             if(person.getMemoryWithoutUpdate().get(ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY) == null) {
                 ba_personmemorydata memoryData = new ba_personmemorydata(1);
                 //====== set up tier
@@ -102,7 +113,7 @@ public class ba_officermanager {
                 if(getPersonVariantTag(person) == null) {
                     String randomVariant;
                     if(person.getFaction() != null) {
-                         randomVariant = ba_variantmanager.getRandomVariantFromFaction(person.getFaction().getId());
+                        randomVariant = ba_variantmanager.getRandomVariantFromFaction(person.getFaction().getId());
                     } else {
                         randomVariant = "GENERIC_HUMAN";
                     }
@@ -132,6 +143,21 @@ public class ba_officermanager {
                         updatePersonStatsOnInteract(data.bionicInstalled, data.limb, person, true);
                     }
                 }
+            }
+        }
+    }
+
+    /**
+     * For AI, the shell will be set up on the ship the AI commanding
+     * So the shell's tier and scripts will be attached to the fleet
+     * @param person
+     * @param fleetFP
+     */
+    public static void setupForAI(@NotNull PersonAPI person, float fleetFP) {
+        if(person.isAICore()) {
+            if(person.getFleet()!=null && person.getFleet().getFleetData()!=null && person.getFleet().getFleetData().getMemberWithCaptain(person)!=null) {
+                FleetMemberAPI fleetMember = person.getFleet().getFleetData().getMemberWithCaptain(person);
+                fleetMember.getId();
             }
         }
     }
@@ -902,13 +928,34 @@ public class ba_officermanager {
     public static class ba_personmemorydata {
         public List<ba_bionicAugmentedData> anatomy = new ArrayList<>();
         public int BRMTier;
-        public String variant;
+        public String variant = ""; //Should be empty string for AI
         public Object custom;
-        public ba_personmemorydata(int brmTier) {
-            if(brmTier < 0) {
-                brmTier = 1;
+        public ba_personmemorydata(int tier) {
+            if(tier < 0) {
+                tier = 1;
             }
-            this.BRMTier = brmTier;
+            this.BRMTier = tier;
+        }
+    }
+    public static class ba_aimemorydata extends ba_personmemorydata {
+        public List<ba_bionicAugmentedData> anatomy = new ArrayList<>();
+        public int shellTier;
+
+        public ba_aimemorydata(int tier) {
+            super(1);
+            this.shellTier = tier;
+        }
+    }
+
+    /**
+     * Automated ship core + scripts data
+     * Saved into the fleet memory unfortunately
+     */
+    public static class ba_fleetmemorydata {
+        //todo: implement this for normal officer as well.
+        public List<ba_aimemorydata> listAIMember = new ArrayList<>();
+        public ba_fleetmemorydata(List<ba_aimemorydata> listAIMember) {
+            this.listAIMember = listAIMember;
         }
     }
 }

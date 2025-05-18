@@ -45,7 +45,7 @@ public class ba_uiplugin extends ba_uicommon {
     public static final float MAIN_CONTAINER_PADDING = 150f;
     public static final float MAIN_CONTAINER_WIDTH = Global.getSettings().getScreenWidth() - MAIN_CONTAINER_PADDING;
     public static final float MAIN_CONTAINER_HEIGHT = Global.getSettings().getScreenHeight() - MAIN_CONTAINER_PADDING;
-    public static final String OVERVIEW = "OVERVIEW", WORKSHOP = "WORKSHOP";
+    public static final String OVERVIEW = "OVERVIEW", WORKSHOP = "WORKSHOP", SHELL = "SHELL";
     public final String INSTALL_WORKSHOP="INSTALL", EDIT_WORKSHOP="EDIT";
     public String currentWorkShopMode = INSTALL_WORKSHOP; //determine what mode workshop is in
     public ba_bionicitemplugin currentRemovingBionic; //selected for removing

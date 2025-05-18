@@ -7,7 +7,8 @@
   "maxAcademyBRMTier": 7, #Determine max BRM tier you can reach with upgrading from Galactic Academy. Only have effect if isBRMCapDisable is disabled.,
   "brmUpgradePerTier": 6, #Determine the amount of BRM you get per BRM tier,
   "brmUpgradeBaseCredit": 20000, #Base credit about you need for each tier increase, the upgrade cost formular is brmUpgradeBaseCredit * Tier,
-
+  "canConsciousnessLowerThanZero": false, #,Conciousness/Stability can go lower than 0%
+  "maxShellUpgradeTier": 4,
   "plugins":{
 
   },
