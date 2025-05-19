@@ -5,7 +5,7 @@ import com.fs.starfarer.api.combat.MutableShipStatsAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 
-public class ba_shell extends BaseHullMod {
+public class ba_shellinfo extends BaseHullMod {
     public static final float tooltipWitdth = 600f;
     @Override
     public float getTooltipWidth() {

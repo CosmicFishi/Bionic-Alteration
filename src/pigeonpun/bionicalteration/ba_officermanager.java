@@ -81,16 +81,16 @@ public class ba_officermanager {
      * @param fleetFP
      */
     public static void setUpListOfficers(@NotNull List<PersonAPI> listOfficers, int fleetFP) {
-        //todo: problem with spawning admin -> admin always spawn with 1 skill
         for(PersonAPI person: listOfficers) {
             if(person.isAICore()) {
-
+                setupForAI(person, fleetFP);
             } else {
                 setupForPeople(person, fleetFP);
             }
         }
     }
     public static void setupForPeople(@NotNull PersonAPI person, float fleetFP) {
+        //todo: problem with spawning admin -> admin always spawn with 1 skill
         if(!person.isAICore()) {
             if(person.getMemoryWithoutUpdate().get(ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY) == null) {
                 ba_personmemorydata memoryData = new ba_personmemorydata(1);
@@ -154,12 +154,37 @@ public class ba_officermanager {
      * @param fleetFP
      */
     public static void setupForAI(@NotNull PersonAPI person, float fleetFP) {
-        if(person.isAICore()) {
-            if(person.getFleet()!=null && person.getFleet().getFleetData()!=null && person.getFleet().getFleetData().getMemberWithCaptain(person)!=null) {
-                FleetMemberAPI fleetMember = person.getFleet().getFleetData().getMemberWithCaptain(person);
-                fleetMember.getId();
+        if(person!= null && person.isAICore() && person.getFleet() != null) {
+            if(person.getFleet().getFleetData() == null || person.getFleet().getFleetData().getMemberWithCaptain(person) ==null) return;
+            ba_fleetmemorydata fleetMemData = getFleetBionicMemoryData(person);
+            if(fleetMemData == null) return;
+            FleetMemberAPI fleetMember = person.getFleet().getFleetData().getMemberWithCaptain(person);
+            ba_aimemorydata aiMemData = fleetMemData.listAIMember.get(fleetMember.getId());
+            if(aiMemData == null) aiMemData = new ba_aimemorydata(1);
+            //todo: setup spawning for friendly ship
+            //demo one with a single script always installed.
+
+            fleetMemData.listAIMember.put(fleetMember.getId(), aiMemData);
+        }
+    }
+
+    /**
+     * Create new memory data for fleet if can't find mem data
+     * @param person
+     * @return null if person has no fleet.
+     */
+    public static ba_fleetmemorydata getFleetBionicMemoryData(@NotNull PersonAPI person) {
+        ba_fleetmemorydata fleetData = null;
+        if(person!= null && person.getFleet() != null) {
+            if(person.getFleet().getMemoryWithoutUpdate().get(ba_variablemanager.BA_FLEET_MEMORY_BIONIC_KEY) == null ||
+                    !(person.getFleet().getMemoryWithoutUpdate().get(ba_variablemanager.BA_FLEET_MEMORY_BIONIC_KEY) instanceof ba_fleetmemorydata)) {
+                fleetData = new ba_fleetmemorydata(new HashMap<>());
+                person.getFleet().getMemoryWithoutUpdate().set(ba_variablemanager.BA_FLEET_MEMORY_BIONIC_KEY, fleetData);
+            } else {
+                fleetData = (ba_fleetmemorydata) person.getFleet().getMemoryWithoutUpdate().get(ba_variablemanager.BA_FLEET_MEMORY_BIONIC_KEY);
             }
         }
+        return fleetData;
     }
     //create new admin
     //runcode import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent; import com.fs.starfarer.api.impl.campaign.ids.Factions; PersonAPI person = OfficerManagerEvent.createAdmin(Global.getSector().getFaction(Factions.MERCENARY), 1, new Random()); Global.getSector().getCharacterData().addAdmin(person);
@@ -960,9 +985,9 @@ public class ba_officermanager {
         public List<ba_scriptAugmentedData> anatomy = new ArrayList<>();
         public int shellTier;
 
-        public ba_aimemorydata(int tier) {
+        public ba_aimemorydata(int shellTier) {
             super(1);
-            this.shellTier = tier;
+            this.shellTier = shellTier;
         }
     }
 
@@ -972,8 +997,9 @@ public class ba_officermanager {
      */
     public static class ba_fleetmemorydata {
         //todo: implement this for normal officer as well.
-        public List<ba_aimemorydata> listAIMember = new ArrayList<>();
-        public ba_fleetmemorydata(List<ba_aimemorydata> listAIMember) {
+        public HashMap<String, ba_aimemorydata> listAIMember = new HashMap<>(); //Fleet member ID - Data
+        public HashMap<String, ba_personmemorydata> listPeopleMember = new HashMap<>(); //Person ID - Data
+        public ba_fleetmemorydata(HashMap<String, ba_aimemorydata> listAIMember) {
             this.listAIMember = listAIMember;
         }
     }

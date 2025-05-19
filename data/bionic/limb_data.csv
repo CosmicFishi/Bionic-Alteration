@@ -9,4 +9,5 @@ brain,brain_group,Brain,The thinking machine,
 mouth,mouth_group,Mouth,The talky walky,
 torso,torso_group,Torso,The central part,
 legs,"leg_group,leg_hand_group",Legs,Built-in walk sticks,
-,,,,base_dynamic_limb
+,,,,
+channel,channel_group,Channel,The Digital Backroom,base_dynamic_limb
