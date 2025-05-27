@@ -43,7 +43,7 @@ public class ba_campaignlistener extends BaseCampaignEventListener implements Ev
             FleetEncounterContext context = (FleetEncounterContext) plugin.getContext();
             List<CampaignFleetAPI> fleets = context.getBattle().getBothSides();
             for(CampaignFleetAPI fleet: fleets) {
-                List<PersonAPI> listPerson = new ArrayList<>(ba_officermanager.getListOfficerFromFleet(Arrays.asList(fleet), false));
+                List<PersonAPI> listPerson = new ArrayList<>(ba_officermanager.getListOfficerFromFleet(Arrays.asList(fleet), false, true));
                 ba_officermanager.setUpListOfficers(listPerson, fleet.getFleetPoints());
             }
 //            List<PersonAPI> listPerson = new ArrayList<>(ba_officermanager.getListOfficerFromFleet(fleets, false));

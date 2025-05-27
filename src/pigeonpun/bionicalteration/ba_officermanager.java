@@ -45,7 +45,7 @@ public class ba_officermanager {
     public static void onSaveLoad() {
         //disable random bionic generation on new game
         if(!bionicalterationplugin.isAllowBionicsToSpawnInPlayerFleetOnNewSave && !Global.getSector().getMemoryWithoutUpdate().contains(ba_variablemanager.BA_BIONIC_ON_NEW_GAME_KEY)) {
-            for(PersonAPI person: getListOfficerFromFleet(null, true)) {
+            for(PersonAPI person: getListOfficerFromFleet(null, true, true)) {
                 person.addTag(ba_variablemanager.BA_RANDOM_BIONIC_GENERATED_TAG);
             }
             Global.getSector().getMemoryWithoutUpdate().set(ba_variablemanager.BA_BIONIC_ON_NEW_GAME_KEY, true);
@@ -88,6 +88,7 @@ public class ba_officermanager {
                 setupForPeople(person, fleetFP);
             }
         }
+        log.info("aaaaaaaaaaaaaaaaaaaaaa");
     }
     public static void setupForPeople(@NotNull PersonAPI person, float fleetFP) {
         //todo: problem with spawning admin -> admin always spawn with 1 skill
@@ -192,7 +193,7 @@ public class ba_officermanager {
         listPersons.clear();
         List<PersonAPI> listP = new ArrayList<>();
         if(listOfficers == null) {
-            listP.addAll(getListOfficerFromFleet(null, true));
+            listP.addAll(getListOfficerFromFleet(null, true, true));
         } else {
             listP.addAll(listOfficers);
         }
@@ -342,19 +343,23 @@ public class ba_officermanager {
         float currentConsciousness = ba_variablemanager.BA_CONSCIOUSNESS_DEFAULT;
         return currentConsciousness;
     }
+    //todo: need testing on: consciousness, other fleet with AI, player fleet with AI, BRM management UI
     /**
      * @param fleets fleets that will get the list officer from
      * @param isPlayer If true, only get from player fleet
+     * @param isIncludeAIOfficer If true, include AI officers
      */
-    public static List<PersonAPI> getListOfficerFromFleet(List<CampaignFleetAPI> fleets, boolean isPlayer) {
+    public static List<PersonAPI> getListOfficerFromFleet(List<CampaignFleetAPI> fleets, boolean isPlayer, boolean isIncludeAIOfficer) {
         List<PersonAPI> listP = new ArrayList<>();
         if(!isPlayer) {
             for (CampaignFleetAPI fleet : fleets) {
                 if(!fleet.isPlayerFleet()) {
                     for (FleetMemberAPI member : fleet.getMembersWithFightersCopy()) {
                         if (member.isFighterWing()) continue;
-                        if (!member.getCaptain().isDefault() && !member.getCaptain().isAICore()) {
-                            listP.add(member.getCaptain());
+                        if (!member.getCaptain().isDefault()) {
+                            if(member.getCaptain().isAICore() && isIncludeAIOfficer) {
+                                listP.add(member.getCaptain());
+                            }
                         }
                     }
                 }
@@ -366,18 +371,32 @@ public class ba_officermanager {
                 listPlayerMember = Global.getSector().getPlayerFleet().getFleetData().getOfficersCopy();
             }
             for (OfficerDataAPI officer: listPlayerMember) {
-                if(!officer.getPerson().isAICore() && !officer.getPerson().isDefault()) {
-                    listP.add(officer.getPerson());
+                if(!officer.getPerson().isDefault()) {
+                    if(officer.getPerson().isAICore() && isIncludeAIOfficer) {
+                        listP.add(officer.getPerson());
+                    }
                 }
             }
             for (AdminData admin: Global.getSector().getCharacterData().getAdmins()) {
-                if(!admin.getPerson().isDefault() && !admin.getPerson().isAICore()) {
-                    listP.add(admin.getPerson());
+                if(!admin.getPerson().isAICore()) {
+                    if(admin.getPerson().isAICore() && isIncludeAIOfficer) {
+                        listP.add(admin.getPerson());
+                    }
                 }
             }
         }
 
         return listP;
+    }
+
+    /**
+     * Note: This doesn't include AI officer into the list
+     * @param fleets
+     * @param isPlayer
+     * @return
+     */
+    public static List<PersonAPI> getListOfficerFromFleet(List<CampaignFleetAPI> fleets, boolean isPlayer) {
+        return getListOfficerFromFleet(fleets, isPlayer, false);
     }
     /**
      * Update necessary stats on a person

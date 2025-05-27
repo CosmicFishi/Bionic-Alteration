@@ -77,7 +77,7 @@ public class ba_displayBionicUI extends BaseCommandPlugin {
         if (this.dialog.getPlugin() instanceof FleetInteractionDialogPluginImpl) {
             FleetEncounterContext context = (FleetEncounterContext) this.dialog.getPlugin().getContext();
             List<CampaignFleetAPI> fleets = context.getBattle().getBothSides();
-            List<PersonAPI> listPerson = new ArrayList<>(ba_officermanager.getListOfficerFromFleet(fleets, false));
+            List<PersonAPI> listPerson = new ArrayList<>(ba_officermanager.getListOfficerFromFleet(fleets, false, true));
             dialog.showCustomVisualDialog(ba_uiplugin.MAIN_CONTAINER_WIDTH,
                     ba_uiplugin.MAIN_CONTAINER_HEIGHT,
                     new ba_delegate(ba_uiplugin.createDefault(), dialog, listPerson)

@@ -21,7 +21,7 @@ public class ba_zeroconsciousness extends MagicAchievement {
     @Override
     public void advanceAfterInterval(float amount) {
         if(!isComplete()) {
-            List<PersonAPI> listP = ba_officermanager.getListOfficerFromFleet(null, true);
+            List<PersonAPI> listP = ba_officermanager.getListOfficerFromFleet(null, true, true);
             for(PersonAPI person: listP) {
                 if(person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f) <= 0f) {
                     completeAchievement();
