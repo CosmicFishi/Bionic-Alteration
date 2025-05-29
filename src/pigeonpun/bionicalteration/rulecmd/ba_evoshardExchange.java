@@ -90,6 +90,7 @@ public class ba_evoshardExchange extends BaseCommandPlugin {
                         AddRemoveCommodity.addItemLossText(stack.getSpecialDataIfSpecial(), (int) stack.getSize(), text);
                     }
                     if(stack.isCommodityStack()) {
+                        ba_inventoryhandler.removeStackFromPlayerInv(stack);
                         AddRemoveCommodity.addCommodityLossText(stack.getCommodityId(), (int) stack.getSize(), text);
                     }
                 }
