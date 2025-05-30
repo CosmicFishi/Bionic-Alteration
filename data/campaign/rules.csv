@@ -97,5 +97,8 @@ ba_ripperBionic_confirmPurchase,ba_ripperBionicConfirmPurchase,,"ba_ripperDoc_cl
 ba_ripperBionic_selectBionics:Reconsider your choice",
 ba_ripperBionic_purchase_opt,DialogOptionSelected,"$option == ba_ripperBionic_purchase_opt","ba_ripperDoc_clinic purchase
 BarCMD returnFromEvent false",,,
+ba_ripperBionicBlurb,ba_ripperBionic_blurb,,,"""I got these special offers just for you""","ba_ripperBionic_selectBionics:Take a look at the offer
+contact_declineBarNoContinue:Decline",
+ba_ripperBionicOption,ba_ripperBionic_option,,,,"ba_ripperBionic_selectBionics:Take a look at the offer",
 "#END ripperDoc",,,,,,
 
