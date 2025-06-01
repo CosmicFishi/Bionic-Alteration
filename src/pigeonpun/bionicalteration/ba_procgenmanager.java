@@ -76,6 +76,7 @@ public class ba_procgenmanager {
                         }
                     }
                     PlanetAPI selectedPlanet = randomPlanetPicker.pick();
+                    if(selectedPlanet == null) continue;
                     List<SectorEntityToken> listOrbittingEntities = new ArrayList<>();
                     List<String> ignoredType = new ArrayList<>();
                     ignoredType.add("wreck");
