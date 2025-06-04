@@ -92,10 +92,17 @@ ba_ripperBionicOptionBar,ba_ripperBionic_optionBar,,"ba_ripperDoc_clinic initMem
 ba_ripperBionicBlurbBar,ba_ripperBionic_blurbBar,,,"Standing beside a dark alley, a sketchy street vendor covered in augments eyes the area, looking for their next buyer.",,
 ba_ripperBionicStartOption,DialogOptionSelected,"$option == ba_ripperBionic_startOption",,"You approach the individual. With a grin, they pitch their offer immediately. ""Hey, I got some good stuff, just for you, with a mere markup price of $ba_markupBionicPrice. Quite a deal, don't you think?""","ba_ripperBionic_selectBionics:Take a look at the offer
 contact_declineBarNoContinue:Decline",
-ba_ripperBionic_selectBionics,DialogOptionSelected,"$option == ba_ripperBionic_selectBionics","ba_ripperDoc_clinic displayClinic",,,
+ba_ripperBionic_selectBionics,DialogOptionSelected,"$option == ba_ripperBionic_selectBionics","ba_ripperDoc_clinic displayClinic
+$missionId = ba_ripperDoc",,,
 ba_ripperBionic_confirmPurchase,ba_ripperBionicConfirmPurchase,,"ba_ripperDoc_clinic purchaseInfo",,"ba_ripperBionic_purchase_opt:Purchase
 ba_ripperBionic_selectBionics:Reconsider your choice",
-ba_ripperBionic_purchase_opt,DialogOptionSelected,"$option == ba_ripperBionic_purchase_opt","ba_ripperDoc_clinic purchase
-BarCMD returnFromEvent false",,,
+ba_ripperBionic_purchase_opt,DialogOptionSelected,"$option == ba_ripperBionic_purchase_opt","$ba_ripperBionic_completed = true
+Call $ba_ripperBionic_ref ba_addRipperDoc_Contact
+BarCMD returnFromEvent false
+ba_ripperDoc_clinic purchase
+",,,
+ba_ripperBionicBlurb,ba_ripperBionic_blurb,,,"""I got these special offers just for you""",,
+ba_ripperBionicOption,ba_ripperBionic_option,,,,"ba_ripperBionic_selectBionics:Take a look at the offer
+contact_decline:Decline",
 "#END ripperDoc",,,,,,
 

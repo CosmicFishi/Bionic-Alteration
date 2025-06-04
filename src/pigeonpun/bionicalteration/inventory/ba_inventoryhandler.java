@@ -194,4 +194,7 @@ public class ba_inventoryhandler {
         }
         return remainderCount > 0;
     }
+    public static void removeStackFromPlayerInv(CargoStackAPI stack) {
+        Global.getSector().getPlayerFleet().getCargo().removeItems(stack.getType(), stack.getData(), stack.getSize());
+    }
 }

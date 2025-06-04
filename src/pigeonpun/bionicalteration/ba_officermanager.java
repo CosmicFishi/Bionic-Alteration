@@ -88,7 +88,6 @@ public class ba_officermanager {
                 setupForPeople(person, fleetFP);
             }
         }
-        log.info("aaaaaaaaaaaaaaaaaaaaaa");
     }
     public static void setupForPeople(@NotNull PersonAPI person, float fleetFP) {
         //todo: problem with spawning admin -> admin always spawn with 1 skill
@@ -155,17 +154,35 @@ public class ba_officermanager {
      * @param fleetFP
      */
     public static void setupForAI(@NotNull PersonAPI person, float fleetFP) {
+        //todo: error: person.getfleet is null for AI core ? probably something involving player fleet. test it with remnant fleet just to be sure.
         if(person!= null && person.isAICore() && person.getFleet() != null) {
             if(person.getFleet().getFleetData() == null || person.getFleet().getFleetData().getMemberWithCaptain(person) ==null) return;
             ba_fleetmemorydata fleetMemData = getFleetBionicMemoryData(person);
             if(fleetMemData == null) return;
             FleetMemberAPI fleetMember = person.getFleet().getFleetData().getMemberWithCaptain(person);
             ba_aimemorydata aiMemData = fleetMemData.listAIMember.get(fleetMember.getId());
-            if(aiMemData == null) aiMemData = new ba_aimemorydata(1);
-            //todo: setup spawning for friendly ship
-            //demo one with a single script always installed.
-
+            if(aiMemData == null) {
+                aiMemData = new ba_aimemorydata();
+            }
+            if(!aiMemData.isSetUped) {
+                int maxFPScaling = 600;
+                float spawningPristineShell = 100;
+                float actualChanceOfSpawningPristineShell = 0;
+                if(fleetFP > 0) {
+                    actualChanceOfSpawningPristineShell = (float) ((double) fleetFP / maxFPScaling * spawningPristineShell);
+                }
+                float spawningCorruptedShell = 100 - actualChanceOfSpawningPristineShell;
+                WeightedRandomPicker<String> randomPicker = new WeightedRandomPicker<>(ba_utils.getRandom());
+                randomPicker.add(ba_variablemanager.BA_SHELL_CORRUPTED_HULLMOD, spawningCorruptedShell);
+                randomPicker.add(ba_variablemanager.BA_SHELL_PRISTINE_HULLMOD, actualChanceOfSpawningPristineShell);
+                aiMemData.shell = randomPicker.pick();
+                //todo: setup spawning for friendly ship
+                //demo one with a single script always installed.
+                log.info("aaaaaaaaaaaaaaaaa");
+            }
+            aiMemData.isSetUped = true;
             fleetMemData.listAIMember.put(fleetMember.getId(), aiMemData);
+            person.getFleet().getMemoryWithoutUpdate().set(ba_variablemanager.BA_FLEET_MEMORY_BIONIC_KEY, fleetMemData);
         }
     }
 
@@ -366,14 +383,24 @@ public class ba_officermanager {
             }
         } else {
             listP.add(Global.getSector().getPlayerPerson());
-            List<OfficerDataAPI> listPlayerMember = new ArrayList<>();
-            if(Global.getSector().getPlayerFleet() != null) {
-                listPlayerMember = Global.getSector().getPlayerFleet().getFleetData().getOfficersCopy();
-            }
-            for (OfficerDataAPI officer: listPlayerMember) {
-                if(!officer.getPerson().isDefault()) {
-                    if(officer.getPerson().isAICore() && isIncludeAIOfficer) {
-                        listP.add(officer.getPerson());
+//            List<OfficerDataAPI> listPlayerMember = new ArrayList<>();
+//            if(Global.getSector().getPlayerFleet() != null) {
+//                listPlayerMember = Global.getSector().getPlayerFleet().getFleetData().getOfficersCopy();
+//            }
+//            for (OfficerDataAPI officer: listPlayerMember) {
+//                if(!officer.getPerson().isDefault()) {
+//                    if(officer.getPerson().isAICore() && isIncludeAIOfficer) {
+//                        listP.add(officer.getPerson());
+//                    } else {
+//                        listP.add(officer.getPerson());
+//                    }
+//                }
+//            }
+            for (FleetMemberAPI member : Global.getSector().getPlayerFleet().getMembersWithFightersCopy()) {
+                if (member.isFighterWing()) continue;
+                if (!member.getCaptain().isDefault()) {
+                    if(member.getCaptain().isAICore() && isIncludeAIOfficer) {
+                        listP.add(member.getCaptain());
                     }
                 }
             }
@@ -1002,11 +1029,16 @@ public class ba_officermanager {
     }
     public static class ba_aimemorydata extends ba_personmemorydata {
         public List<ba_scriptAugmentedData> anatomy = new ArrayList<>();
-        public int shellTier;
+        public String shell; //Get from ba_variablemanager {BA_SHELL_CORRUPTED_HULLMOD | BA_SHELL_PRISTINE_HULLMOD}
+        public boolean isSetUped = false;
 
-        public ba_aimemorydata(int shellTier) {
+        public ba_aimemorydata() {
             super(1);
-            this.shellTier = shellTier;
+            this.shell = ba_variablemanager.BA_SHELL_CORRUPTED_HULLMOD;
+        }
+        public ba_aimemorydata(String shell) {
+            super(1);
+            this.shell = shell;
         }
     }
 

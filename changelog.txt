@@ -1,3 +1,7 @@
+=========== 0.3.2 ============
+- Fix crash from combat encounter with Symbiotic Void Creatures
+- Fix RipperDoc bar encounter being weird
+- Fix ripping bionic and core not removing the core
 =========== 0.3.1 ============
 - Fix typo for bar event.
 - Fix crash related to Nex string helper.

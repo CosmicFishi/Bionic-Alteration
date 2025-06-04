@@ -41,6 +41,7 @@ public class ba_campaignlistener extends BaseCampaignEventListener implements Ev
         InteractionDialogPlugin plugin = dialog.getPlugin();
         if(plugin instanceof FleetInteractionDialogPluginImpl) {
             FleetEncounterContext context = (FleetEncounterContext) plugin.getContext();
+            if(context.getBattle() == null) return;
             List<CampaignFleetAPI> fleets = context.getBattle().getBothSides();
             for(CampaignFleetAPI fleet: fleets) {
                 List<PersonAPI> listPerson = new ArrayList<>(ba_officermanager.getListOfficerFromFleet(Arrays.asList(fleet), false, true));

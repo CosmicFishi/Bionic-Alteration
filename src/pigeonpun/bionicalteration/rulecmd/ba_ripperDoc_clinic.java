@@ -70,7 +70,7 @@ public class ba_ripperDoc_clinic extends BaseCommandPlugin {
                 purchase();
                 break;
         }
-        return false;
+        return true;
     }
     public void initMemKey() {
         memory.set(markupBionicPriceMemKey, "" + Math.round(markUp * 100) + "%");
