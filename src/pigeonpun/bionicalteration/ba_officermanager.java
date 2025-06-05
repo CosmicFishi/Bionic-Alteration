@@ -725,10 +725,11 @@ public class ba_officermanager {
                         for (ba_bionicAugmentedData augmentedData : new ArrayList<>(data.anatomy)) {
                             if(augmentedData.limb.limbId.equals(limb.limbId) && augmentedData.bionicInstalled.getId().equals(bionic.bionicId)) {
                                 data.anatomy.remove(augmentedData);
+                                updatePersonStatsOnInteract(augmentedData.bionicInstalled, augmentedData.limb, person, false);
                                 ba_bionicAugmentedData newAugmentedData = new ba_bionicAugmentedData(limb, bionic, ba_overclockmanager.getOverclock(overclockId));
                                 data.anatomy.add(newAugmentedData);
-                                updatePersonStatsOnInteract(bionic, limb, person, false);
                                 savePersonMemoryData(data, person);
+                                updatePersonStatsOnInteract(bionic, limb, person, true);
                                 return true;
                             }
                         }
