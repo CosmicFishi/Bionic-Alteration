@@ -18,6 +18,7 @@ import pigeonpun.bionicalteration.skills.ba_bionic_augmented;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class bioniccondition extends BaseMarketConditionPlugin {
     protected PersonAPI person;
@@ -33,6 +34,10 @@ public class bioniccondition extends BaseMarketConditionPlugin {
     @Override
     public void apply(String id) {
         if(market != null && !market.hasCondition(Conditions.DECIVILIZED) && market.getAdmin() != null &&  !market.getAdmin().isDefault()) {
+            //check if admin replaced
+            if(this.person != null && !Objects.equals(this.person.getId(), market.getAdmin().getId())) {
+                unapply(id);
+            }
             this.person = market.getAdmin();
             List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
             for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
@@ -64,26 +69,32 @@ public class bioniccondition extends BaseMarketConditionPlugin {
     @Override
     public void unapply(String id) {
         if(market != null && market.getAdmin() != null) {
+            if(this.person != null && !Objects.equals(this.person.getId(), market.getAdmin().getId())) {
+                unapplyPersonBionic(this.person, id);
+            }
             this.person = market.getAdmin();
-            List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
-            for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
-                if(anatomy.bionicInstalled != null) {
-                    if(anatomy.bionicInstalled != null && anatomy.bionicInstalled.isApplyAdminEffect) {
-                        String applyId = anatomy.bionicInstalled.bionicId + anatomy.limb.limbId;
-                        anatomy.bionicInstalled.unapplyAdminEffect(market.getAdmin().getStats(), id);
-                        anatomy.bionicInstalled.unapplyEffectAdminMarket(market, applyId);
-                    }
-                    if(anatomy.appliedOverclock != null) {
-                        if(anatomy.appliedOverclock.isApplyAdminEffect) {
-                            String applyOverclockId = id + "_" + anatomy.bionicInstalled.bionicId + "_" + anatomy.appliedOverclock.id + "_" + anatomy.limb;
-                            anatomy.appliedOverclock.unapplyAdminEffect(market.getAdmin().getStats(), id);
-                            anatomy.appliedOverclock.unapplyEffectAdminMarket(market, applyOverclockId);
-                        }
+            unapplyPersonBionic(this.person, id);
+        }
+    }
+    private void unapplyPersonBionic(PersonAPI person, String id) {
+        List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(person);
+        for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
+            if(anatomy.bionicInstalled != null) {
+                if(anatomy.bionicInstalled != null && anatomy.bionicInstalled.isApplyAdminEffect) {
+                    String applyId = anatomy.bionicInstalled.bionicId + anatomy.limb.limbId;
+                    anatomy.bionicInstalled.unapplyAdminEffect(market.getAdmin().getStats(), id);
+                    anatomy.bionicInstalled.unapplyEffectAdminMarket(market, applyId);
+                }
+                if(anatomy.appliedOverclock != null) {
+                    if(anatomy.appliedOverclock.isApplyAdminEffect) {
+                        String applyOverclockId = id + "_" + anatomy.bionicInstalled.bionicId + "_" + anatomy.appliedOverclock.id + "_" + anatomy.limb;
+                        anatomy.appliedOverclock.unapplyAdminEffect(market.getAdmin().getStats(), id);
+                        anatomy.appliedOverclock.unapplyEffectAdminMarket(market, applyOverclockId);
                     }
                 }
             }
-            ba_consciousmanager.resetBeforeApplyEffectAdminMarket(market, id);
         }
+        ba_consciousmanager.resetBeforeApplyEffectAdminMarket(market, id);
     }
 
     @Override

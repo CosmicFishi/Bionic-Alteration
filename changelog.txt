@@ -1,3 +1,7 @@
+====================0.3.3 ==================
+- Fix overclocking bionic completely reset the person BRM and consciousness stat
+- Fix heart limb not highlighted after selecting bionic installable on heart
+- Fix admin swapping in market not updating market condition
 =========== 0.3.2 ============
 - Fix crash from combat encounter with Symbiotic Void Creatures
 - Fix RipperDoc bar encounter being weird
