@@ -465,6 +465,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 for (ba_limbmanager.ba_limb limb: limbList) {
                     if(limb.limbId.equals(augmentData.limb.limbId)) {
                         limbName.setHighlightColors(Misc.getPositiveHighlightColor());
+                        break;
                     } else {
                         limbName.setHighlightColors(t);
                     }
