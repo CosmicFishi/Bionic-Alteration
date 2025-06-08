@@ -45,13 +45,13 @@ public class ba_campaignlistener extends BaseCampaignEventListener implements Ev
             List<CampaignFleetAPI> fleets = context.getBattle().getBothSides();
             for(CampaignFleetAPI fleet: fleets) {
                 List<PersonAPI> listPerson = new ArrayList<>(ba_officermanager.getListOfficerFromFleet(Arrays.asList(fleet), false, true));
-                ba_officermanager.setUpListOfficers(listPerson, fleet.getFleetPoints());
+                ba_officermanager.setUpListOfficers(listPerson, fleet.getFleetPoints(), fleet);
             }
 //            List<PersonAPI> listPerson = new ArrayList<>(ba_officermanager.getListOfficerFromFleet(fleets, false));
 //            ba_officermanager.setUpListOfficers(listPerson);
             CampaignFleetAPI otherFleet = context.getBattle().getCombinedTwo();
             otherFleet.getMemoryWithoutUpdate().set("$ba_bionic_dropList", ba_officermanager.getListPotentialBionicDrop(otherFleet));
-            log.info("Set up for officers completed");
+            log.info("Set up for bionics completed");
         }
 //        if(target.getMarket() != null) {
 //            if(target.getMarket().getAdmin() != null) {

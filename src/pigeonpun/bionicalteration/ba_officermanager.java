@@ -9,8 +9,6 @@ import com.fs.starfarer.api.characters.AdminData;
 import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import com.fs.starfarer.api.characters.OfficerDataAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
-import com.fs.starfarer.api.combat.ShipAPI;
-import com.fs.starfarer.api.combat.ShipVariantAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.util.Misc;
@@ -68,29 +66,35 @@ public class ba_officermanager {
 //        setUpSkill(listPersons);
     }
     /**
-     * Set up all the needed stats/bionic/skill for encountering officer from other fleet to display bionics
+     * Set up all the needed stats/bionic/skill for player fleet
      * @param listOfficers
      */
     public static void setUpListOfficers(@NotNull List<PersonAPI> listOfficers) {
         setUpListOfficers(listOfficers, -1);
     }
-
+    public static void setUpListOfficers(@NotNull List<PersonAPI> listOfficers, int fleetFP) {
+        if(fleetFP == -1) {
+            setUpListOfficers(listOfficers, fleetFP, Global.getSector().getPlayerFleet());
+            return;
+        }
+        setUpListOfficers(listOfficers, fleetFP, null);
+    }
     /**
      * Set up officers list for fleet, based on fleet FP.
      * @param listOfficers
      * @param fleetFP
      */
-    public static void setUpListOfficers(@NotNull List<PersonAPI> listOfficers, int fleetFP) {
+    public static void setUpListOfficers(@NotNull List<PersonAPI> listOfficers, int fleetFP, CampaignFleetAPI fleet) {
         for(PersonAPI person: listOfficers) {
             if(person.isAICore()) {
-                setupForAI(person, fleetFP);
+                setupForAI(person, fleetFP, fleet);
             } else {
                 setupForPeople(person, fleetFP);
             }
         }
     }
     public static void setupForPeople(@NotNull PersonAPI person, float fleetFP) {
-        //todo: problem with spawning admin -> admin always spawn with 1 skill
+        //todo: change this so it will take the entire fleet instead of single person
         if(!person.isAICore()) {
             if(person.getMemoryWithoutUpdate().get(ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY) == null) {
                 ba_personmemorydata memoryData = new ba_personmemorydata(1);
@@ -150,56 +154,59 @@ public class ba_officermanager {
     /**
      * For AI, the shell will be set up on the ship the AI commanding
      * So the shell's tier and scripts will be attached to the fleet
+     * ONLY set up shell hullmod for AI fleet.
      * @param person
      * @param fleetFP
+     * @param fleet
      */
-    public static void setupForAI(@NotNull PersonAPI person, float fleetFP) {
-        //todo: error: person.getfleet is null for AI core ? probably something involving player fleet. test it with remnant fleet just to be sure.
-        if(person!= null && person.isAICore() && person.getFleet() != null) {
-            if(person.getFleet().getFleetData() == null || person.getFleet().getFleetData().getMemberWithCaptain(person) ==null) return;
-            ba_fleetmemorydata fleetMemData = getFleetBionicMemoryData(person);
+    public static void setupForAI(@NotNull PersonAPI person, float fleetFP, CampaignFleetAPI fleet) {
+        //this will not set up for player fleet for new save, idk how the player fleet gonna get AI core fleet member at new game but this wont generate anything for the ai core ship
+        if(person!= null && !person.isDefault() && person.isAICore() && fleet != null) {
+            if(fleet.getFleetData() == null || fleet.getFleetData().getMemberWithCaptain(person) ==null) return;
+            FleetMemberAPI fleetMember = fleet.getFleetData().getMemberWithCaptain(person);
+            ba_fleetmemorydata fleetMemData = getFleetBionicMemoryData(fleet);
             if(fleetMemData == null) return;
-            FleetMemberAPI fleetMember = person.getFleet().getFleetData().getMemberWithCaptain(person);
             ba_aimemorydata aiMemData = fleetMemData.listAIMember.get(fleetMember.getId());
             if(aiMemData == null) {
                 aiMemData = new ba_aimemorydata();
             }
-            if(!aiMemData.isSetUped) {
+            //todo: transfer aiMemdata when salvaging other fleet - encountered a problem related to ship recovery
+            //set up for AI fleet
+            if(!aiMemData.isSetUped && fleetFP > 0) {
                 int maxFPScaling = 600;
-                float spawningPristineShell = 100;
-                float actualChanceOfSpawningPristineShell = 0;
-                if(fleetFP > 0) {
-                    actualChanceOfSpawningPristineShell = (float) ((double) fleetFP / maxFPScaling * spawningPristineShell);
-                }
-                float spawningCorruptedShell = 100 - actualChanceOfSpawningPristineShell;
+                float spawningPristineShell = 20;
+                float actualChanceOfSpawningPristineShell = (float) ((double) fleetFP / maxFPScaling * spawningPristineShell);
+                float spawningCorruptedShell = 40;
+                float actualLChanceOfSpawningCorruptedShell = (float) ((double) fleetFP / maxFPScaling * spawningCorruptedShell);
+                float spawningNothing = 100 - actualChanceOfSpawningPristineShell - actualLChanceOfSpawningCorruptedShell;
                 WeightedRandomPicker<String> randomPicker = new WeightedRandomPicker<>(ba_utils.getRandom());
                 randomPicker.add(ba_variablemanager.BA_SHELL_CORRUPTED_HULLMOD, spawningCorruptedShell);
                 randomPicker.add(ba_variablemanager.BA_SHELL_PRISTINE_HULLMOD, actualChanceOfSpawningPristineShell);
+                randomPicker.add("", actualChanceOfSpawningPristineShell);
                 aiMemData.shell = randomPicker.pick();
-                //todo: setup spawning for friendly ship
-                //demo one with a single script always installed.
+                aiMemData.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).modifyFlat(ba_variablemanager.BA_CONSCIOUSNESS_SOURCE_KEY, setUpConsciousness(aiMemData.dummyAI));
+                if(!Objects.equals(aiMemData.shell, "")) fleetMember.getVariant().addPermaMod(aiMemData.shell);
                 log.info("aaaaaaaaaaaaaaaaa");
             }
             aiMemData.isSetUped = true;
             fleetMemData.listAIMember.put(fleetMember.getId(), aiMemData);
-            person.getFleet().getMemoryWithoutUpdate().set(ba_variablemanager.BA_FLEET_MEMORY_BIONIC_KEY, fleetMemData);
+            fleet.getMemoryWithoutUpdate().set(ba_variablemanager.BA_FLEET_MEMORY_BIONIC_KEY, fleetMemData);
         }
     }
 
     /**
      * Create new memory data for fleet if can't find mem data
-     * @param person
-     * @return null if person has no fleet.
+     * @return null if fleet == null
      */
-    public static ba_fleetmemorydata getFleetBionicMemoryData(@NotNull PersonAPI person) {
+    public static ba_fleetmemorydata getFleetBionicMemoryData(@NotNull CampaignFleetAPI fleet) {
         ba_fleetmemorydata fleetData = null;
-        if(person!= null && person.getFleet() != null) {
-            if(person.getFleet().getMemoryWithoutUpdate().get(ba_variablemanager.BA_FLEET_MEMORY_BIONIC_KEY) == null ||
-                    !(person.getFleet().getMemoryWithoutUpdate().get(ba_variablemanager.BA_FLEET_MEMORY_BIONIC_KEY) instanceof ba_fleetmemorydata)) {
+        if(fleet != null) {
+            if(fleet.getMemoryWithoutUpdate().get(ba_variablemanager.BA_FLEET_MEMORY_BIONIC_KEY) == null ||
+                    !(fleet.getMemoryWithoutUpdate().get(ba_variablemanager.BA_FLEET_MEMORY_BIONIC_KEY) instanceof ba_fleetmemorydata)) {
                 fleetData = new ba_fleetmemorydata(new HashMap<>());
-                person.getFleet().getMemoryWithoutUpdate().set(ba_variablemanager.BA_FLEET_MEMORY_BIONIC_KEY, fleetData);
+                fleet.getMemoryWithoutUpdate().set(ba_variablemanager.BA_FLEET_MEMORY_BIONIC_KEY, fleetData);
             } else {
-                fleetData = (ba_fleetmemorydata) person.getFleet().getMemoryWithoutUpdate().get(ba_variablemanager.BA_FLEET_MEMORY_BIONIC_KEY);
+                fleetData = (ba_fleetmemorydata) fleet.getMemoryWithoutUpdate().get(ba_variablemanager.BA_FLEET_MEMORY_BIONIC_KEY);
             }
         }
         return fleetData;
@@ -268,7 +275,7 @@ public class ba_officermanager {
             }
         }
         if(!person.hasTag(ba_variablemanager.BA_RANDOM_BIONIC_GENERATED_TAG) && personVariant != null) {
-            WeightedRandomPicker<String> randomBionics = new WeightedRandomPicker<>();
+            WeightedRandomPicker<String> randomBionics = new WeightedRandomPicker<>(ba_utils.getRandom());
             if(personVariant.bionicUseIdsOverride != null && personVariant.bionicUseIdsOverride.size() != 0) {
                 for(ba_factiondata.ba_bionicUseIdDetails idDetails: personVariant.bionicUseIdsOverride) {
                     if(ba_bionicmanager.getBionic(idDetails.bionic.bionicId) != null) {
@@ -1032,6 +1039,7 @@ public class ba_officermanager {
         public List<ba_scriptAugmentedData> anatomy = new ArrayList<>();
         public String shell; //Get from ba_variablemanager {BA_SHELL_CORRUPTED_HULLMOD | BA_SHELL_PRISTINE_HULLMOD}
         public boolean isSetUped = false;
+        public PersonAPI dummyAI = Global.getFactory().createPerson(); //use for storing
 
         public ba_aimemorydata() {
             super(1);

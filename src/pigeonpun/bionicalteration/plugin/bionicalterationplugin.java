@@ -9,6 +9,7 @@ import pigeonpun.bionicalteration.ability.ba_bionicability;
 import pigeonpun.bionicalteration.faction.ba_factionmanager;
 import pigeonpun.bionicalteration.listeners.ba_campaignlistener;
 import pigeonpun.bionicalteration.listeners.ba_salvagelistener;
+import pigeonpun.bionicalteration.listeners.ba_shiprecoverylistener;
 import pigeonpun.bionicalteration.lunalib.ba_bionic_refit_btn;
 import pigeonpun.bionicalteration.lunalib.lunaconfighelper;
 import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
@@ -19,6 +20,7 @@ import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
 public class bionicalterationplugin extends BaseModPlugin {
     ba_campaignlistener campaignListener = null;
     ba_salvagelistener salvageListener = null;
+    ba_shiprecoverylistener shipRecoveryListener = null;
     public static boolean isLunalibEnabled = false;
     public static boolean isAllowBionicsToSpawnInPlayerFleetOnNewSave = false;
     public static boolean isDevmode = false;
@@ -88,11 +90,14 @@ public class bionicalterationplugin extends BaseModPlugin {
     protected void addListeners() {
         campaignListener = new ba_campaignlistener(false);
         salvageListener = new ba_salvagelistener();
+        shipRecoveryListener = new ba_shiprecoverylistener();
+
 
         Global.getSector().getListenerManager().addListener(salvageListener, true);
         Global.getSector().addTransientListener(campaignListener);
         Global.getSector().getListenerManager().addListener(campaignListener, true);
         Global.getSector().addTransientScript(campaignListener);
+        Global.getSector().getListenerManager().addListener(shipRecoveryListener, true);
 //        Global.getSector().addListener(campaignListener);
     }
     protected void removeListeners() {
