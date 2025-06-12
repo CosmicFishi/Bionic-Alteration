@@ -1,5 +1,5 @@
 name,id,tier,rarity,tech/manufacturer,tags,uiTags,base value,unlocked,hidden,hiddenEverywhere,cost_frigate,cost_dest,cost_cruiser,cost_capital,script,desc,short,sModDesc,sprite
 # standard built-in hullmods,,,,,,,,,,,,,,,,,,,
 Bionic Info,ba_bionicinfo,,,,no_drop,,,,,,0,0,0,0,pigeonpun.bionicalteration.hullmod.ba_bionicinfo,,,,graphics/icons/markets/ba_bionic_condition.png
-Corrupted Shell,ba_corruptedshell,,,,no_drop,,,,,,0,0,0,0,pigeonpun.bionicalteration.hullmod.ba_corruptedshell,,,,graphics/hullmods/ba_shell.png
-Pristine Shell,ba_pristineshell,,,,no_drop,,,,,,0,0,0,0,pigeonpun.bionicalteration.hullmod.ba_pristineshell,,,,graphics/hullmods/ba_shell.png
+Corrupted Synthetic Body,ba_corruptedSyntheticBody,,,,no_drop,,,,,,0,0,0,0,pigeonpun.bionicalteration.hullmod.ba_corruptedSyntheticBody,,,,graphics/hullmods/ba_shell.png
+Pristine Synthetic Body,ba_pristineSyntheticBody,,,,no_drop,,,,,,0,0,0,0,pigeonpun.bionicalteration.hullmod.ba_pristineSyntheticBody,,,,graphics/hullmods/ba_shell.png

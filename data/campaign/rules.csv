@@ -53,6 +53,13 @@ $salvaged = false","While the vast network of gantries running along and to vari
 
 You are not the first to take interest in this station, as you recognize the telltale signs of Remnant Technology.","0:overclockSalvaging:Perform salvage",
 "#END defender",,,,,,
+,,,,,,
+# Upgrade,,,,,,
+ba_bioformUpgradeOpt,ba_showOverclockWorkshopOptions,"$usable","$crewReq = 1000 0
+$metalsReq = 6000 0
+$ai_alphaReq = 3 0
+$machineReq = 500 0",,"10:ba_openOverclockWorkshop:Upgrade to Bioform Terminal",
+"#END Upgrade",,,,,,
 "#END overclock",,,,,,
 ,,,,,,
 # officer hiring,,,,,,
