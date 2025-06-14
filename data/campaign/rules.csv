@@ -55,10 +55,20 @@ You are not the first to take interest in this station, as you recognize the tel
 "#END defender",,,,,,
 ,,,,,,
 # Upgrade,,,,,,
-ba_bioformUpgradeOpt,ba_showOverclockWorkshopOptions,"$usable","$crewReq = 1000 0
-$metalsReq = 6000 0
-$ai_alphaReq = 3 0
-$machineReq = 500 0",,"10:ba_openOverclockWorkshop:Upgrade to Bioform Terminal",
+ba_bioformUpgrade,ba_showOverclockWorkshopOptions,"$usable
+!$ba_upgraded_terminal","$ba_upgrade_crewReq = 1000 0
+$ba_upgrade_metalsReq = 6000 0
+$ba_upgrade_ai_alphaReq = 3 0
+$ba_upgrade_machineReq = 500 0",,"10:ba_bioformUpgradePromptOpt:Upgrade to Bioform Terminal",
+ba_bioformUpgradePromptOpt,DialogOptionSelected,"$option == ba_bioformUpgradePromptOpt
+","ShowResCost crew $ba_upgrade_crewReq metals $ba_upgrade_metalsReq alpha_core $ba_upgrade_ai_alphaReq  heavy_machinery ba_upgrade_machineReq true
+FireBest ba_bioformCheckIfCanRepair","The repair crew has reported that one of the malfunctioning modules contains remnants of outdated domain technology. Within the module are multiple pods housing what appear to be synthetic bodies - humanoid in form but not entirely human. These pods are arranged around a central pillar equipped with numerous surgical arms extending outward in all directions.
+
+Following a thorough assessment and discussion with the team, it has been determined that repairs are feasible but will involve significant cost. However, if we choose to invest in this operation, the recovered technology could potentially be repurposed and integrated into our systems. They await your decision","10:ba_bioformUpgradeOpt:Offload resources.",
+ba_bioformCheckIfCanRepair,ba_bioformCheckIfCanRepair,"$player.metals >= $ba_upgrade_metalsReq
+$player.crew >= $ba_upgrade_crewReq
+ba_bioformTerminal checkIfCanUpgrade",,,,
+ba_bioformUpgradeOpt,DialogOptionSelected,"$option == ba_bioformUpgradeOpt","ba_bioformTerminal upgrade",,,
 "#END Upgrade",,,,,,
 "#END overclock",,,,,,
 ,,,,,,
