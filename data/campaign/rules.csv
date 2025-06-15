@@ -15,6 +15,10 @@ ba_overclock_closeWorkshop,DialogOptionSelected,"$option == ba_leaveWorkshop","D
 ba_evoshard_exchange,DialogOptionSelected,"$option == ba_evoshardExchange","ba_evoshardExchange exchange",,,
 ba_bionic_openWorkshopOpt,ba_showOverclockWorkshopOptions,,,,"20:ba_openBionicWorkshop:Bionics Workshop",
 ba_openBionicWorkshop,DialogOptionSelected,"$option == ba_openBionicWorkshop","ba_displayBionicUI station",,,
+ba_bioform_openWorkshopPromptOpt,ba_showOverclockWorkshopOptions,"$upgraded_bioform
+$usable
+",,,"10:ba_bioform_openWorkshopOpt:Bioform Workshop",
+ba_bioform_openWorkshopOpt,DialogOptionSelected,"$option == ba_bioform_openWorkshopOpt",,"Display bioform UI here pls ",,
 "#END workshop",,,,,,
 ,,,,,,
 # repairing,,,,,,
@@ -56,19 +60,23 @@ You are not the first to take interest in this station, as you recognize the tel
 ,,,,,,
 # Upgrade,,,,,,
 ba_bioformUpgrade,ba_showOverclockWorkshopOptions,"$usable
-!$ba_upgraded_terminal","$ba_upgrade_crewReq = 1000 0
+!$upgraded_bioform","$ba_upgrade_crewReq = 1000 0
 $ba_upgrade_metalsReq = 6000 0
 $ba_upgrade_ai_alphaReq = 3 0
-$ba_upgrade_machineReq = 500 0",,"10:ba_bioformUpgradePromptOpt:Upgrade to Bioform Terminal",
+$ba_upgrade_machineReq = 500 0",,"30:ba_bioformUpgradePromptOpt:Upgrade to Bioform Terminal",
 ba_bioformUpgradePromptOpt,DialogOptionSelected,"$option == ba_bioformUpgradePromptOpt
-","ShowResCost crew $ba_upgrade_crewReq metals $ba_upgrade_metalsReq alpha_core $ba_upgrade_ai_alphaReq  heavy_machinery ba_upgrade_machineReq true
+","ShowResCost crew $ba_upgrade_crewReq metals $ba_upgrade_metalsReq true heavy_machinery $ba_upgrade_machineReq alpha_core $ba_upgrade_ai_alphaReq true 115
 FireBest ba_bioformCheckIfCanRepair","The repair crew has reported that one of the malfunctioning modules contains remnants of outdated domain technology. Within the module are multiple pods housing what appear to be synthetic bodies - humanoid in form but not entirely human. These pods are arranged around a central pillar equipped with numerous surgical arms extending outward in all directions.
 
-Following a thorough assessment and discussion with the team, it has been determined that repairs are feasible but will involve significant cost. However, if we choose to invest in this operation, the recovered technology could potentially be repurposed and integrated into our systems. They await your decision","10:ba_bioformUpgradeOpt:Offload resources.",
-ba_bioformCheckIfCanRepair,ba_bioformCheckIfCanRepair,"$player.metals >= $ba_upgrade_metalsReq
-$player.crew >= $ba_upgrade_crewReq
-ba_bioformTerminal checkIfCanUpgrade",,,,
-ba_bioformUpgradeOpt,DialogOptionSelected,"$option == ba_bioformUpgradeOpt","ba_bioformTerminal upgrade",,,
+Following a thorough assessment and discussion with the team, it has been determined that repairs are feasible but will involve significant cost. However, if we choose to invest in this operation, the recovered technology could potentially be repurposed and integrated into our systems. They await your decision.","10:ba_bioformUpgradeOpt:Offload resources.",
+ba_bioformCheckIfCanRepair,ba_bioformCheckIfCanRepair,,"ba_bioformTerminal checkIfCanUpgrade",,,
+ba_bioformUpgradeOpt,DialogOptionSelected,"$option == ba_bioformUpgradeOpt","RemoveCommodity metals $ba_upgrade_metalsReq
+RemoveCommodity alpha_core $ba_upgrade_ai_alphaReq
+$upgraded_bioform = true
+","Your crews finish offloading the raw materials and you send an activation signal to the structure's distributed repair nodes.
+
+Not a moment later, several movements from the structure’s modules were detected while the rusted monitors started to flicker and display the bioform interface.","100:ba_bioformUpgradedOpt:Continue",
+ba_bioformUpgradedOpt,DialogOptionSelected,"$option ==  ba_bioformUpgradedOpt","FireBest OpenInteractionDialog",,,
 "#END Upgrade",,,,,,
 "#END overclock",,,,,,
 ,,,,,,
