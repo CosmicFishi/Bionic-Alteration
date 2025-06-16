@@ -34,10 +34,11 @@ public class ba_uiplugin extends ba_uicommon {
     Logger log = Global.getLogger(ba_debounceplugin.class);
     protected CustomPanelAPI containerPanel; //Created panel from ba_deligate.java
     protected TooltipMakerAPI mainTooltip;
-    public static final float MAIN_CONTAINER_PADDING = 150f;
+    public static final float MAIN_CONTAINER_PADDING_X = ba_uicommon.getInitDialogContainerPaddingX();
+    public static final float MAIN_CONTAINER_PADDING_Y = ba_uicommon.getInitDialogContainerPaddingY();
     public static final String OVERCLOCK = "OVERCLOCK_WORKSHOP";
-    public static final float MAIN_CONTAINER_WIDTH = Global.getSettings().getScreenWidth() - MAIN_CONTAINER_PADDING;
-    public static final float MAIN_CONTAINER_HEIGHT = Global.getSettings().getScreenHeight() - MAIN_CONTAINER_PADDING;
+    public static final float MAIN_CONTAINER_WIDTH = ba_uicommon.getInitDialogContainerWidth();
+    public static final float MAIN_CONTAINER_HEIGHT = ba_uicommon.getInitDialogContainerHeight();
     public static final String PERSON_LIST = "person_list", INVENTORY = "inventory";
     public String currentSelectOverclockLocation = PERSON_LIST;
     public ba_bionicitemplugin currentSelectOverclockBionic = null;

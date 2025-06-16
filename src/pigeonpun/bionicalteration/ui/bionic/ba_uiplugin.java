@@ -42,9 +42,10 @@ public class ba_uiplugin extends ba_uicommon {
     protected CustomPanelAPI containerPanel; //Created panel from ba_deligate.java
     protected TooltipMakerAPI mainTooltip;
     int dW, dH, pW, pH;
-    public static final float MAIN_CONTAINER_PADDING = 150f;
-    public static final float MAIN_CONTAINER_WIDTH = Global.getSettings().getScreenWidth() - MAIN_CONTAINER_PADDING;
-    public static final float MAIN_CONTAINER_HEIGHT = Global.getSettings().getScreenHeight() - MAIN_CONTAINER_PADDING;
+    public static final float MAIN_CONTAINER_PADDING_X = ba_uicommon.getInitDialogContainerPaddingX();
+    public static final float MAIN_CONTAINER_PADDING_Y = ba_uicommon.getInitDialogContainerPaddingY();
+    public static final float MAIN_CONTAINER_WIDTH = ba_uicommon.getInitDialogContainerWidth();
+    public static final float MAIN_CONTAINER_HEIGHT = ba_uicommon.getInitDialogContainerHeight();
     public static final String OVERVIEW = "OVERVIEW", WORKSHOP = "WORKSHOP", SHELL = "SHELL";
     public final String INSTALL_WORKSHOP="INSTALL", EDIT_WORKSHOP="EDIT";
     public String currentWorkShopMode = INSTALL_WORKSHOP; //determine what mode workshop is in
@@ -156,7 +157,7 @@ public class ba_uiplugin extends ba_uicommon {
         String mainOverviewPanelKey = "MAIN_OVERVIEW_CONTAINER";
         String mainInfoTooltipKey = "MAIN_INFO_TOOLTIP";
         String mainPersonListTooltipKey = "MAIN_LIST_TOOLTIP";
-        ba_component overviewContainer = new ba_component(componentMap, containerPanel, pW, pH, MAIN_CONTAINER_PADDING/2, MAIN_CONTAINER_PADDING/2, true, mainOverviewPanelKey);
+        ba_component overviewContainer = new ba_component(componentMap, containerPanel, pW, pH, MAIN_CONTAINER_PADDING_X/2, MAIN_CONTAINER_PADDING_Y/2, true, mainOverviewPanelKey);
 //        TooltipMakerAPI overviewTooltipContainer = overviewContainer.createTooltip(mainTooltipKey, pW, pH, false, 0, 0);
         tabMap.put(OVERVIEW, overviewContainer);
         overviewContainer.unfocusComponent(dW);
@@ -168,8 +169,8 @@ public class ba_uiplugin extends ba_uicommon {
         overviewInfoTooltipContainer.getPosition().inTL(listPersonW, 0);
         //overviewPerson
 //        displayPersonList(overviewContainer, mainPersonListTooltipKey, listPersonW, pH);
-        displayPersonListWithKeyPreset(overviewContainer, mainPersonListTooltipKey, "OVERVIEW", isDisplayingOtherFleets, listPersonW, pH, MAIN_CONTAINER_PADDING/2, MAIN_CONTAINER_PADDING/2);
-        displayPersonInfoList(overviewContainer, mainInfoTooltipKey, infoPersonW, pH, MAIN_CONTAINER_PADDING/2, MAIN_CONTAINER_PADDING/2);
+        displayPersonListWithKeyPreset(overviewContainer, mainPersonListTooltipKey, "OVERVIEW", isDisplayingOtherFleets, listPersonW, pH, MAIN_CONTAINER_PADDING_X/2, MAIN_CONTAINER_PADDING_Y/2);
+        displayPersonInfoList(overviewContainer, mainInfoTooltipKey, infoPersonW, pH, MAIN_CONTAINER_PADDING_X/2, MAIN_CONTAINER_PADDING_Y/2);
     }
     protected void displayPersonInfoList(ba_component creatorComponent, String creatorComponentTooltip, float personInfoW, float personInfoH, float personInfoX, float personInfoY) {
         float pad = 10f;
@@ -473,7 +474,7 @@ public class ba_uiplugin extends ba_uicommon {
         String mainPersonInfoTooltipKey = "MAIN_PERSON_TOOLTIP";
         String mainInventoryTooltipKey = "MAIN_INVENTORY_TOOLTIP";
         String mainEffectsTooltipKey = "MAIN_EFFECTS_TOOLTIP";
-        ba_component workshopContainer = new ba_component(componentMap, containerPanel, pW, pH, MAIN_CONTAINER_PADDING/2, MAIN_CONTAINER_PADDING/2, true, mainOverviewPanelKey);
+        ba_component workshopContainer = new ba_component(componentMap, containerPanel, pW, pH, MAIN_CONTAINER_PADDING_X/2, MAIN_CONTAINER_PADDING_Y/2, true, mainOverviewPanelKey);
         tabMap.put(WORKSHOP, workshopContainer);
         workshopContainer.unfocusComponent(dW);
 

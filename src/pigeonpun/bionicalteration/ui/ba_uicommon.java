@@ -42,6 +42,34 @@ public class ba_uicommon implements CustomUIPanelPlugin {
     protected float currentScrollPositionPersonList = 0;
     public static ba_debounceplugin debounceplugin = new ba_debounceplugin();
     public List<CargoStackAPI> cargoBionic = new ArrayList<>();
+    public static float getInitDialogContainerPaddingX() {
+        float containerPadding = 0;
+
+        if(Global.getSettings().getScreenWidth() > getInitDialogContainerWidth()) {
+            containerPadding = Global.getSettings().getScreenWidth() - getInitDialogContainerWidth();
+        }
+
+        return containerPadding;
+    }
+    public static float getInitDialogContainerPaddingY() {
+        float containerPadding = 0;
+
+        if(Global.getSettings().getScreenHeight() > getInitDialogContainerHeight()) {
+            containerPadding = Global.getSettings().getScreenHeight() - getInitDialogContainerHeight();
+        }
+
+        return containerPadding;
+    }
+    public static float getInitDialogContainerWidth() {
+        float width = 1200f;
+
+        return width;
+    }
+    public static float getInitDialogContainerHeight() {
+        float height = 700f;
+
+        return height;
+    }
     protected void init(CustomPanelAPI panel, CustomVisualDialogDelegate.DialogCallbacks callbacks, InteractionDialogAPI dialog) {
         currentScrollPositionInventory = 0;
         currentScrollPositionBionicTable = 0;

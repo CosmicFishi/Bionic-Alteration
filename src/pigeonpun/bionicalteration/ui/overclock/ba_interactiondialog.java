@@ -4,6 +4,7 @@ import com.fs.starfarer.api.campaign.InteractionDialogAPI;
 import com.fs.starfarer.api.campaign.InteractionDialogPlugin;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.combat.EngagementResultAPI;
+import pigeonpun.bionicalteration.ui.ba_uicommon;
 
 import java.util.Map;
 
@@ -28,8 +29,8 @@ public class ba_interactiondialog implements InteractionDialogPlugin {
     @Override
     public void optionSelected(String optionText, Object optionData) {
         if(optionData == OptionID.INIT) {
-            dialog.showCustomVisualDialog(ba_uiplugin.MAIN_CONTAINER_WIDTH,
-                    ba_uiplugin.MAIN_CONTAINER_HEIGHT,
+            dialog.showCustomVisualDialog(ba_uicommon.getInitDialogContainerWidth(),
+                    ba_uicommon.getInitDialogContainerHeight(),
                     new ba_delegate(ba_uiplugin.createDefault(), dialog)
                     );
         }
