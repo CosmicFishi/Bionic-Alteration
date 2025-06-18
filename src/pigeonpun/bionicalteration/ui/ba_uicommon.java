@@ -113,8 +113,8 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         //big container
         final float containerW = inventoryW - pad - pad / 2;
         int containerH = (int) (inventoryH - pad - pad);
-        int containerX = (int) pad;
-        int containerY = (int) pad;
+        int containerX = (int) (inventoryX + pad);
+        int containerY = (int) (inventoryY + pad);
         String inventoryTooltipKey = "INVENTORY_TOOLTIP";
         String inventoryPanelKey = "INVENTORY_PANEL";
         ba_component inventoryContainer = new ba_component(componentMap, creatorComponent.mainPanel, containerW, containerH, containerX, containerY, true, inventoryPanelKey);

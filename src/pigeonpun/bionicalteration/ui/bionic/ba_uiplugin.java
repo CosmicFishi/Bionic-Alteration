@@ -47,6 +47,7 @@ public class ba_uiplugin extends ba_uicommon {
     public static final float MAIN_CONTAINER_WIDTH = ba_uicommon.getInitDialogContainerWidth();
     public static final float MAIN_CONTAINER_HEIGHT = ba_uicommon.getInitDialogContainerHeight();
     public static final String OVERVIEW = "OVERVIEW", WORKSHOP = "WORKSHOP", SHELL = "SHELL";
+    public static final String WORKSHOP_EFFECT = "WORKSHOP_EFFECT", WORKSHOP_INV = "WORKSHOP_INV";
     public final String INSTALL_WORKSHOP="INSTALL", EDIT_WORKSHOP="EDIT";
     public String currentWorkShopMode = INSTALL_WORKSHOP; //determine what mode workshop is in
     public ba_bionicitemplugin currentRemovingBionic; //selected for removing
@@ -55,6 +56,7 @@ public class ba_uiplugin extends ba_uicommon {
     // Bionic table hidden in certain UI resolution which cause the hovering being weird. it can still detect the button even tho its hidden
     HashMap<String, ba_component> tabMap = new HashMap<>();
     String currentTabId = OVERVIEW;
+    String currentWorkshopEffectOrInvTab = WORKSHOP_INV;
     public static boolean isDisplayingOtherFleets = false;
 //    public static float currentScrollPositionOverview = 0;
     public static ba_uiplugin createDefault() {
@@ -474,12 +476,15 @@ public class ba_uiplugin extends ba_uicommon {
         String mainPersonInfoTooltipKey = "MAIN_PERSON_TOOLTIP";
         String mainInventoryTooltipKey = "MAIN_INVENTORY_TOOLTIP";
         String mainEffectsTooltipKey = "MAIN_EFFECTS_TOOLTIP";
+        String btnTooltipKey = "MAIN_BTN_TOOLTIP";
         ba_component workshopContainer = new ba_component(componentMap, containerPanel, pW, pH, MAIN_CONTAINER_PADDING_X/2, MAIN_CONTAINER_PADDING_Y/2, true, mainOverviewPanelKey);
         tabMap.put(WORKSHOP, workshopContainer);
         workshopContainer.unfocusComponent(dW);
 
         //tooltip for scroll
-        float personInfoW = 0.7f * pW;
+        float effectListW = 315f;
+        float effectListH = pH;
+        float personInfoW = pW - effectListW;
         float personInfoH = 0.6f * pH;
         TooltipMakerAPI personInfoTooltipContainer = workshopContainer.createTooltip(mainPersonInfoTooltipKey, personInfoW, personInfoH, false, 0, 0);
         personInfoTooltipContainer.getPosition().inTL(0,0);
@@ -497,12 +502,46 @@ public class ba_uiplugin extends ba_uicommon {
             displayRemoveBionicWorkshop(workshopContainer, mainInventoryTooltipKey, inventoryW, inventoryH, 0,0);
         }
 
-        float effectListW = (pW - personInfoW);
-        float effectListH = pH;
-        TooltipMakerAPI effectListTooltipContainer = workshopContainer.createTooltip(mainEffectsTooltipKey, effectListW, effectListH, false, 0, 0);
+        //buttons
+        TooltipMakerAPI btnTooltipContainer = workshopContainer.createTooltip(btnTooltipKey, effectListW, effectListH, false, 0, 0);
+        btnTooltipContainer.getPosition().inTL(personInfoW, 0);
+        float invEffectBtnH = 30;
+        float invEffectBtnW = 100;
+        int invBtnX = (int) (opad);
+        int invBtnY = (int) (pad);
+        int effectBtnX = (int) (opad + invEffectBtnW);
+        int effectBtnY = (int) (pad);
+        ButtonAPI invButton = btnTooltipContainer.addButton("Inventory", null, Misc.getTextColor(), this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_INV)?Misc.getDarkPlayerColor():Misc.getDarkPlayerColor().darker().darker(), Alignment.MID, CutStyle.TOP, invEffectBtnW, invEffectBtnH, 0);
+        addButtonToList(invButton, "workshop_tab:" + WORKSHOP_INV);
+        invButton.getPosition().inTL(invBtnX, invBtnY);
+        invButton.setShortcut(Keyboard.KEY_1, true);
+        invButton.setButtonDisabledPressedSound("ui_button_pressed");
+        invButton.setPerformActionWhenDisabled(true);
+        if(this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_INV)) {
+            invButton.setHighlightBrightness(0);
+            invButton.setFlashBrightness(0);
+            invButton.setButtonPressedSound(null);
+        }
+        ButtonAPI effectButton = btnTooltipContainer.addButton("Effect", null, Misc.getTextColor(), this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_EFFECT)?Misc.getDarkPlayerColor():Misc.getDarkPlayerColor().darker().darker(), Alignment.MID, CutStyle.TOP, invEffectBtnW, invEffectBtnH, 0);
+        addButtonToList(effectButton, "workshop_tab:" + WORKSHOP_EFFECT);
+        effectButton.getPosition().inTL(effectBtnX, effectBtnY);
+        effectButton.setShortcut(Keyboard.KEY_2, true);
+        effectButton.setButtonDisabledPressedSound("ui_button_pressed");
+        effectButton.setPerformActionWhenDisabled(true);
+        if(this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_EFFECT)) {
+            effectButton.setHighlightBrightness(0);
+            effectButton.setFlashBrightness(0);
+            effectButton.setButtonPressedSound(null);
+        }
+        //effect + inv
+        TooltipMakerAPI effectListTooltipContainer = workshopContainer.createTooltip(mainEffectsTooltipKey, effectListW, effectListH, false, 0, invEffectBtnH);
         effectListTooltipContainer.getPosition().inTL(personInfoW, 0);
-//        effectListTooltipContainer.addPara("cccc", 0);
-        displayEffectListWorkshop(workshopContainer, mainEffectsTooltipKey, effectListW, effectListH, 0,0);
+        if(Objects.equals(this.currentWorkshopEffectOrInvTab, WORKSHOP_INV)) {
+            displayInventoryWorkshop(workshopContainer, mainEffectsTooltipKey, effectListW, effectListH-invEffectBtnH, 0,invEffectBtnH);
+        }
+        if(Objects.equals(this.currentWorkshopEffectOrInvTab, WORKSHOP_EFFECT)) {
+            displayEffectListWorkshop(workshopContainer, mainEffectsTooltipKey, effectListW, effectListH-invEffectBtnH, 0,invEffectBtnH);
+        }
     }
     public void displayPersonInfoWorkshop(ba_component creatorComponent, String creatorComponentTooltip, final float personInfoW, float personInfoH, float personInfoX, float personInfoY) {
         final float pad = 10f;
@@ -812,7 +851,7 @@ public class ba_uiplugin extends ba_uicommon {
         String effectListPanelKey = "WORKSHOP_EFFECT_LIST_PANEL";
         ba_component effectListContainer = new ba_component(componentMap, creatorComponent.mainPanel, effectListW, effectListH, effectListX, effectListY, true, effectListPanelKey);
         TooltipMakerAPI effectListTooltipContainer = effectListContainer.createTooltip(effectListTooltipKey, effectListW, effectListH, false, 0,0);
-        creatorComponent.attachSubPanel(creatorComponentTooltip, effectListPanelKey,effectListContainer,0,0);
+        creatorComponent.attachSubPanel(creatorComponentTooltip, effectListPanelKey,effectListContainer,effectListX,effectListY);
 
         //border effect list
         int borderW = (int) (effectListW - pad - pad / 2);
@@ -1200,6 +1239,20 @@ public class ba_uiplugin extends ba_uicommon {
                         }
                     }
                 }
+                if (tokens[0].equals("workshop_tab")) {
+//                    log.info("clicked" + tokens[1]);
+                    if(tokens[1].equals(WORKSHOP_EFFECT)) {
+                        this.currentWorkshopEffectOrInvTab = WORKSHOP_EFFECT;
+                        needsReset = true;
+                        break;
+                    }
+                    if(tokens[1].equals(WORKSHOP_INV)) {
+                        this.currentWorkshopEffectOrInvTab = WORKSHOP_INV;
+                        needsReset = true;
+                        break;
+                    }
+                }
+
             }
         }
 
