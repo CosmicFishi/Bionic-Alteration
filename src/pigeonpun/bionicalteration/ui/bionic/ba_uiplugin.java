@@ -165,7 +165,7 @@ public class ba_uiplugin extends ba_uicommon {
         overviewContainer.unfocusComponent(dW);
 
         float listPersonW = 0.3f * pW;
-        float infoPersonW = (1 - (listPersonW/pW)) * pW;
+        float infoPersonW = ((1 - (listPersonW/pW)) * pW) - pad;
         TooltipMakerAPI overviewPersonListTooltipContainer = overviewContainer.createTooltip(mainPersonListTooltipKey, listPersonW, pH, false, 0, 0);
         TooltipMakerAPI overviewInfoTooltipContainer = overviewContainer.createTooltip(mainInfoTooltipKey, infoPersonW, pH, false, 0, 0);
         overviewInfoTooltipContainer.getPosition().inTL(listPersonW, 0);
@@ -190,14 +190,14 @@ public class ba_uiplugin extends ba_uicommon {
         //important to do this after you attach the sub panel
 //        infoPersonContainer.mainPanel.getPosition().inTL(0,0);
         //--------header
-        float headerW = infoPersonTooltipContainer.getPosition().getWidth() - 3;
-        float headerH = 30f;
-        TooltipMakerAPI headerTooltip = infoPersonContainer.createTooltip("PERSON_INFO_HEADER", headerW, headerH, false, 0,0);
-        headerTooltip.getPosition().inTL(3, 0);
-        headerTooltip.addSectionHeading("DETAILS", Alignment.MID, 0);
-        UIComponentAPI line = headerTooltip.createRect(Misc.getDarkPlayerColor(), 1);
-        line.getPosition().setSize(1, personInfoH);
-        infoPersonContainer.mainPanel.addComponent(line).setLocation(0, 0).inTL(3,0);
+//        float headerW = infoPersonTooltipContainer.getPosition().getWidth() - 3;
+        float headerH = pad;
+//        TooltipMakerAPI headerTooltip = infoPersonContainer.createTooltip("PERSON_INFO_HEADER", headerW, headerH, false, 0,0);
+//        headerTooltip.getPosition().inTL(3, 0);
+//        headerTooltip.addSectionHeading("DETAILS", Alignment.MID, 0);
+//        UIComponentAPI line = headerTooltip.createRect(Misc.getDarkPlayerColor(), 1);
+//        line.getPosition().setSize(1, personInfoH);
+//        infoPersonContainer.mainPanel.addComponent(line).setLocation(0, 0).inTL(3,0);
 
         if(currentPerson != null) {
             int leftColumn = 230;
@@ -432,13 +432,17 @@ public class ba_uiplugin extends ba_uicommon {
                 //Button switch page
                 float upgradeBtnH = 20 + statsSpacer + 20;
                 float upgradeBtnW = 200;
-                int upgradeX = (int) (leftColumn + currentBRMX + 150 + pad*3);
+                int upgradeX = (int) (personInfoW - upgradeBtnW - pad*2.5);
                 int upgradeY = (int) (currentBRMY + headerH + pad + pad/2);
                 TooltipMakerAPI personUpgradeTooltip = infoPersonContainer.createTooltip("PERSON_INFO_UPGRADE", statsW, statsH, false, 0, 0);
                 personUpgradeTooltip.getPosition().setLocation(0,0);
                 personUpgradeTooltip.getPosition().inTL(upgradeX,upgradeY);
                 ButtonAPI upgradeButton = personUpgradeTooltip.addButton("Workshop", null, Misc.getTextColor(), Misc.getPositiveHighlightColor().darker().darker(), Alignment.MID, CutStyle.TOP, upgradeBtnW, upgradeBtnH, 0);
                 addButtonToList(upgradeButton, "tab:" + WORKSHOP);
+                upgradeButton.setShortcut(Keyboard.KEY_W, true);
+                if(this.currentTabId.equals(WORKSHOP)) {
+                    upgradeButton.setEnabled(false);
+                }
             }
             //--------Bionic table
             int tableX = (int) (leftColumn);
@@ -485,32 +489,31 @@ public class ba_uiplugin extends ba_uicommon {
         float effectListW = 315f;
         float effectListH = pH;
         float personInfoW = pW - effectListW;
-        float personInfoH = 0.6f * pH;
+        float personInfoH = 1f * pH - opad;
+        //todo: INSTALL_WORKSHOP | EDIT_WORKSHOP - change bionic list to replace BRM + humanity to remove and confirm remove if have effects.
         TooltipMakerAPI personInfoTooltipContainer = workshopContainer.createTooltip(mainPersonInfoTooltipKey, personInfoW, personInfoH, false, 0, 0);
         personInfoTooltipContainer.getPosition().inTL(0,0);
-//        personInfoTooltipContainer.addPara("addd", 0);
         displayPersonInfoWorkshop(workshopContainer, mainPersonInfoTooltipKey, personInfoW, personInfoH, 0,0);
 
         float inventoryW = personInfoW;
         float inventoryH = (pH - (personInfoH));
-        TooltipMakerAPI inventoryTooltipContainer = workshopContainer.createTooltip(mainInventoryTooltipKey, inventoryW, inventoryH, false, 0, 0);
-        inventoryTooltipContainer.getPosition().inTL(0, personInfoH);
-//        inventoryTooltipContainer.addPara("bbbb", 0);
-        if(this.currentWorkShopMode.equals(INSTALL_WORKSHOP)) {
-            displayInventoryWorkshop(workshopContainer, mainInventoryTooltipKey, inventoryW, inventoryH, 0,0);
-        } else if (this.currentWorkShopMode.equals(EDIT_WORKSHOP)) {
-            displayRemoveBionicWorkshop(workshopContainer, mainInventoryTooltipKey, inventoryW, inventoryH, 0,0);
-        }
+//        TooltipMakerAPI inventoryTooltipContainer = workshopContainer.createTooltip(mainInventoryTooltipKey, inventoryW, inventoryH, false, 0, 0);
+//        inventoryTooltipContainer.getPosition().inTL(0, personInfoH);
+//        if(this.currentWorkShopMode.equals(INSTALL_WORKSHOP)) {
+//            displayInventoryWorkshop(workshopContainer, mainInventoryTooltipKey, inventoryW, inventoryH, 0,0);
+//        } else if (this.currentWorkShopMode.equals(EDIT_WORKSHOP)) {
+//            displayRemoveBionicWorkshop(workshopContainer, mainInventoryTooltipKey, inventoryW, inventoryH, 0,0);
+//        }
 
         //buttons
         TooltipMakerAPI btnTooltipContainer = workshopContainer.createTooltip(btnTooltipKey, effectListW, effectListH, false, 0, 0);
         btnTooltipContainer.getPosition().inTL(personInfoW, 0);
         float invEffectBtnH = 30;
         float invEffectBtnW = 100;
-        int invBtnX = (int) (opad);
-        int invBtnY = (int) (pad);
-        int effectBtnX = (int) (opad + invEffectBtnW);
-        int effectBtnY = (int) (pad);
+        int invBtnX = (int) (pad);
+        int invBtnY = (int) (opad);
+        int effectBtnX = (int) (invBtnX + invEffectBtnW);
+        int effectBtnY = invBtnY;
         ButtonAPI invButton = btnTooltipContainer.addButton("Inventory", null, Misc.getTextColor(), this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_INV)?Misc.getDarkPlayerColor():Misc.getDarkPlayerColor().darker().darker(), Alignment.MID, CutStyle.TOP, invEffectBtnW, invEffectBtnH, 0);
         addButtonToList(invButton, "workshop_tab:" + WORKSHOP_INV);
         invButton.getPosition().inTL(invBtnX, invBtnY);
@@ -537,7 +540,7 @@ public class ba_uiplugin extends ba_uicommon {
         TooltipMakerAPI effectListTooltipContainer = workshopContainer.createTooltip(mainEffectsTooltipKey, effectListW, effectListH, false, 0, invEffectBtnH);
         effectListTooltipContainer.getPosition().inTL(personInfoW, 0);
         if(Objects.equals(this.currentWorkshopEffectOrInvTab, WORKSHOP_INV)) {
-            displayInventoryWorkshop(workshopContainer, mainEffectsTooltipKey, effectListW, effectListH-invEffectBtnH, 0,invEffectBtnH);
+            displayInventoryWorkshop(workshopContainer, mainEffectsTooltipKey, effectListW, effectListH-invEffectBtnH, -pad, invEffectBtnH);
         }
         if(Objects.equals(this.currentWorkshopEffectOrInvTab, WORKSHOP_EFFECT)) {
             displayEffectListWorkshop(workshopContainer, mainEffectsTooltipKey, effectListW, effectListH-invEffectBtnH, 0,invEffectBtnH);
@@ -565,9 +568,13 @@ public class ba_uiplugin extends ba_uicommon {
         int upgradeBtnW = (int) (infoLeftW - pad);
         int upgradeBtnX = (int) (0 + pad);
         int upgradeBtnY = (int) (0 + pad);
-        ButtonAPI upgradeButton = infoPersonTooltipContainer.addButton("< Back", null, upgradeBtnW, upgradeBtnH, 0);
+        ButtonAPI upgradeButton = infoPersonTooltipContainer.addButton("Exit", null, Misc.getTextColor(), Misc.getNegativeHighlightColor().darker().darker(), upgradeBtnW, upgradeBtnH, 0);
         upgradeButton.getPosition().inTL(upgradeBtnX,upgradeBtnY);
+        upgradeButton.setShortcut(Keyboard.KEY_E, true);
         addButtonToList(upgradeButton, "tab:" + OVERVIEW);
+        if(this.currentTabId.equals(OVERVIEW)) {
+            upgradeButton.setEnabled(false);
+        }
 
         //--------image
         int imageX = (int) (0 + pad);
@@ -1241,12 +1248,12 @@ public class ba_uiplugin extends ba_uicommon {
                 }
                 if (tokens[0].equals("workshop_tab")) {
 //                    log.info("clicked" + tokens[1]);
-                    if(tokens[1].equals(WORKSHOP_EFFECT)) {
+                    if(tokens[1].equals(WORKSHOP_EFFECT) && this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_INV)) {
                         this.currentWorkshopEffectOrInvTab = WORKSHOP_EFFECT;
                         needsReset = true;
                         break;
                     }
-                    if(tokens[1].equals(WORKSHOP_INV)) {
+                    if(tokens[1].equals(WORKSHOP_INV) && this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_EFFECT)) {
                         this.currentWorkshopEffectOrInvTab = WORKSHOP_INV;
                         needsReset = true;
                         break;

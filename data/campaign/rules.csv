@@ -68,7 +68,8 @@ ba_bioformUpgradePromptOpt,DialogOptionSelected,"$option == ba_bioformUpgradePro
 ","ShowResCost crew $ba_upgrade_crewReq metals $ba_upgrade_metalsReq true heavy_machinery $ba_upgrade_machineReq alpha_core $ba_upgrade_ai_alphaReq true 115
 FireBest ba_bioformCheckIfCanRepair","The repair crew has reported that one of the malfunctioning modules contains remnants of outdated domain technology. Within the module are multiple pods housing what appear to be synthetic bodies - humanoid in form but not entirely human. These pods are arranged around a central pillar equipped with numerous surgical arms extending outward in all directions.
 
-Following a thorough assessment and discussion with the team, it has been determined that repairs are feasible but will involve significant cost. However, if we choose to invest in this operation, the recovered technology could potentially be repurposed and integrated into our systems. They await your decision.","10:ba_bioformUpgradeOpt:Offload resources.",
+Following a thorough assessment and discussion with the team, it has been determined that repairs are feasible but will involve significant cost. However, if we choose to invest in this operation, the recovered technology could potentially be repurposed and integrated into our systems. They await your decision.","10:ba_bioformUpgradeOpt:Offload resources.
+100:ba_bioformUpgradeReturnOpt:Leave",
 ba_bioformCheckIfCanRepair,ba_bioformCheckIfCanRepair,,"ba_bioformTerminal checkIfCanUpgrade",,,
 ba_bioformUpgradeOpt,DialogOptionSelected,"$option == ba_bioformUpgradeOpt","RemoveCommodity metals $ba_upgrade_metalsReq
 RemoveCommodity alpha_core $ba_upgrade_ai_alphaReq
@@ -77,6 +78,7 @@ $upgraded_bioform = true
 
 Not a moment later, several movements from the structure’s modules were detected while the rusted monitors started to flicker and display the bioform interface.","100:ba_bioformUpgradedOpt:Continue",
 ba_bioformUpgradedOpt,DialogOptionSelected,"$option ==  ba_bioformUpgradedOpt","FireBest OpenInteractionDialog",,,
+ba_bioformUpgradeReturnOpt,DialogOptionSelected,"$option == ba_bioformUpgradeReturnOpt","FireAll ba_showOverclockWorkshopOptions",,,
 "#END Upgrade",,,,,,
 "#END overclock",,,,,,
 ,,,,,,

@@ -169,7 +169,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                         TooltipMakerAPI personImageTooltip = rowContainer.createTooltip("ITEM_IMAGE", imageW, imageH, false, 0, 0);
                         personImageTooltip.addImage(spriteName, imageW * 0.9f, imageH * 0.9f, 0);
                         //---------hover
-                        ButtonAPI areaChecker = rowTooltipContainer.addAreaCheckbox("", null,Misc.getBasePlayerColor(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), itemW, itemH, 0);
+                        ButtonAPI areaChecker = rowTooltipContainer.addAreaCheckbox("", null,Misc.getBasePlayerColor(), Misc.getDarkPlayerColor().darker().darker().darker(), Misc.getBrightPlayerColor(), itemW, itemH, 0);
                         addButtonToList(areaChecker, "hover_bionic_item:"+bionic.getId()+":"+index);
                         areaChecker.getPosition().setLocation(0,0).inTL(itemX, itemY);
                         if(currentSelectedBionic != null) {
@@ -211,7 +211,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
 
                             @Override
                             public float getTooltipWidth(Object tooltipParam) {
-                                return rowW * 0.8f;
+                                return Math.max(rowW * 0.8f, 500f);
                             }
 
                             @Override
