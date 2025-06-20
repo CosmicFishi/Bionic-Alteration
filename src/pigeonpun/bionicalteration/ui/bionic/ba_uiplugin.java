@@ -772,20 +772,21 @@ public class ba_uiplugin extends ba_uicommon {
         //--------remove button
         //edit: enter edit mode, display list a list of bionic for a limb with remove button next to it
         int removeBtnH = btnH;
-        int removeBtnW = (int) (100 - pad);
+        int removeBtnW = (int) (160 - pad);
         int removeBtnX = (int) (installBtnX - pad - removeBtnW);
         int removeBtnY = (int) (installBtnY);
-        ButtonAPI removeButton = infoPersonTooltipContainer.addButton(this.currentWorkShopMode.equals(this.INSTALL_WORKSHOP) ?"Remove": "Exit remove", null, t, Color.yellow.darker().darker(), removeBtnW, removeBtnH, 0);
+        ButtonAPI removeButton = infoPersonTooltipContainer.addButton(this.currentWorkShopMode.equals(this.INSTALL_WORKSHOP) ?"Removal": "Exit Removal", null, t, Color.yellow.darker().darker(), removeBtnW, removeBtnH, 0);
         removeButton.getPosition().inTL(removeBtnX,removeBtnY);
+        removeButton.setShortcut(Keyboard.KEY_R, true);
         addButtonToList(removeButton, "bionic:edit");
-        removeButton.setEnabled(false);
-        if(this.currentSelectedLimb != null && ba_officermanager.checkIfCanEditLimb(this.currentSelectedLimb, this.currentPerson)) {
-            List<ba_bionicitemplugin> availableRemovingBionics = ba_bionicmanager.getListBionicInstalledOnLimb(this.currentSelectedLimb, this.currentPerson);
-            if(!availableRemovingBionics.isEmpty()) {
-                removeButton.setEnabled(true);
-                removeButton.flash(false);
-            }
-        }
+//        removeButton.setEnabled(false);
+//        if(this.currentSelectedLimb != null && ba_officermanager.checkIfCanEditLimb(this.currentSelectedLimb, this.currentPerson)) {
+//            List<ba_bionicitemplugin> availableRemovingBionics = ba_bionicmanager.getListBionicInstalledOnLimb(this.currentSelectedLimb, this.currentPerson);
+//            if(!availableRemovingBionics.isEmpty()) {
+//                removeButton.setEnabled(true);
+//                removeButton.flash(false);
+//            }
+//        }
         infoPersonTooltipContainer.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
             @Override
             public boolean isTooltipExpandable(Object tooltipParam) {
@@ -825,7 +826,12 @@ public class ba_uiplugin extends ba_uicommon {
         int tableW = (int) (infoRightW - pad - pad);
         int tableH = (int) (personInfoH - pad - pad - btnH);
         String highlightLimbId = this.currentSelectedBionic != null? this.currentSelectedBionic.bionicLimbGroupId: "";
-        displayBionicTableWithKeyPresetHighLight(infoPersonContainer, infoPersonTooltipKey, "WORKSHOP",true, true, tableW, tableH, tableX, tableY, highlightLimbId);
+        if(currentWorkShopMode.equals(INSTALL_WORKSHOP)) {
+            displayBionicTableWithKeyPresetHighLight(infoPersonContainer, infoPersonTooltipKey, "WORKSHOP",true, true, tableW, tableH, tableX, tableY, highlightLimbId, false);
+        }
+        if(currentWorkShopMode.equals(EDIT_WORKSHOP)) {
+            displayBionicTableWithKeyPresetHighLight(infoPersonContainer, infoPersonTooltipKey, "WORKSHOP",true, true, tableW, tableH, tableX, tableY, highlightLimbId, true);
+        }
         //--------selected
         int selectedH = btnH / 2;
         int selectedW = (int) (infoRightW - removeBtnW - installBtnW - pad);

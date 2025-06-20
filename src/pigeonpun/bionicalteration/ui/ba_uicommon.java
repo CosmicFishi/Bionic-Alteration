@@ -287,7 +287,8 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 isWorkshopMode, isScroll,
                 tableW, tableH,
                 tableX, tableY,
-                ""
+                "",
+                false
         );
     }
 
@@ -307,7 +308,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
             String creatorComponentTooltip,
             String preset,
             final boolean isWorkshopMode,
-            boolean isScroll , float tableW, float tableH, float tableX, float tableY, String highlightLimbGroupID) {
+            boolean isScroll , float tableW, float tableH, float tableX, float tableY, String highlightLimbGroupID, boolean isEdit) {
         final float pad = 10f;
         float opad = 10f;
         final Color h = Misc.getHighlightColor();
@@ -365,8 +366,8 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         //>Conscious
         LabelAPI bionicConsciousHeader = tableHeaderDisplayContainerTooltip.addPara(ba_consciousmanager.getDisplayConditionLabel(currentPerson).toUpperCase(), 0, Misc.getBrightPlayerColor(), ba_consciousmanager.getDisplayConditionLabel(currentPerson).toUpperCase());
         bionicConsciousHeader.getPosition().setSize(bionicConsciousW, tableHeaderH);
-        bionicConsciousHeader.getPosition().inTL(bionicConsciousX + bionicNameX,0);
-        bionicConsciousHeader.setAlignment(Alignment.MID);
+        bionicConsciousHeader.getPosition().inTL(bionicConsciousX + bionicNameX - pad,0);
+        bionicConsciousHeader.setAlignment(Alignment.RMID);
 
         //rows
         int i = 0;
@@ -387,7 +388,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
             int singleBionicInstalledNameH = 40;
             int bionicH = singleBionicInstalledNameH;
             //add a extra line for the overclock
-            if(augmentData.bionicInstalled != null && ba_overclockmanager.isBionicOverclockable(augmentData.bionicInstalled)) {
+            if(augmentData.bionicInstalled != null && (ba_overclockmanager.isBionicOverclockable(augmentData.bionicInstalled) || isEdit)) {
                 bionicH += singleBionicInstalledNameH;
             }
             final int bionicW = (int) (tableW - pad);
@@ -399,13 +400,18 @@ public class ba_uicommon implements CustomUIPanelPlugin {
             infoPersonBionicContainer.attachSubPanel(infoPersonBionicTooltipKey, infoPersonBionicPanelKey, bionicDisplayContainer);
             subComponentBionicList.add(bionicDisplayContainer);
             //hover
-            ButtonAPI areaChecker = personDisplayContainerTooltip.addAreaCheckbox("", null,Misc.getBasePlayerColor(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), bionicW, bionicH, 0);
+            ButtonAPI areaChecker = personDisplayContainerTooltip.addAreaCheckbox("", null,Misc.getDarkPlayerColor(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), bionicW, bionicH, 0);
             addButtonToList(areaChecker, "hover_bionic_table_limb:"+augmentData.limb.limbId + (augmentData.bionicInstalled != null ? ":"+augmentData.bionicInstalled.getId() : ""));
             areaChecker.getPosition().setLocation(0,0).inTL(0, 0);
             if(this.currentSelectedLimb != null) {
                 if(this.currentSelectedLimb.limbId.equals(augmentData.limb.limbId)) {
                     areaChecker.highlight();
                 }
+            }
+            if(isEdit) {
+                areaChecker.setHighlightBrightness(0);
+                areaChecker.setHighlightBounceDown(false);
+                areaChecker.setEnabled(false);
             }
             //hover pop up
             personDisplayContainerTooltip.addTooltipToPrevious(new TooltipMakerAPI.TooltipCreator() {
@@ -531,16 +537,30 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 bionicConscious.setHighlight("" + Math.round(b.consciousnessCost * 100) + "%");
                 bionicConscious.setHighlightColors(Misc.getNegativeHighlightColor());
                 bionicConscious.getPosition().inTL(bionicConsciousX + bionicConsciousW/2, pad);
-                if(b != null && ba_overclockmanager.isBionicOverclockable(b)) {
+                if(b != null) {
                     ba_overclock overclock = augmentData.appliedOverclock;
                     int overclockRowY = singleBionicInstalledNameH;
-                    TooltipMakerAPI overclockTooltip = bionicDisplayContainer.createTooltip("BIONIC_OVERCLOCK_NAME", sectionW, sectionH, false, sectionX, overclockRowY);
-                    overclockTooltip.getPosition().inTL(sectionX, overclockRowY);
+                    if(ba_overclockmanager.isBionicOverclockable(b)) {
+                        TooltipMakerAPI overclockTooltip = bionicDisplayContainer.createTooltip("BIONIC_OVERCLOCK_NAME", sectionW, sectionH, false, sectionX, overclockRowY);
+                        overclockTooltip.getPosition().inTL(sectionX, overclockRowY);
+                        LabelAPI overclockName = overclockTooltip.addPara("[ %s ]", pad, h, overclock != null? overclock.name: "--------");
+                        overclockName.setHighlight("[",overclock != null? overclock.name: "--------", "]");
+                        overclockName.setHighlightColors(special, overclock != null ? h: g, special);
+                        overclockName.getPosition().setSize(bionicNameW,sectionH);
+                    }
+                    if (isEdit) {
+                        TooltipMakerAPI btnTooltip = bionicDisplayContainer.createTooltip("BIONIC_EDIT_BTN", sectionW, sectionH, false, sectionX, overclockRowY);
+                        btnTooltip.getPosition().inTL(bionicBRMX + bionicBRMW, overclockRowY);
+                        ButtonAPI editBtn = btnTooltip.addButton("Remove", null, Misc.getTextColor(), Misc.getNegativeHighlightColor().darker().darker(), bionicBRMW, sectionH - pad, 0);
+                        if(!b.isAllowedRemoveAfterInstall) {
+                            editBtn.setEnabled(false);
+                        }
+                        if(b.isEffectAppliedAfterRemove) {
+                            ButtonAPI editConfirmBtn = btnTooltip.addButton("Confirm", null, Misc.getTextColor(), Misc.getNegativeHighlightColor().darker(), bionicBRMW, sectionH - pad, 0);
+//                            editConfirmBtn.getPosition().inTL(editBtn.getPosition().getWidth() - editBtn.getPosition().getX() - pad, overclockRowY);
+                        }
+                    }
                     //>name
-                    LabelAPI overclockName = overclockTooltip.addPara("[ %s ]", pad, h, overclock != null? overclock.name: "--------");
-                    overclockName.setHighlight("[",overclock != null? overclock.name: "--------", "]");
-                    overclockName.setHighlightColors(special, overclock != null ? h: g, special);
-                    overclockName.getPosition().setSize(bionicNameW,sectionH);
                 }
 
                 bionicInstalledI++;
