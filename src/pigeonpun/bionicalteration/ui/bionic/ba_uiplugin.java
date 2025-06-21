@@ -50,7 +50,6 @@ public class ba_uiplugin extends ba_uicommon {
     public static final String WORKSHOP_EFFECT = "WORKSHOP_EFFECT", WORKSHOP_INV = "WORKSHOP_INV";
     public final String INSTALL_WORKSHOP="INSTALL", EDIT_WORKSHOP="EDIT";
     public String currentWorkShopMode = INSTALL_WORKSHOP; //determine what mode workshop is in
-    public ba_bionicitemplugin currentRemovingBionic; //selected for removing
 //    public ba_limbmanager.ba_limb currentHoveringLimb = null; //To highlight which effect on the effect list,
     // sadly not possible with how the bionic table currently implemented.
     // Bionic table hidden in certain UI resolution which cause the hovering being weird. it can still detect the button even tho its hidden

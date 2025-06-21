@@ -40,6 +40,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
     protected float currentScrollPositionInventory = 0;
     protected float currentScrollPositionBionicTable = 0;
     protected float currentScrollPositionPersonList = 0;
+    public ba_bionicitemplugin currentRemovingBionic; //selected for removing
     public static ba_debounceplugin debounceplugin = new ba_debounceplugin();
     public List<CargoStackAPI> cargoBionic = new ArrayList<>();
     public static float getInitDialogContainerPaddingX() {
@@ -536,7 +537,8 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 bionicConscious.getPosition().setSize(bionicConsciousW,sectionH);
                 bionicConscious.setHighlight("" + Math.round(b.consciousnessCost * 100) + "%");
                 bionicConscious.setHighlightColors(Misc.getNegativeHighlightColor());
-                bionicConscious.getPosition().inTL(bionicConsciousX + bionicConsciousW/2, pad);
+                bionicConscious.setAlignment(Alignment.TL);
+                bionicConscious.getPosition().inTL(bionicConsciousX - pad, pad);
                 if(b != null) {
                     ba_overclock overclock = augmentData.appliedOverclock;
                     int overclockRowY = singleBionicInstalledNameH;
@@ -550,13 +552,18 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                     }
                     if (isEdit) {
                         TooltipMakerAPI btnTooltip = bionicDisplayContainer.createTooltip("BIONIC_EDIT_BTN", sectionW, sectionH, false, sectionX, overclockRowY);
-                        btnTooltip.getPosition().inTL(bionicBRMX + bionicBRMW, overclockRowY);
-                        ButtonAPI editBtn = btnTooltip.addButton("Remove", null, Misc.getTextColor(), Misc.getNegativeHighlightColor().darker().darker(), bionicBRMW, sectionH - pad, 0);
+                        btnTooltip.getPosition().inTL(bionicConsciousX + bionicConsciousW + opad*3, overclockRowY);
+                        ButtonAPI editBtn = btnTooltip.addButton("Remove", null, Misc.getTextColor(), Misc.getNegativeHighlightColor().darker().darker(), bionicConsciousW, sectionH - pad, 0);
+                        addButtonToList(editBtn, "bionic:remove:" + b.bionicId);
+                        //todo: test removing, add more info on hovering
                         if(!b.isAllowedRemoveAfterInstall) {
                             editBtn.setEnabled(false);
                         }
                         if(b.isEffectAppliedAfterRemove) {
-                            ButtonAPI editConfirmBtn = btnTooltip.addButton("Confirm", null, Misc.getTextColor(), Misc.getNegativeHighlightColor().darker(), bionicBRMW, sectionH - pad, 0);
+                            ButtonAPI editConfirmBtn = btnTooltip.addButton("Confirm", null, Misc.getTextColor(), Misc.getNegativeHighlightColor().darker(), bionicConsciousW, sectionH - pad, 0);
+                            editConfirmBtn.getPosition().inTL(-bionicConsciousW-pad/2, 0);
+                            addButtonToList(editConfirmBtn, "bionic:removeConfirm:"+b.bionicId);
+                            editConfirmBtn.setEnabled(!b.isEffectAppliedAfterRemove || (this.currentRemovingBionic != null && this.currentRemovingBionic.bionicId.equals(b.bionicId)));
 //                            editConfirmBtn.getPosition().inTL(editBtn.getPosition().getWidth() - editBtn.getPosition().getX() - pad, overclockRowY);
                         }
                     }
