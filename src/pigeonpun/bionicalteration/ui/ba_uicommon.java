@@ -428,10 +428,20 @@ public class ba_uicommon implements CustomUIPanelPlugin {
 
                 @Override
                 public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
-                    tooltip.addSectionHeading("Limb", Alignment.MID, 0);
-                    tooltip.addPara(augmentData.limb.description, pad);
+                    if(isEdit && augmentData.bionicInstalled != null) {
+                        tooltip.addSectionHeading("Removal", Misc.getNegativeHighlightColor(), Misc.getDarkPlayerColor().darker() ,Alignment.MID, 0);
+                        if(augmentData.bionicInstalled != null && augmentData.bionicInstalled.isEffectAppliedAfterRemove) {
+                            augmentData.bionicInstalled.getLongOnRemoveEffectDescription(tooltip);
+                        } else {
+                            String warnText = augmentData.bionicInstalled.isAllowedRemoveAfterInstall ? "No effect on remove" : "Can't be removed";
+                            LabelAPI warnLabel = tooltip.addPara(warnText, pad);
+                            warnLabel.setHighlight(warnText);
+                            warnLabel.setHighlightColors(!augmentData.bionicInstalled.isAllowedRemoveAfterInstall? Misc.getNegativeHighlightColor(): Misc.getGrayColor().brighter());
+                        }
+                    }
                     tooltip.addSpacer(pad);
-                    tooltip.addSectionHeading("Bionics", Alignment.MID, 0);
+                    tooltip.addSectionHeading("Augmentation", Misc.getBrightPlayerColor(), Misc.getDarkPlayerColor().darker() ,Alignment.MID, 0);
+                    tooltip.addPara(augmentData.limb.name + ": " + augmentData.limb.description, pad);
                     if(augmentData.bionicInstalled != null) {
                         ba_bionicitemplugin b = augmentData.bionicInstalled;
                         b.displayEffectDescription(tooltip, currentPerson, b, false);
@@ -537,7 +547,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 bionicConscious.getPosition().setSize(bionicConsciousW,sectionH);
                 bionicConscious.setHighlight("" + Math.round(b.consciousnessCost * 100) + "%");
                 bionicConscious.setHighlightColors(Misc.getNegativeHighlightColor());
-                bionicConscious.setAlignment(Alignment.TL);
+                bionicConscious.setAlignment(Alignment.TR);
                 bionicConscious.getPosition().inTL(bionicConsciousX - pad, pad);
                 if(b != null) {
                     ba_overclock overclock = augmentData.appliedOverclock;
@@ -554,15 +564,19 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                         TooltipMakerAPI btnTooltip = bionicDisplayContainer.createTooltip("BIONIC_EDIT_BTN", sectionW, sectionH, false, sectionX, overclockRowY);
                         btnTooltip.getPosition().inTL(bionicConsciousX + bionicConsciousW + opad*3, overclockRowY);
                         ButtonAPI editBtn = btnTooltip.addButton("Remove", null, Misc.getTextColor(), Misc.getNegativeHighlightColor().darker().darker(), bionicConsciousW, sectionH - pad, 0);
-                        addButtonToList(editBtn, "bionic:remove:" + b.bionicId);
+                        String btmMapValuePrefix = b.isEffectAppliedAfterRemove? "remove":"removeConfirm";
+                        addButtonToList(editBtn, "bionic:" + btmMapValuePrefix +":" + b.bionicId + ":" + augmentData.limb.limbId);
                         //todo: test removing, add more info on hovering
                         if(!b.isAllowedRemoveAfterInstall) {
+                            editBtn.setEnabled(false);
+                        }
+                        if(b.isEffectAppliedAfterRemove && this.currentRemovingBionic != null) {
                             editBtn.setEnabled(false);
                         }
                         if(b.isEffectAppliedAfterRemove) {
                             ButtonAPI editConfirmBtn = btnTooltip.addButton("Confirm", null, Misc.getTextColor(), Misc.getNegativeHighlightColor().darker(), bionicConsciousW, sectionH - pad, 0);
                             editConfirmBtn.getPosition().inTL(-bionicConsciousW-pad/2, 0);
-                            addButtonToList(editConfirmBtn, "bionic:removeConfirm:"+b.bionicId);
+                            addButtonToList(editConfirmBtn, "bionic:removeConfirm:"+b.bionicId + ":" + augmentData.limb.limbId);
                             editConfirmBtn.setEnabled(!b.isEffectAppliedAfterRemove || (this.currentRemovingBionic != null && this.currentRemovingBionic.bionicId.equals(b.bionicId)));
 //                            editConfirmBtn.getPosition().inTL(editBtn.getPosition().getWidth() - editBtn.getPosition().getX() - pad, overclockRowY);
                         }

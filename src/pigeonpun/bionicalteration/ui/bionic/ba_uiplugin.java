@@ -777,6 +777,7 @@ public class ba_uiplugin extends ba_uicommon {
         ButtonAPI removeButton = infoPersonTooltipContainer.addButton(this.currentWorkShopMode.equals(this.INSTALL_WORKSHOP) ?"Removal": "Exit Removal", null, t, Color.yellow.darker().darker(), removeBtnW, removeBtnH, 0);
         removeButton.getPosition().inTL(removeBtnX,removeBtnY);
         removeButton.setShortcut(Keyboard.KEY_R, true);
+        removeButton.setEnabled(this.currentTabId.equals(WORKSHOP));
         addButtonToList(removeButton, "bionic:edit");
 //        removeButton.setEnabled(false);
 //        if(this.currentSelectedLimb != null && ba_officermanager.checkIfCanEditLimb(this.currentSelectedLimb, this.currentPerson)) {
@@ -1231,16 +1232,21 @@ public class ba_uiplugin extends ba_uicommon {
                         needsReset = true;
                         break;
                     }
-                    if(tokens[1].equals("remove") && !tokens[2].isEmpty()) {
+                    if(tokens[1].equals("remove") && !tokens[2].isEmpty() && !tokens[3].isEmpty()) {
                         this.currentRemovingBionic = ba_bionicmanager.getBionic(tokens[2]);
+                        this.currentSelectedLimb = ba_limbmanager.getLimb(tokens[3]);
                         needsReset = true;
                         break;
                     }
-                    if(tokens[1].equals("removeConfirm") && !tokens[2].isEmpty()) {
+                    if(tokens[1].equals("removeConfirm") && !tokens[2].isEmpty() && !tokens[3].isEmpty()) {
                         if(ba_bionicmanager.getBionic(tokens[2].toString()) != null && !ba_bionicmanager.getBionic(tokens[2].toString()).isEffectAppliedAfterRemove) {
                             this.currentRemovingBionic = ba_bionicmanager.getBionic(tokens[2]);
                         }
-                        if(tokens[2].equals(this.currentRemovingBionic.bionicId)) {
+                        this.currentSelectedLimb = ba_limbmanager.getLimb(tokens[3]);
+                        if(this.currentSelectedLimb == null || this.currentRemovingBionic == null) {
+                            log.warn("No limb or bionic can be found for removal");
+                        }
+                        if(tokens[2].equals(this.currentRemovingBionic.bionicId) && tokens[3].equals(this.currentSelectedLimb.limbId)) {
                             removeBionic();
                             List<ba_bionicitemplugin> availableRemovingBionics = ba_bionicmanager.getListBionicInstalledOnLimb(this.currentSelectedLimb, this.currentPerson);
                             if(availableRemovingBionics.isEmpty()) {
