@@ -566,7 +566,6 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                         ButtonAPI editBtn = btnTooltip.addButton("Remove", null, Misc.getTextColor(), Misc.getNegativeHighlightColor().darker().darker(), bionicConsciousW, sectionH - pad, 0);
                         String btmMapValuePrefix = b.isEffectAppliedAfterRemove? "remove":"removeConfirm";
                         addButtonToList(editBtn, "bionic:" + btmMapValuePrefix +":" + b.bionicId + ":" + augmentData.limb.limbId);
-                        //todo: test removing, add more info on hovering
                         if(!b.isAllowedRemoveAfterInstall) {
                             editBtn.setEnabled(false);
                         }

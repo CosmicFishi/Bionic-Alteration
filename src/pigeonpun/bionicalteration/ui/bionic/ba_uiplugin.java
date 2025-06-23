@@ -489,7 +489,6 @@ public class ba_uiplugin extends ba_uicommon {
         float effectListH = pH;
         float personInfoW = pW - effectListW;
         float personInfoH = 1f * pH - opad;
-        //todo: INSTALL_WORKSHOP | EDIT_WORKSHOP - change bionic list to replace BRM + humanity to remove and confirm remove if have effects.
         TooltipMakerAPI personInfoTooltipContainer = workshopContainer.createTooltip(mainPersonInfoTooltipKey, personInfoW, personInfoH, false, 0, 0);
         personInfoTooltipContainer.getPosition().inTL(0,0);
         displayPersonInfoWorkshop(workshopContainer, mainPersonInfoTooltipKey, personInfoW, personInfoH, 0,0);
@@ -801,19 +800,22 @@ public class ba_uiplugin extends ba_uicommon {
             @Override
             public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
                 tooltip.addSectionHeading("Info", Alignment.MID, 0);
-                if(currentSelectedLimb == null) {
-                    tooltip.addPara("Please select the modifying %s", pad, Misc.getBrightPlayerColor(), "limb");
-                } else {
-                    tooltip.addPara("Modifying %s selected", pad, Misc.getBrightPlayerColor(), "limb");
-                }
-                tooltip.addSectionHeading("Help", Alignment.MID, pad);
-                tooltip.addPara("To remove bionic(s) from a person, follow these steps:", pad);
-                tooltip.addPara("1. Select the %s that installed the bionic", pad, Misc.getHighlightColor(), "LIMB");
-                tooltip.addPara("2. Click the %s button", pad, Misc.getHighlightColor(), "EDIT");
-                tooltip.addPara("3. Find the bionic you want to remove, if available, click the %s button", pad, Misc.getHighlightColor(), "REMOVE");
-                tooltip.addPara("4. Confirm remove by clicking the %s button", pad, Misc.getHighlightColor(), "CONFIRM REMOVE");
-                tooltip.addPara("The remove bionic will appear in your inventory. (Click the %s again to exist %s)", pad, Misc.getBasePlayerColor(),"Exit remove button", "Remove mode");
-                tooltip.addPara("Note: Some bionics can NOT be removed, some have effects ON REMOVE and some once removed DO NOT RETURN the bionic item", pad);
+//                if(currentSelectedLimb == null) {
+//                    tooltip.addPara("Please select the modifying %s", pad, Misc.getBrightPlayerColor(), "limb");
+//                } else {
+//                    tooltip.addPara("Modifying %s selected", pad, Misc.getBrightPlayerColor(), "limb");
+//                }
+//                tooltip.addSectionHeading("Help", Alignment.MID, pad);
+//                tooltip.addPara("To remove bionic(s) from a person, follow these steps:", pad);
+//                tooltip.addPara("1. Select the %s that installed the bionic", pad, Misc.getHighlightColor(), "LIMB");
+//                tooltip.addPara("2. Click the %s button", pad, Misc.getHighlightColor(), "EDIT");
+//                tooltip.addPara("3. Find the bionic you want to remove, if available, click the %s button", pad, Misc.getHighlightColor(), "REMOVE");
+//                tooltip.addPara("4. Confirm remove by clicking the %s button", pad, Misc.getHighlightColor(), "CONFIRM REMOVE");
+//                tooltip.addPara("- The removed bionic if applicable, will appear in your inventory.", pad, Misc.getBasePlayerColor(),"Exit remove button", "Remove mode");
+                tooltip.addPara("- Removal effects if applicable, will be displayed on hover.", pad);
+                tooltip.addPara("- Some bionics can NOT be removed.", pad);
+                tooltip.addPara("- Some bionics have effects ON removed.", pad);
+                tooltip.addPara("- Some bionics once removed, DO NOT RETURN the bionic item", pad);
 //                tooltip.setParaFontVictor14();
 //                tooltip.addPara("Button is disabled ?", pad);
 //                tooltip.setParaFontDefault();
