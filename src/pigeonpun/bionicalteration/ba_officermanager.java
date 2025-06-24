@@ -404,18 +404,24 @@ public class ba_officermanager {
 //                }
 //            }
             for (FleetMemberAPI member : Global.getSector().getPlayerFleet().getMembersWithFightersCopy()) {
+                if(member.getCaptain().isPlayer()) continue;
                 if (member.isFighterWing()) continue;
                 if (!member.getCaptain().isDefault()) {
                     if(member.getCaptain().isAICore() && isIncludeAIOfficer) {
                         listP.add(member.getCaptain());
                     }
+                    if(!member.getCaptain().isAICore()) {
+                        listP.add(member.getCaptain());
+                    }
                 }
             }
             for (AdminData admin: Global.getSector().getCharacterData().getAdmins()) {
+                if(admin.getPerson().isPlayer()) continue;
                 if(!admin.getPerson().isAICore()) {
-                    if(admin.getPerson().isAICore() && isIncludeAIOfficer) {
-                        listP.add(admin.getPerson());
-                    }
+                    listP.add(admin.getPerson());
+                }
+                if(admin.getPerson().isAICore() && isIncludeAIOfficer) {
+                    listP.add(admin.getPerson());
                 }
             }
         }
@@ -946,18 +952,15 @@ public class ba_officermanager {
         if(person.isPlayer()) {
             return "Captain/Admin";
         }
-        if(person.getFleet() != null) {
-            if(isCaptainOrAdmin(person, false).equals(ba_profession.CAPTAIN)) profString = "Captain (Idle)";
-            if(Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(person) != null) {
-                profString = "Captain";
-            }
-        } else {
-            if(isCaptainOrAdmin(person, false).equals(ba_profession.ADMIN)) profString = "Admin (Idle)";
-            if (person.getMarket() != null) {
-                MarketAPI market = person.getMarket();
-                if(market.getAdmin() == person) {
-                    profString = "Admin";
-                }
+        if(isCaptainOrAdmin(person, false).equals(ba_profession.CAPTAIN)) profString = "Captain (Idle)";
+        if(Global.getSector().getPlayerFleet().getFleetData().getMemberWithCaptain(person) != null) {
+            profString = "Captain";
+        }
+        if(isCaptainOrAdmin(person, false).equals(ba_profession.ADMIN)) profString = "Admin (Idle)";
+        if (person.getMarket() != null) {
+            MarketAPI market = person.getMarket();
+            if(market.getAdmin() == person) {
+                profString = "Admin";
             }
         }
         return profString;

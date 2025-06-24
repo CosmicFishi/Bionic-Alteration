@@ -372,7 +372,8 @@ public class ba_uiplugin extends ba_uicommon {
             //>BRM limit
             int limitBRMY = (int) (occupationY + occupationLabel.getPosition().getHeight() + statsSpacer);
             int limitBRM = (int) this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);
-            LabelAPI limitBRMLabel = personStatsTooltip.addPara(String.valueOf("BRM Limit: " + limitBRM), 0, Misc.getBrightPlayerColor(), "" + limitBRM);
+            LabelAPI limitBRMLabel = personStatsTooltip.addPara(String.valueOf("BRM Limit: " + (this.currentPerson.isAICore()? "---" :limitBRM)), 0, Misc.getBrightPlayerColor(), "" + (this.currentPerson.isAICore()? "---" :limitBRM));
+            limitBRMLabel.setHighlightColors(this.currentPerson.isAICore()? Misc.getGrayColor() : Misc.getBrightPlayerColor());
             limitBRMLabel.getPosition().setSize(150,20);
             limitBRMLabel.getPosition().inTL(0, limitBRMY);
             if(bionicalterationplugin.isBRMCapDisable) {
@@ -382,11 +383,15 @@ public class ba_uiplugin extends ba_uicommon {
             int currentBRM = (int) this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
             int currentBRMY = (int) limitBRMY;
             int currentBRMX = (int) (limitBRMLabel.getPosition().getWidth());
-            LabelAPI currentBRMLabel = personStatsTooltip.addPara(String.valueOf("BRM Using: " + currentBRM), 0, currentBRM > limitBRM ? bad: Misc.getHighlightColor(), "" + currentBRM);
+            LabelAPI currentBRMLabel = personStatsTooltip.addPara(String.valueOf("BRM Using: " + (this.currentPerson.isAICore()? "---" :currentBRM)), 0, currentBRM > limitBRM ? bad: Misc.getHighlightColor(), "" + (this.currentPerson.isAICore()? "---" :currentBRM));
+            currentBRMLabel.setHighlightColors(this.currentPerson.isAICore()? Misc.getGrayColor() : currentBRM > limitBRM ? bad: Misc.getHighlightColor());
             currentBRMLabel.getPosition().setSize(150,20);
             currentBRMLabel.getPosition().inTL(currentBRMX, currentBRMY);
             //>Consciousness
             float consciousness = this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
+            if(this.currentPerson.isAICore()) {
+                //todo: figure out how to get consciousness from fleet from person
+            }
             int consciousnessY = (int) (limitBRMY + statsSpacer + limitBRMLabel.getPosition().getHeight());
             int consciousnessX = (int) (0);
             int consciousnessW = 150;

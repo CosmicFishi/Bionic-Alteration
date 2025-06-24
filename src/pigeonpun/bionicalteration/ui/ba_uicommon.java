@@ -756,13 +756,19 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         int limitBRM = (int) member.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);;
         TooltipMakerAPI personBRMTooltip = personDisplayContainer.createTooltip("PERSON_BRM", brmW, brmH, false, 0, 0);
         personBRMTooltip.getPosition().inTL(brmX, brmY);
-        LabelAPI BRM = personBRMTooltip.addPara("BRM: " + currentBRM + " / " + limitBRM, pad);
-        BRM.setHighlight("BRM: ", "" +currentBRM, "" +limitBRM);
-        BRM.setHighlightColors(t,currentBRM > limitBRM ? bad: h,Misc.getBrightPlayerColor());
-        if(bionicalterationplugin.isBRMCapDisable) {
-            BRM.setText("BRM: " + currentBRM);
-            BRM.setHighlight("BRM: ", "" +currentBRM);
-            BRM.setHighlightColors(t, h);
+        LabelAPI BRM;
+        if(member.isAICore()) {
+            BRM = personBRMTooltip.addPara("BRM: ---", pad);
+            BRM.setOpacity(0.6f);
+        } else {
+            BRM = personBRMTooltip.addPara("BRM: " + currentBRM + " / " + limitBRM, pad);
+            BRM.setHighlight("BRM: ", "" +currentBRM, "" +limitBRM);
+            BRM.setHighlightColors(t,currentBRM > limitBRM ? bad: h,Misc.getBrightPlayerColor());
+            if(bionicalterationplugin.isBRMCapDisable) {
+                BRM.setText("BRM: " + currentBRM);
+                BRM.setHighlight("BRM: ", "" +currentBRM);
+                BRM.setHighlightColors(t, h);
+            }
         }
         //Level
         int levelH = brmH;
