@@ -43,6 +43,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
     public ba_bionicitemplugin currentRemovingBionic; //selected for removing
     public static ba_debounceplugin debounceplugin = new ba_debounceplugin();
     public List<CargoStackAPI> cargoBionic = new ArrayList<>();
+    public static boolean isDisplayingOtherFleets = false;
     public static float getInitDialogContainerPaddingX() {
         float containerPadding = 0;
 

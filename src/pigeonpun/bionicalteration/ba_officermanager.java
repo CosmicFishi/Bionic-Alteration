@@ -1,15 +1,15 @@
 package pigeonpun.bionicalteration;
 
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.CampaignFleetAPI;
-import com.fs.starfarer.api.campaign.CargoAPI;
-import com.fs.starfarer.api.campaign.SpecialItemData;
+import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.characters.AdminData;
 import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import com.fs.starfarer.api.characters.OfficerDataAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
+import com.fs.starfarer.api.impl.campaign.FleetEncounterContext;
+import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
@@ -182,11 +182,11 @@ public class ba_officermanager {
                 WeightedRandomPicker<String> randomPicker = new WeightedRandomPicker<>(ba_utils.getRandom());
                 randomPicker.add(ba_variablemanager.BA_SHELL_CORRUPTED_HULLMOD, spawningCorruptedShell);
                 randomPicker.add(ba_variablemanager.BA_SHELL_PRISTINE_HULLMOD, actualChanceOfSpawningPristineShell);
-                randomPicker.add("", actualChanceOfSpawningPristineShell);
+                randomPicker.add("", spawningNothing);
                 aiMemData.shell = randomPicker.pick();
                 aiMemData.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).modifyFlat(ba_variablemanager.BA_CONSCIOUSNESS_SOURCE_KEY, setUpConsciousness(aiMemData.dummyAI));
                 if(!Objects.equals(aiMemData.shell, "")) fleetMember.getVariant().addPermaMod(aiMemData.shell);
-                log.info("aaaaaaaaaaaaaaaaa");
+
             }
             aiMemData.isSetUped = true;
             fleetMemData.listAIMember.put(fleetMember.getId(), aiMemData);
@@ -195,10 +195,37 @@ public class ba_officermanager {
     }
 
     /**
+     * Try to find fleet bionic memory data - Checking both player fleet and current dialog fleets.
+     * @return null if can't find dialog fleet.
+     */
+    public static ba_fleetmemorydata getFleetBionicMemoryData(PersonAPI person, List<CampaignFleetAPI> fleets, boolean isPlayerFleet) {
+        CampaignFleetAPI f;
+        if(!isPlayerFleet) {
+//            for (CampaignFleetAPI fleet : fleets) {
+//                if(!fleet.isPlayerFleet()) {
+//                    for (FleetMemberAPI member : fleet.getMembersWithFightersCopy()) {
+//                        if (member.isFighterWing()) continue;
+//                        if (!member.getCaptain().isDefault() && !member.getCaptain().isAICore()) {
+//                            if(person.getId().equals(member.getCaptain().getId())) {
+//                                f = fleet;
+//                                break;
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+            //TODO: check for other fleet. mostly person.getfleet() return null or not
+            f = null; //temporary
+        } else {
+            f = Global.getSector().getPlayerFleet();
+        }
+        return getFleetBionicMemoryData(f);
+    }
+    /**
      * Create new memory data for fleet if can't find mem data
      * @return null if fleet == null
      */
-    public static ba_fleetmemorydata getFleetBionicMemoryData(@NotNull CampaignFleetAPI fleet) {
+    public static ba_fleetmemorydata getFleetBionicMemoryData(@Nullable CampaignFleetAPI fleet) {
         ba_fleetmemorydata fleetData = null;
         if(fleet != null) {
             if(fleet.getMemoryWithoutUpdate().get(ba_variablemanager.BA_FLEET_MEMORY_BIONIC_KEY) == null ||
@@ -422,6 +449,12 @@ public class ba_officermanager {
                 }
                 if(admin.getPerson().isAICore() && isIncludeAIOfficer) {
                     listP.add(admin.getPerson());
+                }
+            }
+            //for AI cores
+            for (MarketAPI market: Misc.getPlayerMarkets(false)) {
+                if(!listP.contains(market.getAdmin())) {
+                    listP.add(market.getAdmin());
                 }
             }
         }
@@ -884,6 +917,7 @@ public class ba_officermanager {
                 if(!fleet.isPlayerFleet()) {
                     for (FleetMemberAPI member : fleet.getMembersWithFightersCopy()) {
                         if (member.isFighterWing()) continue;
+                        //TODO: REMOVE AI CORE CHECK
                         if (!member.getCaptain().isDefault() && !member.getCaptain().isAICore()) {
                             if(person.getId().equals(member.getCaptain().getId())) {
                                 return member;

@@ -77,8 +77,8 @@ public class ba_variablemanager {
     public static final String BA_PERSON_MEMORY_BIONIC_KEY = "$ba_bionic_key";
     public static final String BA_FLEET_MEMORY_BIONIC_KEY = "$ba_fleet_bionic_key";
     public static final String BA_BIONIC_INFO_HULLMOD = "ba_bionicinfo";
-    public static final String BA_SHELL_CORRUPTED_HULLMOD = "ba_corruptedshell";
-    public static final String BA_SHELL_PRISTINE_HULLMOD = "ba_pristineshell";
+    public static final String BA_SHELL_CORRUPTED_HULLMOD = "ba_corruptedSyntheticBody";
+    public static final String BA_SHELL_PRISTINE_HULLMOD = "ba_pristineSyntheticBody";
     public static final String BA_BIONIC_CONTAINER_PERSISTENT_KEY = "ba_bionic_container";
     public static final String BA_OVERCLOCK_STATION_TAG_NAME = "Overclock station";
     public static final String BA_ACHIEVEMENT_ZERO_CONSCIOUSNESS_ITEM_KEY = "$ba_zero_consciousness_reward";

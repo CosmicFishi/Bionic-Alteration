@@ -56,7 +56,6 @@ public class ba_uiplugin extends ba_uicommon {
     HashMap<String, ba_component> tabMap = new HashMap<>();
     String currentTabId = OVERVIEW;
     String currentWorkshopEffectOrInvTab = WORKSHOP_INV;
-    public static boolean isDisplayingOtherFleets = false;
 //    public static float currentScrollPositionOverview = 0;
     public static ba_uiplugin createDefault() {
         return new ba_uiplugin();
@@ -363,6 +362,21 @@ public class ba_uiplugin extends ba_uicommon {
                 MarketAPI market = this.currentPerson.getMarket();
                 if(market.getAdmin() == this.currentPerson) {
                     occupation = "Admin of " + market.getName();
+                }
+            }
+            if(this.currentPerson.isAICore()) {
+                for(FleetMemberAPI fleetMemberAPI: Global.getSector().getPlayerFleet().getFleetData().getMembersListCopy()) {
+                    if(!fleetMemberAPI.getCaptain().isDefault() && fleetMemberAPI.getCaptain().isAICore() && fleetMemberAPI.getCaptain().getId().equals(this.currentPerson.getId())) {
+                        String shipName = fleetMemberAPI.getShipName();
+                        String shipClass = fleetMemberAPI.getHullSpec().getNameWithDesignationWithDashClass();
+                        occupation = "Piloting "+ shipName + " of " + shipClass;
+                        break;
+                    }
+                }
+                for (AdminData admin: Global.getSector().getCharacterData().getAdmins()) {
+                    if(!admin.getPerson().isAICore() && admin.getPerson().getId().equals(this.currentPerson.getId())) {
+                        occupation = "Admin of " + admin.getMarket().getName();
+                    }
                 }
             }
             int occupationY = (int) (nameLabel.getPosition().getHeight() + statsSpacer + personalityLabel.getPosition().getHeight() + statsSpacer);
