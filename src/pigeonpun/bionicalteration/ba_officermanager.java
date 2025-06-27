@@ -195,10 +195,26 @@ public class ba_officermanager {
     }
 
     /**
+     * Get AI bionic data
+     * @param person
+     * @param fleets
+     * @param isPlayerFleet
+     * @return
+     */
+    public static ba_aimemorydata getAIMemData(@NotNull PersonAPI person, @Nullable List<CampaignFleetAPI> fleets, boolean isPlayerFleet) {
+        ba_fleetmemorydata fleetMem = getFleetBionicMemoryData(fleets, isPlayerFleet);
+        ba_aimemorydata aimemorydata = null;
+        if(fleetMem != null) {
+            aimemorydata = fleetMem.listAIMember.get(person.getId());
+        }
+        return aimemorydata;
+    }
+    /**
      * Try to find fleet bionic memory data - Checking both player fleet and current dialog fleets.
      * @return null if can't find dialog fleet.
+     * @param fleets dialog fleet
      */
-    public static ba_fleetmemorydata getFleetBionicMemoryData(PersonAPI person, List<CampaignFleetAPI> fleets, boolean isPlayerFleet) {
+    public static ba_fleetmemorydata getFleetBionicMemoryData(@Nullable List<CampaignFleetAPI> fleets, boolean isPlayerFleet) {
         CampaignFleetAPI f;
         if(!isPlayerFleet) {
 //            for (CampaignFleetAPI fleet : fleets) {

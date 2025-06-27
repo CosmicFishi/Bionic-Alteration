@@ -25,6 +25,7 @@ import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
 import pigeonpun.bionicalteration.inventory.ba_inventoryhandler;
 import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
 import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
+import pigeonpun.bionicalteration.rulecmd.ba_bioformTerminal;
 import pigeonpun.bionicalteration.ui.ba_component;
 import pigeonpun.bionicalteration.ui.ba_debounceplugin;
 import pigeonpun.bionicalteration.ui.ba_uicommon;
@@ -405,6 +406,11 @@ public class ba_uiplugin extends ba_uicommon {
             float consciousness = this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
             if(this.currentPerson.isAICore()) {
                 //todo: figure out how to get consciousness from fleet from person
+                //problem - can't get fleet member -> no ai memory data
+                ba_officermanager.ba_aimemorydata memdata =  ba_officermanager.getAIMemData(this.currentPerson, null, !isDisplayingOtherFleets);
+                if(memdata != null) {
+                    consciousness = memdata.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
+                }
             }
             int consciousnessY = (int) (limitBRMY + statsSpacer + limitBRMLabel.getPosition().getHeight());
             int consciousnessX = (int) (0);
