@@ -184,58 +184,74 @@ public class ba_officermanager {
                 randomPicker.add(ba_variablemanager.BA_SHELL_PRISTINE_HULLMOD, actualChanceOfSpawningPristineShell);
                 randomPicker.add("", spawningNothing);
                 aiMemData.shell = randomPicker.pick();
-                aiMemData.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).modifyFlat(ba_variablemanager.BA_CONSCIOUSNESS_SOURCE_KEY, setUpConsciousness(aiMemData.dummyAI));
                 if(!Objects.equals(aiMemData.shell, "")) fleetMember.getVariant().addPermaMod(aiMemData.shell);
 
             }
+            aiMemData.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).modifyFlat(ba_variablemanager.BA_CONSCIOUSNESS_SOURCE_KEY, setUpConsciousness(aiMemData.dummyAI));
             aiMemData.isSetUped = true;
             fleetMemData.listAIMember.put(fleetMember.getId(), aiMemData);
             fleet.getMemoryWithoutUpdate().set(ba_variablemanager.BA_FLEET_MEMORY_BIONIC_KEY, fleetMemData);
         }
     }
-
+    public static List<CampaignFleetAPI> getCurrentInteractingFleets(@Nullable InteractionDialogAPI dialog, boolean isPlayerFleet) {
+        List<CampaignFleetAPI> fleets = new ArrayList<>();
+        if(isPlayerFleet) {
+            fleets.add(Global.getSector().getPlayerFleet());
+        } else {
+            if(dialog != null) {
+                SectorEntityToken target = dialog.getInteractionTarget();
+                if(target != null) {
+                    InteractionDialogPlugin plugin = dialog.getPlugin();
+                    if(plugin instanceof FleetInteractionDialogPluginImpl) {
+                        FleetEncounterContext context = (FleetEncounterContext) plugin.getContext();
+                        if(context.getBattle() == null) return fleets;
+                        List<CampaignFleetAPI> f = context.getBattle().getBothSides();
+                        fleets.addAll(f);
+                    }
+                } else {
+                    log.error("Can't find dialog battle fleets -> retuning empty fleet");
+                }
+            }
+        }
+        return fleets;
+    }
     /**
      * Get AI bionic data
      * @param person
-     * @param fleets
      * @param isPlayerFleet
-     * @return
+     * @return null if can't find person's fleet
      */
-    public static ba_aimemorydata getAIMemData(@NotNull PersonAPI person, @Nullable List<CampaignFleetAPI> fleets, boolean isPlayerFleet) {
-        ba_fleetmemorydata fleetMem = getFleetBionicMemoryData(fleets, isPlayerFleet);
+    public static ba_aimemorydata getAIMemData(@NotNull PersonAPI person, @Nullable InteractionDialogAPI dialog, boolean isPlayerFleet) {
+        CampaignFleetAPI fleet = getFleetFromPerson(person, dialog, isPlayerFleet);
+        ba_fleetmemorydata fleetMem = getFleetBionicMemoryData(fleet);
+        FleetMemberAPI member = null;
+        for(FleetMemberAPI memb: fleet.getFleetData().getMembersListCopy()) {
+            if(memb.getCaptain().getId().equals(person.getId())) {
+                member = memb;
+            }
+        }
         ba_aimemorydata aimemorydata = null;
-        if(fleetMem != null) {
-            aimemorydata = fleetMem.listAIMember.get(person.getId());
+        if(fleetMem != null && member != null) {
+            aimemorydata = fleetMem.listAIMember.get(member.getId());
         }
         return aimemorydata;
     }
     /**
-     * Try to find fleet bionic memory data - Checking both player fleet and current dialog fleets.
+     * Find fleet which contains person
      * @return null if can't find dialog fleet.
-     * @param fleets dialog fleet
      */
-    public static ba_fleetmemorydata getFleetBionicMemoryData(@Nullable List<CampaignFleetAPI> fleets, boolean isPlayerFleet) {
-        CampaignFleetAPI f;
-        if(!isPlayerFleet) {
-//            for (CampaignFleetAPI fleet : fleets) {
-//                if(!fleet.isPlayerFleet()) {
-//                    for (FleetMemberAPI member : fleet.getMembersWithFightersCopy()) {
-//                        if (member.isFighterWing()) continue;
-//                        if (!member.getCaptain().isDefault() && !member.getCaptain().isAICore()) {
-//                            if(person.getId().equals(member.getCaptain().getId())) {
-//                                f = fleet;
-//                                break;
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-            //TODO: check for other fleet. mostly person.getfleet() return null or not
-            f = null; //temporary
-        } else {
-            f = Global.getSector().getPlayerFleet();
+    public static CampaignFleetAPI getFleetFromPerson(@NotNull PersonAPI person, @Nullable InteractionDialogAPI dialog, boolean isPlayerFleet) {
+        CampaignFleetAPI f = null;
+        List<CampaignFleetAPI> fleets = getCurrentInteractingFleets(dialog, isPlayerFleet);
+        for(CampaignFleetAPI fleet: fleets) {
+            for(FleetMemberAPI member: fleet.getFleetData().getMembersListCopy()) {
+                if(member.getCaptain().getId().equals(person.getId())) {
+                    f = fleet;
+                    break;
+                }
+            }
         }
-        return getFleetBionicMemoryData(f);
+        return f;
     }
     /**
      * Create new memory data for fleet if can't find mem data

@@ -57,6 +57,7 @@ public class ba_uiplugin extends ba_uicommon {
     HashMap<String, ba_component> tabMap = new HashMap<>();
     String currentTabId = OVERVIEW;
     String currentWorkshopEffectOrInvTab = WORKSHOP_INV;
+    protected List<CampaignFleetAPI> currentFleets = new ArrayList<>();
 //    public static float currentScrollPositionOverview = 0;
     public static ba_uiplugin createDefault() {
         return new ba_uiplugin();
@@ -78,8 +79,10 @@ public class ba_uiplugin extends ba_uicommon {
         super.init(panel, callbacks, dialog);
         if(personList != null) {
             isDisplayingOtherFleets = true;
+            this.currentFleets = ba_officermanager.getCurrentInteractingFleets(dialog, false);
         } else {
             isDisplayingOtherFleets = false;
+            this.currentFleets = ba_officermanager.getCurrentInteractingFleets(null, true);
         }
         ba_officermanager.refresh(personList);
         ba_inventoryhandler.compressAllBionics();
@@ -406,8 +409,7 @@ public class ba_uiplugin extends ba_uicommon {
             float consciousness = this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
             if(this.currentPerson.isAICore()) {
                 //todo: figure out how to get consciousness from fleet from person
-                //problem - can't get fleet member -> no ai memory data
-                ba_officermanager.ba_aimemorydata memdata =  ba_officermanager.getAIMemData(this.currentPerson, null, !isDisplayingOtherFleets);
+                ba_officermanager.ba_aimemorydata memdata =  ba_officermanager.getAIMemData(this.currentPerson, this.dialog, !isDisplayingOtherFleets);
                 if(memdata != null) {
                     consciousness = memdata.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
                 }
