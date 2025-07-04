@@ -949,8 +949,7 @@ public class ba_officermanager {
                 if(!fleet.isPlayerFleet()) {
                     for (FleetMemberAPI member : fleet.getMembersWithFightersCopy()) {
                         if (member.isFighterWing()) continue;
-                        //TODO: REMOVE AI CORE CHECK
-                        if (!member.getCaptain().isDefault() && !member.getCaptain().isAICore()) {
+                        if (!member.getCaptain().isDefault()) {
                             if(person.getId().equals(member.getCaptain().getId())) {
                                 return member;
                             }
@@ -962,7 +961,7 @@ public class ba_officermanager {
             listP.add(Global.getSector().getPlayerPerson());
             if(Global.getSector().getPlayerFleet() != null) {
                 for(FleetMemberAPI member: Global.getSector().getPlayerFleet().getMembersWithFightersCopy()) {
-                    if (!member.getCaptain().isDefault() && !member.getCaptain().isAICore()) {
+                    if (!member.getCaptain().isDefault()) {
                         if(person.getId().equals(member.getCaptain().getId())) {
                             return member;
                         }

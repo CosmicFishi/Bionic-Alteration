@@ -239,8 +239,8 @@ public class ba_uiplugin extends ba_uicommon {
                     //display ship for the officer in player's fleet
                     List<FleetMemberAPI> temp = new ArrayList<>();
                     FleetMemberAPI member = ba_officermanager.getFleetMemberFromFleet(currentPerson, Collections.singletonList(Global.getSector().getPlayerFleet()), true);
-                        if(member != null) {
-                            temp.add(member);
+                    if(member != null) {
+                        temp.add(member);
                     } else {
                         //display the person pfp if idle
                         int imageX = (int) 0;
@@ -408,7 +408,6 @@ public class ba_uiplugin extends ba_uicommon {
             //>Consciousness
             float consciousness = this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
             if(this.currentPerson.isAICore()) {
-                //todo: figure out how to get consciousness from fleet from person
                 ba_officermanager.ba_aimemorydata memdata =  ba_officermanager.getAIMemData(this.currentPerson, this.dialog, !isDisplayingOtherFleets);
                 if(memdata != null) {
                     consciousness = memdata.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
@@ -470,6 +469,8 @@ public class ba_uiplugin extends ba_uicommon {
                     upgradeButton.setEnabled(false);
                 }
             }
+            //todo: implement feature to install bioform into AI ships
+            //todo: change workshop so it can install ^
             //--------Bionic table
             int tableX = (int) (leftColumn);
             int tableY = (int) (row1H + headerH);
