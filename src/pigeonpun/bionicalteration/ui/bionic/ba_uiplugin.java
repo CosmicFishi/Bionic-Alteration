@@ -591,7 +591,7 @@ public class ba_uiplugin extends ba_uicommon {
         float infoRightW = personInfoW - infoLeftW;
 
         int upgradeBtnH = 40;
-        int upgradeBtnW = (int) (infoLeftW - pad);
+        int upgradeBtnW = (int) (infoLeftW);
         int upgradeBtnX = (int) (0 + pad);
         int upgradeBtnY = (int) (0 + pad);
         ButtonAPI upgradeButton = infoPersonTooltipContainer.addButton("Exit", null, Misc.getTextColor(), Misc.getNegativeHighlightColor().darker().darker(), upgradeBtnW, upgradeBtnH, 0);
@@ -645,6 +645,7 @@ public class ba_uiplugin extends ba_uicommon {
         name.getPosition().setSize(nameW, nameH);
         name.setHighlight(this.currentPerson.getName().getFullName());
         name.setHighlightColors(Misc.getBrightPlayerColor());
+        infoPersonTooltipContainer.addSpacer(pad);
         //BRM (Bionic Rights Management)
         int brmH = 30;
         int brmW = (int) infoLeftW;
@@ -662,6 +663,7 @@ public class ba_uiplugin extends ba_uicommon {
             BRM.setHighlight("BRM: ", "" +currentBRM);
             BRM.setHighlightColors(t, h);
         }
+        infoPersonTooltipContainer.addSpacer(pad);
         //>Consciousness
         float consciousness = this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
         int consciousnessY = (int) (brmY + brmH);
@@ -679,12 +681,14 @@ public class ba_uiplugin extends ba_uicommon {
         ButtonAPI consciousAreaChecker = infoPersonTooltipContainer.addAreaCheckbox("", null,Misc.getBasePlayerColor(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), hoverConsciousW, hoverConsciousH, 0);
         addButtonToList(consciousAreaChecker, "hover_bionic_consciousness:"+ consciousness);
         consciousAreaChecker.getPosition().setLocation(0,0).inTL(conditionX - pad/2, conditionY - pad/2);
+        infoPersonTooltipContainer.addSpacer(pad);
         //conscious label
         LabelAPI consciousnessLabel = infoPersonTooltipContainer.addPara(ba_consciousmanager.getDisplayConditionLabel(currentPerson) + ": " + Math.round(consciousness * 100) + "%", 0);
         consciousnessLabel.setHighlight("" + Math.round(consciousness * 100) + "%");
         consciousnessLabel.setHighlightColor(ba_consciousmanager.getConsciousnessColorByLevel(consciousness));
         consciousnessLabel.getPosition().setSize(consciousnessW,consciousnessH);
         consciousnessLabel.getPosition().inTL(consciousnessX, consciousnessY);
+        infoPersonTooltipContainer.addSpacer(pad);
         //>Conditions: tiled with conscious
         LabelAPI conditionLabel = infoPersonTooltipContainer.addPara("Condition: " + condition + "", 0);
         conditionLabel.setHighlight("" + condition);
@@ -707,12 +711,54 @@ public class ba_uiplugin extends ba_uicommon {
                 ba_consciousmanager.displayConsciousEffects(tooltip, currentPerson, expanded);
             }
         }, consciousAreaChecker, TooltipMakerAPI.TooltipLocation.ABOVE);
+        infoPersonTooltipContainer.addSpacer(pad);
         //>professions: tiled with conscious
         LabelAPI professionLabel = infoPersonTooltipContainer.addPara("" + ba_officermanager.getProfessionText(this.currentPerson, isDisplayingOtherFleets) + "", 0);
         professionLabel.setHighlight("" + ba_officermanager.getProfessionText(this.currentPerson, isDisplayingOtherFleets));
         professionLabel.setHighlightColor(Misc.getHighlightColor());
         professionLabel.getPosition().setSize(150,30);
         professionLabel.getPosition().inTL(professionX, professionY);
+        infoPersonTooltipContainer.addSpacer(pad);
+        if(isDisplayingOtherFleets) {
+            //displaying ship for the other fleet
+            List<FleetMemberAPI> temp = new ArrayList<>();
+            InteractionDialogPlugin plugin = dialog.getPlugin();
+            if(plugin instanceof FleetInteractionDialogPluginImpl) {
+                FleetEncounterContext context = (FleetEncounterContext) plugin.getContext();
+                List<CampaignFleetAPI> fleets = context.getBattle().getBothSides();
+                FleetMemberAPI member = ba_officermanager.getFleetMemberFromFleet(currentPerson, fleets, false);
+                if(member != null) {
+                    temp.add(member);
+                }
+                infoPersonTooltipContainer.addShipList(1, 1, infoLeftW, Global.getSettings().getBasePlayerColor(), temp, pad*3);
+            }
+        } else {
+            if(ba_officermanager.isCaptainOrAdmin(currentPerson, false).equals(ba_officermanager.ba_profession.CAPTAIN)) {
+                //display ship for the officer in player's fleet
+                List<FleetMemberAPI> temp = new ArrayList<>();
+                FleetMemberAPI member = ba_officermanager.getFleetMemberFromFleet(currentPerson, Collections.singletonList(Global.getSector().getPlayerFleet()), true);
+                if(member != null) {
+                    temp.add(member);
+                }
+                infoPersonTooltipContainer.addShipList(1, 1, infoLeftW, Global.getSettings().getBasePlayerColor(), temp, pad*3);
+            } else {
+                AdminData selectedAdmin = null;
+                for (AdminData admin: Global.getSector().getCharacterData().getAdmins()) {
+                    if(!admin.getPerson().isDefault() && !admin.getPerson().isAICore()) {
+                        if(admin.getPerson().getId().equals(currentPerson.getId())) {
+                            selectedAdmin = admin;
+                            break;
+                        }
+                    }
+                }
+                if(selectedAdmin != null && selectedAdmin.getMarket() != null) {
+                    //display planet
+                    if(selectedAdmin.getMarket().getPlanetEntity() != null) {
+                        infoPersonTooltipContainer.showPlanetInfo(selectedAdmin.getMarket().getPlanetEntity(), infoLeftW,infoLeftW,true,pad*3);
+                    }
+                }
+            }
+        }
         int btnH = 40;
         //--------upgrade button
         int installBtnH = btnH;
@@ -909,7 +955,7 @@ public class ba_uiplugin extends ba_uicommon {
         int subEffectW = (int) (borderW - pad - pad);
         int subEffectH = (int) (borderH - pad);
         int subEffectX = (int) (pad / 2 + pad);
-        int subEffectY = (int) (pad + pad);
+        int subEffectY = (int) (pad + pad/2);
         String subEffectListTooltipKey = "WORKSHOP_SUB_EFFECT_LIST_TOOLTIP";
         String subEffectListPanelKey = "WORKSHOP_SUB_EFFECT_LIST_PANEL";
         ba_component subEffectListContainer = new ba_component(componentMap, effectListContainer.mainPanel, subEffectW, subEffectH, subEffectX, subEffectY, false, subEffectListPanelKey);
@@ -927,11 +973,25 @@ public class ba_uiplugin extends ba_uicommon {
         int i = 0;
         for(ba_officermanager.ba_bionicAugmentedData bionicAugmentedDatas: currentAnatomyList) {
             if(bionicAugmentedDatas.bionicInstalled != null) {
+                if(this.currentSelectedLimb != null && bionicAugmentedDatas.limb.limbId.equals(this.currentSelectedLimb.limbId) && i!=0) {
+                    UIComponentAPI borderSelected = subEffectListTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
+                    borderSelected.getPosition().setSize(subEffectW, 1);
+                    borderSelected.getPosition().inTL(0,subEffectListTooltipContainer.getHeightSoFar() + pad*2);
+                    subEffectListTooltipContainer.addComponent(borderSelected);
+                    subEffectListTooltipContainer.addSpacer(pad*2);
+                }
                 bionicAugmentedDatas.bionicInstalled.displayEffectDescription(subEffectListTooltipContainer, currentPerson, bionicAugmentedDatas.bionicInstalled, false);
 
                 subEffectListTooltipContainer.addSpacer(spacerY);
                 if(bionicAugmentedDatas.appliedOverclock != null) {
                     bionicAugmentedDatas.appliedOverclock.displayEffectDescription(subEffectListTooltipContainer, currentPerson, bionicAugmentedDatas.bionicInstalled, true);
+                }
+                if(this.currentSelectedLimb != null && bionicAugmentedDatas.limb.limbId.equals(this.currentSelectedLimb.limbId)) {
+                    UIComponentAPI borderSelected = subEffectListTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
+                    borderSelected.getPosition().setSize(subEffectW, 1);
+                    borderSelected.getPosition().inTL(0,subEffectListTooltipContainer.getHeightSoFar() + (bionicAugmentedDatas.appliedOverclock != null? pad:pad/2));
+                    subEffectListTooltipContainer.addComponent(borderSelected);
+                    subEffectListTooltipContainer.addSpacer(pad*2);
                 }
             }
             i++;
