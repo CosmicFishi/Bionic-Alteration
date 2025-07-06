@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import org.lazywizard.lazylib.MathUtils;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
+import pigeonpun.bionicalteration.conscious.ba_consciousmanager;
 import pigeonpun.bionicalteration.faction.ba_factiondata;
 import pigeonpun.bionicalteration.faction.ba_factionmanager;
 import pigeonpun.bionicalteration.inventory.ba_inventoryhandler;
@@ -174,24 +175,41 @@ public class ba_officermanager {
             //set up for AI fleet
             if(!aiMemData.isSetUped && fleetFP > 0) {
                 int maxFPScaling = 600;
-                float spawningPristineShell = 20;
-                float actualChanceOfSpawningPristineShell = (float) ((double) fleetFP / maxFPScaling * spawningPristineShell);
-                float spawningCorruptedShell = 40;
-                float actualLChanceOfSpawningCorruptedShell = (float) ((double) fleetFP / maxFPScaling * spawningCorruptedShell);
-                float spawningNothing = 100 - actualChanceOfSpawningPristineShell - actualLChanceOfSpawningCorruptedShell;
+                float spawningShell = 40;
+                float actualLChanceOfSpawningShell = (float) ((double) fleetFP / maxFPScaling * spawningShell);
+                float spawningNothing = 100 - actualLChanceOfSpawningShell;
                 WeightedRandomPicker<String> randomPicker = new WeightedRandomPicker<>(ba_utils.getRandom());
-                randomPicker.add(ba_variablemanager.BA_SHELL_CORRUPTED_HULLMOD, spawningCorruptedShell);
-                randomPicker.add(ba_variablemanager.BA_SHELL_PRISTINE_HULLMOD, actualChanceOfSpawningPristineShell);
+                randomPicker.add(ba_variablemanager.BA_SYNTHETIC_BODY_HULLMOD, actualLChanceOfSpawningShell);
                 randomPicker.add("", spawningNothing);
                 aiMemData.shell = randomPicker.pick();
+                aiMemData.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).modifyFlat(ba_variablemanager.BA_CONSCIOUSNESS_SOURCE_KEY, setUpConsciousness(aiMemData.dummyAI));
+                aiMemData.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).modifyFlat(ba_variablemanager.BA_BRM_LIMIT_SOURCE_KEY, setUpBRMLimit(person, Integer.MAX_VALUE));
+                aiMemData.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).modifyFlat(ba_variablemanager.BA_BRM_CURRENT_SOURCE_KEY, setUpBRMCurrent(person));
                 if(!Objects.equals(aiMemData.shell, "")) fleetMember.getVariant().addPermaMod(aiMemData.shell);
-
+                //todo: bionic spawning for synthetic body if have the hullmod
             }
-            aiMemData.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).modifyFlat(ba_variablemanager.BA_CONSCIOUSNESS_SOURCE_KEY, setUpConsciousness(aiMemData.dummyAI));
+            setUpSkill(person);
             aiMemData.isSetUped = true;
             fleetMemData.listAIMember.put(fleetMember.getId(), aiMemData);
             fleet.getMemoryWithoutUpdate().set(ba_variablemanager.BA_FLEET_MEMORY_BIONIC_KEY, fleetMemData);
         }
+    }
+    public static List<CampaignFleetAPI> getAllInteractingFleets(@Nullable InteractionDialogAPI dialog) {
+        List<CampaignFleetAPI> fleets = new ArrayList<>();
+        fleets.add(Global.getSector().getPlayerFleet());
+        if(dialog != null) {
+            SectorEntityToken target = dialog.getInteractionTarget();
+            if(target != null) {
+                InteractionDialogPlugin plugin = dialog.getPlugin();
+                if(plugin instanceof FleetInteractionDialogPluginImpl) {
+                    FleetEncounterContext context = (FleetEncounterContext) plugin.getContext();
+                    if(context.getBattle() == null) return fleets;
+                    List<CampaignFleetAPI> f = context.getBattle().getBothSides();
+                    fleets.addAll(f);
+                }
+            }
+        }
+        return fleets;
     }
     public static List<CampaignFleetAPI> getCurrentInteractingFleets(@Nullable InteractionDialogAPI dialog, boolean isPlayerFleet) {
         List<CampaignFleetAPI> fleets = new ArrayList<>();
@@ -218,11 +236,10 @@ public class ba_officermanager {
     /**
      * Get AI bionic data
      * @param person
-     * @param isPlayerFleet
      * @return null if can't find person's fleet
      */
-    public static ba_aimemorydata getAIMemData(@NotNull PersonAPI person, @Nullable InteractionDialogAPI dialog, boolean isPlayerFleet) {
-        CampaignFleetAPI fleet = getFleetFromPerson(person, dialog, isPlayerFleet);
+    public static ba_aimemorydata getAIMemData(@NotNull PersonAPI person, @Nullable InteractionDialogAPI dialog) {
+        CampaignFleetAPI fleet = getFleetFromPerson(person, dialog);
         ba_fleetmemorydata fleetMem = getFleetBionicMemoryData(fleet);
         FleetMemberAPI member = null;
         for(FleetMemberAPI memb: fleet.getFleetData().getMembersListCopy()) {
@@ -240,9 +257,9 @@ public class ba_officermanager {
      * Find fleet which contains person
      * @return null if can't find dialog fleet.
      */
-    public static CampaignFleetAPI getFleetFromPerson(@NotNull PersonAPI person, @Nullable InteractionDialogAPI dialog, boolean isPlayerFleet) {
+    public static CampaignFleetAPI getFleetFromPerson(@NotNull PersonAPI person, @Nullable InteractionDialogAPI dialog) {
         CampaignFleetAPI f = null;
-        List<CampaignFleetAPI> fleets = getCurrentInteractingFleets(dialog, isPlayerFleet);
+        List<CampaignFleetAPI> fleets = getAllInteractingFleets(dialog);
         for(CampaignFleetAPI fleet: fleets) {
             for(FleetMemberAPI member: fleet.getFleetData().getMembersListCopy()) {
                 if(member.getCaptain().getId().equals(person.getId())) {
@@ -309,10 +326,14 @@ public class ba_officermanager {
 //        }
 //    }
     public static void setUpSkill(PersonAPI person) {
+        boolean containSkill = false;
         for (MutableCharacterStatsAPI.SkillLevelAPI skill: person.getStats().getSkillsCopy()) {
-            if (!skill.getSkill().getId().equals(ba_variablemanager.BA_BIONIC_SKILL_ID) && ba_bionicmanager.checkIfHaveBionicInstalled(person)) {
-                person.getStats().setSkillLevel(ba_variablemanager.BA_BIONIC_SKILL_ID, 1);
+            if (!skill.getSkill().getId().equals(ba_variablemanager.BA_BIONIC_SKILL_ID)) {
+                containSkill = true;
             }
+        }
+        if (!containSkill && ba_bionicmanager.checkIfHaveBionicInstalled(person)) {
+            person.getStats().setSkillLevel(ba_variablemanager.BA_BIONIC_SKILL_ID, 1);
         }
     }
 
@@ -416,6 +437,7 @@ public class ba_officermanager {
 //            brmLimit = (int) (person.getStats().getLevel() * bionicalterationplugin.brmUpgradePerTier_ADMIN);
 //        }
         int brmLimit = (int) (bionicalterationplugin.brmUpgradePerTier * tier);
+        if(person.isAICore()) return 9999;
         return brmLimit;
     }
     protected static int setUpBRMCurrent(PersonAPI person) {
@@ -440,6 +462,9 @@ public class ba_officermanager {
                     for (FleetMemberAPI member : fleet.getMembersWithFightersCopy()) {
                         if (member.isFighterWing()) continue;
                         if (!member.getCaptain().isDefault()) {
+                            if(!member.getCaptain().isAICore()) {
+                                listP.add(member.getCaptain());
+                            }
                             if(member.getCaptain().isAICore() && isIncludeAIOfficer) {
                                 listP.add(member.getCaptain());
                             }
@@ -645,7 +670,7 @@ public class ba_officermanager {
         return currentBrm + bionic.brmCost <= limitBrm;
     }
     public static boolean checkIfConsciousnessReduceAboveZeroOnInstall(ba_bionicitemplugin bionic, PersonAPI person) {
-        float conscious = person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
+        float conscious = ba_consciousmanager.getConsciousStat(person);
         return (conscious - bionic.consciousnessCost) >= 0;
     }
 
@@ -661,7 +686,7 @@ public class ba_officermanager {
         return currentBrm < limit * limitBrm;
     }
     public static boolean checkIfCurrentConsciousLowerThanLimit(PersonAPI person, float limit) {
-        float current = person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
+        float current = ba_consciousmanager.getConsciousStat(person);
         return current > limit;
     }
     /**
@@ -1111,7 +1136,7 @@ public class ba_officermanager {
 
         public ba_aimemorydata() {
             super(1);
-            this.shell = ba_variablemanager.BA_SHELL_CORRUPTED_HULLMOD;
+            this.shell = ba_variablemanager.BA_SYNTHETIC_BODY_HULLMOD;
         }
         public ba_aimemorydata(String shell) {
             super(1);

@@ -495,7 +495,7 @@ public class ba_uiplugin extends ba_uicommon {
             BRM.setHighlightColors(t, h);
         }
         //>Consciousness
-        float consciousness = this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
+        float consciousness = ba_consciousmanager.getConsciousStat(this.currentPerson);
         int consciousnessY = (int) (brmY + brmH);
         int consciousnessX = (int) (imageW + pad + pad);
         int consciousnessH = 30;

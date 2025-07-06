@@ -788,18 +788,13 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         TooltipMakerAPI personBRMTooltip = personDisplayContainer.createTooltip("PERSON_BRM", brmW, brmH, false, 0, 0);
         personBRMTooltip.getPosition().inTL(brmX, brmY);
         LabelAPI BRM;
-        if(member.isAICore()) {
-            BRM = personBRMTooltip.addPara("BRM: ---", pad);
-            BRM.setOpacity(0.6f);
-        } else {
-            BRM = personBRMTooltip.addPara("BRM: " + currentBRM + " / " + limitBRM, pad);
-            BRM.setHighlight("BRM: ", "" +currentBRM, "" +limitBRM);
-            BRM.setHighlightColors(t,currentBRM > limitBRM ? bad: h,Misc.getBrightPlayerColor());
-            if(bionicalterationplugin.isBRMCapDisable) {
-                BRM.setText("BRM: " + currentBRM);
-                BRM.setHighlight("BRM: ", "" +currentBRM);
-                BRM.setHighlightColors(t, h);
-            }
+        BRM = personBRMTooltip.addPara("BRM: " + currentBRM + " / " + limitBRM, pad);
+        BRM.setHighlight("BRM: ", "" +currentBRM, "" +limitBRM);
+        BRM.setHighlightColors(t,currentBRM > limitBRM ? bad: h,Misc.getBrightPlayerColor());
+        if(bionicalterationplugin.isBRMCapDisable) {
+            BRM.setText("BRM: " + currentBRM);
+            BRM.setHighlight("BRM: ", "" +currentBRM);
+            BRM.setHighlightColors(t, h);
         }
         //Level
         int levelH = brmH;

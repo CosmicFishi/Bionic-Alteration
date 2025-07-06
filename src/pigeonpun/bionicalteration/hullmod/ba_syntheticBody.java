@@ -9,9 +9,18 @@ import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.combat.ShipVariantAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
+import pigeonpun.bionicalteration.ba_variablemanager;
 
-public class ba_pristineSyntheticBody extends BaseHullMod {
+import java.awt.*;
+
+public class ba_syntheticBody extends BaseHullMod {
     public static final float tooltipWitdth = 600f;
+
+    @Override
+    public Color getNameColor() {
+        return ba_variablemanager.BA_OVERFORM_COLOR;
+    }
+
     @Override
     public float getTooltipWidth() {
         return tooltipWitdth;

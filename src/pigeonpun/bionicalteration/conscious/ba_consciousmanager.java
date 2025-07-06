@@ -11,6 +11,7 @@ import com.fs.starfarer.api.ui.LabelAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
+import pigeonpun.bionicalteration.ba_officermanager;
 import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import pigeonpun.bionicalteration.bionic.ba_bionicmanager;
@@ -33,12 +34,19 @@ public class ba_consciousmanager {
         consciousMap.put(ba_variablemanager.ba_consciousnessLevel.FRAGILE, new ba_conscious_fragile());
         consciousMap.put(ba_variablemanager.ba_consciousnessLevel.CRITICAL, new ba_conscious_critical());
     }
+    public static float getConsciousStat(PersonAPI person) {
+        float conscious = 1;
+        if(person.isAICore()) {
+            ba_officermanager.ba_aimemorydata memdata =  ba_officermanager.getAIMemData(person,Global.getSector().getCampaignUI().getCurrentInteractionDialog());
+            if(memdata != null) {
+                conscious = memdata.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
+            }
+        }
+        return conscious;
+    }
     public static ba_conscious getConsciousnessLevel(PersonAPI person) {
         //In case of player assigning to a AI ship and switched back to AI core as captain.
-        if(person.isAICore()) {
-            return consciousMap.get(ba_variablemanager.ba_consciousnessLevel.STABLE);
-        }
-        float conscious = person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
+        float conscious = getConsciousStat(person);
         return getConsciousnessLevel(conscious);
     }
     /**
@@ -100,7 +108,7 @@ public class ba_consciousmanager {
     }
     public static void displayConsciousEffects(TooltipMakerAPI tooltip, PersonAPI person, boolean isSimpleMode) {
         final float pad = 10f;
-        float consciousnessLevel = person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
+        float consciousnessLevel = getConsciousStat(person);
         ba_conscious conscious = getConsciousnessLevel(consciousnessLevel);
         List<ba_conscious> orderedList = new ArrayList<>();
         for(ba_variablemanager.ba_consciousnessLevel level: consciousMap.keySet()) {

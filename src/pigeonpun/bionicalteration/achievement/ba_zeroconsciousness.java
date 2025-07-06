@@ -23,7 +23,7 @@ public class ba_zeroconsciousness extends MagicAchievement {
         if(!isComplete()) {
             List<PersonAPI> listP = ba_officermanager.getListOfficerFromFleet(null, true, true);
             for(PersonAPI person: listP) {
-                if(person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f) <= 0f) {
+                if(ba_consciousmanager.getConsciousStat(person) <= 0f) {
                     completeAchievement();
                     break;
                 }

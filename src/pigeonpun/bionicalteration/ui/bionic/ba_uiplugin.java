@@ -396,8 +396,8 @@ public class ba_uiplugin extends ba_uicommon {
             //>BRM limit
             int limitBRMY = (int) (occupationY + occupationLabel.getPosition().getHeight() + statsSpacer);
             int limitBRM = (int) this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);
-            LabelAPI limitBRMLabel = personStatsTooltip.addPara(String.valueOf("BRM Limit: " + (this.currentPerson.isAICore()? "---" :limitBRM)), 0, Misc.getBrightPlayerColor(), "" + (this.currentPerson.isAICore()? "---" :limitBRM));
-            limitBRMLabel.setHighlightColors(this.currentPerson.isAICore()? Misc.getGrayColor() : Misc.getBrightPlayerColor());
+            LabelAPI limitBRMLabel = personStatsTooltip.addPara(String.valueOf("BRM Limit: " + (limitBRM)), 0, Misc.getBrightPlayerColor(), "" + (limitBRM));
+            limitBRMLabel.setHighlightColors(Misc.getBrightPlayerColor());
             limitBRMLabel.getPosition().setSize(150,20);
             limitBRMLabel.getPosition().inTL(0, limitBRMY);
             if(bionicalterationplugin.isBRMCapDisable) {
@@ -407,18 +407,12 @@ public class ba_uiplugin extends ba_uicommon {
             int currentBRM = (int) this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
             int currentBRMY = (int) limitBRMY;
             int currentBRMX = (int) (limitBRMLabel.getPosition().getWidth());
-            LabelAPI currentBRMLabel = personStatsTooltip.addPara(String.valueOf("BRM Using: " + (this.currentPerson.isAICore()? "---" :currentBRM)), 0, currentBRM > limitBRM ? bad: Misc.getHighlightColor(), "" + (this.currentPerson.isAICore()? "---" :currentBRM));
-            currentBRMLabel.setHighlightColors(this.currentPerson.isAICore()? Misc.getGrayColor() : currentBRM > limitBRM ? bad: Misc.getHighlightColor());
+            LabelAPI currentBRMLabel = personStatsTooltip.addPara(String.valueOf("BRM Using: " + currentBRM), 0, currentBRM > limitBRM ? bad: Misc.getHighlightColor(), "" +currentBRM);
+            currentBRMLabel.setHighlightColors(currentBRM > limitBRM ? bad: Misc.getHighlightColor());
             currentBRMLabel.getPosition().setSize(150,20);
             currentBRMLabel.getPosition().inTL(currentBRMX, currentBRMY);
             //>Consciousness
-            float consciousness = this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
-            if(this.currentPerson.isAICore()) {
-                ba_officermanager.ba_aimemorydata memdata =  ba_officermanager.getAIMemData(this.currentPerson, this.dialog, !isDisplayingOtherFleets);
-                if(memdata != null) {
-                    consciousness = memdata.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
-                }
-            }
+            float consciousness = ba_consciousmanager.getConsciousStat(this.currentPerson);
             int consciousnessY = (int) (limitBRMY + statsSpacer + limitBRMLabel.getPosition().getHeight());
             int consciousnessX = (int) (0);
             int consciousnessW = 150;
@@ -613,7 +607,6 @@ public class ba_uiplugin extends ba_uicommon {
             int bioformBtnW = (int) (infoLeftW);
             int bioformBtnX = (int) (0 + pad);
             int bioformBtnY = (int) (personInfoH - bioformBtnH);
-            //todo: find a color for bioform
             ButtonAPI bioformButton = infoPersonTooltipContainer.addButton("Bioform", null, Misc.getTextColor(), ba_variablemanager.BA_OVERFORM_COLOR.darker(), Alignment.MID, CutStyle.TOP,  bioformBtnW, bioformBtnH, 0);
             bioformButton.getPosition().inTL(bioformBtnX,bioformBtnY);
             bioformButton.setShortcut(Keyboard.KEY_B, true);
@@ -687,7 +680,7 @@ public class ba_uiplugin extends ba_uicommon {
         }
         infoPersonTooltipContainer.addSpacer(pad);
         //>Consciousness
-        float consciousness = this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
+        float consciousness = ba_consciousmanager.getConsciousStat(this.currentPerson);
         int consciousnessY = (int) (brmY + brmH);
         int consciousnessX = (int) (0 + pad);
         int consciousnessH = 30;
@@ -986,7 +979,7 @@ public class ba_uiplugin extends ba_uicommon {
 
         int spacerY = 5;
 //        //consciousness effect
-//        float consciousness = this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).computeEffective(0f);
+//        float consciousness = ba_consciousnessmanager.getConsciousStat(this.currentPerson);
 //        ba_conscious consciousLevel = ba_consciousmanager.getConsciousnessLevel(consciousness);
 //        ba_consciousmanager.displayConsciousEffects(subEffectListTooltipContainer, currentPerson, true);
 //        subEffectListTooltipContainer.addSpacer(spacerY);
