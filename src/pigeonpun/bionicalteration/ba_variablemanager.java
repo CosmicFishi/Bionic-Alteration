@@ -71,6 +71,7 @@ public class ba_variablemanager {
     public static final String BA_MARKET_BIONIC_MEMORY_KEY = "$ba_market_bionic_effect_applied";
     public static final String BA_MARKET_ADMIN_SET_UP = "$ba_market_admin_set_up";
     public static final Color BA_OVERCLOCK_COLOR = new Color(255, 149, 0);
+    public static final Color BA_OVERFORM_COLOR = new Color(106, 73, 163);
     public static final String BA_OVERCLOCK_STATION = "ba_station_overclock";
     public static final String BA_BIONIC_RESEARCH_STATION_SPAWNED_KEY = "$ba_bionic_research_station_spawned";
     public static final String BA_OVERCLOCK_ITEM = "ba_evoshard";

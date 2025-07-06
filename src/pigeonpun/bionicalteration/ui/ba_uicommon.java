@@ -595,6 +595,29 @@ public class ba_uicommon implements CustomUIPanelPlugin {
             }
             i++;
         }
+        if(i==0) { //empty || have no synthetic body || something went horribly wrong
+            //table header
+            String tableEmptyTooltipContainerKey = "BIONIC_TABLE_EMPTY_TOOLTIP";
+            String tableEmptyPanelContainerKey = keyPreset + "BIONIC_TABLE_EMPTY_PANEL";
+            int tableEmptyH = 240;
+            int tableEmptyW = (int) (tableW - pad);
+            //--------bionic container
+            ba_component tableEmptyDisplayContainer = new ba_component(componentMap, infoPersonBionicContainer.mainPanel, tableEmptyW, tableEmptyH,0,0,false, tableEmptyPanelContainerKey);
+            TooltipMakerAPI tableEmptyDisplayContainerTooltip = tableEmptyDisplayContainer.createTooltip(tableEmptyTooltipContainerKey, tableEmptyW, tableEmptyH, false, 0,0);
+            tableEmptyDisplayContainerTooltip.setForceProcessInput(true);
+            //attach to have the main tooltip scroll effect this component's panel
+            infoPersonBionicContainer.attachSubPanel(infoPersonBionicTooltipKey, infoPersonBionicPanelKey, tableEmptyDisplayContainer);
+
+            UIComponentAPI borderEmpty = tableEmptyDisplayContainerTooltip.createRect(Misc.getDarkPlayerColor().darker().darker(), 1);
+            borderEmpty.getPosition().setSize(tableEmptyW, tableEmptyH);
+            borderEmpty.getPosition().inTL(0,0);
+            tableEmptyDisplayContainerTooltip.addComponent(borderEmpty);
+            //>Limb
+            LabelAPI emptyHeader = tableEmptyDisplayContainerTooltip.addPara("No Augmentation Information found", 0, Misc.getDarkPlayerColor(), "No Augmentation Information found");
+            emptyHeader.getPosition().setSize(tableEmptyW, tableEmptyH);
+            emptyHeader.getPosition().inTL(pad + 5, 0);
+            emptyHeader.setAlignment(Alignment.MID);
+        }
         infoPersonBionicContainer.subComponentListMap.put("SUB_BIONIC_LIST", subComponentBionicList);
         if(isScroll) {
             infoPersonBionicContainer.mainPanel.addUIElement(infoPersonBionicTooltipContainer);

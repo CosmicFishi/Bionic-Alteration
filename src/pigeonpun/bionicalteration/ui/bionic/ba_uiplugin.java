@@ -47,7 +47,7 @@ public class ba_uiplugin extends ba_uicommon {
     public static final float MAIN_CONTAINER_PADDING_Y = ba_uicommon.getInitDialogContainerPaddingY();
     public static final float MAIN_CONTAINER_WIDTH = ba_uicommon.getInitDialogContainerWidth();
     public static final float MAIN_CONTAINER_HEIGHT = ba_uicommon.getInitDialogContainerHeight();
-    public static final String OVERVIEW = "OVERVIEW", WORKSHOP = "WORKSHOP", SHELL = "SHELL";
+    public static final String OVERVIEW = "OVERVIEW", WORKSHOP = "WORKSHOP", BIOFORM = "BIOFORM";
     public static final String WORKSHOP_EFFECT = "WORKSHOP_EFFECT", WORKSHOP_INV = "WORKSHOP_INV";
     public final String INSTALL_WORKSHOP="INSTALL", EDIT_WORKSHOP="EDIT";
     public String currentWorkShopMode = INSTALL_WORKSHOP; //determine what mode workshop is in
@@ -143,6 +143,12 @@ public class ba_uiplugin extends ba_uicommon {
             }
         }
         refresh();
+    }
+    public boolean checkIfCanOpenBioformWorkshop() {
+        if(this.dialog.getInteractionTarget() != null && this.dialog.getInteractionTarget().hasTag(ba_variablemanager.BA_OVERCLOCK_STATION)) {
+            return this.dialog.getInteractionTarget().getMemoryWithoutUpdate().contains("$upgraded_bioform") && this.dialog.getInteractionTarget().getMemoryWithoutUpdate().getBoolean("$upgraded_bioform");
+        }
+        return false;
     }
     protected void displayOverview() {
 
@@ -594,12 +600,28 @@ public class ba_uiplugin extends ba_uicommon {
         int upgradeBtnW = (int) (infoLeftW);
         int upgradeBtnX = (int) (0 + pad);
         int upgradeBtnY = (int) (0 + pad);
-        ButtonAPI upgradeButton = infoPersonTooltipContainer.addButton("Exit", null, Misc.getTextColor(), Misc.getNegativeHighlightColor().darker().darker(), upgradeBtnW, upgradeBtnH, 0);
+        ButtonAPI upgradeButton = infoPersonTooltipContainer.addButton("Exit", null, Misc.getTextColor(), Misc.getNegativeHighlightColor().darker().darker(), Alignment.MID, CutStyle.BOTTOM, upgradeBtnW, upgradeBtnH, 0);
         upgradeButton.getPosition().inTL(upgradeBtnX,upgradeBtnY);
         upgradeButton.setShortcut(Keyboard.KEY_E, true);
         addButtonToList(upgradeButton, "tab:" + OVERVIEW);
         if(this.currentTabId.equals(OVERVIEW)) {
             upgradeButton.setEnabled(false);
+        }
+        //todo: AI for now, soon will be "fleshform" for person
+        if(this.currentPerson.isAICore()) {
+            int bioformBtnH = 40;
+            int bioformBtnW = (int) (infoLeftW);
+            int bioformBtnX = (int) (0 + pad);
+            int bioformBtnY = (int) (personInfoH - bioformBtnH);
+            //todo: find a color for bioform
+            ButtonAPI bioformButton = infoPersonTooltipContainer.addButton("Bioform", null, Misc.getTextColor(), ba_variablemanager.BA_OVERFORM_COLOR.darker(), Alignment.MID, CutStyle.TOP,  bioformBtnW, bioformBtnH, 0);
+            bioformButton.getPosition().inTL(bioformBtnX,bioformBtnY);
+            bioformButton.setShortcut(Keyboard.KEY_B, true);
+            addButtonToList(bioformButton, "tab:" + BIOFORM);
+            bioformButton.setEnabled(false);
+            if(this.currentTabId.equals(WORKSHOP) && checkIfCanOpenBioformWorkshop()) {
+                bioformButton.setEnabled(true);
+            }
         }
 
         //--------image
