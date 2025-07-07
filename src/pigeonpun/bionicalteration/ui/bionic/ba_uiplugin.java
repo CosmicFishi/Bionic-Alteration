@@ -47,9 +47,9 @@ public class ba_uiplugin extends ba_uicommon {
     public static final float MAIN_CONTAINER_PADDING_Y = ba_uicommon.getInitDialogContainerPaddingY();
     public static final float MAIN_CONTAINER_WIDTH = ba_uicommon.getInitDialogContainerWidth();
     public static final float MAIN_CONTAINER_HEIGHT = ba_uicommon.getInitDialogContainerHeight();
-    public static final String OVERVIEW = "OVERVIEW", WORKSHOP = "WORKSHOP", BIOFORM = "BIOFORM";
+    public static final String OVERVIEW = "OVERVIEW", WORKSHOP = "WORKSHOP";
     public static final String WORKSHOP_EFFECT = "WORKSHOP_EFFECT", WORKSHOP_INV = "WORKSHOP_INV";
-    public final String INSTALL_WORKSHOP="INSTALL", EDIT_WORKSHOP="EDIT";
+    public static final String INSTALL_WORKSHOP="INSTALL", EDIT_WORKSHOP="EDIT", BIOFORM_WORKSHOP = "BIOFORM";
     public String currentWorkShopMode = INSTALL_WORKSHOP; //determine what mode workshop is in
 //    public ba_limbmanager.ba_limb currentHoveringLimb = null; //To highlight which effect on the effect list,
     // sadly not possible with how the bionic table currently implemented.
@@ -66,6 +66,11 @@ public class ba_uiplugin extends ba_uicommon {
     public void init(CustomPanelAPI panel, CustomVisualDialogDelegate.DialogCallbacks callbacks, InteractionDialogAPI dialog) {
         super.init(panel, callbacks, dialog);
         init(panel, callbacks, dialog, "", null);
+    }
+    public void init(CustomPanelAPI panel, CustomVisualDialogDelegate.DialogCallbacks callbacks, InteractionDialogAPI dialog, String workshopMode) {
+        super.init(panel, callbacks, dialog);
+        init(panel, callbacks, dialog, WORKSHOP, null);
+        this.currentWorkShopMode = workshopMode;
     }
 
     /**
@@ -97,6 +102,7 @@ public class ba_uiplugin extends ba_uicommon {
         initialUICreation();
         //change the current tab id and "focus" on it
         focusContent(moveToTabId);
+        refresh();
         currentScrollPositionPersonList = 0;
         currentScrollPositionBionicTable = 0;
         currentScrollPositionInventory = 0;
@@ -145,7 +151,7 @@ public class ba_uiplugin extends ba_uicommon {
         refresh();
     }
     public boolean checkIfCanOpenBioformWorkshop() {
-        if(this.dialog.getInteractionTarget() != null && this.dialog.getInteractionTarget().hasTag(ba_variablemanager.BA_OVERCLOCK_STATION)) {
+        if(this.dialog.getInteractionTarget() != null && this.dialog.getInteractionTarget().hasTag(ba_variablemanager.BA_OVERCLOCK_STATION_ENTITY_TAG)) {
             return this.dialog.getInteractionTarget().getMemoryWithoutUpdate().contains("$upgraded_bioform") && this.dialog.getInteractionTarget().getMemoryWithoutUpdate().getBoolean("$upgraded_bioform");
         }
         return false;
@@ -464,9 +470,29 @@ public class ba_uiplugin extends ba_uicommon {
                 personUpgradeTooltip.getPosition().inTL(upgradeX,upgradeY);
                 ButtonAPI upgradeButton = personUpgradeTooltip.addButton("Workshop", null, Misc.getTextColor(), Misc.getPositiveHighlightColor().darker().darker(), Alignment.MID, CutStyle.TOP, upgradeBtnW, upgradeBtnH, 0);
                 addButtonToList(upgradeButton, "tab:" + WORKSHOP);
-                upgradeButton.setShortcut(Keyboard.KEY_W, true);
+                if(this.currentTabId.equals(OVERVIEW)) {
+                    upgradeButton.setShortcut(Keyboard.KEY_W, true);
+                }
                 if(this.currentTabId.equals(WORKSHOP)) {
                     upgradeButton.setEnabled(false);
+                }
+                if(this.currentPerson.isAICore() && checkIfCanOpenBioformWorkshop()) {
+                    //Button switch page bioform
+                    float bioformBtnH = 20 + statsSpacer + 20;
+                    float bioformBtnW = 200;
+                    int bioformX = (int) (upgradeX);
+                    int bioformY = (int) (pad * 2 + pad/2);
+                    TooltipMakerAPI personbioformTooltip = infoPersonContainer.createTooltip("PERSON_INFO_BIOFORM", statsW, statsH, false, 0, 0);
+                    personbioformTooltip.getPosition().setLocation(0,0);
+                    personbioformTooltip.getPosition().inTL(bioformX,bioformY);
+                    ButtonAPI bioformButton = personbioformTooltip.addButton("Bioform", null, Misc.getTextColor(), ba_variablemanager.BA_OVERFORM_COLOR.darker(), Alignment.MID, CutStyle.BOTTOM, bioformBtnW, bioformBtnH, 0);
+                    addButtonToList(bioformButton, "tab:" + WORKSHOP + ":"+BIOFORM_WORKSHOP);
+                    if(this.currentTabId.equals(OVERVIEW)) {
+                        bioformButton.setShortcut(Keyboard.KEY_B, true);
+                    }
+                    if(this.currentTabId.equals(WORKSHOP)) {
+                        bioformButton.setEnabled(false);
+                    }
                 }
             }
             //todo: implement feature to install bioform into AI ships
@@ -543,7 +569,9 @@ public class ba_uiplugin extends ba_uicommon {
         ButtonAPI invButton = btnTooltipContainer.addButton("Inventory", null, Misc.getTextColor(), this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_INV)?Misc.getDarkPlayerColor():Misc.getDarkPlayerColor().darker().darker(), Alignment.MID, CutStyle.TOP, invEffectBtnW, invEffectBtnH, 0);
         addButtonToList(invButton, "workshop_tab:" + WORKSHOP_INV);
         invButton.getPosition().inTL(invBtnX, invBtnY);
-        invButton.setShortcut(Keyboard.KEY_1, true);
+        if(this.currentTabId.equals(WORKSHOP)) {
+            invButton.setShortcut(Keyboard.KEY_1, true);
+        }
         invButton.setButtonDisabledPressedSound("ui_button_pressed");
         invButton.setPerformActionWhenDisabled(true);
         if(this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_INV)) {
@@ -554,7 +582,9 @@ public class ba_uiplugin extends ba_uicommon {
         ButtonAPI effectButton = btnTooltipContainer.addButton("Effect", null, Misc.getTextColor(), this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_EFFECT)?Misc.getDarkPlayerColor():Misc.getDarkPlayerColor().darker().darker(), Alignment.MID, CutStyle.TOP, invEffectBtnW, invEffectBtnH, 0);
         addButtonToList(effectButton, "workshop_tab:" + WORKSHOP_EFFECT);
         effectButton.getPosition().inTL(effectBtnX, effectBtnY);
-        effectButton.setShortcut(Keyboard.KEY_2, true);
+        if(this.currentTabId.equals(WORKSHOP)) {
+            effectButton.setShortcut(Keyboard.KEY_2, true);
+        }
         effectButton.setButtonDisabledPressedSound("ui_button_pressed");
         effectButton.setPerformActionWhenDisabled(true);
         if(this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_EFFECT)) {
@@ -596,25 +626,44 @@ public class ba_uiplugin extends ba_uicommon {
         int upgradeBtnY = (int) (0 + pad);
         ButtonAPI upgradeButton = infoPersonTooltipContainer.addButton("Exit", null, Misc.getTextColor(), Misc.getNegativeHighlightColor().darker().darker(), Alignment.MID, CutStyle.BOTTOM, upgradeBtnW, upgradeBtnH, 0);
         upgradeButton.getPosition().inTL(upgradeBtnX,upgradeBtnY);
-        upgradeButton.setShortcut(Keyboard.KEY_E, true);
+        if(this.currentTabId.equals(WORKSHOP)) {
+            upgradeButton.setShortcut(Keyboard.KEY_E, true);
+        }
         addButtonToList(upgradeButton, "tab:" + OVERVIEW);
         if(this.currentTabId.equals(OVERVIEW)) {
             upgradeButton.setEnabled(false);
         }
         //todo: AI for now, soon will be "fleshform" for person
         if(this.currentPerson.isAICore()) {
-            int bioformBtnH = 40;
-            int bioformBtnW = (int) (infoLeftW);
-            int bioformBtnX = (int) (0 + pad);
-            int bioformBtnY = (int) (personInfoH - bioformBtnH);
-            ButtonAPI bioformButton = infoPersonTooltipContainer.addButton("Bioform", null, Misc.getTextColor(), ba_variablemanager.BA_OVERFORM_COLOR.darker(), Alignment.MID, CutStyle.TOP,  bioformBtnW, bioformBtnH, 0);
-            bioformButton.getPosition().inTL(bioformBtnX,bioformBtnY);
-            bioformButton.setShortcut(Keyboard.KEY_B, true);
-            addButtonToList(bioformButton, "tab:" + BIOFORM);
-            bioformButton.setEnabled(false);
-            if(this.currentTabId.equals(WORKSHOP) && checkIfCanOpenBioformWorkshop()) {
-                bioformButton.setEnabled(true);
+            if(this.currentWorkShopMode.equals(INSTALL_WORKSHOP) || this.currentWorkShopMode.equals(EDIT_WORKSHOP)) {
+                int bioformBtnH = 40;
+                int bioformBtnW = (int) (infoLeftW);
+                int bioformBtnX = (int) (0 + pad);
+                int bioformBtnY = (int) (personInfoH - bioformBtnH);
+                ButtonAPI bioformButton = infoPersonTooltipContainer.addButton("Bioform", null, Misc.getTextColor(), ba_variablemanager.BA_OVERFORM_COLOR.darker(), Alignment.MID, CutStyle.TOP,  bioformBtnW, bioformBtnH, 0);
+                bioformButton.getPosition().inTL(bioformBtnX,bioformBtnY);
+                if(this.currentTabId.equals(WORKSHOP)) {
+                    bioformButton.setShortcut(Keyboard.KEY_B, true);
+                }
+                addButtonToList(bioformButton, "bionic:" + BIOFORM_WORKSHOP);
+                bioformButton.setEnabled(false);
+                if(this.currentTabId.equals(WORKSHOP) && checkIfCanOpenBioformWorkshop()) {
+                    bioformButton.setEnabled(true);
+                }
             }
+            if(this.currentWorkShopMode.equals(BIOFORM_WORKSHOP)) {
+                int bioformBtnH = 40;
+                int bioformBtnW = (int) (infoLeftW);
+                int bioformBtnX = (int) (0 + pad);
+                int bioformBtnY = (int) (personInfoH - bioformBtnH);
+                ButtonAPI bioformButton = infoPersonTooltipContainer.addButton("Bionics", null, Misc.getTextColor(), Misc.getPositiveHighlightColor().darker().darker(), Alignment.MID, CutStyle.TOP,  bioformBtnW, bioformBtnH, 0);
+                bioformButton.getPosition().inTL(bioformBtnX,bioformBtnY);
+                if(this.currentTabId.equals(WORKSHOP)) {
+                    bioformButton.setShortcut(Keyboard.KEY_W, true);
+                }
+                addButtonToList(bioformButton, "bionic:workshop");
+            }
+
         }
 
         //--------image
@@ -864,9 +913,11 @@ public class ba_uiplugin extends ba_uicommon {
         int removeBtnY = (int) (installBtnY);
         ButtonAPI removeButton = infoPersonTooltipContainer.addButton(this.currentWorkShopMode.equals(this.INSTALL_WORKSHOP) ?"Removal": "Exit Removal", null, t, Color.yellow.darker().darker(), removeBtnW, removeBtnH, 0);
         removeButton.getPosition().inTL(removeBtnX,removeBtnY);
-        removeButton.setShortcut(Keyboard.KEY_R, true);
+        if(this.currentTabId.equals(WORKSHOP)) {
+            removeButton.setShortcut(Keyboard.KEY_R, true);
+        }
         removeButton.setEnabled(this.currentTabId.equals(WORKSHOP));
-        addButtonToList(removeButton, "bionic:edit");
+        addButtonToList(removeButton, "bionic:" + EDIT_WORKSHOP);
 //        removeButton.setEnabled(false);
 //        if(this.currentSelectedLimb != null && ba_officermanager.checkIfCanEditLimb(this.currentSelectedLimb, this.currentPerson)) {
 //            List<ba_bionicitemplugin> availableRemovingBionics = ba_bionicmanager.getListBionicInstalledOnLimb(this.currentSelectedLimb, this.currentPerson);
@@ -1190,6 +1241,11 @@ public class ba_uiplugin extends ba_uicommon {
         this.currentSelectedBionic = null;
         this.currentRemovingBionic = null;
     }
+
+    /**
+     * NOTE: For future me, DONT EVER ADD IN REFRESH METHOD HERE. It will cause max call stack error. Refresh() should be handle seperately
+     * @param focusTabId
+     */
     protected void focusContent(String focusTabId) {
         if(focusTabId == "") {
             //go to default if empty
@@ -1301,6 +1357,10 @@ public class ba_uiplugin extends ba_uicommon {
                     }
                     if(tokens[1].equals(WORKSHOP)) {
                         focusContent(WORKSHOP);
+                        this.currentWorkShopMode = INSTALL_WORKSHOP;
+                        if(tokens.length > 2 && tokens[2] != null) {
+                            this.currentWorkShopMode = tokens[2];
+                        }
                         needsReset = true;
                         break;
                     }
@@ -1325,13 +1385,29 @@ public class ba_uiplugin extends ba_uicommon {
                         needsReset = true;
                         break;
                     }
-                    if(tokens[1].equals("edit")) {
+                    if(tokens[1].equals(EDIT_WORKSHOP)) {
                         if(this.currentWorkShopMode.equals(this.EDIT_WORKSHOP)) {
                             this.currentWorkShopMode = this.INSTALL_WORKSHOP;
                             this.currentSelectedLimb = null;
                         } else if(this.currentWorkShopMode.equals(this.INSTALL_WORKSHOP)) {
                             this.currentWorkShopMode = this.EDIT_WORKSHOP;
                         }
+                        this.currentSelectedBionic = null;
+                        this.currentRemovingBionic = null;
+                        needsReset = true;
+                        break;
+                    }
+                    if(tokens[1].equals("workshop")) {
+                        this.currentWorkShopMode = this.INSTALL_WORKSHOP;
+                        this.currentSelectedLimb = null;
+                        this.currentSelectedBionic = null;
+                        this.currentRemovingBionic = null;
+                        needsReset = true;
+                        break;
+                    }
+                    if(tokens[1].equals(BIOFORM_WORKSHOP)) {
+                        this.currentWorkShopMode = this.BIOFORM_WORKSHOP;
+                        this.currentSelectedLimb = null;
                         this.currentSelectedBionic = null;
                         this.currentRemovingBionic = null;
                         needsReset = true;
@@ -1437,7 +1513,7 @@ public class ba_uiplugin extends ba_uicommon {
             if (this.dialog != null && event.isKeyDownEvent() && event.getEventValue() == Keyboard.KEY_ESCAPE) {
                 event.consume();
                 callbacks.dismissDialog();
-                if(!isDisplayingOtherFleets && (dialog.getInteractionTarget() == null || (dialog.getInteractionTarget() != null && !dialog.getInteractionTarget().getTags().contains("ba_overclock_station")))) {
+                if(!isDisplayingOtherFleets && (dialog.getInteractionTarget() == null || (dialog.getInteractionTarget() != null && !dialog.getInteractionTarget().getTags().contains(ba_variablemanager.BA_OVERCLOCK_STATION_ENTITY_TAG)))) {
                     dialog.dismiss();
                 }
                 return;

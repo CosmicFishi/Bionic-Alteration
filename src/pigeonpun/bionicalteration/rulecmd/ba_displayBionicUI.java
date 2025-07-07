@@ -10,6 +10,7 @@ import com.fs.starfarer.api.impl.campaign.RuleBasedInteractionDialogPluginImpl;
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin;
 import com.fs.starfarer.api.util.Misc;
 import pigeonpun.bionicalteration.ba_officermanager;
+import pigeonpun.bionicalteration.ba_variablemanager;
 import pigeonpun.bionicalteration.ui.bionic.ba_delegate;
 import pigeonpun.bionicalteration.ui.bionic.ba_uiplugin;
 
@@ -86,7 +87,7 @@ public class ba_displayBionicUI extends BaseCommandPlugin {
     }
     public void station() {
         if (this.dialog.getPlugin() instanceof RuleBasedInteractionDialogPluginImpl) {
-            if(entity.getTags().contains("ba_overclock_station")) {
+            if(entity.getTags().contains(ba_variablemanager.BA_OVERCLOCK_STATION_ENTITY_TAG)) {
                 dialog.showCustomVisualDialog(ba_uiplugin.MAIN_CONTAINER_WIDTH,
                         ba_uiplugin.MAIN_CONTAINER_HEIGHT,
                         new ba_delegate(ba_uiplugin.createDefault(), dialog, null)

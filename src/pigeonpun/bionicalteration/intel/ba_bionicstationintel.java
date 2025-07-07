@@ -70,7 +70,7 @@ public class ba_bionicstationintel extends BaseIntelPlugin {
     @Override
     public Set<String> getIntelTags(SectorMapAPI map) {
         Set<String> tags = super.getIntelTags(map);
-        tags.add(ba_variablemanager.BA_OVERCLOCK_STATION_TAG_NAME);
+        tags.add(ba_variablemanager.BA_OVERCLOCK_STATION_INTEL_TAG_NAME);
         return tags;
     }
 

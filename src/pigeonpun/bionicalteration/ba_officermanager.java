@@ -173,19 +173,21 @@ public class ba_officermanager {
             }
             //todo: transfer aiMemdata when salvaging other fleet - encountered a problem related to ship recovery
             //set up for AI fleet
-            if(!aiMemData.isSetUped && fleetFP > 0) {
-                int maxFPScaling = 600;
-                float spawningShell = 40;
-                float actualLChanceOfSpawningShell = (float) ((double) fleetFP / maxFPScaling * spawningShell);
-                float spawningNothing = 100 - actualLChanceOfSpawningShell;
-                WeightedRandomPicker<String> randomPicker = new WeightedRandomPicker<>(ba_utils.getRandom());
-                randomPicker.add(ba_variablemanager.BA_SYNTHETIC_BODY_HULLMOD, actualLChanceOfSpawningShell);
-                randomPicker.add("", spawningNothing);
-                aiMemData.shell = randomPicker.pick();
+            if(!aiMemData.isSetUped) {
+                if(fleetFP > 0) {
+                    int maxFPScaling = 600;
+                    float spawningShell = 40;
+                    float actualLChanceOfSpawningShell = (float) ((double) fleetFP / maxFPScaling * spawningShell);
+                    float spawningNothing = 100 - actualLChanceOfSpawningShell;
+                    WeightedRandomPicker<String> randomPicker = new WeightedRandomPicker<>(ba_utils.getRandom());
+                    randomPicker.add(ba_variablemanager.BA_SYNTHETIC_BODY_HULLMOD, actualLChanceOfSpawningShell);
+                    randomPicker.add("", spawningNothing);
+                    aiMemData.shell = randomPicker.pick();
+                    if(!Objects.equals(aiMemData.shell, "")) fleetMember.getVariant().addPermaMod(aiMemData.shell);
+                }
                 aiMemData.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).modifyFlat(ba_variablemanager.BA_CONSCIOUSNESS_SOURCE_KEY, setUpConsciousness(aiMemData.dummyAI));
                 aiMemData.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).modifyFlat(ba_variablemanager.BA_BRM_LIMIT_SOURCE_KEY, setUpBRMLimit(person, Integer.MAX_VALUE));
                 aiMemData.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).modifyFlat(ba_variablemanager.BA_BRM_CURRENT_SOURCE_KEY, setUpBRMCurrent(person));
-                if(!Objects.equals(aiMemData.shell, "")) fleetMember.getVariant().addPermaMod(aiMemData.shell);
                 //todo: bionic spawning for synthetic body if have the hullmod
             }
             setUpSkill(person);
@@ -1101,7 +1103,7 @@ public class ba_officermanager {
     /**
      * Script is the "bionic" that will be installed on the AI
      */
-    public static class ba_scriptAugmentedData extends ba_bionicAugmentedData {
+    public static class ba_bioformAugmentedData extends ba_bionicAugmentedData {
         public ba_limbmanager.ba_limb baseLimb;
 
         /**
@@ -1111,7 +1113,7 @@ public class ba_officermanager {
          * @param bionic
          * @param appliedOverclock
          */
-        public ba_scriptAugmentedData(@NotNull ba_limbmanager.ba_limb dynamicLimb, @Nullable ba_bionicitemplugin bionic, @Nullable ba_overclock appliedOverclock) {
+        public ba_bioformAugmentedData(@NotNull ba_limbmanager.ba_limb dynamicLimb, @Nullable ba_bionicitemplugin bionic, @Nullable ba_overclock appliedOverclock) {
             super(dynamicLimb, bionic, appliedOverclock);
             this.baseLimb = ba_limbmanager.getBaseLimb(dynamicLimb);
         }
@@ -1129,7 +1131,7 @@ public class ba_officermanager {
         }
     }
     public static class ba_aimemorydata extends ba_personmemorydata {
-        public List<ba_scriptAugmentedData> anatomy = new ArrayList<>();
+        public List<ba_bioformAugmentedData> anatomy = new ArrayList<>();
         public String shell; //Get from ba_variablemanager {BA_SHELL_CORRUPTED_HULLMOD | BA_SHELL_PRISTINE_HULLMOD}
         public boolean isSetUped = false;
         public PersonAPI dummyAI = Global.getFactory().createPerson(); //use for storing

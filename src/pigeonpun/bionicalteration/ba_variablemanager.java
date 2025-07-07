@@ -72,7 +72,7 @@ public class ba_variablemanager {
     public static final String BA_MARKET_ADMIN_SET_UP = "$ba_market_admin_set_up";
     public static final Color BA_OVERCLOCK_COLOR = new Color(255, 149, 0);
     public static final Color BA_OVERFORM_COLOR = new Color(106, 73, 163);
-    public static final String BA_OVERCLOCK_STATION = "ba_station_overclock";
+    public static final String BA_OVERCLOCK_STATION_TYPE = "ba_station_overclock";
     public static final String BA_BIONIC_RESEARCH_STATION_SPAWNED_KEY = "$ba_bionic_research_station_spawned";
     public static final String BA_OVERCLOCK_ITEM = "ba_evoshard";
     public static final String BA_PERSON_MEMORY_BIONIC_KEY = "$ba_bionic_key";
@@ -80,7 +80,8 @@ public class ba_variablemanager {
     public static final String BA_BIONIC_INFO_HULLMOD = "ba_bionicinfo";
     public static final String BA_SYNTHETIC_BODY_HULLMOD = "ba_syntheticBody";
     public static final String BA_BIONIC_CONTAINER_PERSISTENT_KEY = "ba_bionic_container";
-    public static final String BA_OVERCLOCK_STATION_TAG_NAME = "Overclock station";
+    public static final String BA_OVERCLOCK_STATION_INTEL_TAG_NAME = "Overclock station";
+    public static final String BA_OVERCLOCK_STATION_ENTITY_TAG = "ba_overclock_station";
     public static final String BA_ACHIEVEMENT_ZERO_CONSCIOUSNESS_ITEM_KEY = "$ba_zero_consciousness_reward";
     /**
      * Default value, can be change in settings.json

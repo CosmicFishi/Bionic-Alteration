@@ -3,6 +3,7 @@ package pigeonpun.bionicalteration;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.characters.PersonAPI;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -182,7 +183,7 @@ public class ba_limbmanager {
          * @param limbId
          * @param baseLimb
          */
-        public ba_limb(String limbId, ba_limb baseLimb) {
+        public ba_limb(String limbId, @NotNull ba_limb baseLimb) {
             this.limbId = limbId;
             this.name = baseLimb.name;
             this.description = baseLimb.description;

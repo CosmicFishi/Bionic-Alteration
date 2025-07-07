@@ -6,7 +6,8 @@ id,trigger,conditions,script,text,options,notes
 # workshop,,,,,,
 ba_overclock_begin,OpenInteractionDialog,"$tag:ba_overclock_station score:9999997
 $salvaged","ShowDefaultVisual
-FireAll ba_showOverclockWorkshopOptions","You approach the Overclocking Console, looking over all the available options.",,
+FireAll ba_showOverclockWorkshopOptions
+","You approach the Overclocking Console, looking over all the available options.",,
 ba_overclock_openWorkshopOpt,ba_showOverclockWorkshopOptions,"$usable",,,"10:ba_openOverclockWorkshop:Overclocks Workshop",
 ba_overclock_leaveWorkshopOpt,ba_showOverclockWorkshopOptions,,"SetShortcut ba_leaveWorkshop ""ESCAPE""",,"100:ba_leaveWorkshop:Leave",
 ba_evoshard_exchangeOpt,ba_showOverclockWorkshopOptions,"$usable",,,"30:ba_evoshardExchange:Rip Evoshards",
@@ -15,10 +16,6 @@ ba_overclock_closeWorkshop,DialogOptionSelected,"$option == ba_leaveWorkshop","D
 ba_evoshard_exchange,DialogOptionSelected,"$option == ba_evoshardExchange","ba_evoshardExchange exchange",,,
 ba_bionic_openWorkshopOpt,ba_showOverclockWorkshopOptions,,,,"20:ba_openBionicWorkshop:Bionics Workshop",
 ba_openBionicWorkshop,DialogOptionSelected,"$option == ba_openBionicWorkshop","ba_displayBionicUI station",,,
-ba_bioform_openWorkshopPromptOpt,ba_showOverclockWorkshopOptions,"$upgraded_bioform
-$usable
-",,,"10:ba_bioform_openWorkshopOpt:Bioform Workshop",
-ba_bioform_openWorkshopOpt,DialogOptionSelected,"$option == ba_bioform_openWorkshopOpt",,"Display bioform UI here pls ",,
 "#END workshop",,,,,,
 ,,,,,,
 # repairing,,,,,,
@@ -38,7 +35,8 @@ ba_overclock_repair,DialogOptionSelected,"$option == baOverclockRepair","RemoveC
 $usable = true","Your crews finish offloading the raw materials and you send an activation signal to the structure's distributed repair nodes.
 
 Not a moment later, the rerouting process happened and ended swiftly. Flipping on the power switch, several movements from the structure’s modules were detected while the rusted monitors started to flicker and display the overclocking interface.","100:baOverclockRepaired:Continue",
-ba_overclock_repaired,DialogOptionSelected,"$option == baOverclockRepaired","FireBest OpenInteractionDialog",,,
+ba_overclock_repaired,DialogOptionSelected,"$option == baOverclockRepaired","FireBest OpenInteractionDialog
+!$upgraded_bioform",,,
 "#END repairing",,,,,,
 ,,,,,,
 # defender,,,,,,
@@ -77,7 +75,7 @@ $upgraded_bioform = true
 ","Your crews finish offloading the raw materials and you send an activation signal to the structure's distributed repair nodes.
 
 Not a moment later, several movements from the structure’s modules were detected while the rusted monitors started to flicker and display the bioform interface.","100:ba_bioformUpgradedOpt:Continue",
-ba_bioformUpgradedOpt,DialogOptionSelected,"$option ==  ba_bioformUpgradedOpt","FireBest OpenInteractionDialog",,,
+ba_bioformUpgradedOpt,DialogOptionSelected,"$option ==  ba_bioformUpgradedOpt","FireBest OpenInteractionDialog","After a brief wait, the Bioform option is now available but it appears to be compatible only with the AI Officer...for now.",,
 ba_bioformUpgradeReturnOpt,DialogOptionSelected,"$option == ba_bioformUpgradeReturnOpt","FireAll ba_showOverclockWorkshopOptions",,,
 "#END Upgrade",,,,,,
 "#END overclock",,,,,,

@@ -61,7 +61,7 @@ public class ba_procgenmanager {
                     boolean continueToNextOne = false;
                     WeightedRandomPicker<PlanetAPI> randomPlanetPicker = new WeightedRandomPicker<>(ba_utils.getRandom());
                     for (SectorEntityToken entity: targetLocation.getStarSystem().getAllEntities()) {
-                        if(entity.getTags() != null &&  entity.getTags().contains("ba_overclock_station")) {
+                        if(entity.getTags() != null &&  entity.getTags().contains(ba_variablemanager.BA_OVERCLOCK_STATION_ENTITY_TAG)) {
                             continueToNextOne = true;
                             log.info("Duplicated searching, skip for " + targetLocation.getStarSystem().getName());
                             break;
@@ -110,7 +110,7 @@ public class ba_procgenmanager {
                         //waiting for Alex to reply back
                         SectorEntityToken station = targetLocation.getStarSystem().addCustomEntity(
                                 "ba_bionic_research_station_" + spawnCount,
-                                "Bionic Research Station", ba_variablemanager.BA_OVERCLOCK_STATION,
+                                "Bionic Research Station", ba_variablemanager.BA_OVERCLOCK_STATION_TYPE,
                                 Factions.DERELICT
                         );
                         station.setCircularOrbit(selectedPlanet, orbitAngle,  selectedPlanet.getRadius() + 180f, selectedPlanet.getCircularOrbitPeriod());

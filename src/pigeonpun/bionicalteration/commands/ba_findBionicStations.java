@@ -6,6 +6,7 @@ import com.fs.starfarer.api.campaign.StarSystemAPI;
 import org.jetbrains.annotations.NotNull;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.Console;
+import pigeonpun.bionicalteration.ba_variablemanager;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class ba_findBionicStations implements BaseCommand {
         for (StarSystemAPI systemAPI: Global.getSector().getStarSystems()) {
             List<SectorEntityToken> listEntities = systemAPI.getAllEntities();
             for( SectorEntityToken entity: listEntities) {
-                if(entity.getTags() != null &&  entity.getTags().contains("ba_overclock_station") && entity.getStarSystem() != null) {
+                if(entity.getTags() != null &&  entity.getTags().contains(ba_variablemanager.BA_OVERCLOCK_STATION_ENTITY_TAG) && entity.getStarSystem() != null) {
                     Console.showMessage("- At " + entity.getStarSystem().getName());
                     found = true;
                 }

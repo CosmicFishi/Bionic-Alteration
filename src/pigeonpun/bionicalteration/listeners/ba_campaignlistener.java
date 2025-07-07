@@ -89,7 +89,7 @@ public class ba_campaignlistener extends BaseCampaignEventListener implements Ev
 
     @Override
     public void reportEntityDiscovered(SectorEntityToken entity) {
-        if(entity.hasTag("ba_overclock_station")) {
+        if(entity.hasTag(ba_variablemanager.BA_OVERCLOCK_STATION_ENTITY_TAG)) {
             ba_bionicstationintel intel = new ba_bionicstationintel(entity);
             Global.getSector().getIntelManager().addIntel(intel);
         }

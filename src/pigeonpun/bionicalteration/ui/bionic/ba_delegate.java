@@ -6,6 +6,7 @@ import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.ui.CustomPanelAPI;
 
 import java.util.List;
+import java.util.Objects;
 
 //following cptdash aka SpeedRacer guide
 //need his to "trigger" the interaction to show the container panel
@@ -14,17 +15,34 @@ public class ba_delegate implements CustomVisualDialogDelegate {
     protected ba_uiplugin containerPanelPlugin;
     protected InteractionDialogAPI dialog;
     protected List<PersonAPI> listPerson = null;
+    protected String workshopMode = ba_uiplugin.INSTALL_WORKSHOP;
     public ba_delegate(ba_uiplugin containerPanel, InteractionDialogAPI dialog, List<PersonAPI> listPerson) {
         this.dialog = dialog;
         this.containerPanelPlugin = containerPanel;
         this.listPerson = listPerson;
     }
 
+    /**
+     * @param containerPanel
+     * @param dialog
+     * @param listPerson
+     */
+    public ba_delegate(ba_uiplugin containerPanel, InteractionDialogAPI dialog, List<PersonAPI> listPerson, String workshopMode) {
+        this.dialog = dialog;
+        this.containerPanelPlugin = containerPanel;
+        this.listPerson = listPerson;
+        this.workshopMode = workshopMode;
+    }
+
     @Override
     public void init(CustomPanelAPI panel, DialogCallbacks callbacks) {
         this.callbacks = callbacks;
         if(listPerson == null || listPerson.isEmpty()) {
-            this.containerPanelPlugin.init(panel, callbacks, dialog);
+            if(Objects.equals(this.workshopMode, ba_uiplugin.INSTALL_WORKSHOP)) {
+                this.containerPanelPlugin.init(panel, callbacks, dialog);
+            } else {
+                this.containerPanelPlugin.init(panel, callbacks, dialog, ba_uiplugin.BIOFORM_WORKSHOP);
+            }
         } else {
             this.containerPanelPlugin.init(panel, callbacks, dialog, ba_uiplugin.OVERVIEW, listPerson);
         }
