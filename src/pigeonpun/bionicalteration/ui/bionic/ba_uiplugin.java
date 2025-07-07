@@ -401,7 +401,7 @@ public class ba_uiplugin extends ba_uicommon {
             occupationLabel.getPosition().inTL(0, occupationY);
             //>BRM limit
             int limitBRMY = (int) (occupationY + occupationLabel.getPosition().getHeight() + statsSpacer);
-            int limitBRM = (int) this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);
+            int limitBRM = ba_officermanager.getLimitBRM(this.currentPerson);
             LabelAPI limitBRMLabel = personStatsTooltip.addPara(String.valueOf("BRM Limit: " + (limitBRM)), 0, Misc.getBrightPlayerColor(), "" + (limitBRM));
             limitBRMLabel.setHighlightColors(Misc.getBrightPlayerColor());
             limitBRMLabel.getPosition().setSize(150,20);
@@ -410,7 +410,7 @@ public class ba_uiplugin extends ba_uicommon {
                 limitBRMLabel.setOpacity(0);
             }
             //>BRM available
-            int currentBRM = (int) this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
+            int currentBRM = ba_officermanager.getCurrentBRM(this.currentPerson);
             int currentBRMY = (int) limitBRMY;
             int currentBRMX = (int) (limitBRMLabel.getPosition().getWidth());
             LabelAPI currentBRMLabel = personStatsTooltip.addPara(String.valueOf("BRM Using: " + currentBRM), 0, currentBRM > limitBRM ? bad: Misc.getHighlightColor(), "" +currentBRM);
@@ -715,8 +715,8 @@ public class ba_uiplugin extends ba_uicommon {
         int brmW = (int) infoLeftW;
         int brmX = (int) (0 + pad);
         int brmY = (int) (nameY + nameH);
-        int currentBRM = (int) this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);;
-        int limitBRM = (int) this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);;
+        int currentBRM = ba_officermanager.getCurrentBRM(this.currentPerson);
+        int limitBRM = ba_officermanager.getLimitBRM(this.currentPerson);
         LabelAPI BRM = infoPersonTooltipContainer.addPara("BRM: " + currentBRM + " / " + limitBRM, pad);
         BRM.setHighlight("BRM: ", "" +currentBRM, "" +limitBRM);
         BRM.setHighlightColors(t,currentBRM > limitBRM ? bad: h,Misc.getBrightPlayerColor());

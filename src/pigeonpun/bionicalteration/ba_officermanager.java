@@ -450,6 +450,24 @@ public class ba_officermanager {
         float currentConsciousness = ba_variablemanager.BA_CONSCIOUSNESS_DEFAULT;
         return currentConsciousness;
     }
+    public static int getCurrentBRM(PersonAPI person) {
+        int current = 0;
+        current = (int) person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
+        if(person.isAICore()) {
+            ba_aimemorydata data = getAIMemData(person, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
+            current = (int) data.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
+        }
+        return current;
+    }
+    public static int getLimitBRM(PersonAPI person) {
+        int limit = 0;
+        limit = (int) person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);
+        if(person.isAICore()) {
+            ba_aimemorydata data = getAIMemData(person, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
+            limit = (int) data.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);
+        }
+        return limit;
+    }
     //todo: need testing on: consciousness, other fleet with AI, player fleet with AI, BRM management UI
     /**
      * @param fleets fleets that will get the list officer from

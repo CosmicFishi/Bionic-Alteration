@@ -274,8 +274,8 @@ public class ba_BRMManage extends PaginatedOptions {
             BRMTier.setHighlightColors(t, h);
         }
 
-        int currentBRM = (int) person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
-        int limitBRM = (int) person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);
+        int currentBRM = ba_officermanager.getCurrentBRM(person);
+        int limitBRM = ba_officermanager.getLimitBRM(person);
         LabelAPI BRM = text.addPara("BRM Capacity: " + limitBRM);
         BRM.setHighlight("BRM Capacity: ", "" +limitBRM);
         BRM.setHighlightColors(t,h);

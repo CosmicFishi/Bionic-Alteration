@@ -783,8 +783,8 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         int brmW = 120;
         int brmX = (int) (nameX);
         int brmY = (int) (nameH);
-        int currentBRM = (int) member.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);;
-        int limitBRM = (int) member.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);;
+        int currentBRM = ba_officermanager.getCurrentBRM(member);
+        int limitBRM = ba_officermanager.getLimitBRM(member);
         TooltipMakerAPI personBRMTooltip = personDisplayContainer.createTooltip("PERSON_BRM", brmW, brmH, false, 0, 0);
         personBRMTooltip.getPosition().inTL(brmX, brmY);
         LabelAPI BRM;

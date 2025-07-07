@@ -482,8 +482,8 @@ public class ba_uiplugin extends ba_uicommon {
         int brmW = (int) inforRightW;
         int brmX = (int) (imageW + pad + pad);
         int brmY = (int) (nameY + nameH);
-        int currentBRM = (int) this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);;
-        int limitBRM = (int) this.currentPerson.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);;
+        int currentBRM = ba_officermanager.getCurrentBRM(this.currentPerson);
+        int limitBRM = ba_officermanager.getLimitBRM(this.currentPerson);
         LabelAPI BRM = infoPersonTooltipContainer.addPara("BRM: " + currentBRM + " / " + limitBRM, pad);
         BRM.setHighlight("BRM: ", "" +currentBRM, "" +limitBRM);
         BRM.setHighlightColors(t,currentBRM > limitBRM ? bad: h,Misc.getBrightPlayerColor());
