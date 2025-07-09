@@ -616,6 +616,7 @@ public class ba_officermanager {
      */
     public static List<ba_bionicAugmentedData> getBionicAnatomyList(PersonAPI person) {
         //return list with full limb details
+        //todo: Change it so it get AI bionic data as well
         List<ba_bionicAugmentedData> anatomyList = new ArrayList<>();
         if(checkIfPersonHasBionicMemoryData(person)) {
             ba_personmemorydata data = (ba_personmemorydata) person.getMemoryWithoutUpdate().get(ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY);
@@ -1150,13 +1151,12 @@ public class ba_officermanager {
     }
     public static class ba_aimemorydata extends ba_personmemorydata {
         public List<ba_bioformAugmentedData> anatomy = new ArrayList<>();
-        public String shell; //Get from ba_variablemanager {BA_SHELL_CORRUPTED_HULLMOD | BA_SHELL_PRISTINE_HULLMOD}
+        public String shell = "";
         public boolean isSetUped = false;
         public PersonAPI dummyAI = Global.getFactory().createPerson(); //use for storing
 
         public ba_aimemorydata() {
             super(1);
-            this.shell = ba_variablemanager.BA_SYNTHETIC_BODY_HULLMOD;
         }
         public ba_aimemorydata(String shell) {
             super(1);

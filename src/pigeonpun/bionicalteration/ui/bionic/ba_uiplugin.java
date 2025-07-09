@@ -49,8 +49,10 @@ public class ba_uiplugin extends ba_uicommon {
     public static final float MAIN_CONTAINER_HEIGHT = ba_uicommon.getInitDialogContainerHeight();
     public static final String OVERVIEW = "OVERVIEW", WORKSHOP = "WORKSHOP";
     public static final String WORKSHOP_EFFECT = "WORKSHOP_EFFECT", WORKSHOP_INV = "WORKSHOP_INV";
-    public static final String INSTALL_WORKSHOP="INSTALL", EDIT_WORKSHOP="EDIT", BIOFORM_WORKSHOP = "BIOFORM";
-    public String currentWorkShopMode = INSTALL_WORKSHOP; //determine what mode workshop is in
+    public static final String SUB_WORKSHOP_MODE_BIOFORM = "BIOFORM", SUB_WORKSHOP_MODE_NONE = "NONE";
+    public static final String INSTALL_WORKSHOP="INSTALL", EDIT_WORKSHOP="EDIT";
+    public String currentWorkShopMode = INSTALL_WORKSHOP; //determine if workshop is in edit or add
+    public String currentWorkShopSubMode = SUB_WORKSHOP_MODE_BIOFORM; //determine what sub mode workshop is in
 //    public ba_limbmanager.ba_limb currentHoveringLimb = null; //To highlight which effect on the effect list,
     // sadly not possible with how the bionic table currently implemented.
     // Bionic table hidden in certain UI resolution which cause the hovering being weird. it can still detect the button even tho its hidden
@@ -486,7 +488,7 @@ public class ba_uiplugin extends ba_uicommon {
                     personbioformTooltip.getPosition().setLocation(0,0);
                     personbioformTooltip.getPosition().inTL(bioformX,bioformY);
                     ButtonAPI bioformButton = personbioformTooltip.addButton("Bioform", null, Misc.getTextColor(), ba_variablemanager.BA_OVERFORM_COLOR.darker(), Alignment.MID, CutStyle.BOTTOM, bioformBtnW, bioformBtnH, 0);
-                    addButtonToList(bioformButton, "tab:" + WORKSHOP + ":"+BIOFORM_WORKSHOP);
+                    addButtonToList(bioformButton, "tab:" + WORKSHOP + ":"+SUB_WORKSHOP_MODE_BIOFORM);
                     if(this.currentTabId.equals(OVERVIEW)) {
                         bioformButton.setShortcut(Keyboard.KEY_B, true);
                     }
@@ -635,7 +637,7 @@ public class ba_uiplugin extends ba_uicommon {
         }
         //todo: AI for now, soon will be "fleshform" for person
         if(this.currentPerson.isAICore()) {
-            if(this.currentWorkShopMode.equals(INSTALL_WORKSHOP) || this.currentWorkShopMode.equals(EDIT_WORKSHOP)) {
+            if(this.currentWorkShopMode.equals(INSTALL_WORKSHOP) || this.currentWorkShopMode.equals(EDIT_WORKSHOP) && this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_NONE)) {
                 int bioformBtnH = 40;
                 int bioformBtnW = (int) (infoLeftW);
                 int bioformBtnX = (int) (0 + pad);
@@ -645,13 +647,13 @@ public class ba_uiplugin extends ba_uicommon {
                 if(this.currentTabId.equals(WORKSHOP)) {
                     bioformButton.setShortcut(Keyboard.KEY_B, true);
                 }
-                addButtonToList(bioformButton, "bionic:" + BIOFORM_WORKSHOP);
+                addButtonToList(bioformButton, "tab:" + WORKSHOP + ":"+SUB_WORKSHOP_MODE_BIOFORM);
                 bioformButton.setEnabled(false);
                 if(this.currentTabId.equals(WORKSHOP) && checkIfCanOpenBioformWorkshop()) {
                     bioformButton.setEnabled(true);
                 }
             }
-            if(this.currentWorkShopMode.equals(BIOFORM_WORKSHOP)) {
+            if(this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_BIOFORM)) {
                 int bioformBtnH = 40;
                 int bioformBtnW = (int) (infoLeftW);
                 int bioformBtnX = (int) (0 + pad);
@@ -969,10 +971,10 @@ public class ba_uiplugin extends ba_uicommon {
         int tableH = (int) (personInfoH - pad - pad - btnH);
         String highlightLimbId = this.currentSelectedBionic != null? this.currentSelectedBionic.bionicLimbGroupId: "";
         if(currentWorkShopMode.equals(INSTALL_WORKSHOP)) {
-            displayBionicTableWithKeyPresetHighLight(infoPersonContainer, infoPersonTooltipKey, "WORKSHOP",true, true, tableW, tableH, tableX, tableY, highlightLimbId, false);
+            displayBionicTableWithKeyPresetHighLight(infoPersonContainer, infoPersonTooltipKey, "WORKSHOP",true, true, tableW, tableH, tableX, tableY, highlightLimbId, false, this.currentWorkShopSubMode);
         }
         if(currentWorkShopMode.equals(EDIT_WORKSHOP)) {
-            displayBionicTableWithKeyPresetHighLight(infoPersonContainer, infoPersonTooltipKey, "WORKSHOP",true, true, tableW, tableH, tableX, tableY, highlightLimbId, true);
+            displayBionicTableWithKeyPresetHighLight(infoPersonContainer, infoPersonTooltipKey, "WORKSHOP",true, true, tableW, tableH, tableX, tableY, highlightLimbId, true, this.currentWorkShopSubMode);
         }
         //--------selected
         int selectedH = btnH / 2;
@@ -1352,14 +1354,21 @@ public class ba_uiplugin extends ba_uicommon {
 //                    log.info("clicked" + tokens[1]);
                     if(tokens[1].equals(OVERVIEW)) {
                         focusContent(OVERVIEW);
+                        this.currentWorkShopSubMode = this.SUB_WORKSHOP_MODE_NONE;
+                        this.currentWorkShopMode = INSTALL_WORKSHOP;
                         needsReset = true;
                         break;
                     }
                     if(tokens[1].equals(WORKSHOP)) {
                         focusContent(WORKSHOP);
                         this.currentWorkShopMode = INSTALL_WORKSHOP;
+                        this.currentWorkShopSubMode = this.SUB_WORKSHOP_MODE_NONE;
                         if(tokens.length > 2 && tokens[2] != null) {
-                            this.currentWorkShopMode = tokens[2];
+                            switch (tokens[2]) {
+                                case SUB_WORKSHOP_MODE_BIOFORM:
+                                    this.currentWorkShopSubMode = tokens[2];
+                                    break;
+                            }
                         }
                         needsReset = true;
                         break;
@@ -1399,14 +1408,7 @@ public class ba_uiplugin extends ba_uicommon {
                     }
                     if(tokens[1].equals("workshop")) {
                         this.currentWorkShopMode = this.INSTALL_WORKSHOP;
-                        this.currentSelectedLimb = null;
-                        this.currentSelectedBionic = null;
-                        this.currentRemovingBionic = null;
-                        needsReset = true;
-                        break;
-                    }
-                    if(tokens[1].equals(BIOFORM_WORKSHOP)) {
-                        this.currentWorkShopMode = this.BIOFORM_WORKSHOP;
+                        this.currentWorkShopSubMode = this.SUB_WORKSHOP_MODE_NONE;
                         this.currentSelectedLimb = null;
                         this.currentSelectedBionic = null;
                         this.currentRemovingBionic = null;

@@ -7,6 +7,7 @@ import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.ui.*;
 import com.fs.starfarer.api.util.Misc;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
 import pigeonpun.bionicalteration.ba_limbmanager;
 import pigeonpun.bionicalteration.ba_officermanager;
@@ -18,6 +19,7 @@ import pigeonpun.bionicalteration.inventory.ba_inventoryhandler;
 import pigeonpun.bionicalteration.overclock.ba_overclock;
 import pigeonpun.bionicalteration.overclock.ba_overclockmanager;
 import pigeonpun.bionicalteration.plugin.bionicalterationplugin;
+import pigeonpun.bionicalteration.ui.bionic.ba_uiplugin;
 import pigeonpun.bionicalteration.utils.ba_utils;
 
 import java.awt.*;
@@ -290,7 +292,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 tableW, tableH,
                 tableX, tableY,
                 "",
-                false
+                false, null
         );
     }
 
@@ -310,7 +312,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
             String creatorComponentTooltip,
             String preset,
             final boolean isWorkshopMode,
-            boolean isScroll , float tableW, float tableH, float tableX, float tableY, String highlightLimbGroupID, boolean isEdit) {
+            boolean isScroll , float tableW, float tableH, float tableX, float tableY, String highlightLimbGroupID, boolean isEdit, @Nullable String subWorkshopMode) {
         final float pad = 10f;
         float opad = 10f;
         final Color h = Misc.getHighlightColor();
@@ -389,6 +391,16 @@ public class ba_uicommon implements CustomUIPanelPlugin {
 //                }
 //            }
 //        }
+        boolean isInBioformSubMode = subWorkshopMode != null && subWorkshopMode.equals(ba_uiplugin.SUB_WORKSHOP_MODE_BIOFORM);
+        ba_officermanager.ba_aimemorydata aimemorydata = ba_officermanager.getAIMemData(this.currentPerson, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
+
+        if(isInBioformSubMode) {
+            if(aimemorydata.shell.equals(ba_variablemanager.BA_SYNTHETIC_BODY_HULLMOD)) {
+                //todo: display bioform stuffs
+            } else {
+                //todo: doesn't have anything, will need to set up the entire thing
+            }
+        }
         for(final ba_officermanager.ba_bionicAugmentedData augmentData: currentAnatomyList) {
             String bionicTooltipContainerKey = "BIONIC_TOOLTIP_CONTAINER";
             String bionicPanelContainerKey = keyPreset + "BIONIC_PANEL_CONTAINER_"+i;
