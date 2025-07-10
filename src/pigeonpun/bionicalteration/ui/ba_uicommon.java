@@ -42,6 +42,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
     protected float currentScrollPositionInventory = 0;
     protected float currentScrollPositionBionicTable = 0;
     protected float currentScrollPositionPersonList = 0;
+    protected float currentScrollPositionBioformList = 0;
     public ba_bionicitemplugin currentRemovingBionic; //selected for removing
     public static ba_debounceplugin debounceplugin = new ba_debounceplugin();
     public List<CargoStackAPI> cargoBionic = new ArrayList<>();
@@ -78,6 +79,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         currentScrollPositionInventory = 0;
         currentScrollPositionBionicTable = 0;
         currentScrollPositionPersonList = 0;
+        currentScrollPositionBioformList = 0;
         debounceplugin.addToList("INVENTORY_TOOLTIP");
         debounceplugin.addToList("PERSON_LIST_TOOLTIP");
     }
@@ -292,7 +294,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 tableW, tableH,
                 tableX, tableY,
                 "",
-                false, null
+                false
         );
     }
 
@@ -312,7 +314,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
             String creatorComponentTooltip,
             String preset,
             final boolean isWorkshopMode,
-            boolean isScroll , float tableW, float tableH, float tableX, float tableY, String highlightLimbGroupID, boolean isEdit, @Nullable String subWorkshopMode) {
+            boolean isScroll , float tableW, float tableH, float tableX, float tableY, String highlightLimbGroupID, boolean isEdit) {
         final float pad = 10f;
         float opad = 10f;
         final Color h = Misc.getHighlightColor();
@@ -391,16 +393,6 @@ public class ba_uicommon implements CustomUIPanelPlugin {
 //                }
 //            }
 //        }
-        boolean isInBioformSubMode = subWorkshopMode != null && subWorkshopMode.equals(ba_uiplugin.SUB_WORKSHOP_MODE_BIOFORM);
-        ba_officermanager.ba_aimemorydata aimemorydata = ba_officermanager.getAIMemData(this.currentPerson, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
-
-        if(isInBioformSubMode) {
-            if(aimemorydata.shell.equals(ba_variablemanager.BA_SYNTHETIC_BODY_HULLMOD)) {
-                //todo: display bioform stuffs
-            } else {
-                //todo: doesn't have anything, will need to set up the entire thing
-            }
-        }
         for(final ba_officermanager.ba_bionicAugmentedData augmentData: currentAnatomyList) {
             String bionicTooltipContainerKey = "BIONIC_TOOLTIP_CONTAINER";
             String bionicPanelContainerKey = keyPreset + "BIONIC_PANEL_CONTAINER_"+i;
@@ -638,6 +630,83 @@ public class ba_uicommon implements CustomUIPanelPlugin {
             }
         }
     }
+    protected void displayBioformTableWithKeyPreset(
+            ba_component creatorComponent,
+            String creatorComponentTooltip,
+            String preset,
+            boolean isScroll , float tableW, float tableH, float tableX, float tableY) {
+        final float pad = 10f;
+        float opad = 10f;
+        final Color h = Misc.getHighlightColor();
+        final Color bad = Misc.getNegativeHighlightColor();
+        final Color t = Misc.getTextColor();
+        final Color g = Misc.getGrayColor();
+        final Color special = ba_variablemanager.BA_OVERCLOCK_COLOR;
+        String keyPreset = "";
+        if(preset != "") {
+            keyPreset = preset + "_";
+        }
+
+        String infoPersonBionicTooltipKey = "PERSON_INFO_BIOFORM_TOOLTIP";
+        String infoPersonBionicPanelKey = keyPreset+"PERSON_INFO_BIOFORM_PANEL";
+        ba_component infoPersonBionicContainer = new ba_component(componentMap, creatorComponent.mainPanel, tableW, tableH, tableX, tableY, !isScroll, infoPersonBionicPanelKey);
+        TooltipMakerAPI infoPersonBionicTooltipContainer = infoPersonBionicContainer.createTooltip(infoPersonBionicTooltipKey, tableW, tableH, isScroll, 0,0);
+        creatorComponent.attachSubPanel(creatorComponentTooltip, infoPersonBionicPanelKey, infoPersonBionicContainer, tableX, tableY);
+
+        UIComponentAPI borderContainer = infoPersonBionicTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
+        borderContainer.getPosition().setSize(tableW - pad, tableH);
+        borderContainer.getPosition().inTL(pad/2,0);
+        infoPersonBionicTooltipContainer.addComponent(borderContainer);
+
+        if(this.currentPerson.isAICore()) {
+            ba_officermanager.ba_aimemorydata aimemorydata = ba_officermanager.getAIMemData(this.currentPerson, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
+            if(aimemorydata.shell.equals(ba_variablemanager.BA_SYNTHETIC_BODY_HULLMOD)) {
+                //todo: display bioform stuffs
+                //table header
+                String tableHeaderTooltipContainerKey = "BIONIC_TABLE_HEADER_TOOLTIP";
+                String tableHeaderPanelContainerKey = keyPreset + "BIONIC_TABLE_HEADER_PANEL";
+                int tableHeaderH = 40;
+                int tableHeaderW = (int) (tableW - pad);
+                //--------bionic container
+                ba_component tableHeaderDisplayContainer = new ba_component(componentMap, infoPersonBionicContainer.mainPanel, tableHeaderW, tableHeaderH,0,0,false, tableHeaderPanelContainerKey);
+                TooltipMakerAPI tableHeaderDisplayContainerTooltip = tableHeaderDisplayContainer.createTooltip(tableHeaderTooltipContainerKey, tableHeaderW, tableHeaderH, false, 0,0);
+                tableHeaderDisplayContainerTooltip.setForceProcessInput(true);
+                //attach to have the main tooltip scroll effect this component's panel
+                infoPersonBionicContainer.attachSubPanel(infoPersonBionicTooltipKey, infoPersonBionicPanelKey, tableHeaderDisplayContainer);
+                int limbX = (int) pad;
+                int limbW = 150;
+                int bionicRowX = limbW;
+                int bionicRowW = (int) (tableW - limbW - pad);
+                int bionicNameX = bionicRowX;
+                int bionicNameW = (int) (bionicRowW * 0.6f);
+                int bionicBRMX = bionicNameW;
+                int bionicBRMW = (int) (bionicRowW * 0.2f);
+                int bionicConsciousX = bionicBRMX + bionicBRMW;
+                int bionicConsciousW = (int) (bionicRowW * 0.2f);
+            } else {
+                //todo: doesn't have anything, will need to set up the entire thing
+                LabelAPI loreBioformLabel = infoPersonBionicTooltipContainer.addPara("//SCANNING// ...  Synthetic bioform is not detected in current unit ...", 0f, ba_variablemanager.BA_OVERFORM_COLOR, "");
+                loreBioformLabel.getPosition().inTL(tableW/2 - loreBioformLabel.computeTextWidth("//SCANNING// ...  Synthetic bioform is not detected in current unit")/2, tableH/2 - pad*3);
+                LabelAPI createBioformLabel = infoPersonBionicTooltipContainer.addPara("//%s", 0f, ba_variablemanager.BA_OVERFORM_COLOR, "CREATE NEW BIOFORM ?");
+                createBioformLabel.getPosition().inTL(tableW/2 - createBioformLabel.computeTextWidth("//CREATE NEW BIOFORM ?")/2, tableH/2);
+                //Create button
+                int bioformBtnH = 40;
+                int bioformBtnW = (int) (120);
+                int bioformBtnX = (int) (tableW/2);
+                int bioformBtnY = (int) (tableH/2 + pad*3);
+                ButtonAPI bioformButton = infoPersonBionicTooltipContainer.addButton("Confirm", null, Misc.getTextColor(), Misc.getPositiveHighlightColor().darker().darker(), Alignment.MID, CutStyle.TL_BR,  bioformBtnW, bioformBtnH, 0);
+                bioformButton.getPosition().inTL(bioformBtnX - bioformBtnW/2,bioformBtnY);
+                bioformButton.setShortcut(Keyboard.KEY_C, true);
+                addButtonToList(bioformButton, "bioform:createBaselineVariant");
+            }
+        }
+        if(isScroll) {
+            infoPersonBionicContainer.mainPanel.addUIElement(infoPersonBionicTooltipContainer);
+            if(infoPersonBionicTooltipContainer.getExternalScroller() != null) {
+                infoPersonBionicTooltipContainer.getExternalScroller().setYOffset(currentScrollPositionBioformList);
+            }
+        }
+    }
     protected void displayPersonList(
             ba_component creatorComponent,
             String creatorComponentTooltip,
@@ -859,6 +928,13 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         if(component3 != null && component3.tooltipMap.get("PERSON_LIST_TOOLTIP") != null) {
             if(component3.tooltipMap.get("PERSON_LIST_TOOLTIP").getExternalScroller() != null) {
                 currentScrollPositionPersonList = component3.tooltipMap.get("PERSON_LIST_TOOLTIP").getExternalScroller().getYOffset();
+            }
+        }
+        //bioform list, preset = ""
+        ba_component component4 = componentMap.get("PERSON_INFO_BIOFORM_PANEL");
+        if(component4 != null && component4.tooltipMap.get("PERSON_INFO_BIOFORM_TOOLTIP") != null) {
+            if(component4.tooltipMap.get("PERSON_INFO_BIOFORM_TOOLTIP").getExternalScroller() != null) {
+                currentScrollPositionBioformList = component4.tooltipMap.get("PERSON_INFO_BIOFORM_TOOLTIP").getExternalScroller().getYOffset();
             }
         }
     }
