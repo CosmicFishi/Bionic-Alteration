@@ -685,6 +685,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 int bionicConsciousW = (int) (bionicRowW * 0.2f);
             } else {
                 //todo: doesn't have anything, will need to set up the entire thing
+                //todo: set a price for creating new bioform
                 LabelAPI loreBioformLabel = infoPersonBionicTooltipContainer.addPara("//SCANNING// ...  Synthetic bioform is not detected in current unit ...", 0f, ba_variablemanager.BA_OVERFORM_COLOR, "");
                 loreBioformLabel.getPosition().inTL(tableW/2 - loreBioformLabel.computeTextWidth("//SCANNING// ...  Synthetic bioform is not detected in current unit")/2, tableH/2 - pad*3);
                 LabelAPI createBioformLabel = infoPersonBionicTooltipContainer.addPara("//%s", 0f, ba_variablemanager.BA_OVERFORM_COLOR, "CREATE NEW BIOFORM ?");
@@ -696,7 +697,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 int bioformBtnY = (int) (tableH/2 + pad*3);
                 ButtonAPI bioformButton = infoPersonBionicTooltipContainer.addButton("Confirm", null, Misc.getTextColor(), Misc.getPositiveHighlightColor().darker().darker(), Alignment.MID, CutStyle.TL_BR,  bioformBtnW, bioformBtnH, 0);
                 bioformButton.getPosition().inTL(bioformBtnX - bioformBtnW/2,bioformBtnY);
-                bioformButton.setShortcut(Keyboard.KEY_C, true);
+                bioformButton.setShortcut(Keyboard.KEY_G, true);
                 addButtonToList(bioformButton, "bioform:createBaselineVariant");
             }
         }

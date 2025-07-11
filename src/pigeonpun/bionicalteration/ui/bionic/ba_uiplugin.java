@@ -52,7 +52,7 @@ public class ba_uiplugin extends ba_uicommon {
     public static final String SUB_WORKSHOP_MODE_BIOFORM = "BIOFORM", SUB_WORKSHOP_MODE_NONE = "NONE";
     public static final String INSTALL_WORKSHOP="INSTALL", EDIT_WORKSHOP="EDIT";
     public String currentWorkShopMode = INSTALL_WORKSHOP; //determine if workshop is in edit or add
-    public String currentWorkShopSubMode = SUB_WORKSHOP_MODE_BIOFORM; //determine what sub mode workshop is in
+    public String currentWorkShopSubMode = SUB_WORKSHOP_MODE_NONE; //determine what sub mode workshop is in
 //    public ba_limbmanager.ba_limb currentHoveringLimb = null; //To highlight which effect on the effect list,
     // sadly not possible with how the bionic table currently implemented.
     // Bionic table hidden in certain UI resolution which cause the hovering being weird. it can still detect the button even tho its hidden
@@ -560,49 +560,57 @@ public class ba_uiplugin extends ba_uicommon {
 //            displayRemoveBionicWorkshop(workshopContainer, mainInventoryTooltipKey, inventoryW, inventoryH, 0,0);
 //        }
 
-        //buttons
-        TooltipMakerAPI btnTooltipContainer = workshopContainer.createTooltip(btnTooltipKey, effectListW, effectListH, false, 0, 0);
-        btnTooltipContainer.getPosition().inTL(personInfoW, 0);
-        float invEffectBtnH = 30;
-        float invEffectBtnW = 100;
-        int invBtnX = (int) (pad);
-        int invBtnY = (int) (opad);
-        int effectBtnX = (int) (invBtnX + invEffectBtnW);
-        int effectBtnY = invBtnY;
-        ButtonAPI invButton = btnTooltipContainer.addButton("Inventory", null, Misc.getTextColor(), this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_INV)?Misc.getDarkPlayerColor():Misc.getDarkPlayerColor().darker().darker(), Alignment.MID, CutStyle.TOP, invEffectBtnW, invEffectBtnH, 0);
-        addButtonToList(invButton, "workshop_tab:" + WORKSHOP_INV);
-        invButton.getPosition().inTL(invBtnX, invBtnY);
-        if(this.currentTabId.equals(WORKSHOP)) {
-            invButton.setShortcut(Keyboard.KEY_1, true);
+        if(this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_NONE)) {
+            //buttons
+            TooltipMakerAPI btnTooltipContainer = workshopContainer.createTooltip(btnTooltipKey, effectListW, effectListH, false, 0, 0);
+            btnTooltipContainer.getPosition().inTL(personInfoW, 0);
+            float invEffectBtnH = 30;
+            float invEffectBtnW = 100;
+            int invBtnX = (int) (pad);
+            int invBtnY = (int) (opad);
+            int effectBtnX = (int) (invBtnX + invEffectBtnW);
+            int effectBtnY = invBtnY;
+            ButtonAPI invButton = btnTooltipContainer.addButton("Inventory", null, Misc.getTextColor(), this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_INV)?Misc.getDarkPlayerColor():Misc.getDarkPlayerColor().darker().darker(), Alignment.MID, CutStyle.TOP, invEffectBtnW, invEffectBtnH, 0);
+            addButtonToList(invButton, "workshop_tab:" + WORKSHOP_INV);
+            invButton.getPosition().inTL(invBtnX, invBtnY);
+            if(this.currentTabId.equals(WORKSHOP)) {
+                invButton.setShortcut(Keyboard.KEY_1, true);
+            }
+            invButton.setButtonDisabledPressedSound("ui_button_pressed");
+            invButton.setPerformActionWhenDisabled(true);
+            if(this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_INV)) {
+                invButton.setHighlightBrightness(0);
+                invButton.setFlashBrightness(0);
+                invButton.setButtonPressedSound(null);
+            }
+            ButtonAPI effectButton = btnTooltipContainer.addButton("Effect", null, Misc.getTextColor(), this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_EFFECT)?Misc.getDarkPlayerColor():Misc.getDarkPlayerColor().darker().darker(), Alignment.MID, CutStyle.TOP, invEffectBtnW, invEffectBtnH, 0);
+            addButtonToList(effectButton, "workshop_tab:" + WORKSHOP_EFFECT);
+            effectButton.getPosition().inTL(effectBtnX, effectBtnY);
+            if(this.currentTabId.equals(WORKSHOP)) {
+                effectButton.setShortcut(Keyboard.KEY_2, true);
+            }
+            effectButton.setButtonDisabledPressedSound("ui_button_pressed");
+            effectButton.setPerformActionWhenDisabled(true);
+            if(this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_EFFECT)) {
+                effectButton.setHighlightBrightness(0);
+                effectButton.setFlashBrightness(0);
+                effectButton.setButtonPressedSound(null);
+            }
+            //effect + inv
+            TooltipMakerAPI effectListTooltipContainer = workshopContainer.createTooltip(mainEffectsTooltipKey, effectListW, effectListH, false, 0, invEffectBtnH);
+            effectListTooltipContainer.getPosition().inTL(personInfoW, 0);
+            if(Objects.equals(this.currentWorkshopEffectOrInvTab, WORKSHOP_INV)) {
+                displayInventoryWorkshop(workshopContainer, mainEffectsTooltipKey, effectListW, effectListH-invEffectBtnH, -pad, invEffectBtnH);
+            }
+            if(Objects.equals(this.currentWorkshopEffectOrInvTab, WORKSHOP_EFFECT)) {
+                displayEffectListWorkshop(workshopContainer, mainEffectsTooltipKey, effectListW, effectListH-invEffectBtnH, 0,invEffectBtnH);
+            }
         }
-        invButton.setButtonDisabledPressedSound("ui_button_pressed");
-        invButton.setPerformActionWhenDisabled(true);
-        if(this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_INV)) {
-            invButton.setHighlightBrightness(0);
-            invButton.setFlashBrightness(0);
-            invButton.setButtonPressedSound(null);
-        }
-        ButtonAPI effectButton = btnTooltipContainer.addButton("Effect", null, Misc.getTextColor(), this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_EFFECT)?Misc.getDarkPlayerColor():Misc.getDarkPlayerColor().darker().darker(), Alignment.MID, CutStyle.TOP, invEffectBtnW, invEffectBtnH, 0);
-        addButtonToList(effectButton, "workshop_tab:" + WORKSHOP_EFFECT);
-        effectButton.getPosition().inTL(effectBtnX, effectBtnY);
-        if(this.currentTabId.equals(WORKSHOP)) {
-            effectButton.setShortcut(Keyboard.KEY_2, true);
-        }
-        effectButton.setButtonDisabledPressedSound("ui_button_pressed");
-        effectButton.setPerformActionWhenDisabled(true);
-        if(this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_EFFECT)) {
-            effectButton.setHighlightBrightness(0);
-            effectButton.setFlashBrightness(0);
-            effectButton.setButtonPressedSound(null);
-        }
-        //effect + inv
-        TooltipMakerAPI effectListTooltipContainer = workshopContainer.createTooltip(mainEffectsTooltipKey, effectListW, effectListH, false, 0, invEffectBtnH);
-        effectListTooltipContainer.getPosition().inTL(personInfoW, 0);
-        if(Objects.equals(this.currentWorkshopEffectOrInvTab, WORKSHOP_INV)) {
-            displayInventoryWorkshop(workshopContainer, mainEffectsTooltipKey, effectListW, effectListH-invEffectBtnH, -pad, invEffectBtnH);
-        }
-        if(Objects.equals(this.currentWorkshopEffectOrInvTab, WORKSHOP_EFFECT)) {
-            displayEffectListWorkshop(workshopContainer, mainEffectsTooltipKey, effectListW, effectListH-invEffectBtnH, 0,invEffectBtnH);
+        if(this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_BIOFORM)) {
+            TooltipMakerAPI effectListTooltipContainer = workshopContainer.createTooltip(mainEffectsTooltipKey, effectListW, effectListH, false, 0, 0);
+            effectListTooltipContainer.getPosition().inTL(personInfoW, 0);
+            displayLimbListWorkshop(workshopContainer, mainEffectsTooltipKey, effectListW, effectListH/2, 0, 0);
+            displayLimbModificationSummaryWorkshop(workshopContainer, mainEffectsTooltipKey, effectListW, effectListH/2, 0, effectListH/2);
         }
     }
     public void displayPersonInfoWorkshop(ba_component creatorComponent, String creatorComponentTooltip, final float personInfoW, float personInfoH, float personInfoX, float personInfoY) {
@@ -1000,7 +1008,7 @@ public class ba_uiplugin extends ba_uicommon {
             selectedBionicLabel.setHighlightColors(Misc.getBrightPlayerColor(), this.currentSelectedBionic != null ? this.currentSelectedBionic.displayColor: Misc.getGrayColor(), bad);
         }
         if(this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_BIOFORM)) {
-            displayBioformTableWithKeyPreset(infoPersonContainer, infoPersonTooltipKey, "WORKSHOP",true, tableW, tableH, tableX, tableY);
+            displayBioformTableWithKeyPreset(infoPersonContainer, infoPersonTooltipKey, "WORKSHOP",true, tableW, tableH + btnH + pad, tableX, tableY);
         }
     }
     public void displayEffectListWorkshop(ba_component creatorComponent, String creatorComponentTooltip, float effectListW, float effectListH, float effectListX, float effectListY) {
@@ -1073,6 +1081,91 @@ public class ba_uiplugin extends ba_uicommon {
         }
         //do the adding late so the scroll work
         subEffectListContainer.mainPanel.addUIElement(subEffectListTooltipContainer).setLocation(0,0).inTL(subEffectX, subEffectY);
+    }
+    public void displayLimbListWorkshop(ba_component creatorComponent, String creatorComponentTooltip, float W, float H, float X, float Y) {
+        float pad = 10f;
+        float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        Color t = Misc.getTextColor();
+        Color g = Misc.getGrayColor();
+
+        String effectListTooltipKey = "LIMB_LIST_TOOLTIP";
+        String effectListPanelKey = "LIMB_EFFECT_LIST_PANEL";
+        ba_component listContainer = new ba_component(componentMap, creatorComponent.mainPanel, W, H, X, Y, true, effectListPanelKey);
+        TooltipMakerAPI listTooltipContainer = listContainer.createTooltip(effectListTooltipKey, W, H, false, 0,0);
+        creatorComponent.attachSubPanel(creatorComponentTooltip, effectListPanelKey,listContainer,X,Y);
+
+        //border effect list
+        int borderW = (int) (W - pad - pad/2);
+        int borderH = (int) (H * 1f - pad - pad);
+        int borderX = (int) pad/2;
+        int borderY = (int) (pad);
+        UIComponentAPI border = listTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
+        border.getPosition().setSize(borderW, borderH);
+        listContainer.mainPanel.addComponent(border).setLocation(0,0).inTL(borderX, borderY);
+
+        //sub container
+        int subEffectW = (int) (borderW - pad - pad);
+        int subEffectH = (int) (borderH - pad - pad - pad/2);
+        int subEffectX = (int) (pad / 2 + pad);
+        int subEffectY = (int) (pad + pad + pad/2);
+        String subEffectListTooltipKey = "WORKSHOP_SUB_LIMB_LIST_TOOLTIP";
+        String subEffectListPanelKey = "WORKSHOP_SUB_LIMB_LIST_PANEL";
+        ba_component subLimbListContainer = new ba_component(componentMap, listContainer.mainPanel, subEffectW, subEffectH, subEffectX, subEffectY, false, subEffectListPanelKey);
+        TooltipMakerAPI subLimbListTooltipContainer = subLimbListContainer.createTooltip(subEffectListTooltipKey, subEffectW, subEffectH, true, 0,0);
+        listContainer.attachSubPanel(effectListTooltipKey, subEffectListPanelKey,subLimbListContainer,0,0);
+
+        int spacerY = 5;
+        //bionic effects
+        int i = 0;
+        int rowHeight = 35;
+        int btnW = 40;
+        for(ba_limbmanager.ba_limb limb: ba_limbmanager.limbMap.values()) {
+            //sub container
+            int innerLimbW = (int) subEffectW - btnW;
+            int innerLimbH = (int) rowHeight;
+            int innerLimbX = (int) (0);
+            int innerLimbY = (int) (rowHeight * i);
+            String innerLimbTooltipKey = "WORKSHOP_SUB_LIMB_LIST_TOOLTIP";
+            String innerLimbPanelKey = "WORKSHOP_SUB_LIMB_LIST_PANEL_" + i;
+            ba_component innerLimbContainer = new ba_component(componentMap, subLimbListContainer.mainPanel, innerLimbW, innerLimbH, innerLimbX, innerLimbY, false, innerLimbPanelKey);
+            TooltipMakerAPI innerLimbTooltipContainer = innerLimbContainer.createTooltip(innerLimbTooltipKey, innerLimbW, innerLimbH, false, 0,0);
+            subLimbListContainer.attachSubPanel(innerLimbTooltipKey, innerLimbPanelKey, innerLimbContainer);
+
+            innerLimbTooltipContainer.addButton("+", null, 40, 20f, 0);
+            LabelAPI text = innerLimbTooltipContainer.addPara(limb.name, 0);
+            text.getPosition().inTL(btnW + pad, 0);
+            text.setAlignment(Alignment.LMID);
+//            text.getPosition().inTL(btnW + pad, rowHeight*i);
+            i++;
+        }
+
+        //do the adding late so the scroll work
+        subLimbListContainer.mainPanel.addUIElement(subLimbListTooltipContainer).setLocation(0,0).inTL(subEffectX, subEffectY);
+    }
+    public void displayLimbModificationSummaryWorkshop(ba_component creatorComponent, String creatorComponentTooltip, float W, float H, float X, float Y) {
+        float pad = 10f;
+        float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        Color t = Misc.getTextColor();
+        Color g = Misc.getGrayColor();
+
+        String effectListTooltipKey = "LIMB_MOD_SUMMARY_TOOLTIP";
+        String effectListPanelKey = "LIMB_MOD_SUMMARY_PANEL";
+        ba_component listContainer = new ba_component(componentMap, creatorComponent.mainPanel, W, H, X, Y, true, effectListPanelKey);
+        TooltipMakerAPI effectListTooltipContainer = listContainer.createTooltip(effectListTooltipKey, W, H, false, 0,0);
+        creatorComponent.attachSubPanel(creatorComponentTooltip, effectListPanelKey,listContainer,X,Y);
+
+        //border effect list
+        int borderW = (int) (W - pad - pad/2);
+        int borderH = (int) (H * 1f - pad);
+        int borderX = (int) pad/2;
+        int borderY = (int) (0);
+        UIComponentAPI border = effectListTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
+        border.getPosition().setSize(borderW, borderH);
+        listContainer.mainPanel.addComponent(border).setLocation(0,0).inTL(borderX, borderY);
     }
     public void displayRemoveBionicWorkshop(ba_component creatorComponent, String creatorComponentTooltip, float removeW, float removeH, float removeX, float removeY) {
         final float pad = 10f;

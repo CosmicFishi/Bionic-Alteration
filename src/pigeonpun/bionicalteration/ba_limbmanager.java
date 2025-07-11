@@ -16,8 +16,8 @@ import java.util.*;
 
 public class ba_limbmanager {
     static Logger log = Global.getLogger(ba_limbmanager.class);
-    protected static HashMap<String, ba_limbmanager.ba_limb> limbMap = new HashMap<>();
-    protected static HashMap<String, List<ba_limb>> limbGroupMap = new HashMap<>();
+    public static HashMap<String, ba_limbmanager.ba_limb> limbMap = new HashMap<>();
+    public static HashMap<String, List<ba_limb>> limbGroupMap = new HashMap<>();
     public static final String DYNAMIC_LIMB_ID_CUSTOM_DIVIDER = "|";
     public static void onApplicationLoad() {
         loadLimbs();
