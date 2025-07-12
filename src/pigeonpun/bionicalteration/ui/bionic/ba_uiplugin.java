@@ -60,6 +60,7 @@ public class ba_uiplugin extends ba_uicommon {
     String currentTabId = OVERVIEW;
     String currentWorkshopEffectOrInvTab = WORKSHOP_INV;
     protected List<CampaignFleetAPI> currentFleets = new ArrayList<>();
+    protected List<ba_officermanager.ba_bioformAugmentedData> currentBioformData = new ArrayList<>(); //use as a placeholder the actual bioform info from person to avoid overriding unintentionally person's bioform
 //    public static float currentScrollPositionOverview = 0;
     public static ba_uiplugin createDefault() {
         return new ba_uiplugin();
@@ -1105,11 +1106,22 @@ public class ba_uiplugin extends ba_uicommon {
         border.getPosition().setSize(borderW, borderH);
         listContainer.mainPanel.addComponent(border).setLocation(0,0).inTL(borderX, borderY);
 
+        ba_officermanager.ba_aimemorydata aimemorydata = ba_officermanager.getAIMemData(this.currentPerson, this.dialog);
+        if(!aimemorydata.shell.equals(ba_variablemanager.BA_SYNTHETIC_BODY_HULLMOD)) {
+            border.setOpacity(0.3f);
+            return;
+        }
+        listTooltipContainer.setParaFontVictor14();
+        LabelAPI header = listTooltipContainer.addPara("Available parts", 0);
+        header.setAlignment(Alignment.MID);
+        header.getPosition().inTL(0, pad + pad);
+        listTooltipContainer.setParaFontDefault();
+
         //sub container
         int subEffectW = (int) (borderW - pad - pad);
-        int subEffectH = (int) (borderH - pad - pad - pad/2);
+        int subEffectH = (int) (borderH - pad*3 - header.computeTextHeight("Available limbs") - pad/2);
         int subEffectX = (int) (pad / 2 + pad);
-        int subEffectY = (int) (pad + pad + pad/2);
+        int subEffectY = (int) (pad*3 + header.computeTextHeight("Available limbs"));
         String subEffectListTooltipKey = "WORKSHOP_SUB_LIMB_LIST_TOOLTIP";
         String subEffectListPanelKey = "WORKSHOP_SUB_LIMB_LIST_PANEL";
         ba_component subLimbListContainer = new ba_component(componentMap, listContainer.mainPanel, subEffectW, subEffectH, subEffectX, subEffectY, false, subEffectListPanelKey);
@@ -1119,7 +1131,7 @@ public class ba_uiplugin extends ba_uicommon {
         int spacerY = 5;
         //bionic effects
         int i = 0;
-        int rowHeight = 35;
+        int rowHeight = 45;
         int btnW = 40;
         for(ba_limbmanager.ba_limb limb: ba_limbmanager.limbMap.values()) {
             //sub container
@@ -1133,10 +1145,13 @@ public class ba_uiplugin extends ba_uicommon {
             TooltipMakerAPI innerLimbTooltipContainer = innerLimbContainer.createTooltip(innerLimbTooltipKey, innerLimbW, innerLimbH, false, 0,0);
             subLimbListContainer.attachSubPanel(innerLimbTooltipKey, innerLimbPanelKey, innerLimbContainer);
 
-            innerLimbTooltipContainer.addButton("+", null, 40, 20f, 0);
+            innerLimbTooltipContainer.addButton("+", null, Misc.getTextColor(), ba_variablemanager.BA_OVERFORM_COLOR.darker().darker(), Alignment.MID, CutStyle.TL_BR,40, 32f, 0);
             LabelAPI text = innerLimbTooltipContainer.addPara(limb.name, 0);
-            text.getPosition().inTL(btnW + pad, 0);
+            text.getPosition().inTL(btnW + pad + pad, 0);
             text.setAlignment(Alignment.LMID);
+            LabelAPI description = innerLimbTooltipContainer.addPara(limb.description, Misc.getGrayColor(),0);
+            description.getPosition().inTL(btnW + pad + pad, description.computeTextHeight(limb.name) + pad /2);
+            description.setAlignment(Alignment.LMID);
 //            text.getPosition().inTL(btnW + pad, rowHeight*i);
             i++;
         }
@@ -1155,7 +1170,7 @@ public class ba_uiplugin extends ba_uicommon {
         String effectListTooltipKey = "LIMB_MOD_SUMMARY_TOOLTIP";
         String effectListPanelKey = "LIMB_MOD_SUMMARY_PANEL";
         ba_component listContainer = new ba_component(componentMap, creatorComponent.mainPanel, W, H, X, Y, true, effectListPanelKey);
-        TooltipMakerAPI effectListTooltipContainer = listContainer.createTooltip(effectListTooltipKey, W, H, false, 0,0);
+        TooltipMakerAPI listTooltipContainer = listContainer.createTooltip(effectListTooltipKey, W, H, false, 0,0);
         creatorComponent.attachSubPanel(creatorComponentTooltip, effectListPanelKey,listContainer,X,Y);
 
         //border effect list
@@ -1163,9 +1178,20 @@ public class ba_uiplugin extends ba_uicommon {
         int borderH = (int) (H * 1f - pad);
         int borderX = (int) pad/2;
         int borderY = (int) (0);
-        UIComponentAPI border = effectListTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
+        UIComponentAPI border = listTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
         border.getPosition().setSize(borderW, borderH);
         listContainer.mainPanel.addComponent(border).setLocation(0,0).inTL(borderX, borderY);
+
+        ba_officermanager.ba_aimemorydata aimemorydata = ba_officermanager.getAIMemData(this.currentPerson, this.dialog);
+        if(!aimemorydata.shell.equals(ba_variablemanager.BA_SYNTHETIC_BODY_HULLMOD)) {
+            border.setOpacity(0.3f);
+            return;
+        }
+        listTooltipContainer.setParaFontVictor14();
+        LabelAPI header = listTooltipContainer.addPara("Console", 0);
+        header.setAlignment(Alignment.MID);
+        header.getPosition().inTL(0, pad);
+        listTooltipContainer.setParaFontDefault();
     }
     public void displayRemoveBionicWorkshop(ba_component creatorComponent, String creatorComponentTooltip, float removeW, float removeH, float removeX, float removeY) {
         final float pad = 10f;
@@ -1554,7 +1580,20 @@ public class ba_uiplugin extends ba_uicommon {
                         break;
                     }
                 }
-
+                if(tokens[0].equals("bioform")) {
+                    if(tokens[1].equals("createBaselineVariant")) {
+                        //create new variant
+                        this.currentBioformData = ba_officermanager.createDefaultVariantLimbs();
+                        needsReset = true;
+                        break;
+                    }
+                    if(tokens[1].equals("saveVariant")) {
+                        //create new variant
+                        ba_officermanager.saveVariantLimbs(currentPerson, dialog, currentBioformData);
+                        needsReset = true;
+                        break;
+                    }
+                }
             }
         }
 

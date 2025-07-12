@@ -255,6 +255,28 @@ public class ba_officermanager {
         }
         return aimemorydata;
     }
+    public static boolean saveAIMemData(@NotNull PersonAPI person, @Nullable InteractionDialogAPI dialog, ba_aimemorydata newData) {
+        CampaignFleetAPI fleet = getFleetFromPerson(person, dialog);
+        ba_fleetmemorydata fleetMem = getFleetBionicMemoryData(fleet);
+        FleetMemberAPI member = null;
+        for(FleetMemberAPI memb: fleet.getFleetData().getMembersListCopy()) {
+            if(memb.getCaptain().getId().equals(person.getId())) {
+                member = memb;
+            }
+        }
+        ba_aimemorydata aimemorydata = null;
+        if(fleetMem != null && member != null) {
+            aimemorydata = fleetMem.listAIMember.get(member.getId());
+            if(aimemorydata != null) {
+                aimemorydata = newData;
+                fleetMem.listAIMember.put(member.getId(), aimemorydata);
+                fleet.getMemoryWithoutUpdate().set(ba_variablemanager.BA_FLEET_MEMORY_BIONIC_KEY, fleetMem);
+                return true;
+            }
+        }
+
+        return false;
+    }
     /**
      * Find fleet which contains person
      * @return null if can't find dialog fleet.
@@ -467,6 +489,20 @@ public class ba_officermanager {
             limit = (int) data.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);
         }
         return limit;
+    }
+    //todo: need testing
+    public static List<ba_bioformAugmentedData> createDefaultVariantLimbs() {
+        List<ba_bioformAugmentedData> data = new ArrayList<>();
+        for(String limb :ba_variantmanager.getListLimbFromVariant("GENERIC_HUMAN")) {
+            data.add(new ba_bioformAugmentedData(ba_limbmanager.getLimb(limb), null, null));
+        }
+        return data;
+    }
+    //todo: need testing
+    public static void saveVariantLimbs(PersonAPI person, InteractionDialogAPI dialog, List<ba_bioformAugmentedData> newBioformData) {
+        ba_aimemorydata data = getAIMemData(person, dialog);
+        data.anatomy = newBioformData;
+        saveAIMemData(person, dialog, data);
     }
     //todo: need testing on: consciousness, other fleet with AI, player fleet with AI, BRM management UI
     /**
