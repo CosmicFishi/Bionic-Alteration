@@ -47,6 +47,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
     public static ba_debounceplugin debounceplugin = new ba_debounceplugin();
     public List<CargoStackAPI> cargoBionic = new ArrayList<>();
     public static boolean isDisplayingOtherFleets = false;
+    protected List<ba_officermanager.ba_bioformAugmentedData> currentBioformData = new ArrayList<>(); //use as a placeholder the actual bioform info from person to avoid overriding unintentionally person's bioform
     public static float getInitDialogContainerPaddingX() {
         float containerPadding = 0;
 
@@ -660,7 +661,27 @@ public class ba_uicommon implements CustomUIPanelPlugin {
 
         if(this.currentPerson.isAICore()) {
             ba_officermanager.ba_aimemorydata aimemorydata = ba_officermanager.getAIMemData(this.currentPerson, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
-            if(aimemorydata.shell.equals(ba_variablemanager.BA_SYNTHETIC_BODY_HULLMOD)) {
+            //if AI person have the bioform data
+            if(!aimemorydata.anatomy.isEmpty() && !aimemorydata.shell.equals(ba_variablemanager.BA_SYNTHETIC_BODY_HULLMOD)) {
+                this.currentBioformData = aimemorydata.anatomy;
+            }
+            //if AI person have not set up bioform data
+            if(this.currentBioformData == null ) {
+                //todo: set a price for creating new bioform
+                LabelAPI loreBioformLabel = infoPersonBionicTooltipContainer.addPara("//SCANNING// ...  Synthetic bioform is not detected in current unit ...", 0f, ba_variablemanager.BA_OVERFORM_COLOR, "");
+                loreBioformLabel.getPosition().inTL(tableW/2 - loreBioformLabel.computeTextWidth("//SCANNING// ...  Synthetic bioform is not detected in current unit")/2, tableH/2 - pad*3);
+                LabelAPI createBioformLabel = infoPersonBionicTooltipContainer.addPara("//%s", 0f, ba_variablemanager.BA_OVERFORM_COLOR, "CREATE NEW BIOFORM ?");
+                createBioformLabel.getPosition().inTL(tableW/2 - createBioformLabel.computeTextWidth("//CREATE NEW BIOFORM ?")/2, tableH/2);
+                //Create button
+                int bioformBtnH = 40;
+                int bioformBtnW = (int) (120);
+                int bioformBtnX = (int) (tableW/2);
+                int bioformBtnY = (int) (tableH/2 + pad*3);
+                ButtonAPI bioformButton = infoPersonBionicTooltipContainer.addButton("Confirm", null, Misc.getTextColor(), Misc.getPositiveHighlightColor().darker().darker(), Alignment.MID, CutStyle.TL_BR,  bioformBtnW, bioformBtnH, 0);
+                bioformButton.getPosition().inTL(bioformBtnX - bioformBtnW/2,bioformBtnY);
+                bioformButton.setShortcut(Keyboard.KEY_G, true);
+                addButtonToList(bioformButton, "bioform:createBaselineVariant");
+            } else {
                 //todo: display bioform stuffs
                 //table header
                 String tableHeaderTooltipContainerKey = "BIONIC_TABLE_HEADER_TOOLTIP";
@@ -683,22 +704,6 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 int bionicBRMW = (int) (bionicRowW * 0.2f);
                 int bionicConsciousX = bionicBRMX + bionicBRMW;
                 int bionicConsciousW = (int) (bionicRowW * 0.2f);
-            } else {
-                //todo: doesn't have anything, will need to set up the entire thing
-                //todo: set a price for creating new bioform
-                LabelAPI loreBioformLabel = infoPersonBionicTooltipContainer.addPara("//SCANNING// ...  Synthetic bioform is not detected in current unit ...", 0f, ba_variablemanager.BA_OVERFORM_COLOR, "");
-                loreBioformLabel.getPosition().inTL(tableW/2 - loreBioformLabel.computeTextWidth("//SCANNING// ...  Synthetic bioform is not detected in current unit")/2, tableH/2 - pad*3);
-                LabelAPI createBioformLabel = infoPersonBionicTooltipContainer.addPara("//%s", 0f, ba_variablemanager.BA_OVERFORM_COLOR, "CREATE NEW BIOFORM ?");
-                createBioformLabel.getPosition().inTL(tableW/2 - createBioformLabel.computeTextWidth("//CREATE NEW BIOFORM ?")/2, tableH/2);
-                //Create button
-                int bioformBtnH = 40;
-                int bioformBtnW = (int) (120);
-                int bioformBtnX = (int) (tableW/2);
-                int bioformBtnY = (int) (tableH/2 + pad*3);
-                ButtonAPI bioformButton = infoPersonBionicTooltipContainer.addButton("Confirm", null, Misc.getTextColor(), Misc.getPositiveHighlightColor().darker().darker(), Alignment.MID, CutStyle.TL_BR,  bioformBtnW, bioformBtnH, 0);
-                bioformButton.getPosition().inTL(bioformBtnX - bioformBtnW/2,bioformBtnY);
-                bioformButton.setShortcut(Keyboard.KEY_G, true);
-                addButtonToList(bioformButton, "bioform:createBaselineVariant");
             }
         }
         if(isScroll) {

@@ -60,7 +60,6 @@ public class ba_uiplugin extends ba_uicommon {
     String currentTabId = OVERVIEW;
     String currentWorkshopEffectOrInvTab = WORKSHOP_INV;
     protected List<CampaignFleetAPI> currentFleets = new ArrayList<>();
-    protected List<ba_officermanager.ba_bioformAugmentedData> currentBioformData = new ArrayList<>(); //use as a placeholder the actual bioform info from person to avoid overriding unintentionally person's bioform
 //    public static float currentScrollPositionOverview = 0;
     public static ba_uiplugin createDefault() {
         return new ba_uiplugin();
