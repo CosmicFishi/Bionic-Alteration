@@ -60,6 +60,7 @@ public class ba_uiplugin extends ba_uicommon {
     String currentTabId = OVERVIEW;
     String currentWorkshopEffectOrInvTab = WORKSHOP_INV;
     protected List<CampaignFleetAPI> currentFleets = new ArrayList<>();
+    protected HashMap<String, String> bioformChangeList = new HashMap<>();
 //    public static float currentScrollPositionOverview = 0;
     public static ba_uiplugin createDefault() {
         return new ba_uiplugin();
@@ -1008,7 +1009,28 @@ public class ba_uiplugin extends ba_uicommon {
             selectedBionicLabel.setHighlightColors(Misc.getBrightPlayerColor(), this.currentSelectedBionic != null ? this.currentSelectedBionic.displayColor: Misc.getGrayColor(), bad);
         }
         if(this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_BIOFORM)) {
-            displayBioformTableWithKeyPreset(infoPersonContainer, infoPersonTooltipKey, "WORKSHOP",true, tableW, tableH + btnH + pad, tableX, tableY);
+            int bioformW = (int) (tableW - 3);
+            int bioformH = (int) (tableH + btnH + pad);
+            int bioformX = tableX;
+            int bioformY = tableY;
+            UIComponentAPI borderContainer = infoPersonTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
+            borderContainer.getPosition().setSize(bioformW, bioformH);
+            borderContainer.getPosition().inTL(bioformX,bioformY);
+            infoPersonTooltipContainer.addComponent(borderContainer);
+
+            //table header
+            int headerH = 30;
+            infoPersonTooltipContainer.setParaOrbitronLarge();
+            if(this.currentPerson.isAICore() && !this.currentBioformData.isEmpty()) {
+                LabelAPI header = infoPersonTooltipContainer.addPara("LIMB PART COUNT: %s / %s", 0f, Misc.getHighlightColor(), "" + this.currentBioformData.size(), "" + bionicalterationplugin.bioformMaxLimbCount);
+                header.getPosition().setSize(bioformW, headerH);
+                header.getPosition().inTL(bioformX + header.computeTextWidth(header.getText()), bioformY + header.computeTextHeight(header.getText())/2);
+            }
+            int bTableH = (int) (bioformH - headerH - pad);
+            int bTableY = (int) (bioformY + headerH + pad);
+            infoPersonTooltipContainer.setParaFontDefault();
+            //bioform limbs
+            displayBioformTableWithKeyPreset(infoPersonContainer, infoPersonTooltipKey, "BIOFORM_WORKSHOP",true, bioformW, bTableH, bioformX, bTableY);
         }
     }
     public void displayEffectListWorkshop(ba_component creatorComponent, String creatorComponentTooltip, float effectListW, float effectListH, float effectListX, float effectListY) {
@@ -1106,7 +1128,7 @@ public class ba_uiplugin extends ba_uicommon {
         listContainer.mainPanel.addComponent(border).setLocation(0,0).inTL(borderX, borderY);
 
         ba_officermanager.ba_aimemorydata aimemorydata = ba_officermanager.getAIMemData(this.currentPerson, this.dialog);
-        if(!aimemorydata.shell.equals(ba_variablemanager.BA_SYNTHETIC_BODY_HULLMOD)) {
+        if(this.currentBioformData.isEmpty()) {
             border.setOpacity(0.3f);
             return;
         }
@@ -1182,7 +1204,7 @@ public class ba_uiplugin extends ba_uicommon {
         listContainer.mainPanel.addComponent(border).setLocation(0,0).inTL(borderX, borderY);
 
         ba_officermanager.ba_aimemorydata aimemorydata = ba_officermanager.getAIMemData(this.currentPerson, this.dialog);
-        if(!aimemorydata.shell.equals(ba_variablemanager.BA_SYNTHETIC_BODY_HULLMOD)) {
+        if(this.currentBioformData.isEmpty()) {
             border.setOpacity(0.3f);
             return;
         }
@@ -1191,6 +1213,14 @@ public class ba_uiplugin extends ba_uicommon {
         header.setAlignment(Alignment.MID);
         header.getPosition().inTL(0, pad);
         listTooltipContainer.setParaFontDefault();
+
+        int buttonW = 200;
+        int buttonH = 36;
+        ButtonAPI confirmButton = listTooltipContainer.addButton("Confirm modification", null, t, ba_variablemanager.BA_OVERFORM_COLOR.darker().darker(), Alignment.MID, CutStyle.NONE ,buttonW, buttonH, 0);
+        confirmButton.getPosition().inTL(0 + W/2 - buttonW/2,0 + H - buttonH - pad*2);
+//        addButtonToList(confirmButton, "bioform:saveVariant");
+        confirmButton.setEnabled(!bioformChangeList.isEmpty());
+        confirmButton.setShortcut(Keyboard.KEY_G, true);
     }
     public void displayRemoveBionicWorkshop(ba_component creatorComponent, String creatorComponentTooltip, float removeW, float removeH, float removeX, float removeY) {
         final float pad = 10f;
@@ -1627,6 +1657,7 @@ public class ba_uiplugin extends ba_uicommon {
                                         for(PersonAPI person: ba_officermanager.listPersons) {
                                             if(tokens[1].equals(person.getId())) {
                                                 this.currentPerson = person;
+                                                this.currentBioformData.clear();
                                                 shouldRefresh = true;
                                             }
                                         }

@@ -157,6 +157,15 @@ public class ba_limbmanager {
         }
         return null;
     }
+
+    /**
+     * Center of the entire bioform, can NOT be removed/alter/add using UI. Will be count toward total limb count
+     * @param limb
+     * @return
+     */
+    protected static boolean isLimbCentralLimb(ba_limb limb) {
+        return limb.tags.contains(ba_variablemanager.BA_BIOFORM_CENTRAL_TAG);
+    }
     public static class ba_limb {
         public String limbId;
         public String name;

@@ -29,6 +29,8 @@ public class bionicalterationplugin extends BaseModPlugin {
     public static int maxAcademyBRMTier = ba_variablemanager.BA_ACADEMIC_MAX_BRM_TIER;
     public static int academyBRMUpgradeBase = ba_variablemanager.BA_ACADEMIC_UPGRADE_BASE_CREDIT;
     public static float brmUpgradePerTier = ba_variablemanager.BA_BRM_LIMIT_BONUS_PER_LEVEL;
+    //todo: Set this up in settings.json
+    public static int bioformMaxLimbCount = ba_variablemanager.BA_BIOFORM_MAX_LIMB_COUNT;
     @Override
     public void onApplicationLoad() throws Exception {
 //        ba_manager.getInstance();

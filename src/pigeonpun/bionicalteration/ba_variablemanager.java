@@ -99,4 +99,6 @@ public class ba_variablemanager {
     public static final String BA_BLIND_ENTRY_ITEM_ID = "ba_blind_entry";
     public static final int BA_BLIND_ENTRY_BRM_INCREMENT = (int) (BA_BRM_LIMIT_BONUS_PER_LEVEL * 2);
     public static final String BA_DYNAMICALLY_CREATE_LIMB = "ba_dynamically_created_limb";
+    public static final String BA_BIOFORM_CENTRAL_TAG = "central_bioform"; //Center of the entire bioform, can NOT be removed/alter/add using UI. Will be count toward total limb count
+    public static final int BA_BIOFORM_MAX_LIMB_COUNT = 8;
 }
