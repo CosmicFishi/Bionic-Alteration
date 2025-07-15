@@ -163,7 +163,7 @@ public class ba_limbmanager {
      * @param limb
      * @return
      */
-    protected static boolean isLimbCentralLimb(ba_limb limb) {
+    public static boolean isLimbCentralLimb(ba_limb limb) {
         return limb.tags.contains(ba_variablemanager.BA_BIOFORM_CENTRAL_TAG);
     }
     public static class ba_limb {
