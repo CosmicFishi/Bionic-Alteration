@@ -60,7 +60,6 @@ public class ba_uiplugin extends ba_uicommon {
     String currentTabId = OVERVIEW;
     String currentWorkshopEffectOrInvTab = WORKSHOP_INV;
     protected List<CampaignFleetAPI> currentFleets = new ArrayList<>();
-    protected HashMap<String, String> bioformChangeList = new HashMap<>();
 //    public static float currentScrollPositionOverview = 0;
     public static ba_uiplugin createDefault() {
         return new ba_uiplugin();
@@ -1030,7 +1029,7 @@ public class ba_uiplugin extends ba_uicommon {
             int bTableY = (int) (bioformY + headerH + pad);
             infoPersonTooltipContainer.setParaFontDefault();
             //bioform limbs
-            displayBioformTableWithKeyPreset(infoPersonContainer, infoPersonTooltipKey, "BIOFORM_WORKSHOP",true, bioformW, bTableH, bioformX, bTableY);
+            displayBioformTableWithKeyPreset(infoPersonContainer, infoPersonTooltipKey, "BIOFORM_WORKSHOP",true, bioformW - pad, bTableH, bioformX + pad/2, bTableY);
         }
     }
     public void displayEffectListWorkshop(ba_component creatorComponent, String creatorComponentTooltip, float effectListW, float effectListH, float effectListX, float effectListY) {
@@ -1155,26 +1154,28 @@ public class ba_uiplugin extends ba_uicommon {
         int rowHeight = 45;
         int btnW = 40;
         for(ba_limbmanager.ba_limb limb: ba_limbmanager.limbMap.values()) {
-            //sub container
-            int innerLimbW = (int) subEffectW - btnW;
-            int innerLimbH = (int) rowHeight;
-            int innerLimbX = (int) (0);
-            int innerLimbY = (int) (rowHeight * i);
-            String innerLimbTooltipKey = "WORKSHOP_SUB_LIMB_LIST_TOOLTIP";
-            String innerLimbPanelKey = "WORKSHOP_SUB_LIMB_LIST_PANEL_" + i;
-            ba_component innerLimbContainer = new ba_component(componentMap, subLimbListContainer.mainPanel, innerLimbW, innerLimbH, innerLimbX, innerLimbY, false, innerLimbPanelKey);
-            TooltipMakerAPI innerLimbTooltipContainer = innerLimbContainer.createTooltip(innerLimbTooltipKey, innerLimbW, innerLimbH, false, 0,0);
-            subLimbListContainer.attachSubPanel(innerLimbTooltipKey, innerLimbPanelKey, innerLimbContainer);
+            if(!ba_limbmanager.isLimbCentralLimb(limb) && ba_limbmanager.isLimbBaseLimb(limb)) {
+                //sub container
+                int innerLimbW = (int) subEffectW - btnW;
+                int innerLimbH = (int) rowHeight;
+                int innerLimbX = (int) (0);
+                int innerLimbY = (int) (rowHeight * i);
+                String innerLimbTooltipKey = "WORKSHOP_SUB_LIMB_LIST_TOOLTIP";
+                String innerLimbPanelKey = "WORKSHOP_SUB_LIMB_LIST_PANEL_" + i;
+                ba_component innerLimbContainer = new ba_component(componentMap, subLimbListContainer.mainPanel, innerLimbW, innerLimbH, innerLimbX, innerLimbY, false, innerLimbPanelKey);
+                TooltipMakerAPI innerLimbTooltipContainer = innerLimbContainer.createTooltip(innerLimbTooltipKey, innerLimbW, innerLimbH, false, 0,0);
+                subLimbListContainer.attachSubPanel(innerLimbTooltipKey, innerLimbPanelKey, innerLimbContainer);
 
-            innerLimbTooltipContainer.addButton("+", null, Misc.getTextColor(), ba_variablemanager.BA_OVERFORM_COLOR.darker().darker(), Alignment.MID, CutStyle.TL_BR,40, 32f, 0);
-            LabelAPI text = innerLimbTooltipContainer.addPara(limb.name, 0);
-            text.getPosition().inTL(btnW + pad + pad, 0);
-            text.setAlignment(Alignment.LMID);
-            LabelAPI description = innerLimbTooltipContainer.addPara(limb.description, Misc.getGrayColor(),0);
-            description.getPosition().inTL(btnW + pad + pad, description.computeTextHeight(limb.name) + pad /2);
-            description.setAlignment(Alignment.LMID);
+                innerLimbTooltipContainer.addButton("+", null, Misc.getTextColor(), ba_variablemanager.BA_OVERFORM_COLOR.darker().darker(), Alignment.MID, CutStyle.TL_BR,40, 32f, 0);
+                LabelAPI text = innerLimbTooltipContainer.addPara(limb.name, 0);
+                text.getPosition().inTL(btnW + pad + pad, 0);
+                text.setAlignment(Alignment.LMID);
+                LabelAPI description = innerLimbTooltipContainer.addPara(limb.description, Misc.getGrayColor(),0);
+                description.getPosition().inTL(btnW + pad + pad, description.computeTextHeight(limb.name) + pad /2);
+                description.setAlignment(Alignment.LMID);
 //            text.getPosition().inTL(btnW + pad, rowHeight*i);
-            i++;
+                i++;
+            }
         }
 
         //do the adding late so the scroll work
@@ -1523,6 +1524,9 @@ public class ba_uiplugin extends ba_uicommon {
                             switch (tokens[2]) {
                                 case SUB_WORKSHOP_MODE_BIOFORM:
                                     this.currentWorkShopSubMode = tokens[2];
+                                    this.bioformRemoveList.clear();
+                                    this.bioformAddList.clear();
+                                    this.bioformChangeList.clear();
                                     break;
                             }
                         }
@@ -1610,6 +1614,16 @@ public class ba_uiplugin extends ba_uicommon {
                     }
                 }
                 if(tokens[0].equals("bioform")) {
+                    if(tokens[1].equals("remove") && tokens.length > 2) {
+                        //todo: need to check the case where the limb is not base limb -> limb newly created -> remove the limb completely
+                        if(!this.bioformRemoveList.contains(tokens[2].toString())) {
+                            this.bioformRemoveList.add(tokens[2].toString());
+                        } else {
+                            this.bioformRemoveList.remove(tokens[2].toString());
+                        }
+                        needsReset = true;
+                        break;
+                    }
                     if(tokens[1].equals("createBaselineVariant")) {
                         //create new variant
                         this.currentBioformData = ba_officermanager.createDefaultVariantLimbs();

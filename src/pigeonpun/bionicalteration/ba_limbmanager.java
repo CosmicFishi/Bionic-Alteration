@@ -18,7 +18,7 @@ public class ba_limbmanager {
     static Logger log = Global.getLogger(ba_limbmanager.class);
     public static HashMap<String, ba_limbmanager.ba_limb> limbMap = new HashMap<>();
     public static HashMap<String, List<ba_limb>> limbGroupMap = new HashMap<>();
-    public static final String DYNAMIC_LIMB_ID_CUSTOM_DIVIDER = "|";
+    public static final String DYNAMIC_LIMB_ID_CUSTOM_DIVIDER = "`";
     public static void onApplicationLoad() {
         loadLimbs();
     }
@@ -165,6 +165,9 @@ public class ba_limbmanager {
      */
     public static boolean isLimbCentralLimb(ba_limb limb) {
         return limb.tags.contains(ba_variablemanager.BA_BIOFORM_CENTRAL_TAG);
+    }
+    public static boolean isLimbBaseLimb(ba_limb limb) {
+        return limb.tags.contains("base_dynamic_limb");
     }
     public static class ba_limb {
         public String limbId;

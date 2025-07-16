@@ -48,6 +48,9 @@ public class ba_uicommon implements CustomUIPanelPlugin {
     public List<CargoStackAPI> cargoBionic = new ArrayList<>();
     public static boolean isDisplayingOtherFleets = false;
     protected List<ba_officermanager.ba_bioformAugmentedData> currentBioformData = new ArrayList<>(); //use as a placeholder the actual bioform info from person to avoid overriding unintentionally person's bioform
+    protected HashMap<String, String> bioformChangeList = new HashMap<>();
+    protected List<String> bioformAddList = new ArrayList<>();
+    protected List<String> bioformRemoveList = new ArrayList<>();
     public static float getInitDialogContainerPaddingX() {
         float containerPadding = 0;
 
@@ -714,35 +717,41 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                     int lineW = 30;
                     int spacerH = (int) (pad + pad/2);
                     if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb)) {
-                        UIComponentAPI borderSelected = infoPersonBionicTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
+                        UIComponentAPI borderSelected = infoPersonBionicTooltipContainer.createRect(ba_variablemanager.BA_OVERFORM_COLOR.darker(), 1);
                         borderSelected.getPosition().setSize(1f, singleBionicInstalledNameH + spacerH);
                         borderSelected.getPosition().inTL(lineW/2, i*(singleBionicInstalledNameH + spacerH));
                         if(i == this.currentBioformData.size()-1) {
                             borderSelected.getPosition().setSize(1f, singleBionicInstalledNameH/2);
                         }
+                        if(i == 0) {
+                            borderSelected.getPosition().setSize(1f, singleBionicInstalledNameH/2+spacerH);
+                            borderSelected.getPosition().inTL(lineW/2, singleBionicInstalledNameH/2);
+                        }
                         infoPersonBionicContainer.mainPanel.addComponent(borderSelected);
-                        UIComponentAPI border2 = infoPersonBionicTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
+                        UIComponentAPI border2 = infoPersonBionicTooltipContainer.createRect(ba_variablemanager.BA_OVERFORM_COLOR.darker(), 1);
                         border2.getPosition().setSize(lineW/2 + pad/2, 1f);
                         border2.getPosition().inTL(lineW/2, i*(singleBionicInstalledNameH + spacerH) + singleBionicInstalledNameH/2);
                         infoPersonBionicContainer.mainPanel.addComponent(border2);
                     } else {
-                        UIComponentAPI borderSelected = infoPersonBionicTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
+                        UIComponentAPI borderSelected = infoPersonBionicTooltipContainer.createRect(ba_variablemanager.BA_OVERFORM_COLOR.darker(), 1);
                         borderSelected.getPosition().setSize(1f, spacerH);
                         borderSelected.getPosition().inTL(lineW/2, i*(singleBionicInstalledNameH + spacerH) + singleBionicInstalledNameH);
                         infoPersonBionicContainer.mainPanel.addComponent(borderSelected);
+                        if(i == this.currentBioformData.size()-1) {
+                            borderSelected.getPosition().setSize(0f, 0);
+                            borderSelected.setOpacity(0);
+                        }
                     }
                     //hover
                     int areaX = !ba_limbmanager.isLimbCentralLimb(augmentData.limb)? lineW: 0;
-                    ButtonAPI areaChecker = personDisplayContainerTooltip.addAreaCheckbox("", null,!ba_limbmanager.isLimbCentralLimb(augmentData.limb)? Misc.getDarkPlayerColor().brighter(): ba_variablemanager.BA_OVERFORM_COLOR.darker(), !ba_limbmanager.isLimbCentralLimb(augmentData.limb)? Misc.getDarkPlayerColor().darker().darker(): ba_variablemanager.BA_OVERFORM_COLOR.darker(), Misc.getBrightPlayerColor(), bionicW - areaX, bionicH, 0);
-                    addButtonToList(areaChecker, "hover_bionic_table_limb:"+augmentData.limb.limbId + (augmentData.bionicInstalled != null ? ":"+augmentData.bionicInstalled.getId() : ""));
+                    ButtonAPI areaChecker = personDisplayContainerTooltip.addAreaCheckbox("", null,!ba_limbmanager.isLimbCentralLimb(augmentData.limb)? Misc.getDarkPlayerColor().brighter(): ba_variablemanager.BA_OVERFORM_COLOR.darker(), !ba_limbmanager.isLimbCentralLimb(augmentData.limb)? Misc.getDarkPlayerColor(): ba_variablemanager.BA_OVERFORM_COLOR.darker(), Misc.getBrightPlayerColor(), bionicW - areaX, bionicH, 0);
+                    addButtonToList(areaChecker, "bioform:remove:"+augmentData.limb.limbId + (augmentData.bionicInstalled != null ? ":"+augmentData.bionicInstalled.getId() : ""));
                     areaChecker.getPosition().setLocation(0,0).inTL(areaX, 0);
                     if(ba_limbmanager.isLimbCentralLimb(augmentData.limb)) {
                         areaChecker.setClickable(false);
                     }
-                    if(this.currentSelectedLimb != null && !ba_limbmanager.isLimbCentralLimb(augmentData.limb)) {
-                        if(this.currentSelectedLimb.limbId.equals(augmentData.limb.limbId)) {
-                            areaChecker.highlight();
-                        }
+                    if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb) && this.bioformRemoveList.contains(augmentData.limb.limbId)) {
+                        areaChecker.highlight();
                     }
                     //hover pop up
                     personDisplayContainerTooltip.addTooltipToPrevious(new TooltipMakerAPI.TooltipCreator() {
@@ -802,22 +811,23 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                     int nameX = limbX + (!ba_limbmanager.isLimbCentralLimb(augmentData.limb)? lineW: 0);
                     TooltipMakerAPI bionicLimbNameTooltip = bionicDisplayContainer.createTooltip("BIONIC_LIMB_NAME", nameW, nameH, false, 0, 0);
                     bionicLimbNameTooltip.getPosition().inTL(nameX, 0);
-                    LabelAPI limbName = bionicLimbNameTooltip.addPara(augmentData.limb.name, pad);
-                    limbName.setHighlight(augmentData.limb.name);
+                    String limbText = augmentData.limb.name;
+                    if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb) && this.bioformRemoveList.contains(augmentData.limb.limbId)) {
+                        limbText += " - Removing";
+                    }
+                    if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb) && this.bioformAddList.contains(augmentData.limb.limbId)) {
+                        limbText += " - Adding";
+                    }
+                    LabelAPI limbName = bionicLimbNameTooltip.addPara(limbText, pad);
+                    limbName.setHighlight(limbText);
+                    limbName.setHighlightColors(t);
                     //todo: disable/enable the limb if selected
-//                    if(highlightLimbGroupID != "") {
-//                        List<ba_limbmanager.ba_limb> limbList = ba_limbmanager.getListLimbFromGroup(highlightLimbGroupID);
-//                        for (ba_limbmanager.ba_limb limb: limbList) {
-//                            if(limb.limbId.equals(augmentData.limb.limbId)) {
-//                                limbName.setHighlightColors(Misc.getPositiveHighlightColor());
-//                                break;
-//                            } else {
-//                                limbName.setHighlightColors(t);
-//                            }
-//                        }
-//                    } else {
-                        limbName.setHighlightColors(t);
-//                    }
+                    if(this.bioformAddList.contains(augmentData.limb.limbId)) {
+                        limbName.setHighlightColors(Misc.getPositiveHighlightColor());
+                    }
+                    if(this.bioformRemoveList.contains(augmentData.limb.limbId)) {
+                        limbName.setHighlightColors(Misc.getNegativeHighlightColor());
+                    }
                     limbName.getPosition().inTL(pad/2,12);
 
                     //---------Bionic
