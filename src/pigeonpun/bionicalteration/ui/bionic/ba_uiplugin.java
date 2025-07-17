@@ -1021,7 +1021,7 @@ public class ba_uiplugin extends ba_uicommon {
             int headerH = 30;
             infoPersonTooltipContainer.setParaOrbitronLarge();
             if(this.currentPerson.isAICore() && !this.currentBioformData.isEmpty()) {
-                LabelAPI header = infoPersonTooltipContainer.addPara("LIMB PART COUNT: %s / %s", 0f, Misc.getHighlightColor(), "" + this.getCurrentLimbPartCount(), "" + getCurrentLimbLimit());
+                LabelAPI header = infoPersonTooltipContainer.addPara("LIMB PART COUNT: %s / %s", 0f, getCurrentLimbPartCount() < getCurrentLimbLimit() ? Misc.getHighlightColor(): Misc.getNegativeHighlightColor(), "" + this.getCurrentLimbPartCount(), "" + getCurrentLimbLimit());
                 header.getPosition().setSize(bioformW, headerH);
                 header.getPosition().inTL(bioformX + header.computeTextWidth(header.getText()), bioformY + header.computeTextHeight(header.getText())/2);
             }
@@ -1168,6 +1168,7 @@ public class ba_uiplugin extends ba_uicommon {
 
                 ButtonAPI btn = innerLimbTooltipContainer.addButton("+", null, Misc.getTextColor(), ba_variablemanager.BA_OVERFORM_COLOR.darker().darker(), Alignment.MID, CutStyle.TL_BR,40, 32f, 0);
                 addButtonToList(btn, "bioform:add:"+limb.limbId);
+                btn.setEnabled(getCurrentLimbPartCount() < getCurrentLimbLimit());
                 LabelAPI text = innerLimbTooltipContainer.addPara(limb.name, 0);
                 text.getPosition().inTL(btnW + pad + pad, 0);
                 text.setAlignment(Alignment.LMID);
@@ -1218,6 +1219,24 @@ public class ba_uiplugin extends ba_uicommon {
 
         int buttonW = 200;
         int buttonH = 36;
+
+        String modificationListTooltipKey = "LIMB_MOD_SUMMARY_INNER_TOOLTIP";
+        String modificationListPanelKey = "LIMB_MOD_SUMMARY_INNER_PANEL";
+        int modificationH = (int) (H - header.computeTextHeight("Console") - buttonH - pad * 5);
+        int modificationW = (int) (W - pad - pad);
+        int modificationX = (int) (pad);
+        ba_component modificationListContainer = new ba_component(componentMap, listContainer.mainPanel, modificationW, modificationH, modificationX, 0, false, modificationListPanelKey);
+        TooltipMakerAPI modificationListTooltipContainer = modificationListContainer.createTooltip(modificationListTooltipKey, modificationW, modificationH, true, 0,0);
+        listContainer.attachSubPanel(effectListTooltipKey, modificationListPanelKey,modificationListContainer);
+
+        for(String line: this.bioformChangeList.values()) {
+            modificationListTooltipContainer.addPara(line, 0);
+            modificationListTooltipContainer.addSpacer(pad * 10);
+        }
+
+        modificationListContainer.mainPanel.addUIElement(modificationListTooltipContainer).setLocation(0,0).inTL(0, 0);
+
+
         ButtonAPI confirmButton = listTooltipContainer.addButton("Confirm modification", null, t, ba_variablemanager.BA_OVERFORM_COLOR.darker().darker(), Alignment.MID, CutStyle.NONE ,buttonW, buttonH, 0);
         confirmButton.getPosition().inTL(0 + W/2 - buttonW/2,0 + H - buttonH - pad*2);
 //        addButtonToList(confirmButton, "bioform:saveVariant");
@@ -1528,6 +1547,7 @@ public class ba_uiplugin extends ba_uicommon {
                                     this.bioformRemoveList.clear();
                                     this.bioformAddList.clear();
                                     this.bioformChangeList.clear();
+                                    this.currentBioformData.clear();
                                     break;
                             }
                         }
@@ -1621,30 +1641,32 @@ public class ba_uiplugin extends ba_uicommon {
                             for (ba_officermanager.ba_bioformAugmentedData currentBioformDatum : new ArrayList<>(this.currentBioformData)) {
                                 if(currentBioformDatum.limb.limbId.equals(tokens[2])) {
                                     this.currentBioformData.remove(currentBioformDatum);
+                                    this.bioformChangeList.remove(tokens[2].toString());
                                 }
                             }
                             needsReset = true;
                             break;
                         }
                         if(ba_limbmanager.getLimb(tokens[2]) != null) {
-                            //todo: need to check the case where the limb is not base limb -> limb newly created -> remove the limb completely
                             if(!this.bioformRemoveList.contains(tokens[2].toString())) {
                                 this.bioformRemoveList.add(tokens[2].toString());
+                                this.bioformChangeList.put(tokens[2].toString(), "(-) Removing " + ba_limbmanager.getLimb(tokens[2]).name);
                             } else {
                                 this.bioformRemoveList.remove(tokens[2].toString());
+                                this.bioformChangeList.remove(tokens[2].toString());
                             }
                             needsReset = true;
                             break;
                         }
                     }
                     if(tokens[1].equals("add") && tokens.length > 2) {
-                        //todo: need to check the case where the limb is not base limb -> limb newly created -> remove the limb completely
                         if(ba_limbmanager.getLimb(tokens[2]) != null && ba_limbmanager.isLimbBaseLimb(ba_limbmanager.getLimb(tokens[2]))) {
                             ba_limbmanager.ba_limb newLimb = ba_limbmanager.createDynamicLimb(ba_limbmanager.getLimb(tokens[2]), this.currentBioformData);
                             if(newLimb != null) {
                                 this.currentBioformData.add(new ba_officermanager.ba_bioformAugmentedData(newLimb, null, null));
                                 if (!this.bioformAddList.contains(newLimb.limbId.toString())) {
                                     this.bioformAddList.add(newLimb.limbId.toString());
+                                    this.bioformChangeList.put(newLimb.limbId.toString(), "(+) Adding " + newLimb.name);
                                 }
                                 needsReset = true;
                                 break;
@@ -1654,6 +1676,8 @@ public class ba_uiplugin extends ba_uicommon {
                     if(tokens[1].equals("createBaselineVariant")) {
                         //create new variant
                         this.currentBioformData = ba_officermanager.createDefaultVariantLimbs();
+                        //todo: save the variant
+//                        ba_officermanager.saveVariantLimbs(currentPerson, dialog, currentBioformData);
                         needsReset = true;
                         break;
                     }
