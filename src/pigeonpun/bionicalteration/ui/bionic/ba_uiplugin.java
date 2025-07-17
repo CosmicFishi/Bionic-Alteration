@@ -1021,7 +1021,7 @@ public class ba_uiplugin extends ba_uicommon {
             int headerH = 30;
             infoPersonTooltipContainer.setParaOrbitronLarge();
             if(this.currentPerson.isAICore() && !this.currentBioformData.isEmpty()) {
-                LabelAPI header = infoPersonTooltipContainer.addPara("LIMB PART COUNT: %s / %s", 0f, Misc.getHighlightColor(), "" + this.currentBioformData.size(), "" + bionicalterationplugin.bioformMaxLimbCount);
+                LabelAPI header = infoPersonTooltipContainer.addPara("LIMB PART COUNT: %s / %s", 0f, Misc.getHighlightColor(), "" + this.getCurrentLimbPartCount(), "" + getCurrentLimbLimit());
                 header.getPosition().setSize(bioformW, headerH);
                 header.getPosition().inTL(bioformX + header.computeTextWidth(header.getText()), bioformY + header.computeTextHeight(header.getText())/2);
             }
@@ -1166,7 +1166,8 @@ public class ba_uiplugin extends ba_uicommon {
                 TooltipMakerAPI innerLimbTooltipContainer = innerLimbContainer.createTooltip(innerLimbTooltipKey, innerLimbW, innerLimbH, false, 0,0);
                 subLimbListContainer.attachSubPanel(innerLimbTooltipKey, innerLimbPanelKey, innerLimbContainer);
 
-                innerLimbTooltipContainer.addButton("+", null, Misc.getTextColor(), ba_variablemanager.BA_OVERFORM_COLOR.darker().darker(), Alignment.MID, CutStyle.TL_BR,40, 32f, 0);
+                ButtonAPI btn = innerLimbTooltipContainer.addButton("+", null, Misc.getTextColor(), ba_variablemanager.BA_OVERFORM_COLOR.darker().darker(), Alignment.MID, CutStyle.TL_BR,40, 32f, 0);
+                addButtonToList(btn, "bioform:add:"+limb.limbId);
                 LabelAPI text = innerLimbTooltipContainer.addPara(limb.name, 0);
                 text.getPosition().inTL(btnW + pad + pad, 0);
                 text.setAlignment(Alignment.LMID);
@@ -1615,14 +1616,40 @@ public class ba_uiplugin extends ba_uicommon {
                 }
                 if(tokens[0].equals("bioform")) {
                     if(tokens[1].equals("remove") && tokens.length > 2) {
-                        //todo: need to check the case where the limb is not base limb -> limb newly created -> remove the limb completely
-                        if(!this.bioformRemoveList.contains(tokens[2].toString())) {
-                            this.bioformRemoveList.add(tokens[2].toString());
-                        } else {
-                            this.bioformRemoveList.remove(tokens[2].toString());
+                        if(this.bioformAddList.contains(tokens[2].toString())){
+                            this.bioformAddList.remove(tokens[2].toString());
+                            for (ba_officermanager.ba_bioformAugmentedData currentBioformDatum : new ArrayList<>(this.currentBioformData)) {
+                                if(currentBioformDatum.limb.limbId.equals(tokens[2])) {
+                                    this.currentBioformData.remove(currentBioformDatum);
+                                }
+                            }
+                            needsReset = true;
+                            break;
                         }
-                        needsReset = true;
-                        break;
+                        if(ba_limbmanager.getLimb(tokens[2]) != null) {
+                            //todo: need to check the case where the limb is not base limb -> limb newly created -> remove the limb completely
+                            if(!this.bioformRemoveList.contains(tokens[2].toString())) {
+                                this.bioformRemoveList.add(tokens[2].toString());
+                            } else {
+                                this.bioformRemoveList.remove(tokens[2].toString());
+                            }
+                            needsReset = true;
+                            break;
+                        }
+                    }
+                    if(tokens[1].equals("add") && tokens.length > 2) {
+                        //todo: need to check the case where the limb is not base limb -> limb newly created -> remove the limb completely
+                        if(ba_limbmanager.getLimb(tokens[2]) != null && ba_limbmanager.isLimbBaseLimb(ba_limbmanager.getLimb(tokens[2]))) {
+                            ba_limbmanager.ba_limb newLimb = ba_limbmanager.createDynamicLimb(ba_limbmanager.getLimb(tokens[2]), this.currentBioformData);
+                            if(newLimb != null) {
+                                this.currentBioformData.add(new ba_officermanager.ba_bioformAugmentedData(newLimb, null, null));
+                                if (!this.bioformAddList.contains(newLimb.limbId.toString())) {
+                                    this.bioformAddList.add(newLimb.limbId.toString());
+                                }
+                                needsReset = true;
+                                break;
+                            }
+                        }
                     }
                     if(tokens[1].equals("createBaselineVariant")) {
                         //create new variant

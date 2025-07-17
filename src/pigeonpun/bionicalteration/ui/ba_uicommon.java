@@ -813,10 +813,10 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                     bionicLimbNameTooltip.getPosition().inTL(nameX, 0);
                     String limbText = augmentData.limb.name;
                     if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb) && this.bioformRemoveList.contains(augmentData.limb.limbId)) {
-                        limbText += " - Removing";
+                        limbText += " (-)";
                     }
                     if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb) && this.bioformAddList.contains(augmentData.limb.limbId)) {
-                        limbText += " - Adding";
+                        limbText += " (+)";
                     }
                     LabelAPI limbName = bionicLimbNameTooltip.addPara(limbText, pad);
                     limbName.setHighlight(limbText);
@@ -1121,6 +1121,12 @@ public class ba_uicommon implements CustomUIPanelPlugin {
     @Override
     public void positionChanged(PositionAPI position) {
 
+    }
+    protected int getCurrentLimbPartCount() {
+        return this.currentBioformData.size() - this.bioformRemoveList.size();
+    }
+    protected int getCurrentLimbLimit() {
+        return bionicalterationplugin.bioformMaxLimbCount;
     }
 
     @Override

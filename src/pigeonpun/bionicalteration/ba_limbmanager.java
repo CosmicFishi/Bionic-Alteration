@@ -146,9 +146,31 @@ public class ba_limbmanager {
         }
         return false;
     }
-    public static ba_limb createDynamicLimb(ba_limbmanager.ba_limb baseLimb, String prefix) {
-        String dynamicId = baseLimb.limbId + DYNAMIC_LIMB_ID_CUSTOM_DIVIDER + prefix;
-        return new ba_limb(dynamicId, baseLimb);
+
+    /**
+     * AI for now. todo: add normal human
+     * @param baseLimb
+     * @return
+     */
+    public static ba_limb createDynamicLimb(ba_limbmanager.ba_limb baseLimb, List<ba_officermanager.ba_bioformAugmentedData> data) {
+        boolean isDuplicated = true;
+        int startPrefix = 2;
+        String dynamicId = baseLimb.limbId + DYNAMIC_LIMB_ID_CUSTOM_DIVIDER + startPrefix;
+        while(isDuplicated) {
+            boolean found = false;
+            for (ba_officermanager.ba_bioformAugmentedData baBioformAugmentedData : data) {
+                if(baBioformAugmentedData.limb.limbId.equals(dynamicId)) {
+                    startPrefix += 1;
+                    dynamicId = baseLimb.limbId + DYNAMIC_LIMB_ID_CUSTOM_DIVIDER + startPrefix;
+                    found = true;
+                    break;
+                }
+            }
+            if(!found) {
+                isDuplicated = false;
+            }
+        }
+        return new ba_limb(dynamicId, baseLimb, String.valueOf(startPrefix));
     }
     protected static ba_limbmanager.ba_limb getBaseLimb(ba_limbmanager.ba_limb dynamicLimb) {
         String[] limbIds = dynamicLimb.limbId.split(DYNAMIC_LIMB_ID_CUSTOM_DIVIDER.toString());
@@ -195,9 +217,9 @@ public class ba_limbmanager {
          * @param limbId
          * @param baseLimb
          */
-        public ba_limb(String limbId, @NotNull ba_limb baseLimb) {
+        public ba_limb(String limbId, @NotNull ba_limb baseLimb, String namePrefix) {
             this.limbId = limbId;
-            this.name = baseLimb.name;
+            this.name = baseLimb.name + " " + namePrefix;
             this.description = baseLimb.description;
             this.limbGroupList = baseLimb.limbGroupList;
             this.tags = baseLimb.tags;

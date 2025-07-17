@@ -490,7 +490,6 @@ public class ba_officermanager {
         }
         return limit;
     }
-    //todo: need testing
     public static List<ba_bioformAugmentedData> createDefaultVariantLimbs() {
         List<ba_bioformAugmentedData> data = new ArrayList<>();
         for(String limb :ba_variantmanager.getListLimbFromVariant("GENERIC_HUMAN")) {
