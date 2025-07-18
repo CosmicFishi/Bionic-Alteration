@@ -23,10 +23,8 @@ import pigeonpun.bionicalteration.ui.bionic.ba_uiplugin;
 import pigeonpun.bionicalteration.utils.ba_utils;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 
 //import static pigeonpun.bionicalteration.ui.bionic.ba_uiplugin.currentScrollPositionBionicTable;
 public class ba_uicommon implements CustomUIPanelPlugin {
@@ -48,7 +46,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
     public List<CargoStackAPI> cargoBionic = new ArrayList<>();
     public static boolean isDisplayingOtherFleets = false;
     protected List<ba_officermanager.ba_bioformAugmentedData> currentBioformData = new ArrayList<>(); //use as a placeholder the actual bioform info from person to avoid overriding unintentionally person's bioform
-    protected HashMap<String, String> bioformChangeList = new HashMap<>();
+    protected LinkedHashMap<String, String> bioformChangeList = new LinkedHashMap<>();
     protected List<String> bioformAddList = new ArrayList<>();
     protected List<String> bioformRemoveList = new ArrayList<>();
     public static float getInitDialogContainerPaddingX() {
@@ -716,26 +714,27 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                     //lines
                     int lineW = 30;
                     int spacerH = (int) (pad + pad/2);
+                    float offset = infoPersonBionicTooltipContainer.getExternalScroller() != null ? infoPersonBionicTooltipContainer.getExternalScroller().getYOffset() : 0;
                     if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb)) {
-                        UIComponentAPI borderSelected = infoPersonBionicTooltipContainer.createRect(ba_variablemanager.BA_OVERFORM_COLOR.darker(), 1);
+                        UIComponentAPI borderSelected = personDisplayContainerTooltip.createRect(ba_variablemanager.BA_OVERFORM_COLOR.darker(), 1);
                         borderSelected.getPosition().setSize(1f, singleBionicInstalledNameH + spacerH);
-                        borderSelected.getPosition().inTL(lineW/2, i*(singleBionicInstalledNameH + spacerH));
+                        borderSelected.getPosition().inTL(lineW/2, (i*(singleBionicInstalledNameH + spacerH)) + offset);
                         if(i == this.currentBioformData.size()-1) {
                             borderSelected.getPosition().setSize(1f, singleBionicInstalledNameH/2);
                         }
                         if(i == 0) {
                             borderSelected.getPosition().setSize(1f, singleBionicInstalledNameH/2+spacerH);
-                            borderSelected.getPosition().inTL(lineW/2, singleBionicInstalledNameH/2);
+                            borderSelected.getPosition().inTL(lineW/2, singleBionicInstalledNameH/2 + offset);
                         }
                         infoPersonBionicContainer.mainPanel.addComponent(borderSelected);
-                        UIComponentAPI border2 = infoPersonBionicTooltipContainer.createRect(ba_variablemanager.BA_OVERFORM_COLOR.darker(), 1);
+                        UIComponentAPI border2 = personDisplayContainerTooltip.createRect(ba_variablemanager.BA_OVERFORM_COLOR.darker(), 1);
                         border2.getPosition().setSize(lineW/2 + pad/2, 1f);
-                        border2.getPosition().inTL(lineW/2, i*(singleBionicInstalledNameH + spacerH) + singleBionicInstalledNameH/2);
+                        border2.getPosition().inTL(lineW/2, i*(singleBionicInstalledNameH + spacerH) + singleBionicInstalledNameH/2 + offset);
                         infoPersonBionicContainer.mainPanel.addComponent(border2);
                     } else {
-                        UIComponentAPI borderSelected = infoPersonBionicTooltipContainer.createRect(ba_variablemanager.BA_OVERFORM_COLOR.darker(), 1);
+                        UIComponentAPI borderSelected = personDisplayContainerTooltip.createRect(ba_variablemanager.BA_OVERFORM_COLOR.darker(), 1);
                         borderSelected.getPosition().setSize(1f, spacerH);
-                        borderSelected.getPosition().inTL(lineW/2, i*(singleBionicInstalledNameH + spacerH) + singleBionicInstalledNameH);
+                        borderSelected.getPosition().inTL(lineW/2, i*(singleBionicInstalledNameH + spacerH) + singleBionicInstalledNameH + offset);
                         infoPersonBionicContainer.mainPanel.addComponent(borderSelected);
                         if(i == this.currentBioformData.size()-1) {
                             borderSelected.getPosition().setSize(0f, 0);

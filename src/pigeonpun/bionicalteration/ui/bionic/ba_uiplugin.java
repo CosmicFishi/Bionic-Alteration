@@ -1229,9 +1229,33 @@ public class ba_uiplugin extends ba_uicommon {
         TooltipMakerAPI modificationListTooltipContainer = modificationListContainer.createTooltip(modificationListTooltipKey, modificationW, modificationH, true, 0,0);
         listContainer.attachSubPanel(effectListTooltipKey, modificationListPanelKey,modificationListContainer);
 
+        int i = 0;
         for(String line: this.bioformChangeList.values()) {
-            modificationListTooltipContainer.addPara(line, 0);
-            modificationListTooltipContainer.addSpacer(pad * 10);
+            //sub container
+            listTooltipContainer.setParaFontVictor14();
+            int innerTextW = (int) modificationW;
+            int innerTextH = (int) 30;
+            int innerTextX = (int) (pad);
+            int innerTextY = (int) (innerTextH * i);
+            String innerTextTooltipKey = "WORKSHOP_SUB_TEXT_CHANGE_LIST_TOOLTIP";
+            String innerTextPanelKey = "WORKSHOP_SUB_TEXT_CHANGE_LIST_PANEL_" + i;
+            ba_component innerLimbContainer = new ba_component(componentMap, modificationListContainer.mainPanel, innerTextW, innerTextH, innerTextX, innerTextY, false, innerTextPanelKey);
+            TooltipMakerAPI innerLimbTooltipContainer = innerLimbContainer.createTooltip(innerTextTooltipKey, innerTextW, innerTextH, false, 0,0);
+            modificationListContainer.attachSubPanel(modificationListTooltipKey, innerTextPanelKey, innerLimbContainer);
+            innerLimbTooltipContainer.setParaFontVictor14();
+            LabelAPI label = innerLimbTooltipContainer.addPara(line, 0);
+            label.getPosition().inTL(pad, 0);
+            label.getPosition().setSize(innerTextW, innerTextH);
+            label.setAlignment(Alignment.LMID);
+            label.setHighlight(line);
+            if(line.split(" ")[0].equals("-")) {
+                label.setHighlightColor(Misc.getNegativeHighlightColor());
+            }
+            if(line.split(" ")[0].equals("+")) {
+                label.setHighlightColor(Misc.getPositiveHighlightColor());
+            }
+
+            i++;
         }
 
         modificationListContainer.mainPanel.addUIElement(modificationListTooltipContainer).setLocation(0,0).inTL(0, 0);
@@ -1240,7 +1264,7 @@ public class ba_uiplugin extends ba_uicommon {
         ButtonAPI confirmButton = listTooltipContainer.addButton("Confirm modification", null, t, ba_variablemanager.BA_OVERFORM_COLOR.darker().darker(), Alignment.MID, CutStyle.NONE ,buttonW, buttonH, 0);
         confirmButton.getPosition().inTL(0 + W/2 - buttonW/2,0 + H - buttonH - pad*2);
 //        addButtonToList(confirmButton, "bioform:saveVariant");
-        confirmButton.setEnabled(!bioformChangeList.isEmpty());
+        confirmButton.setEnabled(!bioformChangeList.isEmpty() && getCurrentLimbLimit() >= getCurrentLimbPartCount());
         confirmButton.setShortcut(Keyboard.KEY_G, true);
     }
     public void displayRemoveBionicWorkshop(ba_component creatorComponent, String creatorComponentTooltip, float removeW, float removeH, float removeX, float removeY) {
@@ -1650,7 +1674,7 @@ public class ba_uiplugin extends ba_uicommon {
                         if(ba_limbmanager.getLimb(tokens[2]) != null) {
                             if(!this.bioformRemoveList.contains(tokens[2].toString())) {
                                 this.bioformRemoveList.add(tokens[2].toString());
-                                this.bioformChangeList.put(tokens[2].toString(), "(-) Removing " + ba_limbmanager.getLimb(tokens[2]).name);
+                                this.bioformChangeList.put(tokens[2].toString(), "- Removing " + ba_limbmanager.getLimb(tokens[2]).name);
                             } else {
                                 this.bioformRemoveList.remove(tokens[2].toString());
                                 this.bioformChangeList.remove(tokens[2].toString());
@@ -1666,7 +1690,7 @@ public class ba_uiplugin extends ba_uicommon {
                                 this.currentBioformData.add(new ba_officermanager.ba_bioformAugmentedData(newLimb, null, null));
                                 if (!this.bioformAddList.contains(newLimb.limbId.toString())) {
                                     this.bioformAddList.add(newLimb.limbId.toString());
-                                    this.bioformChangeList.put(newLimb.limbId.toString(), "(+) Adding " + newLimb.name);
+                                    this.bioformChangeList.put(newLimb.limbId.toString(), "+ Adding " + newLimb.name);
                                 }
                                 needsReset = true;
                                 break;
