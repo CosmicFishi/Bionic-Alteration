@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.lazywizard.lazylib.CollectionUtils;
 import org.magiclib.util.MagicSettings;
 import pigeonpun.bionicalteration.utils.ba_utils;
 import pigeonpun.bionicalteration.variant.ba_variantmanager;
@@ -50,7 +51,8 @@ public class ba_limbmanager {
                                             row.getString("name"),
                                             row.getString("description"),
                                             limbGroupList,
-                                            ba_utils.trimAndSplitString(row.getString("tags"))
+                                            ba_utils.trimAndSplitString(row.getString("tags")),
+                                            row.getInt("order")
                                     )
                             );
                         } else {
@@ -60,7 +62,8 @@ public class ba_limbmanager {
                                             limbId,
                                             row.getString("name"),
                                             row.getString("description"),
-                                            limbGroupList
+                                            limbGroupList,
+                                            row.getInt("order")
                                     )
                             );
                         }
@@ -146,19 +149,24 @@ public class ba_limbmanager {
         }
         return false;
     }
+    public static List<ba_officermanager.ba_bionicAugmentedData> sortBionicDataByLimbOrder(List<ba_officermanager.ba_bionicAugmentedData> data) {
+        List<ba_officermanager.ba_bionicAugmentedData> result = new ArrayList<>(data);
+        result.sort((o1, o2) -> o1.limb.order > o2.limb.order ? 1 : 0);
+        return result;
+    }
 
     /**
      * AI for now. todo: add normal human
      * @param baseLimb
      * @return
      */
-    public static ba_limb createDynamicLimb(ba_limbmanager.ba_limb baseLimb, List<ba_officermanager.ba_bioformAugmentedData> data) {
+    public static ba_limb createDynamicLimb(ba_limbmanager.ba_limb baseLimb, List<ba_officermanager.ba_bionicAugmentedData> data) {
         boolean isDuplicated = true;
         int startPrefix = 2;
         String dynamicId = baseLimb.limbId + DYNAMIC_LIMB_ID_CUSTOM_DIVIDER + startPrefix;
         while(isDuplicated) {
             boolean found = false;
-            for (ba_officermanager.ba_bioformAugmentedData baBioformAugmentedData : data) {
+            for (ba_officermanager.ba_bionicAugmentedData baBioformAugmentedData : data) {
                 if(baBioformAugmentedData.limb.limbId.equals(dynamicId)) {
                     startPrefix += 1;
                     dynamicId = baseLimb.limbId + DYNAMIC_LIMB_ID_CUSTOM_DIVIDER + startPrefix;
@@ -197,19 +205,22 @@ public class ba_limbmanager {
         public String description;
         public List<String> limbGroupList;
         public List<String> tags = new ArrayList<>();
+        public int order = 0;
         public HashMap<String, Object> customData = new HashMap<>();
-        public ba_limb(String limbId, String name, String description, List<String> limbGroupId) {
+        public ba_limb(String limbId, String name, String description, List<String> limbGroupId, int order) {
             this.limbId = limbId;
             this.name = name;
             this.description = description;
             this.limbGroupList = limbGroupId;
+            this.order = order;
         }
-        public ba_limb(String limbId, String name, String description, List<String> limbGroupId, List<String> tags) {
+        public ba_limb(String limbId, String name, String description, List<String> limbGroupId, List<String> tags, int order) {
             this.limbId = limbId;
             this.name = name;
             this.description = description;
             this.limbGroupList = limbGroupId;
             this.tags = tags;
+            this.order = order;
         }
 
         /**
@@ -223,6 +234,7 @@ public class ba_limbmanager {
             this.description = baseLimb.description;
             this.limbGroupList = baseLimb.limbGroupList;
             this.tags = baseLimb.tags;
+            this.order = baseLimb.order;
             this.tags.add(ba_variablemanager.BA_DYNAMICALLY_CREATE_LIMB);
         }
     }

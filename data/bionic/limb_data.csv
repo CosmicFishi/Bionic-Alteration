@@ -1,12 +1,12 @@
-limbId,groupId,name,description,tags
-heart,heart_group,Heart,Blood pumping machine,base_dynamic_limb
-heart_2,heart_group,Second Heart,"Wow, 2nd heart",
-hands,"hand_group,leg_hand_group",Hands,Pair of fists,base_dynamic_limb
-,,,,
-eyes,eye_group,Eyes,The things that let you see,base_dynamic_limb
-,,,,
-brain,brain_group,Brain,The thinking machine,"base_dynamic_limb,central_bioform"
-mouth,mouth_group,Mouth,The talky walky,base_dynamic_limb
-torso,torso_group,Torso,The central part,"base_dynamic_limb,central_bioform"
-legs,"leg_group,leg_hand_group",Legs,Built-in walk sticks,base_dynamic_limb
-,,,,
+limbId,groupId,name,description,tags,order
+heart,heart_group,Heart,Blood pumping machine,base_dynamic_limb,1100
+heart_2,heart_group,piggy-back Heart,"Wow, 2nd heart",,1101
+hands,"hand_group,leg_hand_group",Hands,Pair of fists,base_dynamic_limb,2100
+,,,,,
+eyes,eye_group,Eyes,The things that let you see,base_dynamic_limb,1200
+,,,,,
+brain,brain_group,Brain,The thinking machine,"base_dynamic_limb,central_bioform",1000
+mouth,mouth_group,Mouth,The talky walky,base_dynamic_limb,1300
+torso,torso_group,Torso,The central part,"base_dynamic_limb,central_bioform",2000
+legs,"leg_group,leg_hand_group",Legs,Built-in walk sticks,base_dynamic_limb,2200
+,,,,,

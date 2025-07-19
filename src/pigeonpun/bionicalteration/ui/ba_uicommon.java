@@ -45,7 +45,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
     public static ba_debounceplugin debounceplugin = new ba_debounceplugin();
     public List<CargoStackAPI> cargoBionic = new ArrayList<>();
     public static boolean isDisplayingOtherFleets = false;
-    protected List<ba_officermanager.ba_bioformAugmentedData> currentBioformData = new ArrayList<>(); //use as a placeholder the actual bioform info from person to avoid overriding unintentionally person's bioform
+    protected List<ba_officermanager.ba_bionicAugmentedData> currentBioformData = new ArrayList<>(); //use as a placeholder the actual bioform info from person to avoid overriding unintentionally person's bioform
     protected LinkedHashMap<String, String> bioformChangeList = new LinkedHashMap<>();
     protected List<String> bioformAddList = new ArrayList<>();
     protected List<String> bioformRemoveList = new ArrayList<>();
@@ -386,6 +386,13 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         int i = 0;
         List<ba_component> subComponentBionicList = new ArrayList<>();
         List<ba_officermanager.ba_bionicAugmentedData> currentAnatomyList = ba_officermanager.getBionicAnatomyList(this.currentPerson);
+        if(this.currentPerson.isAICore()) {
+            ba_officermanager.ba_aimemorydata aimemorydata = ba_officermanager.getAIMemData(this.currentPerson, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
+            //if AI person have the bioform data
+            if(!aimemorydata.anatomy.isEmpty() && !aimemorydata.shell.equals(ba_variablemanager.BA_SYNTHETIC_BODY_HULLMOD)) {
+                currentAnatomyList = aimemorydata.anatomy;
+            }
+        }
 //        log.info(currentAnatomyList.size() + " - " + this.currentPerson.getTags());
 //        for (ba_officermanager.ba_bionicAugmentedData data: currentAnatomyList) {
 //            log.info(data.limb.name + " - " + data.bionicInstalled.size());
@@ -395,6 +402,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
 //                }
 //            }
 //        }
+        currentAnatomyList = ba_limbmanager.sortBionicDataByLimbOrder(currentAnatomyList);
         for(final ba_officermanager.ba_bionicAugmentedData augmentData: currentAnatomyList) {
             String bionicTooltipContainerKey = "BIONIC_TOOLTIP_CONTAINER";
             String bionicPanelContainerKey = keyPreset + "BIONIC_PANEL_CONTAINER_"+i;
@@ -658,7 +666,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         if(this.currentPerson.isAICore()) {
             ba_officermanager.ba_aimemorydata aimemorydata = ba_officermanager.getAIMemData(this.currentPerson, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
             //if AI person have the bioform data
-            if(!aimemorydata.anatomy.isEmpty() && !aimemorydata.shell.equals(ba_variablemanager.BA_SYNTHETIC_BODY_HULLMOD)) {
+            if((this.currentBioformData == null || this.currentBioformData.isEmpty()) && !aimemorydata.anatomy.isEmpty() && !aimemorydata.shell.equals(ba_variablemanager.BA_SYNTHETIC_BODY_HULLMOD)) {
                 this.currentBioformData = aimemorydata.anatomy;
             }
             //if AI person have not set up bioform data
@@ -678,6 +686,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 bioformButton.setShortcut(Keyboard.KEY_G, true);
                 addButtonToList(bioformButton, "bioform:createBaselineVariant");
             } else {
+                this.currentBioformData = ba_limbmanager.sortBionicDataByLimbOrder(this.currentBioformData);
                 //todo: display bioform stuffs
                 int limbX = (int) pad;
                 int limbW = 150;

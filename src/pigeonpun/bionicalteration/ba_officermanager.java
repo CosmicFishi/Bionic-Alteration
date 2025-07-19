@@ -490,15 +490,15 @@ public class ba_officermanager {
         }
         return limit;
     }
-    public static List<ba_bioformAugmentedData> createDefaultVariantLimbs() {
-        List<ba_bioformAugmentedData> data = new ArrayList<>();
+    public static List<ba_bionicAugmentedData> createDefaultVariantLimbs() {
+        List<ba_bionicAugmentedData> data = new ArrayList<>();
         for(String limb :ba_variantmanager.getListLimbFromVariant("GENERIC_HUMAN")) {
-            data.add(new ba_bioformAugmentedData(ba_limbmanager.getLimb(limb), null, null));
+            data.add(new ba_bionicAugmentedData(ba_limbmanager.getLimb(limb), null, null));
         }
         return data;
     }
     //todo: need testing
-    public static void saveVariantLimbs(PersonAPI person, InteractionDialogAPI dialog, List<ba_bioformAugmentedData> newBioformData) {
+    public static void saveVariantLimbs(PersonAPI person, InteractionDialogAPI dialog, List<ba_bionicAugmentedData> newBioformData) {
         ba_aimemorydata data = getAIMemData(person, dialog);
         data.anatomy = newBioformData;
         saveAIMemData(person, dialog, data);
@@ -1147,19 +1147,12 @@ public class ba_officermanager {
         public ba_limbmanager.ba_limb limb;
         public @Nullable ba_bionicitemplugin bionicInstalled;
         public @Nullable ba_overclock appliedOverclock = null;
+        public @Nullable ba_limbmanager.ba_limb baseLimb; //ONLY USE THIS FOR DYNAMIC LIMB
         public ba_bionicAugmentedData(@NotNull ba_limbmanager.ba_limb limb, @Nullable ba_bionicitemplugin bionic, @Nullable ba_overclock appliedOverclock) {
             this.limb = limb;
             this.bionicInstalled = bionic;
             this.appliedOverclock = appliedOverclock;
         }
-    }
-
-    /**
-     * Script is the "bionic" that will be installed on the AI
-     */
-    public static class ba_bioformAugmentedData extends ba_bionicAugmentedData {
-        public ba_limbmanager.ba_limb baseLimb;
-
         /**
          * With this constructor, limb variable from ba_bionicAugmentedData is the dynamic limb. <br>
          * To find the actual limb that dynamic limb based on, use baseLimb.
@@ -1167,11 +1160,34 @@ public class ba_officermanager {
          * @param bionic
          * @param appliedOverclock
          */
-        public ba_bioformAugmentedData(@NotNull ba_limbmanager.ba_limb dynamicLimb, @Nullable ba_bionicitemplugin bionic, @Nullable ba_overclock appliedOverclock) {
-            super(dynamicLimb, bionic, appliedOverclock);
-            this.baseLimb = ba_limbmanager.getBaseLimb(dynamicLimb);
+        public ba_bionicAugmentedData(@NotNull ba_limbmanager.ba_limb dynamicLimb, @Nullable ba_bionicitemplugin bionic, @Nullable ba_overclock appliedOverclock, boolean setBaseLimb) {
+            this.limb = dynamicLimb;
+            this.bionicInstalled = bionic;
+            this.appliedOverclock = appliedOverclock;
+            if(setBaseLimb) {
+                this.baseLimb = ba_limbmanager.getBaseLimb(dynamicLimb);
+            }
         }
     }
+
+//    /**
+//     * Script is the "bionic" that will be installed on the AI
+//     */
+//    public static class ba_bioformAugmentedData extends ba_bionicAugmentedData {
+//        public ba_limbmanager.ba_limb baseLimb;
+//
+//        /**
+//         * With this constructor, limb variable from ba_bionicAugmentedData is the dynamic limb. <br>
+//         * To find the actual limb that dynamic limb based on, use baseLimb.
+//         * @param dynamicLimb
+//         * @param bionic
+//         * @param appliedOverclock
+//         */
+//        public ba_bioformAugmentedData(@NotNull ba_limbmanager.ba_limb dynamicLimb, @Nullable ba_bionicitemplugin bionic, @Nullable ba_overclock appliedOverclock) {
+//            super(dynamicLimb, bionic, appliedOverclock);
+//            this.baseLimb = ba_limbmanager.getBaseLimb(dynamicLimb);
+//        }
+//    }
     public static class ba_personmemorydata {
         public List<ba_bionicAugmentedData> anatomy = new ArrayList<>();
         public int BRMTier;
@@ -1185,7 +1201,7 @@ public class ba_officermanager {
         }
     }
     public static class ba_aimemorydata extends ba_personmemorydata {
-        public List<ba_bioformAugmentedData> anatomy = new ArrayList<>();
+        public List<ba_bionicAugmentedData> anatomy = new ArrayList<>();
         public String shell = "";
         public boolean isSetUped = false;
         public PersonAPI dummyAI = Global.getFactory().createPerson(); //use for storing
