@@ -180,8 +180,15 @@ public class ba_limbmanager {
         }
         return new ba_limb(dynamicId, baseLimb, String.valueOf(startPrefix));
     }
-    protected static ba_limbmanager.ba_limb getBaseLimb(ba_limbmanager.ba_limb dynamicLimb) {
+    public static ba_limbmanager.ba_limb getBaseLimb(ba_limbmanager.ba_limb dynamicLimb) {
         String[] limbIds = dynamicLimb.limbId.split(DYNAMIC_LIMB_ID_CUSTOM_DIVIDER.toString());
+        if(ba_limbmanager.getLimb(limbIds[0]) != null) {
+            return ba_limbmanager.getLimb(limbIds[0]);
+        }
+        return null;
+    }
+    public static ba_limbmanager.ba_limb getBaseLimb(String dynamicLimbId) {
+        String[] limbIds = dynamicLimbId.split(DYNAMIC_LIMB_ID_CUSTOM_DIVIDER.toString());
         if(ba_limbmanager.getLimb(limbIds[0]) != null) {
             return ba_limbmanager.getLimb(limbIds[0]);
         }
