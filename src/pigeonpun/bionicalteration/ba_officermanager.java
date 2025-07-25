@@ -277,6 +277,28 @@ public class ba_officermanager {
 
         return false;
     }
+    public static boolean saveAIMemDataAnatomyOnly(@NotNull PersonAPI person, @Nullable InteractionDialogAPI dialog, ba_personmemorydata newData) {
+        CampaignFleetAPI fleet = getFleetFromPerson(person, dialog);
+        ba_fleetmemorydata fleetMem = getFleetBionicMemoryData(fleet);
+        FleetMemberAPI member = null;
+        for(FleetMemberAPI memb: fleet.getFleetData().getMembersListCopy()) {
+            if(memb.getCaptain().getId().equals(person.getId())) {
+                member = memb;
+            }
+        }
+        ba_aimemorydata aimemorydata = null;
+        if(fleetMem != null && member != null) {
+            aimemorydata = fleetMem.listAIMember.get(member.getId());
+            if(aimemorydata != null) {
+                aimemorydata.anatomy = newData.anatomy;
+                fleetMem.listAIMember.put(member.getId(), aimemorydata);
+                fleet.getMemoryWithoutUpdate().set(ba_variablemanager.BA_FLEET_MEMORY_BIONIC_KEY, fleetMem);
+                return true;
+            }
+        }
+
+        return false;
+    }
     /**
      * Find fleet which contains person
      * @return null if can't find dialog fleet.
@@ -497,7 +519,6 @@ public class ba_officermanager {
         }
         return data;
     }
-    //todo: need testing
     public static void saveVariantLimbs(PersonAPI person, InteractionDialogAPI dialog, List<ba_bionicAugmentedData> newBioformData) {
         ba_aimemorydata data = getAIMemData(person, dialog);
         data.anatomy = newBioformData;
@@ -651,11 +672,16 @@ public class ba_officermanager {
      */
     public static List<ba_bionicAugmentedData> getBionicAnatomyList(PersonAPI person) {
         //return list with full limb details
-        //todo: Change it so it get AI bionic data as well
         List<ba_bionicAugmentedData> anatomyList = new ArrayList<>();
+        if(person.isAICore()) {
+            ba_aimemorydata data = getAIMemData(person, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
+            return data.anatomy;
+        }
         if(checkIfPersonHasBionicMemoryData(person)) {
             ba_personmemorydata data = (ba_personmemorydata) person.getMemoryWithoutUpdate().get(ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY);
-            anatomyList = data.anatomy;
+            if(data != null) {
+                anatomyList = data.anatomy;
+            }
         }
 //        HashMap<ba_limbmanager.ba_limb, ba_bionicmanager.bionicData> bionicsInstalledList = ba_bionicmanager.getListLimbAndBionicInstalled(person);
 //        String personGenericVariant = getPersonVariantTag(person);
@@ -676,7 +702,14 @@ public class ba_officermanager {
         return anatomyList;
     }
     public static boolean checkIfPersonHasBionicMemoryData(PersonAPI person) {
-        return person.getMemoryWithoutUpdate().get(ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY) != null && person.getMemoryWithoutUpdate().get(ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY) instanceof ba_personmemorydata;
+        boolean result = person.getMemoryWithoutUpdate().get(ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY) != null && person.getMemoryWithoutUpdate().get(ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY) instanceof ba_personmemorydata;
+        if(person.isAICore()) {
+            ba_aimemorydata data = getAIMemData(person, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
+            if(data != null) {
+                result = true;
+            }
+        }
+        return result;
     }
     /**
      * @param bionic the bionic going to be installed
@@ -720,8 +753,8 @@ public class ba_officermanager {
         return (isCaptainOrAdmin(person, false).equals(ba_profession.CAPTAIN) && bionic.isApplyCaptainEffect) || (isCaptainOrAdmin(person, false).equals(ba_profession.ADMIN) && bionic.isApplyAdminEffect);
     }
     public static boolean checkIfCurrentBRMLowerThanLimitOnInstall(ba_bionicitemplugin bionic, PersonAPI person) {
-        float currentBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
-        float limitBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);
+        float currentBrm = getCurrentBRM(person);
+        float limitBrm = getLimitBRM(person);
         if(bionicalterationplugin.isBRMCapDisable) return true; //disabling BRM limit
         return currentBrm + bionic.brmCost <= limitBrm;
     }
@@ -762,15 +795,6 @@ public class ba_officermanager {
         }
         return false;
     }
-    public static boolean checkIfCanEditLimb(ba_limbmanager.ba_limb limb, PersonAPI person) {
-        for(ba_bionicAugmentedData data: getBionicAnatomyList(person)) {
-            if(data.limb.limbId.equals(limb.limbId)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /**
      * Return null if can't find bionic memory data
      * @param person
@@ -818,10 +842,15 @@ public class ba_officermanager {
             }
             if(removeSuccessful) {
                 ba_personmemorydata data = getPersonMemoryData(person);
+                if(person.isAICore()) {
+                    data = getAIMemData(person, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
+                }
                 if(data != null) {
 
                     //check for augmentation data -> if found -> remove them before installing new one
                     for (ba_bionicAugmentedData augmentedData : new ArrayList<>(data.anatomy)) {
+                        //todo: check dynamic limb
+                        //todo: check onclick highlight bionic table not working
                         if(augmentedData.limb.limbId.equals(limb.limbId)) {
                             int limbIndex = data.anatomy.indexOf(augmentedData);
                             data.anatomy.remove(augmentedData);
@@ -834,7 +863,11 @@ public class ba_officermanager {
                             }
                             ba_bionicAugmentedData newAugmentedData = new ba_bionicAugmentedData(limb, ba_bionicmanager.getBionic(bionic.bionicId), overclock);
                             data.anatomy.add(limbIndex, newAugmentedData);
-                            savePersonMemoryData(data, person);
+                            if(person.isAICore()) {
+                                saveAIMemDataAnatomyOnly(person, Global.getSector().getCampaignUI().getCurrentInteractionDialog(), data);
+                            } else {
+                                savePersonMemoryData(data, person);
+                            }
                             break;
                         }
                     }
@@ -888,16 +921,13 @@ public class ba_officermanager {
                     }
                 }
             }
-            //remove later because the bionic tag is needed
-//            String removingTag = convertToTag(bionic, limb, null);
-//            boolean canFindTag = false;
-//            ba_overclock overclock = ba_overclockmanager.getOverclockFromPerson(person, limb);
-//            if(overclock != null) {
-//                removingTag = convertToTag(bionic, limb, overclock.id);
-//            }
             ba_personmemorydata data = getPersonMemoryData(person);
+            if(person.isAICore()) {
+                data = getAIMemData(person, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
+            }
             if(data != null) {
                 for (ba_bionicAugmentedData augmentedData : new ArrayList<>(data.anatomy)) {
+                    //todo: check dynamic limb
                     if(augmentedData.limb.limbId.equals(limb.limbId) && augmentedData.bionicInstalled.getId().equals(bionic.bionicId)) {
                         ba_inventoryhandler.addToContainer(bionic, person, limb);
                         int limbIndex = data.anatomy.indexOf(augmentedData);
@@ -908,34 +938,15 @@ public class ba_officermanager {
                         }
                         ba_bionicAugmentedData newAugmentedData = new ba_bionicAugmentedData(limb, null, null);
                         data.anatomy.add(limbIndex, newAugmentedData);
-                        savePersonMemoryData(data, person);
+                        if(person.isAICore()) {
+                            saveAIMemDataAnatomyOnly(person, Global.getSector().getCampaignUI().getCurrentInteractionDialog(), data);
+                        } else {
+                            savePersonMemoryData(data, person);
+                        }
                         return true;
                     }
                 }
             }
-
-//            for(String tag: person.getTags()) {
-//                if(tag.equals(removingTag)) {
-//                    ba_inventoryhandler.addToContainer(bionic, person, limb);
-//                    person.removeTag(removingTag);
-//
-////                    SpecialItemData specialItem = new SpecialItemData(bionic.bionicId, null);
-////                    if(overclock != null) {
-////                        //require special item data to do the overclock things
-////                        specialItem =  new SpecialItemData(bionic.bionicId, overclock.id);
-////                    }
-////                    Global.getSector().getPlayerFleet().getCargo().addSpecial(specialItem, 1);
-//                    updatePersonStatsOnInteract(bionic, limb, person, false);
-//                    if(bionic != null && bionic.isEffectAppliedAfterRemove) {
-//                        bionic.onRemove(person, limb, bionic);
-//                    }
-//                    canFindTag = true;
-//                    break;
-//                }
-//            }
-//            if(canFindTag) {
-//                return true;
-//            }
             return false;
         } else {
             log.error("Can't remove "+ bionic.bionicId + " on " + limb.limbId);
@@ -1201,7 +1212,6 @@ public class ba_officermanager {
         }
     }
     public static class ba_aimemorydata extends ba_personmemorydata {
-        public List<ba_bionicAugmentedData> anatomy = new ArrayList<>();
         public String shell = "";
         public boolean isSetUped = false;
         public PersonAPI dummyAI = Global.getFactory().createPerson(); //use for storing
