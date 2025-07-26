@@ -690,10 +690,10 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 int bionicRowW = (int) (tableW - limbW - pad);
                 int bionicNameX = bionicRowX;
                 int bionicNameW = (int) (bionicRowW * 0.6f);
-                int bionicBRMX = bionicNameW;
-                int bionicBRMW = (int) (bionicRowW * 0.2f);
-                int bionicConsciousX = bionicBRMX + bionicBRMW;
-                int bionicConsciousW = (int) (bionicRowW * 0.2f);
+//                int bionicBRMX = bionicNameW;
+//                int bionicBRMW = (int) (bionicRowW * 0.4f);
+//                int bionicConsciousX = bionicBRMX + bionicBRMW;
+//                int bionicConsciousW = (int) (bionicRowW * 0.2f);
                 //display the entire bioform list
                 int i = 0;
                 List<ba_component> subComponentBionicList = new ArrayList<>();
@@ -849,30 +849,30 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                         bionicName.setHighlightColors(b.displayColor, Misc.getBasePlayerColor());
                         bionicName.getPosition().inTL(0,12);
                         //>BRM
-//                int brmX = (int) (bionicName.getPosition().getWidth());
-                        LabelAPI bionicBRM = bionicNameTooltip.addPara("" + Math.round(b.brmCost), pad);
-                        bionicBRM.getPosition().setSize(bionicBRMW,sectionH);
-                        bionicBRM.setHighlight("" + Math.round(b.brmCost));
-                        bionicBRM.setHighlightColors(Misc.getBrightPlayerColor());
-                        bionicBRM.getPosition().inTL(bionicBRMX + bionicBRMW/2, 12);
-                        //>Conscious
-//                int consX = (int) (bionicBRM.getPosition().getWidth() + brmX);
-                        LabelAPI bionicConscious = bionicNameTooltip.addPara("" + Math.round(b.consciousnessCost * 100) + "%", pad);
-                        bionicConscious.getPosition().setSize(bionicConsciousW,sectionH);
-                        bionicConscious.setHighlight("" + Math.round(b.consciousnessCost * 100) + "%");
-                        bionicConscious.setHighlightColors(Misc.getNegativeHighlightColor());
-                        bionicConscious.setAlignment(Alignment.TR);
-                        bionicConscious.getPosition().inTL(bionicConsciousX - pad, 12);
+////                int brmX = (int) (bionicName.getPosition().getWidth());
+//                        LabelAPI bionicBRM = bionicNameTooltip.addPara("" + Math.round(b.brmCost), pad);
+//                        bionicBRM.getPosition().setSize(bionicBRMW,sectionH);
+//                        bionicBRM.setHighlight("" + Math.round(b.brmCost));
+//                        bionicBRM.setHighlightColors(Misc.getBrightPlayerColor());
+//                        bionicBRM.getPosition().inTL(bionicBRMX + bionicBRMW/2, 12);
+//                        //>Conscious
+////                int consX = (int) (bionicBRM.getPosition().getWidth() + brmX);
+//                        LabelAPI bionicConscious = bionicNameTooltip.addPara("" + Math.round(b.consciousnessCost * 100) + "%", pad);
+//                        bionicConscious.getPosition().setSize(bionicConsciousW,sectionH);
+//                        bionicConscious.setHighlight("" + Math.round(b.consciousnessCost * 100) + "%");
+//                        bionicConscious.setHighlightColors(Misc.getNegativeHighlightColor());
+//                        bionicConscious.setAlignment(Alignment.TR);
+//                        bionicConscious.getPosition().inTL(bionicConsciousX - pad, 12);
                         if(b != null) {
                             ba_overclock overclock = augmentData.appliedOverclock;
                             int overclockRowY = singleBionicInstalledNameH;
                             if(ba_overclockmanager.isBionicOverclockable(b)) {
-                                TooltipMakerAPI overclockTooltip = bionicDisplayContainer.createTooltip("BIONIC_OVERCLOCK_NAME", sectionW, sectionH, false, sectionX, overclockRowY);
-                                overclockTooltip.getPosition().inTL(sectionX, overclockRowY);
-                                LabelAPI overclockName = overclockTooltip.addPara("[ %s ]", pad, h, overclock != null? overclock.name: "--------");
+//                                TooltipMakerAPI overclockTooltip = bionicDisplayContainer.createTooltip("BIONIC_OVERCLOCK_NAME", sectionW, sectionH, false, sectionX, overclockRowY);
+//                                overclockTooltip.getPosition().inTL(sectionX, overclockRowY);
+                                LabelAPI overclockName = bionicNameTooltip.addPara("[ %s ]", pad, h, overclock != null? overclock.name: "--------");
                                 overclockName.setHighlight("[",overclock != null? overclock.name: "--------", "]");
                                 overclockName.setHighlightColors(special, overclock != null ? h: g, special);
-                                overclockName.getPosition().setSize(bionicNameW,sectionH);
+                                overclockName.setAlignment(Alignment.TR);
                                 overclockName.getPosition().inTL(0, 12);
                             }
                             //>name

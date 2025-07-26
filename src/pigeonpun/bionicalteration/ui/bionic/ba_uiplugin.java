@@ -1219,6 +1219,8 @@ public class ba_uiplugin extends ba_uicommon {
         header.getPosition().inTL(0, pad);
         listTooltipContainer.setParaFontDefault();
 
+        listTooltipContainer.addSpacer(pad);
+
         int buttonW = 200;
         int buttonH = 36;
 
@@ -1236,7 +1238,7 @@ public class ba_uiplugin extends ba_uicommon {
             //sub container
             listTooltipContainer.setParaFontVictor14();
             int innerTextW = (int) modificationW;
-            int innerTextH = (int) 30;
+            int innerTextH = (int) (line.split("\\|").length > 1 ? (10 + (pad+5) * line.split("\\|").length) : 20);
             int innerTextX = (int) (pad);
             int innerTextY = (int) (innerTextH * i);
             String innerTextTooltipKey = "WORKSHOP_SUB_TEXT_CHANGE_LIST_TOOLTIP";
@@ -1245,18 +1247,21 @@ public class ba_uiplugin extends ba_uicommon {
             TooltipMakerAPI innerLimbTooltipContainer = innerLimbContainer.createTooltip(innerTextTooltipKey, innerTextW, innerTextH, false, 0,0);
             modificationListContainer.attachSubPanel(modificationListTooltipKey, innerTextPanelKey, innerLimbContainer);
             innerLimbTooltipContainer.setParaFontVictor14();
-            LabelAPI label = innerLimbTooltipContainer.addPara(line, 0);
-            label.getPosition().inTL(pad, 0);
-            label.getPosition().setSize(innerTextW, innerTextH);
-            label.setAlignment(Alignment.LMID);
-            label.setHighlight(line);
-            if(line.split(" ")[0].equals("-")) {
-                label.setHighlightColor(Misc.getNegativeHighlightColor());
+            int j = 0;
+            for (String str: line.split("\\|")) {
+                LabelAPI label = innerLimbTooltipContainer.addPara(str, 0);
+                label.getPosition().inTL(pad, j * (pad + 5));
+                label.getPosition().setSize(innerTextW, innerTextH);
+                label.setAlignment(Alignment.TL);
+                label.setHighlight(str);
+                if (line.split(" ")[0].equals("-")) {
+                    label.setHighlightColor(Misc.getNegativeHighlightColor());
+                }
+                if (line.split(" ")[0].equals("+")) {
+                    label.setHighlightColor(Misc.getPositiveHighlightColor());
+                }
+                j += 1;
             }
-            if(line.split(" ")[0].equals("+")) {
-                label.setHighlightColor(Misc.getPositiveHighlightColor());
-            }
-
             i++;
         }
 
@@ -1676,19 +1681,26 @@ public class ba_uiplugin extends ba_uicommon {
                         if(ba_limbmanager.getLimb(tokens[2]) != null || ba_limbmanager.getBaseLimb(tokens[2]) != null) {
                             if(!this.bioformRemoveList.contains(tokens[2].toString())) {
                                 this.bioformRemoveList.add(tokens[2].toString());
-                                String name = "";
 //                                if(ba_limbmanager.getLimb(tokens[2]) != null) {
 //                                    name = ba_limbmanager.getLimb(tokens[2]).name;
 //                                }
 //                                if(ba_limbmanager.getBaseLimb(tokens[2]) != null) {
 //                                    name = ba_limbmanager.getBaseLimb(tokens[2]).name;
 //                                }
+                                String string = "";
                                 for(ba_officermanager.ba_bionicAugmentedData data: this.currentBioformData) {
                                     if(data.limb.limbId.equals(tokens[2])) {
-                                        name = data.limb.name;
+                                        string = "- Removing " + data.limb.name;
+                                        if(data.bionicInstalled != null) {
+                                            string += "|  > With " + data.bionicInstalled.getName();
+                                            if(data.appliedOverclock != null) {
+                                                string += "|  > PLUS [ " + data.appliedOverclock.name + " ]";
+                                            }
+                                        }
+                                        this.bioformChangeList.put(tokens[2].toString(), string);
+                                        break;
                                     }
                                 }
-                                this.bioformChangeList.put(tokens[2].toString(), "- Removing " + name);
                             } else {
                                 this.bioformRemoveList.remove(tokens[2].toString());
                                 this.bioformChangeList.remove(tokens[2].toString());
