@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.characters.PersonAPI;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -140,6 +141,7 @@ public class ba_limbmanager {
     }
     public static boolean isLimbInGroup(String groupId, String limbId) {
         List<ba_limb> listLimb = getListLimbFromGroup(groupId);
+        limbId = getBaseLimbId(limbId);
         if(listLimb != null) {
             for(ba_limb limb: listLimb) {
                 if(limb.limbId.equals(limbId)) {
@@ -180,19 +182,32 @@ public class ba_limbmanager {
         }
         return new ba_limb(dynamicId, baseLimb, String.valueOf(startPrefix));
     }
-    public static ba_limbmanager.ba_limb getBaseLimb(ba_limbmanager.ba_limb dynamicLimb) {
-        String[] limbIds = dynamicLimb.limbId.split(DYNAMIC_LIMB_ID_CUSTOM_DIVIDER.toString());
-        if(ba_limbmanager.getLimb(limbIds[0]) != null) {
-            return ba_limbmanager.getLimb(limbIds[0]);
+    @Nullable
+    public static ba_limbmanager.ba_limb getLimbFromPerson(PersonAPI person, String limbId) {
+        if(person.isAICore()) {
+            ba_officermanager.ba_aimemorydata data = ba_officermanager.getAIMemData(person, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
+            for (ba_officermanager.ba_bionicAugmentedData d: data.anatomy) {
+                if(d.limb.limbId.equals(limbId)) {
+                    return d.limb;
+                }
+            }
         }
         return null;
     }
+    public static ba_limbmanager.ba_limb getBaseLimb(ba_limbmanager.ba_limb dynamicLimb) {
+        return getBaseLimb(dynamicLimb.limbId);
+    }
+    @Nullable
     public static ba_limbmanager.ba_limb getBaseLimb(String dynamicLimbId) {
         String[] limbIds = dynamicLimbId.split(DYNAMIC_LIMB_ID_CUSTOM_DIVIDER.toString());
         if(ba_limbmanager.getLimb(limbIds[0]) != null) {
             return ba_limbmanager.getLimb(limbIds[0]);
         }
         return null;
+    }
+    public static String getBaseLimbId(String dynamicLimbId) {
+        String[] limbIds = dynamicLimbId.split(DYNAMIC_LIMB_ID_CUSTOM_DIVIDER.toString());
+        return limbIds[0];
     }
 
     /**
@@ -205,6 +220,9 @@ public class ba_limbmanager {
     }
     public static boolean isLimbBaseLimb(ba_limb limb) {
         return limb.tags.contains("base_dynamic_limb");
+    }
+    public static boolean isLimbDynamicLimb(ba_limb limb) {
+        return !isLimbBaseLimb(limb);
     }
     public static class ba_limb {
         public String limbId;
@@ -243,6 +261,20 @@ public class ba_limbmanager {
             this.tags = baseLimb.tags;
             this.order = baseLimb.order;
             this.tags.add(ba_variablemanager.BA_DYNAMICALLY_CREATE_LIMB);
+        }
+
+        /**
+         * Comparing using the base limb ID, DO NOT USE THIS IF YOU WANT TO COMPARE THE ACTUAL LIMB ID
+         * @param otherLimbId
+         * @return
+         */
+        public boolean sameAs(String otherLimbId) {
+            try {
+                return Objects.requireNonNull(getBaseLimbId(this.limbId)).equals(Objects.requireNonNull(getBaseLimbId(otherLimbId)));
+            } catch (Exception ex) {
+                log.error("Limb ID comparison mismatch between " + this.limbId + " + " + otherLimbId + " - " + ex);
+            }
+            return false;
         }
     }
 }

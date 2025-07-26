@@ -526,14 +526,10 @@ public class ba_uicommon implements CustomUIPanelPlugin {
             LabelAPI limbName = bionicLimbNameTooltip.addPara(augmentData.limb.name, pad);
             limbName.setHighlight(augmentData.limb.name);
             if(highlightLimbGroupID != "") {
-                List<ba_limbmanager.ba_limb> limbList = ba_limbmanager.getListLimbFromGroup(highlightLimbGroupID);
-                for (ba_limbmanager.ba_limb limb: limbList) {
-                    if(limb.limbId.equals(augmentData.limb.limbId)) {
-                        limbName.setHighlightColors(Misc.getPositiveHighlightColor());
-                        break;
-                    } else {
-                        limbName.setHighlightColors(t);
-                    }
+                if(augmentData.limb.limbGroupList.contains(highlightLimbGroupID)) {
+                    limbName.setHighlightColors(Misc.getPositiveHighlightColor());
+                } else {
+                    limbName.setHighlightColors(t);
                 }
             } else {
                 limbName.setHighlightColors(t);
@@ -1188,7 +1184,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                     }
                 }
                 if(tokens[0].equals("hover_bionic_table_limb")) {
-                    this.currentSelectedLimb = ba_limbmanager.getLimb(tokens[1]);
+                    this.currentSelectedLimb = ba_limbmanager.getLimbFromPerson(this.currentPerson,tokens[1]);
                     needsReset = true;
                     break;
                 }

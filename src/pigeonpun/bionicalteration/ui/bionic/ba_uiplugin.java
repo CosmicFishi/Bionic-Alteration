@@ -1632,7 +1632,7 @@ public class ba_uiplugin extends ba_uicommon {
                         if(ba_bionicmanager.getBionic(tokens[2].toString()) != null && !ba_bionicmanager.getBionic(tokens[2].toString()).isEffectAppliedAfterRemove) {
                             this.currentRemovingBionic = ba_bionicmanager.getBionic(tokens[2]);
                         }
-                        this.currentSelectedLimb = ba_limbmanager.getLimb(tokens[3]);
+                        this.currentSelectedLimb = ba_limbmanager.getLimbFromPerson(this.currentPerson, tokens[3]);
                         if(this.currentSelectedLimb == null || this.currentRemovingBionic == null) {
                             log.warn("No limb or bionic can be found for removal");
                         }

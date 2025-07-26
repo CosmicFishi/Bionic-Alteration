@@ -140,7 +140,6 @@ public class ba_officermanager {
                 person.getMemoryWithoutUpdate().set(ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY, memoryData);
                 //others
                 setUpBionic(person);
-                setUpSkill(person);
 
                 if(ba_bionicmanager.checkIfHaveBionicInstalled(person)) {
                     List<ba_bionicAugmentedData> list = getBionicAnatomyList(person);
@@ -149,6 +148,7 @@ public class ba_officermanager {
                     }
                 }
             }
+            setUpSkill(person);
         }
     }
 
@@ -190,10 +190,10 @@ public class ba_officermanager {
                 aiMemData.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).modifyFlat(ba_variablemanager.BA_BRM_CURRENT_SOURCE_KEY, setUpBRMCurrent(person));
                 //todo: bionic spawning for synthetic body if have the hullmod
             }
-            setUpSkill(person);
             aiMemData.isSetUped = true;
             fleetMemData.listAIMember.put(fleetMember.getId(), aiMemData);
             fleet.getMemoryWithoutUpdate().set(ba_variablemanager.BA_FLEET_MEMORY_BIONIC_KEY, fleetMemData);
+            setUpSkill(person);
         }
     }
     public static List<CampaignFleetAPI> getAllInteractingFleets(@Nullable InteractionDialogAPI dialog) {
@@ -374,7 +374,7 @@ public class ba_officermanager {
     public static void setUpSkill(PersonAPI person) {
         boolean containSkill = false;
         for (MutableCharacterStatsAPI.SkillLevelAPI skill: person.getStats().getSkillsCopy()) {
-            if (!skill.getSkill().getId().equals(ba_variablemanager.BA_BIONIC_SKILL_ID)) {
+            if (skill.getSkill().getId().equals(ba_variablemanager.BA_BIONIC_SKILL_ID)) {
                 containSkill = true;
             }
         }
@@ -801,6 +801,9 @@ public class ba_officermanager {
      * @return
      */
     public static ba_personmemorydata getPersonMemoryData(@NotNull PersonAPI person) {
+        if(person.isAICore()) {
+            return getAIMemData(person, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
+        }
         if(checkIfPersonHasBionicMemoryData(person)) {
             return (ba_personmemorydata) person.getMemoryWithoutUpdate().get(ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY);
         }
@@ -927,7 +930,6 @@ public class ba_officermanager {
             }
             if(data != null) {
                 for (ba_bionicAugmentedData augmentedData : new ArrayList<>(data.anatomy)) {
-                    //todo: check dynamic limb
                     if(augmentedData.limb.limbId.equals(limb.limbId) && augmentedData.bionicInstalled.getId().equals(bionic.bionicId)) {
                         ba_inventoryhandler.addToContainer(bionic, person, limb);
                         int limbIndex = data.anatomy.indexOf(augmentedData);
