@@ -46,7 +46,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
     public List<CargoStackAPI> cargoBionic = new ArrayList<>();
     public static boolean isDisplayingOtherFleets = false;
     protected List<ba_officermanager.ba_bionicAugmentedData> currentBioformData = new ArrayList<>(); //use as a placeholder the actual bioform info from person to avoid overriding unintentionally person's bioform
-    protected LinkedHashMap<String, String> bioformChangeList = new LinkedHashMap<>();
+    protected LinkedHashMap<String, String> bioformChangeList = new LinkedHashMap<>(); //LimbId - description
     protected List<String> bioformAddList = new ArrayList<>();
     protected List<String> bioformRemoveList = new ArrayList<>();
     public static float getInitDialogContainerPaddingX() {

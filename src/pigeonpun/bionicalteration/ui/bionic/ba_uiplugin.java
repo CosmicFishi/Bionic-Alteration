@@ -1,6 +1,7 @@
 package pigeonpun.bionicalteration.ui.bionic;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.Script;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.characters.AdminData;
@@ -10,6 +11,7 @@ import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.FleetEncounterContext;
 import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl;
+import com.fs.starfarer.api.impl.campaign.abilities.TransponderAbility;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.ui.*;
 import com.fs.starfarer.api.util.Misc;
@@ -34,6 +36,7 @@ import pigeonpun.bionicalteration.utils.ba_utils;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author PigeonPun
@@ -653,7 +656,7 @@ public class ba_uiplugin extends ba_uicommon {
                 int bioformBtnY = (int) (personInfoH - bioformBtnH);
                 ButtonAPI bioformButton = infoPersonTooltipContainer.addButton("Bioform", null, Misc.getTextColor(), ba_variablemanager.BA_OVERFORM_COLOR.darker(), Alignment.MID, CutStyle.TOP,  bioformBtnW, bioformBtnH, 0);
                 bioformButton.getPosition().inTL(bioformBtnX,bioformBtnY);
-                if(this.currentTabId.equals(WORKSHOP)) {
+                if(this.currentTabId.equals(WORKSHOP) && this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_NONE)) {
                     bioformButton.setShortcut(Keyboard.KEY_B, true);
                 }
                 addButtonToList(bioformButton, "tab:" + WORKSHOP + ":"+SUB_WORKSHOP_MODE_BIOFORM);
@@ -1208,6 +1211,73 @@ public class ba_uiplugin extends ba_uicommon {
         border.getPosition().setSize(borderW, borderH);
         listContainer.mainPanel.addComponent(border).setLocation(0,0).inTL(borderX, borderY);
 
+        listTooltipContainer.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
+            @Override
+            public boolean isTooltipExpandable(Object tooltipParam) {
+                return false;
+            }
+
+            @Override
+            public float getTooltipWidth(Object tooltipParam) {
+                return 700;
+            }
+
+            @Override
+            public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                tooltip.addSectionHeading("On modification confirm", Alignment.MID, 0);
+                if(bioformChangeList.isEmpty()) {
+                    LabelAPI empty = tooltip.addPara("Empty", 0);
+                    empty.setAlignment(Alignment.MID);
+                }
+                for(Map.Entry<String, String> line: bioformChangeList.entrySet()) {
+                    ba_officermanager.ba_bionicAugmentedData bioformData = currentBioformData.stream()
+                            .filter(data -> data.limb.limbId.equals(line.getKey())).toList().get(0);
+//                    String str = String.join("",line.getValue().split("\\|  >"));
+                    Color highLightColor = Misc.getTextColor();
+                    String highLightText = "";
+                    if (line.getValue().split(" ")[0].equals("-")) {
+                        highLightColor = Misc.getNegativeHighlightColor();
+                        highLightText = "- Remove " + bioformData.limb.name;
+                    }
+                    if (line.getValue().split(" ")[0].equals("+")) {
+                        highLightColor = Misc.getPositiveHighlightColor();
+                        highLightText = "+ Add " + bioformData.limb.name;
+                    }
+                    String getBackBionicString = "";
+                    Color getBackColor = Misc.getTextColor();
+                    if(bioformData.bionicInstalled != null) {
+                        if(bioformData.bionicInstalled.isEffectAppliedAfterRemove) {
+                            bioformData.bionicInstalled.getLongOnRemoveEffectDescription(tooltip);
+                        }
+                        if(!bioformData.bionicInstalled.isAllowedRemoveAfterInstall) {
+                            getBackBionicString = "Reduced to atom";
+                            getBackColor = Misc.getNegativeHighlightColor();
+                        } else {
+                            getBackBionicString = "Returned as item";
+                        }
+//                        LabelAPI getBackLabel = tooltip.addPara("  Post-Confirm Bionic Status: " + getBackBionicString, pad);
+//                        getBackLabel.setHighlightColors(Misc.getTextColor().darker(), getBackColor);
+//                        getBackLabel.setHighlight("Post-Confirm Bionic Status:", getBackBionicString);
+                    }
+                    tooltip.beginGrid(getTooltipWidth(null)/2 - 8, 2);
+                    tooltip.setGridRowHeight(15);
+                    tooltip.setGridLabelColor(highLightColor);
+                    tooltip.addToGrid(0, 1, highLightText, "---", Misc.getDarkPlayerColor());
+                    if(bioformData.bionicInstalled != null) {
+                        tooltip.setGridLabelColor(bioformData.bionicInstalled.displayColor);
+                        tooltip.addToGrid(1, 1, bioformData.bionicInstalled.getName(), getBackBionicString, getBackColor);
+                    }
+                    if(bioformData.appliedOverclock != null) {
+                        tooltip.setGridLabelColor(Misc.getTextColor().darker());
+                        tooltip.addToGrid(1, 2, "Overclock", bioformData.appliedOverclock.name, Misc.getHighlightColor());
+                    }
+
+                    tooltip.addGrid(0);
+                    tooltip.addSpacer(pad/2);
+                }
+            }
+        }, border, TooltipMakerAPI.TooltipLocation.LEFT);
+
         ba_officermanager.ba_aimemorydata aimemorydata = ba_officermanager.getAIMemData(this.currentPerson, this.dialog);
         if(this.currentBioformData.isEmpty()) {
             border.setOpacity(0.3f);
@@ -1690,11 +1760,11 @@ public class ba_uiplugin extends ba_uicommon {
                                 String string = "";
                                 for(ba_officermanager.ba_bionicAugmentedData data: this.currentBioformData) {
                                     if(data.limb.limbId.equals(tokens[2])) {
-                                        string = "- Removing " + data.limb.name;
+                                        string = "- Remove " + data.limb.name;
                                         if(data.bionicInstalled != null) {
                                             string += "|  > With " + data.bionicInstalled.getName();
                                             if(data.appliedOverclock != null) {
-                                                string += "|  > PLUS [ " + data.appliedOverclock.name + " ]";
+                                                string += "|  > Plus [ " + data.appliedOverclock.name + " ]";
                                             }
                                         }
                                         this.bioformChangeList.put(tokens[2].toString(), string);
@@ -1716,7 +1786,7 @@ public class ba_uiplugin extends ba_uicommon {
                                 this.currentBioformData.add(new ba_officermanager.ba_bionicAugmentedData(newLimb, null, null, true));
                                 if (!this.bioformAddList.contains(newLimb.limbId.toString())) {
                                     this.bioformAddList.add(newLimb.limbId.toString());
-                                    this.bioformChangeList.put(newLimb.limbId.toString(), "+ Adding " + newLimb.name);
+                                    this.bioformChangeList.put(newLimb.limbId.toString(), "+ Add " + newLimb.name);
                                 }
                                 needsReset = true;
                                 break;
@@ -1731,6 +1801,8 @@ public class ba_uiplugin extends ba_uicommon {
                         break;
                     }
                     if(tokens[1].equals("saveVariant")) {
+                        //todo: make pop up somehow
+                        //todo: return back or destroy bionic when saving variant
                         for(String limbId: this.bioformRemoveList) {
                             for (ba_officermanager.ba_bionicAugmentedData currentBioformDatum : new ArrayList<>(this.currentBioformData)) {
                                 if(currentBioformDatum.limb.limbId.equals(limbId)) {
