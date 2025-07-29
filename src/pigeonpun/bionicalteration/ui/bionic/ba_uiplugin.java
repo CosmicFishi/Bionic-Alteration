@@ -1219,17 +1219,18 @@ public class ba_uiplugin extends ba_uicommon {
 
             @Override
             public float getTooltipWidth(Object tooltipParam) {
-                return 700;
+                return 400;
             }
 
             @Override
             public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
                 tooltip.addSectionHeading("On modification confirm", Alignment.MID, 0);
                 if(bioformChangeList.isEmpty()) {
-                    LabelAPI empty = tooltip.addPara("Empty", 0);
+                    LabelAPI empty = tooltip.addPara("List empty", Misc.getGrayColor(),0);
                     empty.setAlignment(Alignment.MID);
                 }
                 for(Map.Entry<String, String> line: bioformChangeList.entrySet()) {
+                    tooltip.addSpacer(pad * 2f);
                     ba_officermanager.ba_bionicAugmentedData bioformData = currentBioformData.stream()
                             .filter(data -> data.limb.limbId.equals(line.getKey())).toList().get(0);
 //                    String str = String.join("",line.getValue().split("\\|  >"));
@@ -1237,43 +1238,40 @@ public class ba_uiplugin extends ba_uicommon {
                     String highLightText = "";
                     if (line.getValue().split(" ")[0].equals("-")) {
                         highLightColor = Misc.getNegativeHighlightColor();
-                        highLightText = "- Remove " + bioformData.limb.name;
+                        highLightText = "Remove " + bioformData.limb.name + " [ - ]";
                     }
                     if (line.getValue().split(" ")[0].equals("+")) {
                         highLightColor = Misc.getPositiveHighlightColor();
-                        highLightText = "+ Add " + bioformData.limb.name;
+                        highLightText = "Add " + bioformData.limb.name + " [ + ]";
                     }
                     String getBackBionicString = "";
                     Color getBackColor = Misc.getTextColor();
                     if(bioformData.bionicInstalled != null) {
-                        if(bioformData.bionicInstalled.isEffectAppliedAfterRemove) {
-                            bioformData.bionicInstalled.getLongOnRemoveEffectDescription(tooltip);
-                        }
                         if(!bioformData.bionicInstalled.isAllowedRemoveAfterInstall) {
-                            getBackBionicString = "Reduced to atom";
+                            getBackBionicString = "REDUCE BIONIC TO ATOM";
                             getBackColor = Misc.getNegativeHighlightColor();
                         } else {
-                            getBackBionicString = "Returned as item";
+                            getBackBionicString = "return bionic as item";
                         }
 //                        LabelAPI getBackLabel = tooltip.addPara("  Post-Confirm Bionic Status: " + getBackBionicString, pad);
 //                        getBackLabel.setHighlightColors(Misc.getTextColor().darker(), getBackColor);
 //                        getBackLabel.setHighlight("Post-Confirm Bionic Status:", getBackBionicString);
                     }
-                    tooltip.beginGrid(getTooltipWidth(null)/2 - 8, 2);
-                    tooltip.setGridRowHeight(15);
-                    tooltip.setGridLabelColor(highLightColor);
-                    tooltip.addToGrid(0, 1, highLightText, "---", Misc.getDarkPlayerColor());
+                    tooltip.setParaFontVictor14();
+                    LabelAPI actionLabel = tooltip.addPara(highLightText, 0, highLightColor, highLightText);
                     if(bioformData.bionicInstalled != null) {
-                        tooltip.setGridLabelColor(bioformData.bionicInstalled.displayColor);
-                        tooltip.addToGrid(1, 1, bioformData.bionicInstalled.getName(), getBackBionicString, getBackColor);
+                        tooltip.setParaFontDefault();
+                        LabelAPI label = tooltip.addPara("Remove " + bioformData.bionicInstalled.getName()  + (bioformData.appliedOverclock!= null ?"with" : ""), pad, Misc.getTextColor(), "");
+                        label.setHighlight(bioformData.bionicInstalled.getName(), "[", bioformData.appliedOverclock != null ? bioformData.appliedOverclock.name: "", "]");
+                        label.setHighlightColors(bioformData.bionicInstalled.displayColor, ba_variablemanager.BA_OVERCLOCK_COLOR, Misc.getHighlightColor(), ba_variablemanager.BA_OVERCLOCK_COLOR);
+                        LabelAPI retainBionicLabel = tooltip.addPara("On remove, " + getBackBionicString, pad, getBackColor, getBackBionicString);
                     }
-                    if(bioformData.appliedOverclock != null) {
-                        tooltip.setGridLabelColor(Misc.getTextColor().darker());
-                        tooltip.addToGrid(1, 2, "Overclock", bioformData.appliedOverclock.name, Misc.getHighlightColor());
+                    if(bioformData.bionicInstalled != null) {
+                        if(bioformData.bionicInstalled.isEffectAppliedAfterRemove) {
+                            bioformData.bionicInstalled.getLongOnRemoveEffectDescription(tooltip);
+                        }
                     }
-
-                    tooltip.addGrid(0);
-                    tooltip.addSpacer(pad/2);
+                    tooltip.setParaFontDefault();
                 }
             }
         }, border, TooltipMakerAPI.TooltipLocation.LEFT);
