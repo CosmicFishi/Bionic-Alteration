@@ -663,6 +663,29 @@ public class ba_uiplugin extends ba_uicommon {
                 bioformButton.setEnabled(false);
                 if(this.currentTabId.equals(WORKSHOP) && checkIfCanOpenBioformWorkshop()) {
                     bioformButton.setEnabled(true);
+                } else {
+                    infoPersonTooltipContainer.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
+                        @Override
+                        public boolean isTooltipExpandable(Object tooltipParam) {
+                            return false;
+                        }
+
+                        @Override
+                        public float getTooltipWidth(Object tooltipParam) {
+                            return 400;
+                        }
+
+                        @Override
+                        public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                            tooltip.setParaFontOrbitron();
+                            tooltip.addPara("ERR///",0);
+                            tooltip.addPara("ERR///",0);
+                            tooltip.addPara("...",0);
+                            tooltip.addPara("%s NOT FOUND", 0, ba_variablemanager.BA_OVERFORM_COLOR, "BIOFORM TERMINAL");
+                            tooltip.addPara("...",0);
+                            tooltip.addPara("Visit nearby bionic stations for more information.", 0);
+                        }
+                    }, bioformButton, TooltipMakerAPI.TooltipLocation.ABOVE);
                 }
             }
             if(this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_BIOFORM)) {
@@ -843,7 +866,7 @@ public class ba_uiplugin extends ba_uicommon {
         int installBtnX = (int) (personInfoW - installBtnW - pad);
         int installBtnY = (int) (personInfoH - installBtnH);
         int removeBtnH = btnH;
-        int removeBtnW = (int) (160 - pad);
+        int removeBtnW = (int) (200 - pad);
         int removeBtnX = (int) (installBtnX - pad - removeBtnW);
         int removeBtnY = (int) (installBtnY);
         int tableX = (int) (infoLeftW + pad  + pad);
@@ -852,7 +875,7 @@ public class ba_uiplugin extends ba_uicommon {
         int tableH = (int) (personInfoH - pad - pad - btnH);
         if(this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_NONE)) {
             //--------upgrade button
-            ButtonAPI installButton = infoPersonTooltipContainer.addButton("Install", null, t, Color.green.darker().darker(), installBtnW, installBtnH, 0);
+            ButtonAPI installButton = infoPersonTooltipContainer.addButton("Install", null, t, Misc.getDarkPlayerColor(), Alignment.MID, CutStyle.BL_TR,installBtnW, installBtnH, 0);
             installButton.getPosition().inTL(installBtnX,installBtnY);
             addButtonToList(installButton, "bionic:install");
             installButton.setEnabled(false);
@@ -931,7 +954,7 @@ public class ba_uiplugin extends ba_uicommon {
             //--------remove button
             //edit: enter edit mode, display list a list of bionic for a limb with remove button next to it
 
-            ButtonAPI removeButton = infoPersonTooltipContainer.addButton(this.currentWorkShopMode.equals(this.INSTALL_WORKSHOP) ?"Removal": "Exit Removal", null, t, Color.yellow.darker().darker(), removeBtnW, removeBtnH, 0);
+            ButtonAPI removeButton = infoPersonTooltipContainer.addButton(this.currentWorkShopMode.equals(this.INSTALL_WORKSHOP) ?"Removal": "Exit Removal", null, t, Color.yellow.darker().darker(), Alignment.MID, CutStyle.TL_BR ,removeBtnW, removeBtnH, 0);
             removeButton.getPosition().inTL(removeBtnX,removeBtnY);
             if(this.currentTabId.equals(WORKSHOP)) {
                 removeButton.setShortcut(Keyboard.KEY_R, true);
@@ -991,24 +1014,26 @@ public class ba_uiplugin extends ba_uicommon {
                 displayBionicTableWithKeyPresetHighLight(infoPersonContainer, infoPersonTooltipKey, "WORKSHOP",true, true, tableW, tableH, tableX, tableY, highlightLimbId, true);
             }
             //--------selected
-            int selectedH = btnH / 2;
-            int selectedW = (int) (infoRightW - removeBtnW - installBtnW - pad);
-            int selectedLimbX = (int) (tableX + pad);
-            int selectedLimbY = (int) (removeBtnY);
-            String limbName = this.currentSelectedLimb != null ? this.currentSelectedLimb.name : "None";
-            LabelAPI selectedLimbLabel = infoPersonTooltipContainer.addPara("%s %s", 0, t, "Selected:", limbName);
-            selectedLimbLabel.getPosition().inTL(selectedLimbX,selectedLimbY);
-            selectedLimbLabel.getPosition().setSize(selectedW, selectedH);
-            selectedLimbLabel.setHighlight("Selected:", limbName);
-            selectedLimbLabel.setHighlightColors(Misc.getBrightPlayerColor(), this.currentSelectedLimb != null ? t :Misc.getGrayColor());
-            int selectedBionicX = (int) (selectedLimbX);
-            int selectedBionicY = (int) (removeBtnY + selectedH);
-            String bionicName = this.currentSelectedBionic != null ? this.currentSelectedBionic.getName(): "None";
-            LabelAPI selectedBionicLabel = infoPersonTooltipContainer.addPara("%s %s %s", 0, t,"Selected:",  bionicName, (this. currentSelectedBionic != null && !this.currentSelectedBionic.isAllowedRemoveAfterInstall)? "[ UNREMOVEABLE ]": "");
-            selectedBionicLabel.getPosition().inTL(selectedBionicX,selectedBionicY);
-            selectedBionicLabel.getPosition().setSize(selectedW, selectedH);
-            selectedBionicLabel.setHighlight("Selected:", bionicName, "[ UNREMOVEABLE ]");
-            selectedBionicLabel.setHighlightColors(Misc.getBrightPlayerColor(), this.currentSelectedBionic != null ? this.currentSelectedBionic.displayColor: Misc.getGrayColor(), bad);
+            if(this.currentSelectedBionic != null && !this.currentSelectedBionic.isAllowedRemoveAfterInstall) {
+                int selectedH = btnH / 2;
+                int selectedW = (int) (infoRightW - removeBtnW - installBtnW - pad * 4);
+                int selectedLimbX = (int) (tableX + pad);
+                int selectedLimbY = (int) (removeBtnY);
+                String bionicName = this.currentSelectedBionic.getName();
+                LabelAPI noteLabel = infoPersonTooltipContainer.addPara("%s %s is %s", 0, t, "Note:", bionicName, "IRREMOVABLE");
+                noteLabel.getPosition().inTL(selectedLimbX,selectedLimbY);
+                noteLabel.getPosition().setSize(selectedW, selectedH);
+                noteLabel.setHighlight("Note:", bionicName, "IRREMOVABLE");
+                noteLabel.setHighlightColors(Misc.getBrightPlayerColor(), this.currentSelectedBionic.displayColor, Misc.getNegativeHighlightColor());
+            }
+//            int selectedBionicX = (int) (selectedLimbX);
+//            int selectedBionicY = (int) (removeBtnY + selectedH);
+//            String bionicName = this.currentSelectedBionic != null ? this.currentSelectedBionic.getName(): "None";
+//            LabelAPI selectedBionicLabel = infoPersonTooltipContainer.addPara("%s %s %s", 0, t,"Selected:",  bionicName, (this. currentSelectedBionic != null && !this.currentSelectedBionic.isAllowedRemoveAfterInstall)? "[ UNREMOVEABLE ]": "");
+//            selectedBionicLabel.getPosition().inTL(selectedBionicX,selectedBionicY);
+//            selectedBionicLabel.getPosition().setSize(selectedW, selectedH);
+//            selectedBionicLabel.setHighlight("Selected:", bionicName, "[ UNREMOVEABLE ]");
+//            selectedBionicLabel.setHighlightColors(Misc.getBrightPlayerColor(), this.currentSelectedBionic != null ? this.currentSelectedBionic.displayColor: Misc.getGrayColor(), bad);
         }
         if(this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_BIOFORM)) {
             int bioformW = (int) (tableW - 3);
@@ -1799,12 +1824,14 @@ public class ba_uiplugin extends ba_uicommon {
                         break;
                     }
                     if(tokens[1].equals("saveVariant")) {
-                        //todo: make pop up somehow
-                        //todo: return back or destroy bionic when saving variant
+                        //todo: make pop up somehow or have a wait time on the confirm button ?
                         for(String limbId: this.bioformRemoveList) {
                             for (ba_officermanager.ba_bionicAugmentedData currentBioformDatum : new ArrayList<>(this.currentBioformData)) {
                                 if(currentBioformDatum.limb.limbId.equals(limbId)) {
                                     this.currentBioformData.remove(currentBioformDatum);
+                                    if(currentBioformDatum.bionicInstalled != null) {
+                                        ba_officermanager.removeBionic(currentBioformDatum.bionicInstalled, currentBioformDatum.limb, this.currentPerson);
+                                    }
                                 }
                             }
                         }

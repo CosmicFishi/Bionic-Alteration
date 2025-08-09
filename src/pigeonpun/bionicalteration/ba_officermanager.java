@@ -629,9 +629,19 @@ public class ba_officermanager {
     public static void updateConsciousness(ba_bionicitemplugin bionic, ba_limbmanager.ba_limb limb, PersonAPI person, boolean isInstall) {
         String key = bionic.bionicId + ":" + limb.limbId;
         if(isInstall) {
-            person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).modifyFlat(key, -bionic.consciousnessCost);
+            if(person.isAICore()) {
+                ba_aimemorydata data = getAIMemData(person, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
+                data.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).modifyFlat(key, -bionic.consciousnessCost);
+            } else {
+                person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).modifyFlat(key, -bionic.consciousnessCost);
+            }
         } else {
-            person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).unmodifyFlat(key);
+            if(person.isAICore()) {
+                ba_aimemorydata data = getAIMemData(person, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
+                data.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).unmodifyFlat(key);
+            } else {
+                person.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).unmodifyFlat(key);
+            }
         }
     }
 
@@ -646,9 +656,19 @@ public class ba_officermanager {
     public static void updateCurrentBRM(ba_bionicitemplugin bionic, ba_limbmanager.ba_limb limb, PersonAPI person, boolean isInstall) {
         String key = bionic.bionicId + ":" + limb.limbId;
         if(isInstall) {
-            person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).modifyFlat(key, bionic.brmCost);
+            if(person.isAICore()) {
+                ba_aimemorydata data = getAIMemData(person, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
+                data.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).modifyFlat(key, bionic.brmCost);
+            } else {
+                person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).modifyFlat(key, bionic.brmCost);
+            }
         } else {
-            person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).unmodifyFlat(key);
+            if(person.isAICore()) {
+                ba_aimemorydata data = getAIMemData(person, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
+                data.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).unmodifyFlat(key);
+            } else {
+                person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).unmodifyFlat(key);
+            }
         }
     }
 
@@ -852,8 +872,6 @@ public class ba_officermanager {
 
                     //check for augmentation data -> if found -> remove them before installing new one
                     for (ba_bionicAugmentedData augmentedData : new ArrayList<>(data.anatomy)) {
-                        //todo: check dynamic limb
-                        //todo: check onclick highlight bionic table not working
                         if(augmentedData.limb.limbId.equals(limb.limbId)) {
                             int limbIndex = data.anatomy.indexOf(augmentedData);
                             data.anatomy.remove(augmentedData);
@@ -880,6 +898,7 @@ public class ba_officermanager {
 //                }
 //                person.addTag(bionicTag);
                     updatePersonStatsOnInteract(bionic, limb, person, true);
+                    setUpSkill(person);
                     if(bionic.isApplyAdminEffect && !getPersonGovernMarkets(person).isEmpty()) {
                         for(MarketAPI market: getPersonGovernMarkets(person)) {
                             if(!market.hasCondition(ba_variablemanager.BA_MARKET_CONDITION_ID)) {
