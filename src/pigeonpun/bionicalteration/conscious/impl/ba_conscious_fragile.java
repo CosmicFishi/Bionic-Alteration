@@ -68,7 +68,7 @@ public class ba_conscious_fragile extends ba_base_conscious {
         if(!isSimpleMode) {
             //on hover
             tooltip.addSectionHeading("Description", Alignment.MID, 0);
-            tooltip.addPara("%s: %s", pad, Misc.getTextColor(), "Fragile", ba_stringhelper.getString("conscious", "ba_fragile_person")).setHighlightColors(getColor(), Misc.getTextColor());
+            tooltip.addPara("%s: %s", pad, Misc.getTextColor(), "Fragile", ba_stringhelper.getString("conscious", person.isAICore()? "ba_fragile_ai":"ba_fragile_person")).setHighlightColors(getColor(), Misc.getTextColor());
             tooltip.addSectionHeading("Effects", Alignment.MID, pad);
         } else {
             if(!isActive) textAlpha = 0.6f;

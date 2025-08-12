@@ -65,7 +65,7 @@ public class ba_conscious_weaken extends ba_base_conscious {
         if(!isSimpleMode) {
             //on hover
             tooltip.addSectionHeading("Description", Alignment.MID, 0);
-            tooltip.addPara("%s: %s", pad, Misc.getTextColor(), "Weaken", ba_stringhelper.getString("conscious", "ba_weaken_person")).setHighlightColors(getColor(), Misc.getTextColor());
+            tooltip.addPara("%s: %s", pad, Misc.getTextColor(), "Weaken", ba_stringhelper.getString("conscious", person.isAICore()? "ba_weaken_ai":"ba_weaken_person")).setHighlightColors(getColor(), Misc.getTextColor());
             tooltip.addSectionHeading("Effects", Alignment.MID, pad);
         } else {
             if(!isActive) textAlpha = 0.6f;

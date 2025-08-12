@@ -242,6 +242,7 @@ public class ba_officermanager {
      */
     public static ba_aimemorydata getAIMemData(@NotNull PersonAPI person, @Nullable InteractionDialogAPI dialog) {
         CampaignFleetAPI fleet = getFleetFromPerson(person, dialog);
+        if(fleet == null) return null;
         ba_fleetmemorydata fleetMem = getFleetBionicMemoryData(fleet);
         FleetMemberAPI member = null;
         for(FleetMemberAPI memb: fleet.getFleetData().getMembersListCopy()) {
