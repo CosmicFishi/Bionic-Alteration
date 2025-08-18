@@ -26,11 +26,17 @@ public class ba_bionicinfo extends BaseHullMod {
     public void applyEffectsAfterShipCreation(ShipAPI ship, String id) {
     }
 
+    @Override
+    public Color getNameColor() {
+        return ba_variablemanager.BA_OVERFORM_COLOR;
+    }
+
     public void applyEffectsBeforeShipCreation(ShipAPI.HullSize hullSize,
                                                MutableShipStatsAPI stats, String id) {
         if(stats.getFleetMember() != null && !stats.getFleetMember().getCaptain().isDefault()) {
             PersonAPI captain = stats.getFleetMember().getCaptain();
             List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(captain);
+            if (listAnatomy == null) return;
             for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
                 if(anatomy.bionicInstalled != null) {
                     if(anatomy.bionicInstalled != null && anatomy.bionicInstalled.isApplyCaptainEffect) {

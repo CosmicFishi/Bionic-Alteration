@@ -61,6 +61,9 @@ public class ba_variablemanager {
         BA_CONSCIOUSNESS_COLOR.put(BA_CONSCIOUSNESS_CRITICAL_THRESHOLD, Misc.getNegativeHighlightColor());
     }
     public static final String BA_BIONIC_SKILL_ID = "ba_bionic_augmented";
+    /**
+     * ONLY use this to check for initial save load. Other cases, use personmemorydata.isSetUped
+     */
     public static final String BA_RANDOM_BIONIC_GENERATED_TAG = "ba_random_bionic_generated";
     public static final String BA_SEED_KEY = "ba_sector_seed";
     public static final String BA_BIONIC_ON_NEW_GAME_KEY = "$ba_bionic_on_new_game";

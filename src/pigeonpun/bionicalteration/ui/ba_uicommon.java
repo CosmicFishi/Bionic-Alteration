@@ -389,7 +389,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         if(this.currentPerson.isAICore()) {
             ba_officermanager.ba_aimemorydata aimemorydata = ba_officermanager.getAIMemData(this.currentPerson, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
             //if AI person have the bioform data
-            if(!aimemorydata.anatomy.isEmpty() && !aimemorydata.shell.equals(ba_variablemanager.BA_SYNTHETIC_BODY_HULLMOD)) {
+            if(!aimemorydata.anatomy.isEmpty()) {
                 currentAnatomyList = aimemorydata.anatomy;
             }
         }
@@ -662,7 +662,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         if(this.currentPerson.isAICore()) {
             ba_officermanager.ba_aimemorydata aimemorydata = ba_officermanager.getAIMemData(this.currentPerson, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
             //if AI person have the bioform data
-            if((this.currentBioformData == null || this.currentBioformData.isEmpty()) && !aimemorydata.anatomy.isEmpty() && !aimemorydata.shell.equals(ba_variablemanager.BA_SYNTHETIC_BODY_HULLMOD)) {
+            if((this.currentBioformData == null || this.currentBioformData.isEmpty()) && !aimemorydata.anatomy.isEmpty()) {
                 this.currentBioformData = aimemorydata.anatomy;
             }
             //if AI person have not set up bioform data
@@ -1032,6 +1032,14 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         personImageTooltip.getPosition().inTL(imageX, 0);
         personImageTooltip.addImage(spriteName, imageW, imageH, 0);
         personImageTooltip.getPosition().inTL(0, (pH - imageH ) / 2);
+        //--------Bioform image
+        if(member.isAICore()) {
+            if(!Objects.requireNonNull(ba_officermanager.getAIMemData(member, Global.getSector().getCampaignUI().getCurrentInteractionDialog())).anatomy.isEmpty()) {
+                TooltipMakerAPI bioformImageTooltip = personDisplayContainer.createTooltip("BIOFORM_IMAGE", 16, 16, false, 0, 0);
+                bioformImageTooltip.addImage("graphics/icons/abyssal_light.png", 16, 16, 0);
+                bioformImageTooltip.getPosition().inTL(pW - 16 - pad, pad/2 + 2);
+            }
+        }
         //---------Name
         int nameH = 30;
         int nameW = (int) (pW - imageW - 30);

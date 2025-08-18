@@ -95,7 +95,6 @@ public class ba_officermanager {
         }
     }
     public static void setupForPeople(@NotNull PersonAPI person, float fleetFP) {
-        //todo: change this so it will take the entire fleet instead of single person
         if(!person.isAICore()) {
             if(person.getMemoryWithoutUpdate().get(ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY) == null) {
                 ba_personmemorydata memoryData = new ba_personmemorydata(1);
@@ -139,7 +138,7 @@ public class ba_officermanager {
 
                 person.getMemoryWithoutUpdate().set(ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY, memoryData);
                 //others
-                setUpBionic(person);
+                setUpBionic(person, memoryData);
 
                 if(ba_bionicmanager.checkIfHaveBionicInstalled(person)) {
                     List<ba_bionicAugmentedData> list = getBionicAnatomyList(person);
@@ -147,6 +146,8 @@ public class ba_officermanager {
                         updatePersonStatsOnInteract(data.bionicInstalled, data.limb, person, true);
                     }
                 }
+                memoryData.isSetUped = true;
+                person.getMemoryWithoutUpdate().set(ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY, memoryData);
             }
             setUpSkill(person);
         }
@@ -174,21 +175,45 @@ public class ba_officermanager {
             //todo: transfer aiMemdata when salvaging other fleet - encountered a problem related to ship recovery
             //set up for AI fleet
             if(!aiMemData.isSetUped) {
-                if(fleetFP > 0) {
-                    int maxFPScaling = 600;
-                    float spawningShell = 40;
-                    float actualLChanceOfSpawningShell = (float) ((double) fleetFP / maxFPScaling * spawningShell);
-                    float spawningNothing = 100 - actualLChanceOfSpawningShell;
-                    WeightedRandomPicker<String> randomPicker = new WeightedRandomPicker<>(ba_utils.getRandom());
-                    randomPicker.add(ba_variablemanager.BA_SYNTHETIC_BODY_HULLMOD, actualLChanceOfSpawningShell);
-                    randomPicker.add("", spawningNothing);
-                    aiMemData.shell = randomPicker.pick();
-                    if(!Objects.equals(aiMemData.shell, "")) fleetMember.getVariant().addPermaMod(aiMemData.shell);
-                }
                 aiMemData.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_CONSCIOUSNESS_STATS_KEY).modifyFlat(ba_variablemanager.BA_CONSCIOUSNESS_SOURCE_KEY, setUpConsciousness(aiMemData.dummyAI));
                 aiMemData.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).modifyFlat(ba_variablemanager.BA_BRM_LIMIT_SOURCE_KEY, setUpBRMLimit(person, Integer.MAX_VALUE));
                 aiMemData.dummyAI.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).modifyFlat(ba_variablemanager.BA_BRM_CURRENT_SOURCE_KEY, setUpBRMCurrent(person));
-                //todo: bionic spawning for synthetic body if have the hullmod
+                boolean shouldHasBionic = false;
+                if(fleetFP > 0) {
+                    int maxFPScaling = 600;
+                    float spawningShell = 100;
+                    float actualLChanceOfSpawningShell = (float) ((double) fleetFP / maxFPScaling * spawningShell);
+                    float spawningNothing = 100 - actualLChanceOfSpawningShell;
+                    WeightedRandomPicker<String> randomPicker = new WeightedRandomPicker<>(ba_utils.getRandom());
+                    randomPicker.add("yes", actualLChanceOfSpawningShell);
+                    randomPicker.add("no", spawningNothing);
+                    shouldHasBionic = Objects.equals(randomPicker.pick(), "yes");
+                }
+                if(shouldHasBionic) {
+                    //====== set up variant
+                    if(getPersonVariantTag(person) == null) {
+                        String randomVariant;
+                        if(person.getFaction() != null) {
+                            randomVariant = ba_variantmanager.getRandomVariantFromFaction(person.getFaction().getId());
+                        } else {
+                            randomVariant = "GENERIC_HUMAN";
+                        }
+                        aiMemData.variant = randomVariant;
+                    }
+                    for(String limb :ba_variantmanager.getListLimbFromVariant(aiMemData.variant)) {
+                        ba_limbmanager.ba_limb dynamicLimb = ba_limbmanager.createDynamicLimb(ba_limbmanager.getLimb(limb), aiMemData.anatomy);
+                        aiMemData.anatomy.add(new ba_bionicAugmentedData(dynamicLimb, null, null));
+                    }
+                    fleetMemData.listAIMember.put(fleetMember.getId(), aiMemData);
+                    fleet.getMemoryWithoutUpdate().set(ba_variablemanager.BA_FLEET_MEMORY_BIONIC_KEY, fleetMemData);
+                    setUpBionic(person, aiMemData);
+
+                    if(ba_bionicmanager.checkIfHaveBionicInstalled(person)) {
+                        for(ba_bionicAugmentedData data: aiMemData.anatomy) {
+                            updatePersonStatsOnInteract(data.bionicInstalled, data.limb, person, true);
+                        }
+                    }
+                }
             }
             aiMemData.isSetUped = true;
             fleetMemData.listAIMember.put(fleetMember.getId(), aiMemData);
@@ -388,7 +413,7 @@ public class ba_officermanager {
      * Bionics choosing will be base on faction_data.json
      * Note: If bionicUseOverride array length is 0 even when defined in the faction_data.json will be ignored and use the bionicUse from the faction instead.
      */
-    public static void setUpBionic(PersonAPI person) {
+    public static void setUpBionic(PersonAPI person, ba_personmemorydata data) {
         if(person.getFaction() == null) {
             return;
         }
@@ -397,11 +422,11 @@ public class ba_officermanager {
         ba_factiondata factionData = ba_factionmanager.getFactionData(person.getFaction().getId());
         ba_factiondata.ba_factionVariantDetails personVariant = null;
         for(ba_factiondata.ba_factionVariantDetails detail: factionData.variantDetails) {
-            if(detail.variant.variantId.equals(ba_variantmanager.getPersonVariantTag(person))) {
+            if(detail.variant.variantId.equals(data.variant)) {
                 personVariant = detail;
             }
         }
-        if(!person.hasTag(ba_variablemanager.BA_RANDOM_BIONIC_GENERATED_TAG) && personVariant != null) {
+        if(!data.isSetUped && !person.hasTag(ba_variablemanager.BA_RANDOM_BIONIC_GENERATED_TAG) && personVariant != null) {
             WeightedRandomPicker<String> randomBionics = new WeightedRandomPicker<>(ba_utils.getRandom());
             if(personVariant.bionicUseIdsOverride != null && personVariant.bionicUseIdsOverride.size() != 0) {
                 for(ba_factiondata.ba_bionicUseIdDetails idDetails: personVariant.bionicUseIdsOverride) {
@@ -438,11 +463,21 @@ public class ba_officermanager {
                 String bionicId = randomBionics.pick(ba_utils.getRandom());
                 ba_bionicitemplugin bionic = ba_bionicmanager.getBionic(bionicId);
                 WeightedRandomPicker<ba_limbmanager.ba_limb> randomLimbPicker = new WeightedRandomPicker<>();
-                randomLimbPicker.addAll(ba_limbmanager.getLimbListFromGroupOnPerson(bionic.bionicLimbGroupId, person));
+                List<ba_limbmanager.ba_limb> limbFromGroupList = ba_limbmanager.getLimbListFromGroupOnPerson(bionic.bionicLimbGroupId, person);
+                //Dynamic limb - need to get from augmentation data
+                for(ba_bionicAugmentedData augmentedData: data.anatomy) {
+                    for(ba_limbmanager.ba_limb limbFromGroup: limbFromGroupList) {
+                        if(augmentedData.limb.sameAs(limbFromGroup.limbId)) {
+                            randomLimbPicker.add(augmentedData.limb);
+                        }
+                    }
+                }
                 ba_limbmanager.ba_limb selectedLimb = randomLimbPicker.pick();
-                boolean success = installBionic(bionic, selectedLimb, person, false);
-                if(success) {
-                    randomBionics.remove(bionicId);
+                if(selectedLimb != null) {
+                    boolean success = installBionic(bionic, selectedLimb, person, false);
+                    if(success && !person.isAICore()) {
+                        randomBionics.remove(bionicId);
+                    }
                 }
                 currentTry++;
             }
@@ -696,7 +731,7 @@ public class ba_officermanager {
         List<ba_bionicAugmentedData> anatomyList = new ArrayList<>();
         if(person.isAICore()) {
             ba_aimemorydata data = getAIMemData(person, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
-            return data.anatomy;
+            return data != null ? data.anatomy: null;
         }
         if(checkIfPersonHasBionicMemoryData(person)) {
             ba_personmemorydata data = (ba_personmemorydata) person.getMemoryWithoutUpdate().get(ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY);
@@ -790,8 +825,8 @@ public class ba_officermanager {
      * @return
      */
     public static boolean checkIfCurrentBRMLowerThanLimit(PersonAPI person, float limit) {
-        float currentBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_CURRENT_STATS_KEY).computeEffective(0f);
-        float limitBrm = person.getStats().getDynamic().getMod(ba_variablemanager.BA_BRM_LIMIT_STATS_KEY).computeEffective(0f);
+        float currentBrm = getCurrentBRM(person);
+        float limitBrm = getLimitBRM(person);
         if(bionicalterationplugin.isBRMCapDisable) return true; //disabling BRM limit
         return currentBrm < limit * limitBrm;
     }
@@ -1225,6 +1260,7 @@ public class ba_officermanager {
         public List<ba_bionicAugmentedData> anatomy = new ArrayList<>();
         public int BRMTier;
         public String variant = ""; //Should be empty string for AI
+        public boolean isSetUped = false;
         public Object custom;
         public ba_personmemorydata(int tier) {
             if(tier < 0) {
@@ -1234,16 +1270,10 @@ public class ba_officermanager {
         }
     }
     public static class ba_aimemorydata extends ba_personmemorydata {
-        public String shell = "";
-        public boolean isSetUped = false;
         public PersonAPI dummyAI = Global.getFactory().createPerson(); //use for storing
 
         public ba_aimemorydata() {
             super(1);
-        }
-        public ba_aimemorydata(String shell) {
-            super(1);
-            this.shell = shell;
         }
     }
 

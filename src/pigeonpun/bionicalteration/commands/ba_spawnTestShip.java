@@ -110,6 +110,7 @@ public class ba_spawnTestShip implements BaseCommand {
         ship.setCaptain(MagicCampaign.createCaptainBuilder(Factions.REMNANTS).setIsAI(true).setAICoreType(Commodities.ALPHA_CORE).create());
         Console.showMessage("Added 1 ship "
                 + ship.getSpecId() + " to player fleet.");
+        //todo: remove this command
         return CommandResult.SUCCESS;
     }
 }

@@ -164,7 +164,7 @@ public class ba_limbmanager {
      */
     public static ba_limb createDynamicLimb(ba_limbmanager.ba_limb baseLimb, List<ba_officermanager.ba_bionicAugmentedData> data) {
         boolean isDuplicated = true;
-        int startPrefix = 2;
+        int startPrefix = 0;
         String dynamicId = baseLimb.limbId + DYNAMIC_LIMB_ID_CUSTOM_DIVIDER + startPrefix;
         while(isDuplicated) {
             boolean found = false;
@@ -179,6 +179,9 @@ public class ba_limbmanager {
             if(!found) {
                 isDuplicated = false;
             }
+        }
+        if(startPrefix == 0) {
+            return new ba_limb(dynamicId, baseLimb, String.valueOf(startPrefix), false);
         }
         return new ba_limb(dynamicId, baseLimb, String.valueOf(startPrefix));
     }
@@ -256,6 +259,15 @@ public class ba_limbmanager {
         public ba_limb(String limbId, @NotNull ba_limb baseLimb, String namePrefix) {
             this.limbId = limbId;
             this.name = baseLimb.name + " " + namePrefix;
+            this.description = baseLimb.description;
+            this.limbGroupList = baseLimb.limbGroupList;
+            this.tags = baseLimb.tags;
+            this.order = baseLimb.order;
+            this.tags.add(ba_variablemanager.BA_DYNAMICALLY_CREATE_LIMB);
+        }
+        public ba_limb(String limbId, @NotNull ba_limb baseLimb, String namePrefix, boolean isAddPrefixToName) {
+            this.limbId = limbId;
+            this.name = baseLimb.name + (isAddPrefixToName? " " + namePrefix: "");
             this.description = baseLimb.description;
             this.limbGroupList = baseLimb.limbGroupList;
             this.tags = baseLimb.tags;

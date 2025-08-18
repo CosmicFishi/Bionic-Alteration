@@ -91,6 +91,7 @@ public class ba_bionic_augmented {
             if(stats.getFleetMember() != null) {
                 PersonAPI captain = stats.getFleetMember().getCaptain();
                 List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(captain);
+                if (listAnatomy == null) return;
                 for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
                     if(anatomy.bionicInstalled != null) {
                         if(anatomy.bionicInstalled != null && anatomy.bionicInstalled.isApplyCaptainEffect) {
@@ -120,6 +121,7 @@ public class ba_bionic_augmented {
             if(stats.getFleetMember() != null) {
                 PersonAPI captain = stats.getFleetMember().getCaptain();
                 List<ba_officermanager.ba_bionicAugmentedData> listAnatomy = ba_officermanager.getBionicAnatomyList(captain);
+                if (listAnatomy == null) return;
                 for(ba_officermanager.ba_bionicAugmentedData anatomy: listAnatomy) {
                     if(anatomy.bionicInstalled != null) {
                         if(anatomy.bionicInstalled != null && anatomy.bionicInstalled.isApplyCaptainEffect) {

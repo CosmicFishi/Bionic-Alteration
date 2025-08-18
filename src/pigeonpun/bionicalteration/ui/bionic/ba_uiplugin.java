@@ -704,7 +704,7 @@ public class ba_uiplugin extends ba_uicommon {
         }
 
         //--------image
-        int imageX = (int) (0 + pad);
+        int imageX = (int) (0 + pad/2);
         int imageY = (int) (upgradeBtnH + upgradeBtnY + pad);
         int imageW = (int) infoLeftW;
         int imageH = imageW;

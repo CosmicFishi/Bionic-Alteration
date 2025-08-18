@@ -360,18 +360,40 @@
     "targetBRMLevel": 1,
     "targetConsciousLevel": 0.4
   },
-  "remnants": {
+  "remnant": {
     "variantUse": [
-
+      {
+        "variantId": "GENERIC_HUMAN",
+        "spawnWeight": "10f"
+      },
+      {
+        "variantId": "AI_HORROR_1",
+        "spawnWeight": "2f"
+      },
+      {
+        "variantId": "AI_HORROR_2",
+        "spawnWeight": "2f"
+      },
+      {
+        "variantId": "AI_HORROR_3",
+        "spawnWeight": "2f"
+      }
     ],
     "bionicUse": {
       "tags": [
-
+        {
+          "tag": "ba_bionic_t2",
+          "spawnWeight": "4f"
+        },
+        {
+          "tag": "ba_bionic_bounty",
+          "spawnWeight": "1f"
+        }
       ],
       "ids": []
     },
     "targetBRMLevel": 1,
-    "targetConsciousLevel": 0.4
+    "targetConsciousLevel": 0
   },
   "omega": {
     "variantUse": [

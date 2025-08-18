@@ -1,4 +1,6 @@
 variantId,variantName,limbIdList,allowPlayerChangeTo
 GENERIC_HUMAN,Human,"brain,heart,eyes,mouth,torso,hands,legs",TRUE
 GENERIC_HALF_BORN,Half Born,"brain,heart,heart_2,eyes,mouth,torso,hands,legs",TRUE
-,,,
+AI_HORROR_1,AI 1,"brain,heart,eyes,eyes,torso,hands,legs",TRUE
+AI_HORROR_2,AI 2,"brain,heart,heart,heart,eyes,eyes,torso",TRUE
+AI_HORROR_3,AI 3,"brain,heart,eyes,torso,hands,hands,hands",TRUE
