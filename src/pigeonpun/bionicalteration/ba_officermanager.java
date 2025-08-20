@@ -559,6 +559,21 @@ public class ba_officermanager {
         ba_aimemorydata data = getAIMemData(person, dialog);
         data.anatomy = newBioformData;
         saveAIMemData(person, dialog, data);
+        CampaignFleetAPI fleet = getFleetFromPerson(person, dialog);
+        FleetMemberAPI member = null;
+        for(FleetMemberAPI memb: fleet.getFleetData().getMembersListCopy()) {
+            if(memb.getCaptain().getId().equals(person.getId())) {
+                member = memb;
+            }
+        }
+        if(member != null && member.getVariant() != null) {
+            if(member.getCaptain() != null && !member.getCaptain().isDefault()) {
+                if(!member.getVariant().hasHullMod(ba_variablemanager.BA_BIONIC_INFO_HULLMOD)) {
+                    member.getVariant().addPermaMod(ba_variablemanager.BA_BIONIC_INFO_HULLMOD);
+                    ba_officermanager.refresh(null);
+                }
+            }
+        }
     }
     //todo: need testing on: consciousness, other fleet with AI, player fleet with AI, BRM management UI
     /**

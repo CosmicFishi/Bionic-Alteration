@@ -157,7 +157,7 @@ public class ba_uiplugin extends ba_uicommon {
         refresh();
     }
     public boolean checkIfCanOpenBioformWorkshop() {
-        if(this.dialog.getInteractionTarget() != null && this.dialog.getInteractionTarget().hasTag(ba_variablemanager.BA_OVERCLOCK_STATION_ENTITY_TAG)) {
+        if(this.dialog != null && this.dialog.getInteractionTarget() != null && this.dialog.getInteractionTarget().hasTag(ba_variablemanager.BA_OVERCLOCK_STATION_ENTITY_TAG)) {
             return this.dialog.getInteractionTarget().getMemoryWithoutUpdate().contains("$upgraded_bioform") && this.dialog.getInteractionTarget().getMemoryWithoutUpdate().getBoolean("$upgraded_bioform");
         }
         return false;
