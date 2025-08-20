@@ -683,7 +683,6 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 addButtonToList(bioformButton, "bioform:createBaselineVariant");
             } else {
                 this.currentBioformData = ba_limbmanager.sortBionicDataByLimbOrder(this.currentBioformData);
-                //todo: display bioform stuffs
                 int limbX = (int) pad;
                 int limbW = 150;
                 int bionicRowX = limbW;

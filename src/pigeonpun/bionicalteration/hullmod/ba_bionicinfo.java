@@ -80,7 +80,7 @@ public class ba_bionicinfo extends BaseHullMod {
 //                    UIComponentAPI border = tooltip.createRect(g.darker().darker(), 1);
 //                    border.getPosition().setSize(tooltipWitdth, 1);
 //                    tooltip.addCustom(border, pad);
-                    tooltip.addSectionHeading(data.limb.name, Misc.getTextColor(), Misc.getGrayColor().darker().darker().darker().darker().darker(), Alignment.MID, pad);
+                    tooltip.addSectionHeading(data.limb.name, Misc.getTextColor(), Misc.getGrayColor().darker().darker().darker().darker().darker(), Alignment.MID, pad*2);
                     if(data.bionicInstalled != null) {
                         data.bionicInstalled.displayEffectDescription(tooltip, ship.getCaptain(), data.bionicInstalled, false);
                         if(data.bionicInstalled.hasCustomHullmodInfo()) {
@@ -93,7 +93,8 @@ public class ba_bionicinfo extends BaseHullMod {
                             }
                         }
                     } else {
-                        tooltip.addPara("Empty", Misc.getGrayColor() ,pad);
+                        LabelAPI empty = tooltip.addPara("No Augmentation", Misc.getGrayColor() ,pad);
+                        empty.setAlignment(Alignment.MID);
                     }
                 }
             }

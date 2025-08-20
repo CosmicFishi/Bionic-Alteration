@@ -572,6 +572,10 @@ public class ba_officermanager {
                     member.getVariant().addPermaMod(ba_variablemanager.BA_BIONIC_INFO_HULLMOD);
                     ba_officermanager.refresh(null);
                 }
+                if(!member.getVariant().hasHullMod(ba_variablemanager.BA_SYNTHETIC_BODY_HULLMOD)) {
+                    member.getVariant().addPermaMod(ba_variablemanager.BA_SYNTHETIC_BODY_HULLMOD);
+                    ba_officermanager.refresh(null);
+                }
             }
         }
     }
