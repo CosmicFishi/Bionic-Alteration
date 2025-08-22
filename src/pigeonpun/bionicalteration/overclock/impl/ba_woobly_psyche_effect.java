@@ -23,7 +23,6 @@ public class ba_woobly_psyche_effect extends ba_overclock {
     public static final float BONUS_SPEED = 50;
     public static final float MANEUVERABILITY_REDUCE = 80f;
     public ba_woobly_psyche_effect() {}
-    //todo: Add a hullmod which display certain effect if they are active ot not base on the condition
     //in this case, its the max speed over certain threshold
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {

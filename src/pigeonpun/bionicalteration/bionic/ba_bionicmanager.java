@@ -410,22 +410,6 @@ public class ba_bionicmanager {
         }
         return bionics;
     }
-    //todo: should i keep this ?
-    public static boolean checkIfPersonHasBionicDataSavedAsTag(PersonAPI person) {
-        log.info("Converting bionic data from tag to memory ===== ");
-        boolean found = false;
-        if (!person.getTags().isEmpty()) {
-            log.info(person.getName().getFullName() + ", tags: " + person.getTags().toString());
-            for (String tag: person.getTags()) {
-                if(tag != null && tag.contains(":")) {
-                    String[] tokens = tag.split(":");
-                    ba_bionicitemplugin bionicInstalled = bionicItemMap.get(tokens[0]);
-                    if(bionicInstalled != null) found = true;
-                }
-            }
-        }
-        return found;
-    }
     public static List<String> getListBionicKeys() {
         return new ArrayList<>(bionicItemMap.keySet());
     }

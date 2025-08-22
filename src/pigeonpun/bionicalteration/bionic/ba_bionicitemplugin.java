@@ -330,7 +330,6 @@ public class ba_bionicitemplugin implements SpecialItemPlugin, ba_bioniceffect {
     @Override
     public boolean equals(Object obj) {
         if(obj instanceof ba_bionicitemplugin) {
-            //todo: this need fixing
             boolean equal = true;
             if(!((ba_bionicitemplugin) obj).bionicId.equals(bionicId)) {
                 equal = false;
