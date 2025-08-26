@@ -4,7 +4,6 @@ import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.listeners.ShowLootListener;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
-import com.fs.starfarer.api.impl.SharedUnlockData;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import com.fs.starfarer.api.impl.campaign.procgen.SalvageEntityGenDataSpec;
@@ -69,14 +68,14 @@ public class ba_salvagelistener implements ShowLootListener {
                 1f, 1f, 1f, 1f, dropValue, dropRandom);
         loot.addAll(salvage);
 
-        for(CargoStackAPI stack: loot.getStacksCopy()) {
-            if(stack.isSpecialStack() && stack.getPlugin() instanceof ba_bionicitemplugin) {
-                ba_bionicitemplugin bionic = (ba_bionicitemplugin) stack.getPlugin();
-                if (bionic.getSpec().hasTag(Tags.CODEX_UNLOCKABLE)) {
-                    SharedUnlockData.get().reportPlayerAwareOfSpecialItem(bionic.getId().toString(), true);
-                }
-            }
-        }
+//        for(CargoStackAPI stack: loot.getStacksCopy()) {
+//            if(stack.isSpecialStack() && stack.getPlugin() instanceof ba_bionicitemplugin) {
+//                ba_bionicitemplugin bionic = (ba_bionicitemplugin) stack.getPlugin();
+//                if (bionic.getSpec().hasTag(Tags.CODEX_UNLOCKABLE)) {
+//                    SharedUnlockData.get().reportPlayerAwareOfSpecialItem(bionic.getId().toString(), true);
+//                }
+//            }
+//        }
     }
 
     /**

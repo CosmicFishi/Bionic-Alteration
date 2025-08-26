@@ -51,11 +51,6 @@ public class ba_bioniccontainer implements SpecialItemPlugin {
     }
 
     @Override
-    public void performRightClickAction(RightClickActionHelper helper) {
-
-    }
-
-    @Override
     public boolean shouldRemoveOnRightClickAction() {
         return false;
     }
