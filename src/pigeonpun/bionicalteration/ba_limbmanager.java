@@ -187,12 +187,17 @@ public class ba_limbmanager {
     }
     @Nullable
     public static ba_limbmanager.ba_limb getLimbFromPerson(PersonAPI person, String limbId) {
+        List<ba_officermanager.ba_bionicAugmentedData> augmentedData = new ArrayList<>();
         if(person.isAICore()) {
             ba_officermanager.ba_aimemorydata data = ba_officermanager.getAIMemData(person, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
-            for (ba_officermanager.ba_bionicAugmentedData d: data.anatomy) {
-                if(d.limb.limbId.equals(limbId)) {
-                    return d.limb;
-                }
+            if(data != null) augmentedData = data.anatomy;
+        } else {
+            ba_officermanager.ba_personmemorydata data = ba_officermanager.getPersonMemoryData(person);
+            if(data != null) augmentedData = data.anatomy;
+        }
+        for (ba_officermanager.ba_bionicAugmentedData d: augmentedData) {
+            if(d.limb.limbId.equals(limbId)) {
+                return d.limb;
             }
         }
         return null;

@@ -34,7 +34,7 @@ public class ba_stellar_torso_effect extends ba_bionicitemplugin {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "Increase piloting ship's max peak CR by";
+        String text = "Increase piloting ship's peak performance by";
         String textNum = Math.round(SHIP_PEAK_CR * 100 - 100) + "%";
         String text2 = "and reduce damage taken by the ship engine by";
         String text2Num = Math.round(100 - SHIP_ENGINE_DAMAGE * 100) + "%";

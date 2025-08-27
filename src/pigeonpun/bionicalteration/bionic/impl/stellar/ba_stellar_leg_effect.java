@@ -18,7 +18,7 @@ import pigeonpun.bionicalteration.bionic.ba_bionicitemplugin;
 import java.awt.*;
 
 public class ba_stellar_leg_effect extends ba_bionicitemplugin {
-    public static float SHIP_MAX_CR_MULT = 1.14f;
+    public static float SHIP_MAX_CR_FLAT = 14f;
     public static float SHIP_FLUX_CAP_MULT = 0.94f;
     static Logger log = Global.getLogger(ba_stellar_leg_effect.class);
 
@@ -34,7 +34,7 @@ public class ba_stellar_leg_effect extends ba_bionicitemplugin {
         final Color g = Misc.getGrayColor();
 
         String text = "Increase piloting ship's max combat readiness by";
-        String textNum = Math.round(SHIP_MAX_CR_MULT * 100 - 100) + "%";
+        String textNum = Math.round(SHIP_MAX_CR_FLAT) + "%";
         String negativeText = "but decrease ship's flux capacity by";
         String negativeTextNum = Math.round(100 - SHIP_FLUX_CAP_MULT * 100) + "%";
         String name = isItem ? "Effect:" : bionic.getName() + ":";
@@ -49,13 +49,13 @@ public class ba_stellar_leg_effect extends ba_bionicitemplugin {
 
     @Override
     public void applyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getMaxCombatReadiness().modifyMult(id, SHIP_MAX_CR_MULT);
+        stats.getMaxCombatReadiness().modifyFlat(id, SHIP_MAX_CR_FLAT * 0.01f, this.getName() + " bionic");
         stats.getFluxCapacity().modifyMult(id, SHIP_FLUX_CAP_MULT);
     }
 
     @Override
     public void unapplyOfficerEffect(MutableShipStatsAPI stats, ShipAPI.HullSize hullSize, String id) {
-        stats.getMaxCombatReadiness().unmodifyMult(id);
+        stats.getMaxCombatReadiness().unmodifyFlat(id);
         stats.getFluxCapacity().unmodifyMult(id);
     }
 

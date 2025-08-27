@@ -36,7 +36,7 @@ public class ba_velo_torso_effect extends ba_bionicitemplugin {
         final Color t = Misc.getTextColor();
         final Color g = Misc.getGrayColor();
 
-        String text = "For captain, increase piloting ship's peak CR by";
+        String text = "For captain, increase piloting ship's peak performance by";
         String textNum = Math.round(OFFICER_SHIP_PEAK_CR * 100 - 100) + "%";
         String negativeText = "but increase ship's overload time by";
         String negativeTextNum = Math.round(OFFICER_SHIP_OVERLOAD_MULT * 100 - 100) + "%";
