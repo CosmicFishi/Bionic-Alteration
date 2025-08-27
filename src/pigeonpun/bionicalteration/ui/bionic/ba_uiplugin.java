@@ -31,6 +31,7 @@ import pigeonpun.bionicalteration.rulecmd.ba_bioformTerminal;
 import pigeonpun.bionicalteration.ui.ba_component;
 import pigeonpun.bionicalteration.ui.ba_debounceplugin;
 import pigeonpun.bionicalteration.ui.ba_uicommon;
+import pigeonpun.bionicalteration.utils.ba_stringhelper;
 import pigeonpun.bionicalteration.utils.ba_utils;
 
 import java.awt.*;
@@ -348,6 +349,22 @@ public class ba_uiplugin extends ba_uicommon {
             border.getPosition().setSize(statsW, statsH);
             border.getPosition().inTL(-pad-pad/2,-pad-pad/2);
             personStatsTooltip.addComponent(border);
+//            personStatsTooltip.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
+//                @Override
+//                public boolean isTooltipExpandable(Object tooltipParam) {
+//                    return false;
+//                }
+//
+//                @Override
+//                public float getTooltipWidth(Object tooltipParam) {
+//                    return 300;
+//                }
+//
+//                @Override
+//                public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+//                    tooltip.addPara(ba_stringhelper.getString("BRM_explain"), 10f);
+//                }
+//            }, border, TooltipMakerAPI.TooltipLocation.LEFT);
             //>name
             LabelAPI nameLabel = personStatsTooltip.addPara(this.currentPerson.getName().getFullName() + (currentPerson.isPlayer() ? " (You)" : ""), 0, Misc.getBrightPlayerColor(), this.currentPerson.getName().getFullName());
             nameLabel.getPosition().setSize(200,20);
@@ -412,9 +429,32 @@ public class ba_uiplugin extends ba_uicommon {
             limitBRMLabel.setHighlightColors(Misc.getBrightPlayerColor());
             limitBRMLabel.getPosition().setSize(150,20);
             limitBRMLabel.getPosition().inTL(0, limitBRMY);
+            limitBRMLabel.setHighlightOnMouseover(true);
             if(bionicalterationplugin.isBRMCapDisable) {
                 limitBRMLabel.setOpacity(0);
             }
+            UIComponentAPI BRMUnderline = personStatsTooltip.createRect(Misc.getTextColor().darker().darker(), 0);
+            BRMUnderline.getPosition().setSize(limitBRMLabel.computeTextWidth("BRM Limit:" + limitBRM + " ") + pad, limitBRMLabel.computeTextHeight("BRM Using: 000") + pad);
+            BRMUnderline.getPosition().inTL(-pad/2,limitBRMY-pad/2);
+            personStatsTooltip.addComponent(BRMUnderline);
+            personStatsTooltip.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
+                @Override
+                public boolean isTooltipExpandable(Object tooltipParam) {
+                    return false;
+                }
+
+                @Override
+                public float getTooltipWidth(Object tooltipParam) {
+                    return 300;
+                }
+
+                @Override
+                public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                    tooltip.addSectionHeading("Bionic Right Management Limit", Alignment.MID, 0);
+                    tooltip.addPara(ba_stringhelper.getString("BRM","BRM_explain"), 10f);
+                    tooltip.addPara(ba_stringhelper.getString("BRM","BRM_galatia"), 10f);
+                }
+            }, BRMUnderline, TooltipMakerAPI.TooltipLocation.LEFT);
             //>BRM available
             int currentBRM = ba_officermanager.getCurrentBRM(this.currentPerson);
             int currentBRMY = (int) limitBRMY;

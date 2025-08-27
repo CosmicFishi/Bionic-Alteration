@@ -11,6 +11,10 @@
     "ba_fragile_ai": "ERROR6456, ERROR64$7, ERROR6#58, ERROR64$9, ERROR!460, ERROR6461...",
     "ba_critical_ai": "#$#%##$ I AM H$RE @#$!@#"
   },
+  "BRM": {
+    "BRM_explain": "Bionic Rights Management is a legacy Domain system designed to regulate access to high-grade cybernetics and neural augmentation. Most operate under a basic license, enough for standard civilian implants. However, unlocking more advanced capabilities requires elevated BRM clearance.",
+    "BRM_galatia": "Some say Galatia Academy still maintains partial access to these old systems. If you're looking to push beyond baseline, it might be worth the detour."
+  },
   "ps_lunasettings": {
     "header_Generate": "Generate",
     "name_isAllowBionicsToSpawnInPlayerFleetOnNewSave": "Allow bionics to spawn on player's fleet on new game",
