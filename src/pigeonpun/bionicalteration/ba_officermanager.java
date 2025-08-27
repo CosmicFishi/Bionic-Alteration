@@ -551,7 +551,8 @@ public class ba_officermanager {
     public static List<ba_bionicAugmentedData> createDefaultVariantLimbs() {
         List<ba_bionicAugmentedData> data = new ArrayList<>();
         for(String limb :ba_variantmanager.getListLimbFromVariant("GENERIC_HUMAN")) {
-            data.add(new ba_bionicAugmentedData(ba_limbmanager.getLimb(limb), null, null));
+            ba_limbmanager.ba_limb dynamicLimb = ba_limbmanager.createDynamicLimb(ba_limbmanager.getLimb(limb), null);
+            data.add(new ba_bionicAugmentedData(dynamicLimb, null, null));
         }
         return data;
     }

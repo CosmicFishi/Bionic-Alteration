@@ -160,13 +160,13 @@ public class ba_limbmanager {
     /**
      * AI for now. todo: add normal human
      * @param baseLimb
-     * @return
-     */
-    public static ba_limb createDynamicLimb(ba_limbmanager.ba_limb baseLimb, List<ba_officermanager.ba_bionicAugmentedData> data) {
+     * @param data NULL will create limb with startPrefix 0
+     * @return     */
+    public static ba_limb createDynamicLimb(@NotNull ba_limbmanager.ba_limb baseLimb, @Nullable List<ba_officermanager.ba_bionicAugmentedData> data) {
         boolean isDuplicated = true;
-        int startPrefix = 0;
+        int startPrefix = 1;
         String dynamicId = baseLimb.limbId + DYNAMIC_LIMB_ID_CUSTOM_DIVIDER + startPrefix;
-        while(isDuplicated) {
+        while(isDuplicated && data != null) {
             boolean found = false;
             for (ba_officermanager.ba_bionicAugmentedData baBioformAugmentedData : data) {
                 if(baBioformAugmentedData.limb.limbId.equals(dynamicId)) {
@@ -180,7 +180,7 @@ public class ba_limbmanager {
                 isDuplicated = false;
             }
         }
-        if(startPrefix == 0) {
+        if(startPrefix == 1) {
             return new ba_limb(dynamicId, baseLimb, String.valueOf(startPrefix), false);
         }
         return new ba_limb(dynamicId, baseLimb, String.valueOf(startPrefix));
