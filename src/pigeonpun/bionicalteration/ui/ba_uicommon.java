@@ -973,6 +973,71 @@ public class ba_uicommon implements CustomUIPanelPlugin {
             overviewPersonTooltipContainer.getExternalScroller().setYOffset(currentScrollPositionPersonList);
         }
     }
+    protected void displayPersonListWithKeyPresetSimplified(
+            ba_component creatorComponent,
+            String creatorComponentTooltip,
+            String preset,
+            boolean isDisplayingOtherFleets,
+            float personListW, float personListH,
+            float personListX, float personListY
+    ) {
+        float pad = 10f;
+        float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        Color t = Misc.getTextColor();
+        Color g = Misc.getGrayColor();
+        String keyPreset = "";
+        if(preset != "") {
+            keyPreset = preset + "_";
+        }
+
+        //overview personContainer
+        String overviewPersonTooltipKey = keyPreset+"PERSON_LIST_TOOLTIP";
+        String overviewPersonPanelKey = keyPreset+"PERSON_LIST_PANEL";
+        ba_component overviewPersonContainer = new ba_component(componentMap, creatorComponent.mainPanel, personListW, personListH,personListX, personListY, true, overviewPersonPanelKey);
+        TooltipMakerAPI overviewPersonTooltipContainer = overviewPersonContainer.createTooltip(overviewPersonTooltipKey, personListW, personListH, true, 0, 0);
+        //important to set the container tooltip to have scroll enable if you want scroll
+        //Next important is to have panel.addUI at the bottom of the code if you have scroll enabled, or the scroll wont work
+        creatorComponent.attachSubPanel(creatorComponentTooltip,overviewPersonPanelKey, overviewPersonContainer);
+
+        int i = 0;
+        int imageH = 80;
+        int imageW = 80;
+        int ySpacer = 10;
+        float personW = personListW - 10 * 2; //time 2 for the padding both left and right
+        float personH = imageH + 50;
+        List<ba_component> subComponentPersonList = new ArrayList<>();
+        for (PersonAPI member: ba_officermanager.listPersons) {
+            String defaultPersonTooltipContainerKey = "PERSON_TOOLTIP_CONTAINER";
+            String defaultPersonPanelContainerKey = "PERSON_PANEL_CONTAINER_"+i;
+            //add first spacer
+            if(subComponentPersonList.size() == 0) {
+                overviewPersonTooltipContainer.addSpacer(ySpacer);
+            }
+
+            ba_component personDisplayer = displaySinglePersonFromListSimplified(
+                    member,
+                    overviewPersonContainer,
+                    overviewPersonTooltipKey,
+                    defaultPersonPanelContainerKey,
+                    defaultPersonTooltipContainerKey,
+                    imageW, imageH,
+                    personW, personH,
+                    0,0
+            );
+            subComponentPersonList.add(personDisplayer);
+            //--------Spacer because scroller dont like position offseting as spacing
+            overviewPersonTooltipContainer.addSpacer(ySpacer);
+            i++;
+        }
+        overviewPersonContainer.subComponentListMap.put("SUB_PERSON_LIST", subComponentPersonList);
+        //do the adding late so the scroll work (thanks Lukas04)
+        overviewPersonContainer.mainPanel.addUIElement(overviewPersonTooltipContainer);
+        if(overviewPersonTooltipContainer.getExternalScroller() != null) {
+            overviewPersonTooltipContainer.getExternalScroller().setYOffset(currentScrollPositionPersonList);
+        }
+    }
     protected void displaySinglePersonFromList(
             PersonAPI member,
             ba_component creatorComponent,
@@ -1088,6 +1153,63 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         LabelAPI prof = personProfTooltip.addPara("Profession: " + profString, pad);
         prof.setHighlight("Profession: ", profString);
         prof.setHighlightColors(g,h);
+
+        return personDisplayContainer;
+    }
+
+    protected ba_component displaySinglePersonFromListSimplified(
+            PersonAPI member,
+            ba_component creatorComponent,
+            String creatorComponentTooltip,
+            String componentPanelKey,
+            String componentTooltipKey,
+            float imageW, float imageH,
+            float pW, float pH,
+            float pX, float pY
+    ) {
+        float pad = 10f;
+        float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        Color t = Misc.getTextColor();
+        Color g = Misc.getGrayColor();
+        String spriteName = member.getPortraitSprite();
+
+        ba_component personDisplayContainer = new ba_component(componentMap, creatorComponent.mainPanel, pW, pH, pX, pY,false, componentPanelKey);
+        TooltipMakerAPI personDisplayContainerTooltip = personDisplayContainer.createTooltip(componentTooltipKey, pW, pH, false, 0,0);
+        personDisplayContainerTooltip.setForceProcessInput(true);
+        //attach to have the main tooltip scroll effect this component's panel
+        //important that this doesn't set the location of the attaching component
+        creatorComponent.attachSubPanel(creatorComponentTooltip, componentPanelKey,personDisplayContainer);
+//        subComponentPersonList.add(personDisplayContainer);
+        //hover
+        ButtonAPI areaChecker = personDisplayContainerTooltip.addAreaCheckbox("", null,Color.red.darker(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), pW, pH, 0);
+        addButtonToList(areaChecker, "hover_person:"+member.getId());
+        areaChecker.getPosition().setLocation(0,0).inTL(0, 0);
+        //---------Name
+        int nameH = 30;
+        int nameW = (int) (pW - 30);
+        int nameX = (int) (nameW/2 - personDisplayContainerTooltip.computeStringWidth(member.getName().getFirst() + (member.isPlayer() ? " (" + "You" + ")": ""))/2);
+        TooltipMakerAPI personNameTooltip = personDisplayContainer.createTooltip("PERSON_NAME", nameW, nameH, false, 0, 0);
+        personNameTooltip.getPosition().inTL(nameX + pad/2, 0);
+        LabelAPI name = personNameTooltip.addPara(member.getName().getFirst() + (member.isPlayer() ? " (" + "You" + ")": ""), pad);
+        name.setHighlight(member.getName().getFirst());
+        name.setHighlightColors(Misc.getBrightPlayerColor());
+
+        //--------image
+        int imageX = (int) 0;
+        TooltipMakerAPI personImageTooltip = personDisplayContainer.createTooltip("PERSON_IMAGE", imageW, imageH, false, 0, 0);
+        personImageTooltip.getPosition().inTL(0, 0);
+        personImageTooltip.addImage(spriteName, imageW, imageH, 0);
+        personImageTooltip.getPosition().inTL(pW/2 - imageW/2 - pad, (pH - imageH ) / 2 + pad);
+        //--------Bioform image
+        if(member.isAICore()) {
+            if(!Objects.requireNonNull(ba_officermanager.getAIMemData(member, Global.getSector().getCampaignUI().getCurrentInteractionDialog())).anatomy.isEmpty()) {
+                TooltipMakerAPI bioformImageTooltip = personDisplayContainer.createTooltip("BIOFORM_IMAGE", 16, 16, false, 0, 0);
+                bioformImageTooltip.addImage("graphics/icons/abyssal_light.png", 16, 16, 0);
+                bioformImageTooltip.getPosition().inTL(pW - 16 - pad, pad/2 + 2);
+            }
+        }
 
         return personDisplayContainer;
     }

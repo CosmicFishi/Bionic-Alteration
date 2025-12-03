@@ -185,14 +185,15 @@ public class ba_uiplugin extends ba_uicommon {
         tabMap.put(OVERVIEW, overviewContainer);
         overviewContainer.unfocusComponent(dW);
 
-        float listPersonW = 0.3f * pW;
+        float listPersonW = 0.13f * pW;
         float infoPersonW = ((1 - (listPersonW/pW)) * pW) - pad;
         TooltipMakerAPI overviewPersonListTooltipContainer = overviewContainer.createTooltip(mainPersonListTooltipKey, listPersonW, pH, false, 0, 0);
         TooltipMakerAPI overviewInfoTooltipContainer = overviewContainer.createTooltip(mainInfoTooltipKey, infoPersonW, pH, false, 0, 0);
         overviewInfoTooltipContainer.getPosition().inTL(listPersonW, 0);
         //overviewPerson
 //        displayPersonList(overviewContainer, mainPersonListTooltipKey, listPersonW, pH);
-        displayPersonListWithKeyPreset(overviewContainer, mainPersonListTooltipKey, "OVERVIEW", isDisplayingOtherFleets, listPersonW, pH, MAIN_CONTAINER_PADDING_X/2, MAIN_CONTAINER_PADDING_Y/2);
+//        displayPersonListWithKeyPreset(overviewContainer, mainPersonListTooltipKey, "OVERVIEW", isDisplayingOtherFleets, listPersonW, pH, MAIN_CONTAINER_PADDING_X/2, MAIN_CONTAINER_PADDING_Y/2);
+        displayPersonListWithKeyPresetSimplified(overviewContainer, mainPersonListTooltipKey, "OVERVIEW", isDisplayingOtherFleets, listPersonW, pH, MAIN_CONTAINER_PADDING_X/2, MAIN_CONTAINER_PADDING_Y/2);
         displayPersonInfoList(overviewContainer, mainInfoTooltipKey, infoPersonW, pH, MAIN_CONTAINER_PADDING_X/2, MAIN_CONTAINER_PADDING_Y/2);
     }
     protected void displayPersonInfoList(ba_component creatorComponent, String creatorComponentTooltip, float personInfoW, float personInfoH, float personInfoX, float personInfoY) {
