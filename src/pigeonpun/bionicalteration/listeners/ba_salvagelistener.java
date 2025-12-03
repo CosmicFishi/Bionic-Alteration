@@ -185,7 +185,6 @@ public class ba_salvagelistener implements ShowLootListener {
                 }
             }
         }
-        //todo: add in drop for custom bounty from magiclib
         if(entity.getMemoryWithoutUpdate().get("$fleetType") != null && entity.getMemoryWithoutUpdate().get("$fleetType").equals("personBounty")) {
             SalvageEntityGenDataSpec.DropData bountyDropValue = new SalvageEntityGenDataSpec.DropData();
             bountyDropValue.group = "ba_bionic_bounty";

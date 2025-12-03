@@ -609,7 +609,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
             //table header
             String tableEmptyTooltipContainerKey = "BIONIC_TABLE_EMPTY_TOOLTIP";
             String tableEmptyPanelContainerKey = keyPreset + "BIONIC_TABLE_EMPTY_PANEL";
-            int tableEmptyH = 240;
+            int tableEmptyH = (int) (tableH - tableHeaderH - pad);
             int tableEmptyW = (int) (tableW - pad);
             //--------bionic container
             ba_component tableEmptyDisplayContainer = new ba_component(componentMap, infoPersonBionicContainer.mainPanel, tableEmptyW, tableEmptyH,0,0,false, tableEmptyPanelContainerKey);

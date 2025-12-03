@@ -451,8 +451,16 @@ public class ba_uiplugin extends ba_uicommon {
                 @Override
                 public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
                     tooltip.addSectionHeading("Bionic Right Management Limit", Alignment.MID, 0);
-                    tooltip.addPara(ba_stringhelper.getString("BRM","BRM_explain"), 10f);
-                    tooltip.addPara(ba_stringhelper.getString("BRM","BRM_galatia"), 10f);
+                    if(!currentPerson.isAICore()) {
+                        tooltip.addPara(ba_stringhelper.getString("BRM","BRM_explain"), 10f);
+                        tooltip.addPara(ba_stringhelper.getString("BRM","BRM_galatia"), 10f);
+                    } else {
+                        tooltip.addPara(ba_stringhelper.getString("BRM","BRM_explain_ai"), 10f);
+                        tooltip.addPara("...", 10f);
+                        tooltip.addPara("...", 10f);
+                        tooltip.addPara("...", 10f);
+                        tooltip.addPara("Override Completed...", 10f);
+                    }
                 }
             }, BRMUnderline, TooltipMakerAPI.TooltipLocation.LEFT);
             //>BRM available
@@ -522,23 +530,72 @@ public class ba_uiplugin extends ba_uicommon {
                 if(this.currentTabId.equals(WORKSHOP)) {
                     upgradeButton.setEnabled(false);
                 }
-                if(this.currentPerson.isAICore() && checkIfCanOpenBioformWorkshop()) {
-                    //Button switch page bioform
-                    float bioformBtnH = 20 + statsSpacer + 20;
-                    float bioformBtnW = 200;
-                    int bioformX = (int) (upgradeX);
-                    int bioformY = (int) (pad * 2 + pad/2);
-                    TooltipMakerAPI personbioformTooltip = infoPersonContainer.createTooltip("PERSON_INFO_BIOFORM", statsW, statsH, false, 0, 0);
-                    personbioformTooltip.getPosition().setLocation(0,0);
-                    personbioformTooltip.getPosition().inTL(bioformX,bioformY);
-                    ButtonAPI bioformButton = personbioformTooltip.addButton("Bioform", null, Misc.getTextColor(), ba_variablemanager.BA_OVERFORM_COLOR.darker(), Alignment.MID, CutStyle.BOTTOM, bioformBtnW, bioformBtnH, 0);
-                    addButtonToList(bioformButton, "tab:" + WORKSHOP + ":"+SUB_WORKSHOP_MODE_BIOFORM);
-                    if(this.currentTabId.equals(OVERVIEW)) {
-                        bioformButton.setShortcut(Keyboard.KEY_B, true);
+                //Button switch page bioform
+                float bioformBtnH = 20 + statsSpacer + 20;
+                float bioformBtnW = 200;
+                int bioformX = (int) (upgradeX);
+                int bioformY = (int) (pad * 2 + pad/2);
+                TooltipMakerAPI personbioformTooltip = infoPersonContainer.createTooltip("PERSON_INFO_BIOFORM", statsW, statsH, false, 0, 0);
+                personbioformTooltip.getPosition().setLocation(0,0);
+                personbioformTooltip.getPosition().inTL(bioformX,bioformY);
+                ButtonAPI bioformButton = personbioformTooltip.addButton("Bioform", null, Misc.getTextColor(), ba_variablemanager.BA_OVERFORM_COLOR.darker(), Alignment.MID, CutStyle.BOTTOM, bioformBtnW, bioformBtnH, 0);
+                addButtonToList(bioformButton, "tab:" + WORKSHOP + ":"+SUB_WORKSHOP_MODE_BIOFORM);
+                if(!this.currentPerson.isAICore()) {
+                    bioformButton.setEnabled(false);
+                    if(checkIfCanOpenBioformWorkshop()) {
+                        personbioformTooltip.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
+                            @Override
+                            public boolean isTooltipExpandable(Object tooltipParam) {
+                                return false;
+                            }
+
+                            @Override
+                            public float getTooltipWidth(Object tooltipParam) {
+                                return 400;
+                            }
+
+                            @Override
+                            public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                                tooltip.setParaFontOrbitron();
+                                tooltip.addPara("ERR///",0);
+                                tooltip.addPara("ERR///",0);
+                                tooltip.addPara("...",0);
+                                tooltip.addPara("Access denied. This procedure is %s to AI constructs", 0, Misc.getNegativeHighlightColor(), "restricted");
+                                tooltip.addPara("...",0);
+                            }
+                        }, bioformButton, TooltipMakerAPI.TooltipLocation.LEFT);
                     }
-                    if(this.currentTabId.equals(WORKSHOP)) {
-                        bioformButton.setEnabled(false);
-                    }
+                }
+                if(this.currentTabId.equals(OVERVIEW)) {
+                    bioformButton.setShortcut(Keyboard.KEY_B, true);
+                }
+                if(this.currentTabId.equals(WORKSHOP)) {
+                    bioformButton.setEnabled(false);
+                }
+                if(!checkIfCanOpenBioformWorkshop()) {
+                    bioformButton.setEnabled(false);
+                    personbioformTooltip.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
+                        @Override
+                        public boolean isTooltipExpandable(Object tooltipParam) {
+                            return false;
+                        }
+
+                        @Override
+                        public float getTooltipWidth(Object tooltipParam) {
+                            return 400;
+                        }
+
+                        @Override
+                        public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                            tooltip.setParaFontOrbitron();
+                            tooltip.addPara("ERR///",0);
+                            tooltip.addPara("ERR///",0);
+                            tooltip.addPara("...",0);
+                            tooltip.addPara("%s NOT FOUND", 0, ba_variablemanager.BA_OVERFORM_COLOR, "BIOFORM TERMINAL");
+                            tooltip.addPara("...",0);
+                            tooltip.addPara("Visit nearby bionic stations for more information.", 0);
+                        }
+                    }, bioformButton, TooltipMakerAPI.TooltipLocation.LEFT);
                 }
             }
             //todo: implement feature to install bioform into AI ships
