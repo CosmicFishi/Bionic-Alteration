@@ -44,7 +44,7 @@ public class ba_delegate implements CustomVisualDialogDelegate {
 //                this.containerPanelPlugin.init(panel, callbacks, dialog, ba_uiplugin.BIOFORM, null);
             }
         } else {
-            this.containerPanelPlugin.init(panel, callbacks, dialog, ba_uiplugin.OVERVIEW, listPerson);
+            this.containerPanelPlugin.init(panel, callbacks, dialog, ba_uiplugin.WORKSHOP, listPerson);
         }
     }
 

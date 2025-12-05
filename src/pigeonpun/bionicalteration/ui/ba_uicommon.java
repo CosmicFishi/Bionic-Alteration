@@ -659,227 +659,206 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         TooltipMakerAPI infoPersonBionicTooltipContainer = infoPersonBionicContainer.createTooltip(infoPersonBionicTooltipKey, tableW, tableH, isScroll, 0,0);
         creatorComponent.attachSubPanel(creatorComponentTooltip, infoPersonBionicPanelKey, infoPersonBionicContainer, tableX, tableY);
 
+
+        this.currentBioformData = ba_officermanager.getBionicAnatomyList(this.currentPerson);
         if(this.currentPerson.isAICore()) {
             ba_officermanager.ba_aimemorydata aimemorydata = ba_officermanager.getAIMemData(this.currentPerson, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
             //if AI person have the bioform data
-            if((this.currentBioformData == null || this.currentBioformData.isEmpty()) && !aimemorydata.anatomy.isEmpty()) {
+            if(!aimemorydata.anatomy.isEmpty()) {
                 this.currentBioformData = aimemorydata.anatomy;
             }
-            //if AI person have not set up bioform data
-            if(this.currentBioformData == null || this.currentBioformData.isEmpty() ) {
-                //todo: set a price for creating new bioform
-                LabelAPI loreBioformLabel = infoPersonBionicTooltipContainer.addPara("//SCANNING// ...  Synthetic bioform is not detected in current unit ...", 0f, ba_variablemanager.BA_OVERFORM_COLOR, "");
-                loreBioformLabel.getPosition().inTL(tableW/2 - loreBioformLabel.computeTextWidth("//SCANNING// ...  Synthetic bioform is not detected in current unit")/2, tableH/2 - pad*3);
-                LabelAPI createBioformLabel = infoPersonBionicTooltipContainer.addPara("//%s", 0f, ba_variablemanager.BA_OVERFORM_COLOR, "CREATE NEW BIOFORM ?");
-                createBioformLabel.getPosition().inTL(tableW/2 - createBioformLabel.computeTextWidth("//CREATE NEW BIOFORM ?")/2, tableH/2);
-                //Create button
-                int bioformBtnH = 40;
-                int bioformBtnW = (int) (120);
-                int bioformBtnX = (int) (tableW/2);
-                int bioformBtnY = (int) (tableH/2 + pad*3);
-                ButtonAPI bioformButton = infoPersonBionicTooltipContainer.addButton("Confirm", null, Misc.getTextColor(), Misc.getPositiveHighlightColor().darker().darker(), Alignment.MID, CutStyle.TL_BR,  bioformBtnW, bioformBtnH, 0);
-                bioformButton.getPosition().inTL(bioformBtnX - bioformBtnW/2,bioformBtnY);
-                bioformButton.setShortcut(Keyboard.KEY_G, true);
-                addButtonToList(bioformButton, "bioform:createBaselineVariant");
-            } else {
-                this.currentBioformData = ba_limbmanager.sortBionicDataByLimbOrder(this.currentBioformData);
-                int limbX = (int) pad;
-                int limbW = 150;
-                int bionicRowX = limbW;
-                int bionicRowW = (int) (tableW - limbW - pad);
-                int bionicNameX = bionicRowX;
-                int bionicNameW = (int) (bionicRowW * 0.6f);
+        }
+        //if AI person have not set up bioform data
+        if((this.currentBioformData == null || this.currentBioformData.isEmpty()) && this.currentPerson.isAICore()) {
+            //todo: set a price for creating new bioform
+            LabelAPI loreBioformLabel = infoPersonBionicTooltipContainer.addPara("//SCANNING// ...  Synthetic bioform is not detected in current unit ...", 0f, ba_variablemanager.BA_OVERFORM_COLOR, "");
+            loreBioformLabel.getPosition().inTL(tableW/2 - loreBioformLabel.computeTextWidth("//SCANNING// ...  Synthetic bioform is not detected in current unit")/2, tableH/2 - pad*3);
+            LabelAPI createBioformLabel = infoPersonBionicTooltipContainer.addPara("//%s", 0f, ba_variablemanager.BA_OVERFORM_COLOR, "CREATE NEW BIOFORM ?");
+            createBioformLabel.getPosition().inTL(tableW/2 - createBioformLabel.computeTextWidth("//CREATE NEW BIOFORM ?")/2, tableH/2);
+            //Create button
+            int bioformBtnH = 40;
+            int bioformBtnW = (int) (120);
+            int bioformBtnX = (int) (tableW/2);
+            int bioformBtnY = (int) (tableH/2 + pad*3);
+            ButtonAPI bioformButton = infoPersonBionicTooltipContainer.addButton("Confirm", null, Misc.getTextColor(), Misc.getPositiveHighlightColor().darker().darker(), Alignment.MID, CutStyle.TL_BR,  bioformBtnW, bioformBtnH, 0);
+            bioformButton.getPosition().inTL(bioformBtnX - bioformBtnW/2,bioformBtnY);
+            bioformButton.setShortcut(Keyboard.KEY_G, true);
+            addButtonToList(bioformButton, "bioform:createBaselineVariant");
+        } else {
+            this.currentBioformData = ba_limbmanager.sortBionicDataByLimbOrder(this.currentBioformData);
+            int limbX = (int) pad;
+            int limbW = 150;
+            int bionicRowX = limbW;
+            int bionicRowW = (int) (tableW - limbW - pad);
+            int bionicNameX = bionicRowX;
+            int bionicNameW = (int) (bionicRowW * 0.6f);
 //                int bionicBRMX = bionicNameW;
 //                int bionicBRMW = (int) (bionicRowW * 0.4f);
 //                int bionicConsciousX = bionicBRMX + bionicBRMW;
 //                int bionicConsciousW = (int) (bionicRowW * 0.2f);
-                //display the entire bioform list
-                int i = 0;
-                List<ba_component> subComponentBionicList = new ArrayList<>();
-                for(final ba_officermanager.ba_bionicAugmentedData augmentData: this.currentBioformData) {
-                    String bionicTooltipContainerKey = "BIONIC_TOOLTIP_CONTAINER";
-                    String bionicPanelContainerKey = keyPreset + "BIONIC_PANEL_CONTAINER_"+i;
-                    int singleBionicInstalledNameH = 40;
-                    int bionicH = singleBionicInstalledNameH;
-                    //add a extra line for the overclock
+            //display the entire bioform list
+            int i = 0;
+            List<ba_component> subComponentBionicList = new ArrayList<>();
+            for(final ba_officermanager.ba_bionicAugmentedData augmentData: this.currentBioformData) {
+                String bionicTooltipContainerKey = "BIONIC_TOOLTIP_CONTAINER";
+                String bionicPanelContainerKey = keyPreset + "BIONIC_PANEL_CONTAINER_"+i;
+                int singleBionicInstalledNameH = 40;
+                int bionicH = singleBionicInstalledNameH;
+                //add a extra line for the overclock
 //                    if(augmentData.bionicInstalled != null && (ba_overclockmanager.isBionicOverclockable(augmentData.bionicInstalled) || isEdit)) {
 //                        bionicH += singleBionicInstalledNameH;
 //                    }
-                    int bionicW = (int) (tableW - pad);
-                    int bionicX = 0;
-                    int bionicY = 0;
-                    //--------bionic container
-                    ba_component bionicDisplayContainer = new ba_component(componentMap, infoPersonBionicContainer.mainPanel, bionicW, bionicH,bionicX,bionicY,false, bionicPanelContainerKey);
-                    TooltipMakerAPI personDisplayContainerTooltip = bionicDisplayContainer.createTooltip(bionicTooltipContainerKey, bionicW, bionicH, false, 0,0);
-                    personDisplayContainerTooltip.setForceProcessInput(true);
-                    //attach to have the main tooltip scroll effect this component's panel
-                    infoPersonBionicContainer.attachSubPanel(infoPersonBionicTooltipKey, infoPersonBionicPanelKey, bionicDisplayContainer);
-                    subComponentBionicList.add(bionicDisplayContainer);
-                    //lines
-                    int lineW = 30;
-                    int spacerH = (int) (pad + pad/2);
-                    if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb)) {
-                        UIComponentAPI borderSelected = personDisplayContainerTooltip.createRect(ba_variablemanager.BA_OVERFORM_COLOR.darker(), 1);
-                        borderSelected.getPosition().setSize(1f, singleBionicInstalledNameH + spacerH);
-                        borderSelected.getPosition().inTL(lineW/2, (i*(singleBionicInstalledNameH + spacerH)));
-                        int lineStraightY = 0;
-                        if(i == this.currentBioformData.size()-1) {
-                            borderSelected.getPosition().setSize(1f, singleBionicInstalledNameH/2);
-                        }
-                        if(i == 0) {
-                            borderSelected.getPosition().setSize(1f, singleBionicInstalledNameH/2+spacerH);
-                            lineStraightY = singleBionicInstalledNameH/2;
-                        }
-                        personDisplayContainerTooltip.addCustomDoNotSetPosition(borderSelected).getPosition().inTL(lineW/2,lineStraightY);
-                        UIComponentAPI border2 = personDisplayContainerTooltip.createRect(ba_variablemanager.BA_OVERFORM_COLOR.darker(), 1);
-                        border2.getPosition().setSize(lineW/2 + pad/2, 1f);
+                int bionicW = (int) (tableW - pad);
+                int bionicX = 0;
+                int bionicY = 0;
+                //--------bionic container
+                ba_component bionicDisplayContainer = new ba_component(componentMap, infoPersonBionicContainer.mainPanel, bionicW, bionicH,bionicX,bionicY,false, bionicPanelContainerKey);
+                TooltipMakerAPI personDisplayContainerTooltip = bionicDisplayContainer.createTooltip(bionicTooltipContainerKey, bionicW, bionicH, false, 0,0);
+                personDisplayContainerTooltip.setForceProcessInput(true);
+                //attach to have the main tooltip scroll effect this component's panel
+                infoPersonBionicContainer.attachSubPanel(infoPersonBionicTooltipKey, infoPersonBionicPanelKey, bionicDisplayContainer);
+                subComponentBionicList.add(bionicDisplayContainer);
+                //lines
+                int lineW = 30;
+                int spacerH = (int) (pad + pad/2);
+                if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb)) {
+                    UIComponentAPI borderSelected = personDisplayContainerTooltip.createRect(ba_variablemanager.BA_OVERFORM_COLOR.darker(), 1);
+                    borderSelected.getPosition().setSize(1f, singleBionicInstalledNameH + spacerH);
+                    borderSelected.getPosition().inTL(lineW/2, (i*(singleBionicInstalledNameH + spacerH)));
+                    int lineStraightY = 0;
+                    if(i == this.currentBioformData.size()-1) {
+                        borderSelected.getPosition().setSize(1f, singleBionicInstalledNameH/2);
+                    }
+                    if(i == 0) {
+                        borderSelected.getPosition().setSize(1f, singleBionicInstalledNameH/2+spacerH);
+                        lineStraightY = singleBionicInstalledNameH/2;
+                    }
+                    personDisplayContainerTooltip.addCustomDoNotSetPosition(borderSelected).getPosition().inTL(lineW/2,lineStraightY);
+                    UIComponentAPI border2 = personDisplayContainerTooltip.createRect(ba_variablemanager.BA_OVERFORM_COLOR.darker(), 1);
+                    border2.getPosition().setSize(lineW/2 + pad/2, 1f);
 //                        border2.getPosition().inTL(lineW/2, i*(singleBionicInstalledNameH + spacerH) + singleBionicInstalledNameH/2);
-                        personDisplayContainerTooltip.addCustomDoNotSetPosition(border2).getPosition().inTL(lineW/2,singleBionicInstalledNameH/2);
-                    } else {
-                        UIComponentAPI borderSelected = personDisplayContainerTooltip.createRect(ba_variablemanager.BA_OVERFORM_COLOR.darker(), 1);
-                        borderSelected.getPosition().setSize(1f, spacerH);
-                        personDisplayContainerTooltip.addCustomDoNotSetPosition(borderSelected).getPosition().inTL(lineW/2, singleBionicInstalledNameH);
-                        if(i == this.currentBioformData.size()-1) {
-                            borderSelected.getPosition().setSize(0f, 0);
-                            borderSelected.setOpacity(0);
-                        }
+                    personDisplayContainerTooltip.addCustomDoNotSetPosition(border2).getPosition().inTL(lineW/2,singleBionicInstalledNameH/2);
+                } else {
+                    UIComponentAPI borderSelected = personDisplayContainerTooltip.createRect(ba_variablemanager.BA_OVERFORM_COLOR.darker(), 1);
+                    borderSelected.getPosition().setSize(1f, spacerH);
+                    personDisplayContainerTooltip.addCustomDoNotSetPosition(borderSelected).getPosition().inTL(lineW/2, singleBionicInstalledNameH);
+                    if(i == this.currentBioformData.size()-1) {
+                        borderSelected.getPosition().setSize(0f, 0);
+                        borderSelected.setOpacity(0);
                     }
-                    //hover
-                    int areaX = !ba_limbmanager.isLimbCentralLimb(augmentData.limb)? lineW: 0;
-                    ButtonAPI areaChecker = personDisplayContainerTooltip.addAreaCheckbox("", null,!ba_limbmanager.isLimbCentralLimb(augmentData.limb)? Misc.getDarkPlayerColor().brighter(): ba_variablemanager.BA_OVERFORM_COLOR.darker(), !ba_limbmanager.isLimbCentralLimb(augmentData.limb)? Misc.getDarkPlayerColor(): ba_variablemanager.BA_OVERFORM_COLOR.darker(), Misc.getBrightPlayerColor(), bionicW - areaX, bionicH, 0);
-                    addButtonToList(areaChecker, "bioform:remove:"+augmentData.limb.limbId + (augmentData.bionicInstalled != null ? ":"+augmentData.bionicInstalled.getId() : ""));
-                    areaChecker.getPosition().setLocation(0,0).inTL(areaX, 0);
-                    if(ba_limbmanager.isLimbCentralLimb(augmentData.limb)) {
-                        areaChecker.setClickable(false);
+                }
+                //hover
+                int areaX = !ba_limbmanager.isLimbCentralLimb(augmentData.limb)? lineW: 0;
+                ButtonAPI areaChecker = personDisplayContainerTooltip.addAreaCheckbox("", null,!ba_limbmanager.isLimbCentralLimb(augmentData.limb)? Misc.getDarkPlayerColor().brighter(): ba_variablemanager.BA_OVERFORM_COLOR.darker(), !ba_limbmanager.isLimbCentralLimb(augmentData.limb)? Misc.getDarkPlayerColor(): ba_variablemanager.BA_OVERFORM_COLOR.darker(), Misc.getBrightPlayerColor(), bionicW - areaX, bionicH, 0);
+                addButtonToList(areaChecker, "bioform:remove:"+augmentData.limb.limbId + (augmentData.bionicInstalled != null ? ":"+augmentData.bionicInstalled.getId() : ""));
+                areaChecker.getPosition().setLocation(0,0).inTL(areaX, 0);
+                if(ba_limbmanager.isLimbCentralLimb(augmentData.limb)) {
+                    areaChecker.setClickable(false);
+                }
+                if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb) && this.bioformRemoveList.contains(augmentData.limb.limbId)) {
+                    areaChecker.highlight();
+                }
+                //hover pop up
+                personDisplayContainerTooltip.addTooltipToPrevious(new TooltipMakerAPI.TooltipCreator() {
+                    @Override
+                    public boolean isTooltipExpandable(Object tooltipParam) {
+                        return true;
                     }
-                    if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb) && this.bioformRemoveList.contains(augmentData.limb.limbId)) {
-                        areaChecker.highlight();
-                    }
-                    //hover pop up
-                    personDisplayContainerTooltip.addTooltipToPrevious(new TooltipMakerAPI.TooltipCreator() {
-                        @Override
-                        public boolean isTooltipExpandable(Object tooltipParam) {
-                            return true;
-                        }
 
-                        @Override
-                        public float getTooltipWidth(Object tooltipParam) {
-                            return bionicW * 0.8f;
-                        }
+                    @Override
+                    public float getTooltipWidth(Object tooltipParam) {
+                        return bionicW * 0.8f;
+                    }
 
-                        @Override
-                        public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
-                            tooltip.addSectionHeading("Augmentation", Misc.getBrightPlayerColor(), Misc.getDarkPlayerColor().darker() ,Alignment.MID, 0);
-                            tooltip.addPara(augmentData.limb.name + ": " + augmentData.limb.description, pad);
-                            if(augmentData.bionicInstalled != null) {
-                                ba_bionicitemplugin b = augmentData.bionicInstalled;
-                                b.displayEffectDescription(tooltip, currentPerson, b, false);
-                                //---------Overclock
-                                if(ba_overclockmanager.isBionicOverclockable(b)) {
-                                    ba_overclock overclock = augmentData.appliedOverclock;
-                                    if(overclock != null) {
+                    @Override
+                    public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                        tooltip.addSectionHeading("Augmentation", Misc.getBrightPlayerColor(), Misc.getDarkPlayerColor().darker() ,Alignment.MID, 0);
+                        tooltip.addPara(augmentData.limb.name + ": " + augmentData.limb.description, pad);
+                        if(augmentData.bionicInstalled != null) {
+                            ba_bionicitemplugin b = augmentData.bionicInstalled;
+                            b.displayEffectDescription(tooltip, currentPerson, b, false);
+                            //---------Overclock
+                            if(ba_overclockmanager.isBionicOverclockable(b)) {
+                                ba_overclock overclock = augmentData.appliedOverclock;
+                                if(overclock != null) {
 //                                LabelAPI overclockLabel = tooltip.addPara("%s %s: %s", pad, t, overclock.name, "[O]" , !overclock.description.equals("")? overclock.description: "No description for now...");
 //                                overclockLabel.setHighlightColors(h, special,  Misc.getTextColor());
-                                        overclock.displayEffectDescription(tooltip, currentPerson, currentSelectedBionic, true);
-                                    } else {
-                                        LabelAPI overclockLabel = tooltip.addPara("%s %s", pad, t,"Overclock:", "None active");
-                                        overclockLabel.setHighlight("Overclock:", "None active");
-                                        overclockLabel.setHighlightColors(special, g);
-                                    }
+                                    overclock.displayEffectDescription(tooltip, currentPerson, currentSelectedBionic, true);
+                                } else {
+                                    LabelAPI overclockLabel = tooltip.addPara("%s %s", pad, t,"Overclock:", "None active");
+                                    overclockLabel.setHighlight("Overclock:", "None active");
+                                    overclockLabel.setHighlightColors(special, g);
                                 }
-                                if(expanded) {
-//                                if(!isWorkshopMode) {
-//                                    b.displayEffectDescription(tooltip, currentPerson, b);
-////                                    LabelAPI expandedTooltip = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Effects:", effect);
-////                                    expandedTooltip.setHighlight("Effects:", effect);
-////                                    expandedTooltip.setHighlightColors(Misc.getGrayColor().brighter(), b != null ? Misc.getHighlightColor() :Misc.getGrayColor());
-//                                } else {
-//
-//                                }
-                                    LabelAPI expandedTooltip = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Description:", b.getSpec().getDesc());
-                                    expandedTooltip.setHighlight("Description:", b.getSpec().getDesc());
-                                    expandedTooltip.setHighlightColors(Misc.getGrayColor().brighter(), t);
-                                }
-                                tooltip.addSpacer(pad);
-                            } else {
-                                tooltip.addPara("No bionic installed", pad, Misc.getGrayColor(), "No bionic installed");
-                                tooltip.addSpacer(pad);
                             }
+                            if(expanded) {
+                                LabelAPI expandedTooltip = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Description:", b.getSpec().getDesc());
+                                expandedTooltip.setHighlight("Description:", b.getSpec().getDesc());
+                                expandedTooltip.setHighlightColors(Misc.getGrayColor().brighter(), t);
+                            }
+                            tooltip.addSpacer(pad);
+                        } else {
+                            tooltip.addPara("No bionic installed", pad, Misc.getGrayColor(), "No bionic installed");
+                            tooltip.addSpacer(pad);
                         }
-                    }, TooltipMakerAPI.TooltipLocation.BELOW);
-                    //---------Limb Name
-                    int nameH = bionicH;
-                    int nameW = limbW - (!ba_limbmanager.isLimbCentralLimb(augmentData.limb)? lineW: 0);
-                    int nameX = limbX + (!ba_limbmanager.isLimbCentralLimb(augmentData.limb)? lineW: 0);
-                    TooltipMakerAPI bionicLimbNameTooltip = bionicDisplayContainer.createTooltip("BIONIC_LIMB_NAME", nameW, nameH, false, 0, 0);
-                    bionicLimbNameTooltip.getPosition().inTL(nameX, 0);
-                    String limbText = augmentData.limb.name;
-                    if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb) && this.bioformRemoveList.contains(augmentData.limb.limbId)) {
-                        limbText += " (-)";
                     }
-                    if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb) && this.bioformAddList.contains(augmentData.limb.limbId)) {
-                        limbText += " (+)";
-                    }
-                    LabelAPI limbName = bionicLimbNameTooltip.addPara(limbText, pad);
-                    limbName.setHighlight(limbText);
-                    limbName.setHighlightColors(t);
-                    //todo: disable/enable the limb if selected
-                    if(this.bioformAddList.contains(augmentData.limb.limbId)) {
-                        limbName.setHighlightColors(Misc.getPositiveHighlightColor());
-                    }
-                    if(this.bioformRemoveList.contains(augmentData.limb.limbId)) {
-                        limbName.setHighlightColors(Misc.getNegativeHighlightColor());
-                    }
-                    limbName.getPosition().inTL(pad/2,12);
+                }, TooltipMakerAPI.TooltipLocation.BELOW);
+                //---------Limb Name
+                int nameH = bionicH;
+                int nameW = limbW - (!ba_limbmanager.isLimbCentralLimb(augmentData.limb)? lineW: 0);
+                int nameX = limbX + (!ba_limbmanager.isLimbCentralLimb(augmentData.limb)? lineW: 0);
+                TooltipMakerAPI bionicLimbNameTooltip = bionicDisplayContainer.createTooltip("BIONIC_LIMB_NAME", nameW, nameH, false, 0, 0);
+                bionicLimbNameTooltip.getPosition().inTL(nameX, 0);
+                String limbText = augmentData.limb.name;
+                if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb) && this.bioformRemoveList.contains(augmentData.limb.limbId)) {
+                    limbText += " (-)";
+                }
+                if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb) && this.bioformAddList.contains(augmentData.limb.limbId)) {
+                    limbText += " (+)";
+                }
+                LabelAPI limbName = bionicLimbNameTooltip.addPara(limbText, pad);
+                limbName.setHighlight(limbText);
+                limbName.setHighlightColors(t);
+                //todo: disable/enable the limb if selected
+                if(this.bioformAddList.contains(augmentData.limb.limbId)) {
+                    limbName.setHighlightColors(Misc.getPositiveHighlightColor());
+                }
+                if(this.bioformRemoveList.contains(augmentData.limb.limbId)) {
+                    limbName.setHighlightColors(Misc.getNegativeHighlightColor());
+                }
+                limbName.getPosition().inTL(pad/2,12);
 
-                    //---------Bionic
-                    int bionicInstalledI = 0;
-                    if(augmentData.bionicInstalled != null) {
-                        ba_bionicitemplugin b = augmentData.bionicInstalled;
-                        int sectionH = singleBionicInstalledNameH;
-                        int sectionW = bionicRowW;
-                        int sectionX = bionicRowX;
-                        int sectionSpacerY = singleBionicInstalledNameH * bionicInstalledI;
-                        TooltipMakerAPI bionicNameTooltip = bionicDisplayContainer.createTooltip("BIONIC_NAME"+bionicInstalledI, sectionW, sectionH, false, sectionX, sectionSpacerY);
-                        bionicNameTooltip.getPosition().inTL(sectionX, sectionSpacerY);
-                        //>name
-                        LabelAPI bionicName = bionicNameTooltip.addPara("%s  -  %s", pad, g, "" + b.getName(), !Objects.equals(b.namePrefix, "") ? b.namePrefix: " ");
-                        bionicName.getPosition().setSize(bionicNameW,sectionH);
-                        bionicName.setHighlightColors(b.displayColor, Misc.getBasePlayerColor());
-                        bionicName.getPosition().inTL(0,12);
-                        //>BRM
-////                int brmX = (int) (bionicName.getPosition().getWidth());
-//                        LabelAPI bionicBRM = bionicNameTooltip.addPara("" + Math.round(b.brmCost), pad);
-//                        bionicBRM.getPosition().setSize(bionicBRMW,sectionH);
-//                        bionicBRM.setHighlight("" + Math.round(b.brmCost));
-//                        bionicBRM.setHighlightColors(Misc.getBrightPlayerColor());
-//                        bionicBRM.getPosition().inTL(bionicBRMX + bionicBRMW/2, 12);
-//                        //>Conscious
-////                int consX = (int) (bionicBRM.getPosition().getWidth() + brmX);
-//                        LabelAPI bionicConscious = bionicNameTooltip.addPara("" + Math.round(b.consciousnessCost * 100) + "%", pad);
-//                        bionicConscious.getPosition().setSize(bionicConsciousW,sectionH);
-//                        bionicConscious.setHighlight("" + Math.round(b.consciousnessCost * 100) + "%");
-//                        bionicConscious.setHighlightColors(Misc.getNegativeHighlightColor());
-//                        bionicConscious.setAlignment(Alignment.TR);
-//                        bionicConscious.getPosition().inTL(bionicConsciousX - pad, 12);
-                        if(b != null) {
-                            ba_overclock overclock = augmentData.appliedOverclock;
-                            int overclockRowY = singleBionicInstalledNameH;
-                            if(ba_overclockmanager.isBionicOverclockable(b)) {
+                //---------Bionic
+                int bionicInstalledI = 0;
+                if(augmentData.bionicInstalled != null) {
+                    ba_bionicitemplugin b = augmentData.bionicInstalled;
+                    int sectionH = singleBionicInstalledNameH;
+                    int sectionW = bionicRowW;
+                    int sectionX = bionicRowX;
+                    int sectionSpacerY = singleBionicInstalledNameH * bionicInstalledI;
+                    TooltipMakerAPI bionicNameTooltip = bionicDisplayContainer.createTooltip("BIONIC_NAME"+bionicInstalledI, sectionW, sectionH, false, sectionX, sectionSpacerY);
+                    bionicNameTooltip.getPosition().inTL(sectionX, sectionSpacerY);
+                    //>name
+                    LabelAPI bionicName = bionicNameTooltip.addPara("%s  -  %s", pad, g, "" + b.getName(), !Objects.equals(b.namePrefix, "") ? b.namePrefix: " ");
+                    bionicName.getPosition().setSize(bionicNameW,sectionH);
+                    bionicName.setHighlightColors(b.displayColor, Misc.getBasePlayerColor());
+                    bionicName.getPosition().inTL(0,12);
+                    if(b != null) {
+                        ba_overclock overclock = augmentData.appliedOverclock;
+                        int overclockRowY = singleBionicInstalledNameH;
+                        if(ba_overclockmanager.isBionicOverclockable(b)) {
 //                                TooltipMakerAPI overclockTooltip = bionicDisplayContainer.createTooltip("BIONIC_OVERCLOCK_NAME", sectionW, sectionH, false, sectionX, overclockRowY);
 //                                overclockTooltip.getPosition().inTL(sectionX, overclockRowY);
-                                LabelAPI overclockName = bionicNameTooltip.addPara("[ %s ]", pad, h, overclock != null? overclock.name: "--------");
-                                overclockName.setHighlight("[",overclock != null? overclock.name: "--------", "]");
-                                overclockName.setHighlightColors(special, overclock != null ? h: g, special);
-                                overclockName.setAlignment(Alignment.TR);
-                                overclockName.getPosition().inTL(0, 12);
-                            }
-                            //>name
+                            LabelAPI overclockName = bionicNameTooltip.addPara("[ %s ]", pad, h, overclock != null? overclock.name: "--------");
+                            overclockName.setHighlight("[",overclock != null? overclock.name: "--------", "]");
+                            overclockName.setHighlightColors(special, overclock != null ? h: g, special);
+                            overclockName.setAlignment(Alignment.TR);
+                            overclockName.getPosition().inTL(0, 12);
                         }
+                        //>name
                     }
-                    i++;
-                    infoPersonBionicTooltipContainer.addSpacer(spacerH);
                 }
+                i++;
+                infoPersonBionicTooltipContainer.addSpacer(spacerH);
             }
         }
         if(isScroll) {

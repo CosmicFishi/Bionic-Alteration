@@ -51,7 +51,8 @@ public class ba_uiplugin extends ba_uicommon {
     public static final float MAIN_CONTAINER_PADDING_Y = ba_uicommon.getInitDialogContainerPaddingY();
     public static final float MAIN_CONTAINER_WIDTH = ba_uicommon.getInitDialogContainerWidth();
     public static final float MAIN_CONTAINER_HEIGHT = ba_uicommon.getInitDialogContainerHeight();
-    public static final String OVERVIEW = "OVERVIEW", WORKSHOP = "WORKSHOP";
+//    public static final String OVERVIEW = "OVERVIEW", WORKSHOP = "WORKSHOP";
+    public static final String WORKSHOP = "WORKSHOP";
     public static final String WORKSHOP_EFFECT = "WORKSHOP_EFFECT", WORKSHOP_INV = "WORKSHOP_INV";
     public static final String SUB_WORKSHOP_MODE_BIOFORM = "BIOFORM", SUB_WORKSHOP_MODE_NONE = "NONE";
     public static final String INSTALL_WORKSHOP="INSTALL", EDIT_WORKSHOP="EDIT";
@@ -61,7 +62,7 @@ public class ba_uiplugin extends ba_uicommon {
     // sadly not possible with how the bionic table currently implemented.
     // Bionic table hidden in certain UI resolution which cause the hovering being weird. it can still detect the button even tho its hidden
     HashMap<String, ba_component> tabMap = new HashMap<>();
-    String currentTabId = OVERVIEW;
+    String currentTabId = WORKSHOP;
     String currentWorkshopEffectOrInvTab = WORKSHOP_INV;
     protected List<CampaignFleetAPI> currentFleets = new ArrayList<>();
 //    public static float currentScrollPositionOverview = 0;
@@ -122,7 +123,7 @@ public class ba_uiplugin extends ba_uicommon {
         mainTooltip.setForceProcessInput(true);
         containerPanel.addUIElement(mainTooltip).inTL(0,0);
         refresh();
-        if(currentTabId.equals(OVERVIEW)) {
+        if(currentTabId.equals(WORKSHOP)) {
             ba_component component = componentMap.get("OVERVIEW_PERSON_LIST_PANEL");
             if(component != null && component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP") != null) {
                 if(component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller() != null) {
@@ -135,18 +136,18 @@ public class ba_uiplugin extends ba_uicommon {
     protected void refresh() {
         super.refresh();
 //        log.info("refreshing");
-        ba_component overviewComponent = tabMap.get(OVERVIEW);
+//        ba_component overviewComponent = tabMap.get(OVERVIEW);
         ba_component detailComponent = tabMap.get(WORKSHOP);
-        if (overviewComponent != null) {
-            containerPanel.removeComponent(overviewComponent.mainPanel);
-        }
+//        if (overviewComponent != null) {
+//            containerPanel.removeComponent(overviewComponent.mainPanel);
+//        }
         if (detailComponent != null) {
             containerPanel.removeComponent(detailComponent.mainPanel);
         }
         getNewListPerson();
         //create smaller container for focus/unforcus
-        displayOverview();
-        displayWorkshop();
+        displayOverviewWorkshop();
+//        displayWorkshop();
         focusContent("");
     }
     public void setCurrentPerson(PersonAPI focusingPerson) {
@@ -163,7 +164,7 @@ public class ba_uiplugin extends ba_uicommon {
         }
         return false;
     }
-    protected void displayOverview() {
+    protected void displayOverviewWorkshop() {
 
         float pad = 5f;
         float opad = 10f;
@@ -182,19 +183,103 @@ public class ba_uiplugin extends ba_uicommon {
         String mainPersonListTooltipKey = "MAIN_LIST_TOOLTIP";
         ba_component overviewContainer = new ba_component(componentMap, containerPanel, pW, pH, MAIN_CONTAINER_PADDING_X/2, MAIN_CONTAINER_PADDING_Y/2, true, mainOverviewPanelKey);
 //        TooltipMakerAPI overviewTooltipContainer = overviewContainer.createTooltip(mainTooltipKey, pW, pH, false, 0, 0);
-        tabMap.put(OVERVIEW, overviewContainer);
-        overviewContainer.unfocusComponent(dW);
+        tabMap.put(WORKSHOP, overviewContainer);
+//        overviewContainer.unfocusComponent(dW);
 
         float listPersonW = 0.13f * pW;
-        float infoPersonW = ((1 - (listPersonW/pW)) * pW) - pad;
+        float workshopMidAndRightW = ((1 - (listPersonW/pW)) * pW) - pad;
         TooltipMakerAPI overviewPersonListTooltipContainer = overviewContainer.createTooltip(mainPersonListTooltipKey, listPersonW, pH, false, 0, 0);
-        TooltipMakerAPI overviewInfoTooltipContainer = overviewContainer.createTooltip(mainInfoTooltipKey, infoPersonW, pH, false, 0, 0);
+        TooltipMakerAPI overviewInfoTooltipContainer = overviewContainer.createTooltip(mainInfoTooltipKey, workshopMidAndRightW, pH, false, 0, 0);
         overviewInfoTooltipContainer.getPosition().inTL(listPersonW, 0);
         //overviewPerson
 //        displayPersonList(overviewContainer, mainPersonListTooltipKey, listPersonW, pH);
 //        displayPersonListWithKeyPreset(overviewContainer, mainPersonListTooltipKey, "OVERVIEW", isDisplayingOtherFleets, listPersonW, pH, MAIN_CONTAINER_PADDING_X/2, MAIN_CONTAINER_PADDING_Y/2);
         displayPersonListWithKeyPresetSimplified(overviewContainer, mainPersonListTooltipKey, "OVERVIEW", isDisplayingOtherFleets, listPersonW, pH, MAIN_CONTAINER_PADDING_X/2, MAIN_CONTAINER_PADDING_Y/2);
-        displayPersonInfoList(overviewContainer, mainInfoTooltipKey, infoPersonW, pH, MAIN_CONTAINER_PADDING_X/2, MAIN_CONTAINER_PADDING_Y/2);
+//        displayPersonInfoList(overviewContainer, mainInfoTooltipKey, workshopMidAndRightW, pH, MAIN_CONTAINER_PADDING_X/2, MAIN_CONTAINER_PADDING_Y/2);
+        displayWorkshopMidAndRight(overviewContainer, mainInfoTooltipKey, workshopMidAndRightW, pH, MAIN_CONTAINER_PADDING_X/2, MAIN_CONTAINER_PADDING_Y/2);
+    }
+    protected void displayWorkshopMidAndRight(ba_component creatorComponent, String creatorComponentTooltip, float cW, float cH, float cX, float cY) {
+        float pad = 10f;
+        float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        Color t = Misc.getTextColor();
+        Color g = Misc.getGrayColor();
+
+        String containerTooltipKey = "WORKSHOP_MID_AND_RIGHT_TOOLTIP";
+        String containerPanelKey = "WORKSHOP_MID_AND_RIGHT_PANEL";
+        ba_component container = new ba_component(componentMap, creatorComponent.mainPanel, cW, cH, cX, cY, true, containerPanelKey);
+        TooltipMakerAPI tooltipContainer = container.createTooltip(containerTooltipKey, cW, cH, false, 0,0);
+        creatorComponent.attachSubPanel(creatorComponentTooltip, containerPanelKey,container,0,0);
+
+
+        float wMidTopH = cH * 0.1f;
+        float wMidCenterH = cH * 0.6f;
+        float wMidBottomH = cH - (wMidCenterH + wMidTopH);
+        float wMidW = cW * 0.7f;
+        float wRightW = cW - wMidW;
+        displayWorkshopMidTop(container, containerTooltipKey, wMidW, wMidTopH, 0, 0);
+        displayWorkshopMidCenter(container, containerTooltipKey, wMidW, wMidCenterH, 0, wMidTopH);
+        displayWorkshopMidBottom(container, containerTooltipKey, wMidW, wMidBottomH, 0, wMidTopH+wMidCenterH);
+        displayWorkshopRight(container, containerTooltipKey, wRightW, wMidBottomH, wMidW, 0);
+    }
+    protected void displayWorkshopMidTop(ba_component creatorComponent, String creatorComponentTooltip, float cW, float cH, float cX, float cY) {
+        float pad = 10f;
+        float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        Color t = Misc.getTextColor();
+        Color g = Misc.getGrayColor();
+
+        String containerTooltipKey = "WORKSHOP_MID_TOP_TOOLTIP";
+        String containerPanelKey = "WORKSHOP_MID_TOP_PANEL";
+        ba_component container = new ba_component(componentMap, creatorComponent.mainPanel, cW, cH, cX, cY, true, containerPanelKey);
+        TooltipMakerAPI tooltipContainer = container.createTooltip(containerTooltipKey, cW, cH, false, 0,0);
+        creatorComponent.attachSubPanel(creatorComponentTooltip, containerPanelKey,container,0,0);
+    }
+    protected void displayWorkshopMidCenter(ba_component creatorComponent, String creatorComponentTooltip, float cW, float cH, float cX, float cY) {
+        float pad = 10f;
+        float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        Color t = Misc.getTextColor();
+        Color g = Misc.getGrayColor();
+
+        String containerTooltipKey = "WORKSHOP_MID_CENTER_TOOLTIP";
+        String containerPanelKey = "WORKSHOP_MID_CENTER_PANEL";
+        ba_component container = new ba_component(componentMap, creatorComponent.mainPanel, cW, cH, cX, cY, true, containerPanelKey);
+        TooltipMakerAPI tooltipContainer = container.createTooltip(containerTooltipKey, cW, cH, false, 0,0);
+        creatorComponent.attachSubPanel(creatorComponentTooltip, containerPanelKey,container,0,0);
+
+        displayBioformTableWithKeyPreset(container, containerTooltipKey, "BIOFORM_WORKSHOP_MID_CENTER",true, cW, cH, cX, cY);
+    }
+    protected void displayWorkshopMidBottom(ba_component creatorComponent, String creatorComponentTooltip, float cW, float cH, float cX, float cY) {
+        float pad = 10f;
+        float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        Color t = Misc.getTextColor();
+        Color g = Misc.getGrayColor();
+
+        String containerTooltipKey = "WORKSHOP_MID_BOTTOM_TOOLTIP";
+        String containerPanelKey = "WORKSHOP_MID_BOTTOM_PANEL";
+        ba_component container = new ba_component(componentMap, creatorComponent.mainPanel, cW, cH, cX, cY, true, containerPanelKey);
+        TooltipMakerAPI tooltipContainer = container.createTooltip(containerTooltipKey, cW, cH, false, 0,0);
+        creatorComponent.attachSubPanel(creatorComponentTooltip, containerPanelKey,container,0,0);
+    }
+    protected void displayWorkshopRight(ba_component creatorComponent, String creatorComponentTooltip, float cW, float cH, float cX, float cY) {
+        float pad = 10f;
+        float opad = 10f;
+        Color h = Misc.getHighlightColor();
+        Color bad = Misc.getNegativeHighlightColor();
+        Color t = Misc.getTextColor();
+        Color g = Misc.getGrayColor();
+
+        String containerTooltipKey = "WORKSHOP_RIGHT_TOOLTIP";
+        String containerPanelKey = "WORKSHOP_RIGHT_PANEL";
+        ba_component container = new ba_component(componentMap, creatorComponent.mainPanel, cW, cH, cX, cY, true, containerPanelKey);
+        TooltipMakerAPI tooltipContainer = container.createTooltip(containerTooltipKey, cW, cH, false, 0,0);
+        creatorComponent.attachSubPanel(creatorComponentTooltip, containerPanelKey,container,0,0);
     }
     protected void displayPersonInfoList(ba_component creatorComponent, String creatorComponentTooltip, float personInfoW, float personInfoH, float personInfoX, float personInfoY) {
         float pad = 10f;
@@ -525,7 +610,7 @@ public class ba_uiplugin extends ba_uicommon {
                 personUpgradeTooltip.getPosition().inTL(upgradeX,upgradeY);
                 ButtonAPI upgradeButton = personUpgradeTooltip.addButton("Workshop", null, Misc.getTextColor(), Misc.getPositiveHighlightColor().darker().darker(), Alignment.MID, CutStyle.TOP, upgradeBtnW, upgradeBtnH, 0);
                 addButtonToList(upgradeButton, "tab:" + WORKSHOP);
-                if(this.currentTabId.equals(OVERVIEW)) {
+                if(true) { //todo: change this to check if other fleet. and depend on which workshop mode currently in.
                     upgradeButton.setShortcut(Keyboard.KEY_W, true);
                 }
                 if(this.currentTabId.equals(WORKSHOP)) {
@@ -567,7 +652,7 @@ public class ba_uiplugin extends ba_uicommon {
                         }, bioformButton, TooltipMakerAPI.TooltipLocation.LEFT);
                     }
                 }
-                if(this.currentTabId.equals(OVERVIEW)) {
+                if(true) {
                     bioformButton.setShortcut(Keyboard.KEY_B, true);
                 }
                 if(this.currentTabId.equals(WORKSHOP)) {
@@ -741,10 +826,10 @@ public class ba_uiplugin extends ba_uicommon {
         if(this.currentTabId.equals(WORKSHOP)) {
             upgradeButton.setShortcut(Keyboard.KEY_E, true);
         }
-        addButtonToList(upgradeButton, "tab:" + OVERVIEW);
-        if(this.currentTabId.equals(OVERVIEW)) {
-            upgradeButton.setEnabled(false);
-        }
+//        addButtonToList(upgradeButton, "tab:" + OVERVIEW);
+//        if(this.currentTabId.equals(OVERVIEW)) {
+//            upgradeButton.setEnabled(false);
+//        }
         //todo: AI for now, soon will be "fleshform" for person
         if(this.currentPerson.isAICore()) {
             if(this.currentWorkShopMode.equals(INSTALL_WORKSHOP) || this.currentWorkShopMode.equals(EDIT_WORKSHOP) && this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_NONE)) {
@@ -1681,15 +1766,21 @@ public class ba_uiplugin extends ba_uicommon {
     @Override
     public void saveScrollPosition() {
         super.saveScrollPosition();
-        if(currentTabId.equals(OVERVIEW)) {
-            ba_component component = componentMap.get("OVERVIEW_PERSON_LIST_PANEL");
-            if(component != null && component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP") != null) {
-                if(component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller() != null) {
-                    currentScrollPositionPersonList = component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller().getYOffset();
+//        if(currentTabId.equals(OVERVIEW)) {
+//            ba_component component = componentMap.get("OVERVIEW_PERSON_LIST_PANEL");
+//            if(component != null && component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP") != null) {
+//                if(component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller() != null) {
+//                    currentScrollPositionPersonList = component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller().getYOffset();
+//                }
+//            }
+//        }
+        if(currentTabId.equals(WORKSHOP)) {
+            ba_component componentPersonList = componentMap.get("OVERVIEW_PERSON_LIST_PANEL");
+            if(componentPersonList != null && componentPersonList.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP") != null) {
+                if(componentPersonList.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller() != null) {
+                    currentScrollPositionPersonList = componentPersonList.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller().getYOffset();
                 }
             }
-        }
-        if(currentTabId.equals(WORKSHOP)) {
             ba_component component = componentMap.get("WORKSHOP_PERSON_INFO_BIONICS_PANEL");
             if(component != null && component.tooltipMap.get("PERSON_INFO_BIONICS_TOOLTIP") != null) {
                 if(component.tooltipMap.get("PERSON_INFO_BIONICS_TOOLTIP").getExternalScroller() != null) {
@@ -1751,13 +1842,13 @@ public class ba_uiplugin extends ba_uicommon {
                 String[] tokens = s.split(":");
                 if (tokens[0].equals("tab")) {
 //                    log.info("clicked" + tokens[1]);
-                    if(tokens[1].equals(OVERVIEW)) {
-                        focusContent(OVERVIEW);
-                        this.currentWorkShopSubMode = this.SUB_WORKSHOP_MODE_NONE;
-                        this.currentWorkShopMode = INSTALL_WORKSHOP;
-                        needsReset = true;
-                        break;
-                    }
+//                    if(tokens[1].equals(OVERVIEW)) {
+//                        focusContent(OVERVIEW);
+//                        this.currentWorkShopSubMode = this.SUB_WORKSHOP_MODE_NONE;
+//                        this.currentWorkShopMode = INSTALL_WORKSHOP;
+//                        needsReset = true;
+//                        break;
+//                    }
                     if(tokens[1].equals(WORKSHOP)) {
                         focusContent(WORKSHOP);
                         this.currentWorkShopMode = INSTALL_WORKSHOP;
@@ -1968,7 +2059,7 @@ public class ba_uiplugin extends ba_uicommon {
                         String s = buttonMap.get(button);
                         String[] tokens = s.split(":");
 //                        log.info("hover " + s);
-                        if(currentTabId.equals(OVERVIEW)) {
+                        if(currentTabId.equals(WORKSHOP)) {
                             ba_component component = componentMap.get("OVERVIEW_PERSON_LIST_PANEL");
                             if(component != null && component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP") != null) {
                                 if(tokens[0].equals("hover_person") && debounceplugin.isDebounceOver("OVERVIEW_PERSON_LIST_TOOLTIP", 0, component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller().getYOffset())) {
