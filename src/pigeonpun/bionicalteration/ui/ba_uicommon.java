@@ -1162,15 +1162,18 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         creatorComponent.attachSubPanel(creatorComponentTooltip, componentPanelKey,personDisplayContainer);
 //        subComponentPersonList.add(personDisplayContainer);
         //hover
-        ButtonAPI areaChecker = personDisplayContainerTooltip.addAreaCheckbox("", null,Color.red.darker(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), pW, pH, 0);
+        ButtonAPI areaChecker = personDisplayContainerTooltip.addAreaCheckbox("", null, Misc.getBrightPlayerColor().darker().darker(), Misc.getDarkPlayerColor().darker().darker(), Misc.getBrightPlayerColor(), pW, pH, 0);
         addButtonToList(areaChecker, "hover_person:"+member.getId());
         areaChecker.getPosition().setLocation(0,0).inTL(0, 0);
+        if(currentPerson.getId().equals(member.getId())) {
+            areaChecker.highlight();
+        }
         //---------Name
         int nameH = 30;
         int nameW = (int) (pW - 30);
         int nameX = (int) (nameW/2 - personDisplayContainerTooltip.computeStringWidth(member.getName().getFirst() + (member.isPlayer() ? " (" + "You" + ")": ""))/2);
         TooltipMakerAPI personNameTooltip = personDisplayContainer.createTooltip("PERSON_NAME", nameW, nameH, false, 0, 0);
-        personNameTooltip.getPosition().inTL(nameX + pad/2, 0);
+        personNameTooltip.getPosition().inTL(nameX + pad, 0);
         LabelAPI name = personNameTooltip.addPara(member.getName().getFirst() + (member.isPlayer() ? " (" + "You" + ")": ""), pad);
         name.setHighlight(member.getName().getFirst());
         name.setHighlightColors(Misc.getBrightPlayerColor());
@@ -1180,7 +1183,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         TooltipMakerAPI personImageTooltip = personDisplayContainer.createTooltip("PERSON_IMAGE", imageW, imageH, false, 0, 0);
         personImageTooltip.getPosition().inTL(0, 0);
         personImageTooltip.addImage(spriteName, imageW, imageH, 0);
-        personImageTooltip.getPosition().inTL(pW/2 - imageW/2 - pad, (pH - imageH ) / 2 + pad);
+        personImageTooltip.getPosition().inTL(pW/2 - imageW/2 - pad/2, (pH - imageH ) / 2 + pad);
         //--------Bioform image
         if(member.isAICore()) {
             if(!Objects.requireNonNull(ba_officermanager.getAIMemData(member, Global.getSector().getCampaignUI().getCurrentInteractionDialog())).anatomy.isEmpty()) {
@@ -1189,6 +1192,9 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 bioformImageTooltip.getPosition().inTL(pW - 16 - pad, pad/2 + 2);
             }
         }
+
+        //todo: add tooltip showing skills + profession + ships
+        //todo: may be even custom background for selected charactor ?
 
         return personDisplayContainer;
     }
