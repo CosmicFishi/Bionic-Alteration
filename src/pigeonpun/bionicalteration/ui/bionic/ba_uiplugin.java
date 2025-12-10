@@ -214,14 +214,14 @@ public class ba_uiplugin extends ba_uicommon {
 
 
         float wMidTopH = cH * 0.1f;
-        float wMidCenterH = cH * 0.6f;
+        float wMidCenterH = cH * 0.75f;
         float wMidBottomH = cH - (wMidCenterH + wMidTopH);
         float wMidW = cW * 0.7f;
         float wRightW = cW - wMidW;
         displayWorkshopMidTop(container, containerTooltipKey, wMidW, wMidTopH, 0, 0);
         displayWorkshopMidCenter(container, containerTooltipKey, wMidW, wMidCenterH, 0, wMidTopH);
         displayWorkshopMidBottom(container, containerTooltipKey, wMidW, wMidBottomH, 0, wMidTopH+wMidCenterH);
-        displayWorkshopRight(container, containerTooltipKey, wRightW, wMidBottomH, wMidW, 0);
+        displayWorkshopRight(container, containerTooltipKey, wRightW, cH, wMidW, 0);
     }
     protected void displayWorkshopMidTop(ba_component creatorComponent, String creatorComponentTooltip, float cW, float cH, float cX, float cY) {
         float pad = 10f;
@@ -264,8 +264,248 @@ public class ba_uiplugin extends ba_uicommon {
         String containerTooltipKey = "WORKSHOP_MID_BOTTOM_TOOLTIP";
         String containerPanelKey = "WORKSHOP_MID_BOTTOM_PANEL";
         ba_component container = new ba_component(componentMap, creatorComponent.mainPanel, cW, cH, cX, cY, true, containerPanelKey);
-        TooltipMakerAPI tooltipContainer = container.createTooltip(containerTooltipKey, cW, cH, false, 0,0);
-        creatorComponent.attachSubPanel(creatorComponentTooltip, containerPanelKey,container,0,0);
+        TooltipMakerAPI tooltipContainer = container.createTooltip(containerTooltipKey, cW, cH, false, 0, 0);
+        creatorComponent.attachSubPanel(creatorComponentTooltip, containerPanelKey, container, 0, 0);
+
+        float upgradeBtnW = 0;
+        if (!isDisplayingOtherFleets) {
+            //Button switch page
+            float upgradeBtnH = cH * 0.5f - pad;
+            upgradeBtnW = cW * 0.26f;
+            int upgradeX = (int) cX;
+            int upgradeY = (int) cY;
+            TooltipMakerAPI personUpgradeTooltip = container.createTooltip("PERSON_INFO_UPGRADE", cW, cH * 0.5f, false, 0, 0);
+            personUpgradeTooltip.getPosition().setLocation(0, 0);
+            personUpgradeTooltip.getPosition().inTL(upgradeX, upgradeY);
+            ButtonAPI upgradeButton = personUpgradeTooltip.addButton("Workshop", null, Misc.getTextColor(), Misc.getPositiveHighlightColor().darker().darker(), Alignment.MID, CutStyle.NONE, upgradeBtnW, upgradeBtnH, 0);
+            addButtonToList(upgradeButton, "tab:" + WORKSHOP);
+            if (true) { //todo: change this to check if other fleet. and depend on which workshop mode currently in.
+                upgradeButton.setShortcut(Keyboard.KEY_W, true);
+            }
+            if (this.currentTabId.equals(WORKSHOP)) { //todo: add functionality
+                upgradeButton.setEnabled(false);
+            }
+            //Button switch page bioform
+            float bioformBtnH = upgradeBtnH;
+            float bioformBtnW = upgradeBtnW;
+            int bioformX = (int) (upgradeX);
+            int bioformY = (int) (cY + cH * 0.5f);
+            TooltipMakerAPI personbioformTooltip = container.createTooltip("PERSON_INFO_BIOFORM", cW, cH * 0.5f, false, 0, 0);
+            personbioformTooltip.getPosition().setLocation(0, 0);
+            personbioformTooltip.getPosition().inTL(bioformX, bioformY);
+            ButtonAPI bioformButton = personbioformTooltip.addButton("Bioform", null, Misc.getTextColor(), ba_variablemanager.BA_OVERFORM_COLOR.darker(), Alignment.MID, CutStyle.NONE, bioformBtnW, bioformBtnH, 0);
+            addButtonToList(bioformButton, "tab:" + WORKSHOP + ":" + SUB_WORKSHOP_MODE_BIOFORM);
+            if (!this.currentPerson.isAICore()) {
+                bioformButton.setEnabled(false);
+                if (checkIfCanOpenBioformWorkshop()) {
+                    personbioformTooltip.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
+                        @Override
+                        public boolean isTooltipExpandable(Object tooltipParam) {
+                            return false;
+                        }
+
+                        @Override
+                        public float getTooltipWidth(Object tooltipParam) {
+                            return 400;
+                        }
+
+                        @Override
+                        public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                            tooltip.setParaFontOrbitron();
+                            tooltip.addPara("ERR///", 0);
+                            tooltip.addPara("ERR///", 0);
+                            tooltip.addPara("...", 0);
+                            tooltip.addPara("Access denied. This procedure is %s to AI constructs", 0, Misc.getNegativeHighlightColor(), "restricted");
+                            tooltip.addPara("...", 0);
+                        }
+                    }, bioformButton, TooltipMakerAPI.TooltipLocation.LEFT);
+                }
+            }
+            if (true) {
+                bioformButton.setShortcut(Keyboard.KEY_B, true);
+            }
+            if (this.currentTabId.equals(WORKSHOP)) {
+                bioformButton.setEnabled(false);
+            }
+            if (!checkIfCanOpenBioformWorkshop()) {
+                bioformButton.setEnabled(false);
+                personbioformTooltip.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
+                    @Override
+                    public boolean isTooltipExpandable(Object tooltipParam) {
+                        return false;
+                    }
+
+                    @Override
+                    public float getTooltipWidth(Object tooltipParam) {
+                        return 400;
+                    }
+
+                    @Override
+                    public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                        tooltip.setParaFontOrbitron();
+                        tooltip.addPara("ERR///", 0);
+                        tooltip.addPara("ERR///", 0);
+                        tooltip.addPara("...", 0);
+                        tooltip.addPara("%s NOT FOUND", 0, ba_variablemanager.BA_OVERFORM_COLOR, "BIOFORM TERMINAL");
+                        tooltip.addPara("...", 0);
+                        tooltip.addPara("Visit nearby bionic stations for more information.", 0);
+                    }
+                }, bioformButton, TooltipMakerAPI.TooltipLocation.LEFT);
+            }
+        }
+
+        //--------Stats
+        int statsX = (int) (cW * 0.32f + pad);
+        int statsY = (int) (cY);
+        int statsW = (int) (cW * 0.5f);
+        int statsH = (int) (cH);
+        int statsSpacer = 15;
+        TooltipMakerAPI personStatsTooltip = container.createTooltip("PERSON_INFO_NAME", statsW, statsH, false, 0, 0);
+        personStatsTooltip.getPosition().inTL(statsX, statsY);
+
+        //>name
+        int nameW = statsW / 2;
+        LabelAPI nameLabel = personStatsTooltip.addPara(this.currentPerson.getName().getFullName() + (currentPerson.isPlayer() ? " (You)" : ""), 0, Misc.getBrightPlayerColor(), this.currentPerson.getName().getFullName());
+        nameLabel.getPosition().setSize(nameW, 20);
+        nameLabel.getPosition().inTL(0, 0);
+        //>BRM limit
+        int limitBRMY = (int) (nameLabel.getPosition().getHeight() + statsSpacer);
+        int limitBRM = ba_officermanager.getLimitBRM(this.currentPerson);
+        int currentBRM = ba_officermanager.getCurrentBRM(this.currentPerson);
+        LabelAPI limitBRMLabel = personStatsTooltip.addPara(String.valueOf("BRM: " + (currentBRM) + " / " + limitBRM), 0, Misc.getBrightPlayerColor(), "" + (currentBRM), "" + (limitBRM));
+        limitBRMLabel.setHighlightColors(currentBRM > limitBRM ? bad : Misc.getHighlightColor(), Misc.getBrightPlayerColor());
+        limitBRMLabel.getPosition().setSize(150, 20);
+        limitBRMLabel.getPosition().inTL(0, limitBRMY);
+        limitBRMLabel.setHighlightOnMouseover(true);
+        if (bionicalterationplugin.isBRMCapDisable) {
+            limitBRMLabel.setOpacity(0);
+        }
+        UIComponentAPI BRMUnderline = personStatsTooltip.createRect(Misc.getTextColor().darker().darker(), 0);
+        BRMUnderline.getPosition().setSize(limitBRMLabel.computeTextWidth("BRM:" + limitBRM + " ") + pad, limitBRMLabel.computeTextHeight("BRM: 0000 / 0000") + pad);
+        BRMUnderline.getPosition().inTL(-pad / 2, limitBRMY - pad / 2);
+        personStatsTooltip.addComponent(BRMUnderline);
+        personStatsTooltip.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
+            @Override
+            public boolean isTooltipExpandable(Object tooltipParam) {
+                return false;
+            }
+
+            @Override
+            public float getTooltipWidth(Object tooltipParam) {
+                return 300;
+            }
+
+            @Override
+            public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                tooltip.addSectionHeading("Bionic Right Management Limit", Alignment.MID, 0);
+                if (!currentPerson.isAICore()) {
+                    tooltip.addPara(ba_stringhelper.getString("BRM", "BRM_explain"), 10f);
+                    tooltip.addPara(ba_stringhelper.getString("BRM", "BRM_galatia"), 10f);
+                } else {
+                    tooltip.addPara(ba_stringhelper.getString("BRM", "BRM_explain_ai"), 10f);
+                    tooltip.addPara("...", 10f);
+                    tooltip.addPara("...", 10f);
+                    tooltip.addPara("...", 10f);
+                    tooltip.addPara("Override Completed...", 10f);
+                }
+            }
+        }, BRMUnderline, TooltipMakerAPI.TooltipLocation.LEFT);
+        //>Consciousness
+        float consciousness = ba_consciousmanager.getConsciousStat(this.currentPerson);
+        int consciousnessY = (int) (0);
+        int consciousnessX = (int) (nameW);
+        int consciousnessW = nameW;
+        String condition = ba_consciousmanager.getConsciousnessLevel(consciousness).getDisplayName() == null ? "----" : ba_consciousmanager.getConsciousnessLevel(consciousness).getDisplayName();
+        int conditionY = (int) limitBRMY;
+        int conditionX = (int) (consciousnessW);
+        //hover condition
+        float hoverConsciousW = limitBRMLabel.computeTextWidth("Condition: " + condition) + pad;
+        float hoverConsciousH = limitBRMLabel.computeTextHeight("Condition: " + condition) + pad;
+        ButtonAPI consciousAreaChecker = personStatsTooltip.addAreaCheckbox("", null, Misc.getBasePlayerColor(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), hoverConsciousW, hoverConsciousH, 0);
+        addButtonToList(consciousAreaChecker, "hover_bionic_consciousness:" + consciousness);
+        consciousAreaChecker.getPosition().setLocation(0, 0).inTL(conditionX - pad / 2, conditionY - pad / 2);
+        //conscious label
+        LabelAPI consciousnessLabel = personStatsTooltip.addPara(ba_consciousmanager.getDisplayConditionLabel(currentPerson) + ": " + Math.round(consciousness * 100) + "%", 0);
+        consciousnessLabel.setHighlight("" + Math.round(consciousness * 100) + "%");
+        consciousnessLabel.setHighlightColor(ba_consciousmanager.getConsciousnessColorByLevel(consciousness));
+        consciousnessLabel.getPosition().setSize(consciousnessW, 20);
+        consciousnessLabel.getPosition().inTL(consciousnessX, consciousnessY);
+        //>Conditions: tiled with conscious
+        LabelAPI conditionLabel = personStatsTooltip.addPara("Condition: " + condition + "", 0);
+        conditionLabel.setHighlight("" + condition);
+        conditionLabel.setHighlightColor(ba_consciousmanager.getConsciousnessColorByLevel(consciousness));
+        conditionLabel.getPosition().setSize(150, 20);
+        conditionLabel.getPosition().inTL(conditionX, conditionY);
+        personStatsTooltip.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
+            @Override
+            public boolean isTooltipExpandable(Object tooltipParam) {
+                return true;
+            }
+
+            @Override
+            public float getTooltipWidth(Object tooltipParam) {
+                return 300;
+            }
+
+            @Override
+            public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                ba_consciousmanager.displayConsciousEffects(tooltip, currentPerson, expanded);
+            }
+        }, consciousAreaChecker, TooltipMakerAPI.TooltipLocation.ABOVE);
+        //>professions: tiled with conscious
+        float professionX = 0;
+        float professionY = nameLabel.getPosition().getHeight() + limitBRMLabel.getPosition().getHeight() + statsSpacer * 2;
+        LabelAPI professionLabel = personStatsTooltip.addPara("" + ba_officermanager.getProfessionText(this.currentPerson, isDisplayingOtherFleets) + "", 0);
+        professionLabel.setHighlight("" + ba_officermanager.getProfessionText(this.currentPerson, isDisplayingOtherFleets));
+        professionLabel.setHighlightColor(Misc.getHighlightColor());
+        professionLabel.getPosition().setSize(nameW, 30);
+        professionLabel.getPosition().inTL(professionX, professionY);
+
+        //Ship/planet image
+        int iconW = (int) (cW - statsW - upgradeBtnW);
+        TooltipMakerAPI shipOrPlanetmageTooltip = container.createTooltip("SHIP_OR_PLANET_IMAGE", iconW, iconW, false, 0, 0);
+        shipOrPlanetmageTooltip.getPosition().inTL(0, 0);
+        if (isDisplayingOtherFleets) {
+            //displaying ship for the other fleet
+            List<FleetMemberAPI> temp = new ArrayList<>();
+            InteractionDialogPlugin plugin = dialog.getPlugin();
+            if (plugin instanceof FleetInteractionDialogPluginImpl) {
+                FleetEncounterContext context = (FleetEncounterContext) plugin.getContext();
+                List<CampaignFleetAPI> fleets = context.getBattle().getBothSides();
+                FleetMemberAPI member = ba_officermanager.getFleetMemberFromFleet(currentPerson, fleets, false);
+                if (member != null) {
+                    temp.add(member);
+                }
+                shipOrPlanetmageTooltip.addShipList(1, 1, iconW * 0.5f, Global.getSettings().getBasePlayerColor(), temp, 0);
+            }
+        } else {
+            if (ba_officermanager.isCaptainOrAdmin(currentPerson, false).equals(ba_officermanager.ba_profession.CAPTAIN)) {
+                //display ship for the officer in player's fleet
+                List<FleetMemberAPI> temp = new ArrayList<>();
+                FleetMemberAPI member = ba_officermanager.getFleetMemberFromFleet(currentPerson, Collections.singletonList(Global.getSector().getPlayerFleet()), true);
+                if (member != null) {
+                    temp.add(member);
+                }
+                shipOrPlanetmageTooltip.addShipList(1, 1, iconW * 0.5f, Global.getSettings().getBasePlayerColor(), temp, 0);
+            } else {
+                AdminData selectedAdmin = null;
+                for (AdminData admin : Global.getSector().getCharacterData().getAdmins()) {
+                    if (!admin.getPerson().isDefault() && !admin.getPerson().isAICore()) {
+                        if (admin.getPerson().getId().equals(currentPerson.getId())) {
+                            selectedAdmin = admin;
+                            break;
+                        }
+                    }
+                }
+                if (selectedAdmin != null && selectedAdmin.getMarket() != null) {
+                    //display planet
+                    if (selectedAdmin.getMarket().getPlanetEntity() != null) {
+                        shipOrPlanetmageTooltip.showPlanetInfo(selectedAdmin.getMarket().getPlanetEntity(), iconW* 0.5f, cH, true, -pad);
+                    }
+                }
+            }
+        }
+        shipOrPlanetmageTooltip.getPosition().inTL(cX + statsW + upgradeBtnW + iconW * 0.25f, cY);
     }
     protected void displayWorkshopRight(ba_component creatorComponent, String creatorComponentTooltip, float cW, float cH, float cX, float cY) {
         float pad = 10f;
@@ -278,8 +518,60 @@ public class ba_uiplugin extends ba_uicommon {
         String containerTooltipKey = "WORKSHOP_RIGHT_TOOLTIP";
         String containerPanelKey = "WORKSHOP_RIGHT_PANEL";
         ba_component container = new ba_component(componentMap, creatorComponent.mainPanel, cW, cH, cX, cY, true, containerPanelKey);
-        TooltipMakerAPI tooltipContainer = container.createTooltip(containerTooltipKey, cW, cH, false, 0,0);
-        creatorComponent.attachSubPanel(creatorComponentTooltip, containerPanelKey,container,0,0);
+
+        float effectListW = cW;
+        float effectListH = cH;
+        String rightInnerTooltipKey = "RIGHT_INNER_TOOLTIP";
+        if(this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_NONE)) {
+            //buttons
+            TooltipMakerAPI btnTooltipContainer = container.createTooltip("INVENTORY_OR_EFFECT_TOOLTIP", effectListW, effectListH, false, cX, cY);
+            btnTooltipContainer.getPosition().inTL(0, 0);
+            float invEffectBtnH = 30;
+            float invEffectBtnW = 100;
+            int invBtnX = (int) (pad);
+            int invBtnY = (int) (opad);
+            int effectBtnX = (int) (invBtnX + invEffectBtnW);
+            int effectBtnY = invBtnY;
+            ButtonAPI invButton = btnTooltipContainer.addButton("Inventory", null, Misc.getTextColor(), this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_INV)?Misc.getDarkPlayerColor():Misc.getDarkPlayerColor().darker().darker(), Alignment.MID, CutStyle.TOP, invEffectBtnW, invEffectBtnH, 0);
+            addButtonToList(invButton, "workshop_tab:" + WORKSHOP_INV);
+            invButton.getPosition().inTL(invBtnX, invBtnY);
+            if(this.currentTabId.equals(WORKSHOP)) {
+                invButton.setShortcut(Keyboard.KEY_1, true);
+            }
+            invButton.setButtonDisabledPressedSound("ui_button_pressed");
+            invButton.setPerformActionWhenDisabled(true);
+            if(this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_INV)) {
+                invButton.setHighlightBrightness(0);
+                invButton.setFlashBrightness(0);
+                invButton.setButtonPressedSound(null);
+            }
+            ButtonAPI effectButton = btnTooltipContainer.addButton("Effect", null, Misc.getTextColor(), this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_EFFECT)?Misc.getDarkPlayerColor():Misc.getDarkPlayerColor().darker().darker(), Alignment.MID, CutStyle.TOP, invEffectBtnW, invEffectBtnH, 0);
+            addButtonToList(effectButton, "workshop_tab:" + WORKSHOP_EFFECT);
+            effectButton.getPosition().inTL(effectBtnX, effectBtnY);
+            if(this.currentTabId.equals(WORKSHOP)) {
+                effectButton.setShortcut(Keyboard.KEY_2, true);
+            }
+            effectButton.setButtonDisabledPressedSound("ui_button_pressed");
+            effectButton.setPerformActionWhenDisabled(true);
+            if(this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_EFFECT)) {
+                effectButton.setHighlightBrightness(0);
+                effectButton.setFlashBrightness(0);
+                effectButton.setButtonPressedSound(null);
+            }
+            //effect + inv
+            TooltipMakerAPI effectListTooltipContainer = container.createTooltip(rightInnerTooltipKey, effectListW, effectListH, false, cX, cY + invEffectBtnH);
+            if(Objects.equals(this.currentWorkshopEffectOrInvTab, WORKSHOP_INV)) {
+                displayInventoryWorkshop(container, rightInnerTooltipKey, effectListW, effectListH-invEffectBtnH, 0, invEffectBtnH);
+            }
+            if(Objects.equals(this.currentWorkshopEffectOrInvTab, WORKSHOP_EFFECT)) {
+                displayEffectListWorkshop(container, rightInnerTooltipKey, effectListW, effectListH-invEffectBtnH, pad/2,invEffectBtnH);
+            }
+        }
+        if(this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_BIOFORM)) {
+            TooltipMakerAPI effectListTooltipContainer = container.createTooltip(rightInnerTooltipKey, effectListW, effectListH, false, cX, cY);
+            displayLimbListWorkshop(container, rightInnerTooltipKey, effectListW, effectListH/2, 0, 0);
+            displayLimbModificationSummaryWorkshop(container, rightInnerTooltipKey, effectListW, effectListH/2, 0, effectListH/2);
+        }
     }
     protected void displayPersonInfoList(ba_component creatorComponent, String creatorComponentTooltip, float personInfoW, float personInfoH, float personInfoX, float personInfoY) {
         float pad = 10f;
