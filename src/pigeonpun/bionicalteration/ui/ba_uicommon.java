@@ -641,6 +641,14 @@ public class ba_uicommon implements CustomUIPanelPlugin {
             String creatorComponentTooltip,
             String preset,
             boolean isScroll , float tableW, float tableH, float tableX, float tableY) {
+        displayBioformTableWithKeyPreset(creatorComponent, creatorComponentTooltip, preset, "bioform", isScroll, tableW, tableH, tableX, tableY);
+    }
+    protected void displayBioformTableWithKeyPreset(
+            ba_component creatorComponent,
+            String creatorComponentTooltip,
+            String preset,
+            String mode, //"bioform" || "bionic"
+            boolean isScroll , float tableW, float tableH, float tableX, float tableY) {
         final float pad = 10f;
         float opad = 10f;
         final Color h = Misc.getHighlightColor();
@@ -721,8 +729,9 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 //lines
                 int lineW = 30;
                 int spacerH = (int) (pad + pad/2);
+                Color centralLimbColor = mode.equals("bioform")?ba_variablemanager.BA_OVERFORM_COLOR:Misc.getDarkPlayerColor().brighter();
                 if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb)) {
-                    UIComponentAPI borderSelected = personDisplayContainerTooltip.createRect(ba_variablemanager.BA_OVERFORM_COLOR.darker(), 1);
+                    UIComponentAPI borderSelected = personDisplayContainerTooltip.createRect(centralLimbColor, 1);
                     borderSelected.getPosition().setSize(1f, singleBionicInstalledNameH + spacerH);
                     borderSelected.getPosition().inTL(lineW/2, (i*(singleBionicInstalledNameH + spacerH)));
                     int lineStraightY = 0;
@@ -734,12 +743,12 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                         lineStraightY = singleBionicInstalledNameH/2;
                     }
                     personDisplayContainerTooltip.addCustomDoNotSetPosition(borderSelected).getPosition().inTL(lineW/2,lineStraightY);
-                    UIComponentAPI border2 = personDisplayContainerTooltip.createRect(ba_variablemanager.BA_OVERFORM_COLOR.darker(), 1);
+                    UIComponentAPI border2 = personDisplayContainerTooltip.createRect(centralLimbColor, 1);
                     border2.getPosition().setSize(lineW/2 + pad/2, 1f);
 //                        border2.getPosition().inTL(lineW/2, i*(singleBionicInstalledNameH + spacerH) + singleBionicInstalledNameH/2);
                     personDisplayContainerTooltip.addCustomDoNotSetPosition(border2).getPosition().inTL(lineW/2,singleBionicInstalledNameH/2);
                 } else {
-                    UIComponentAPI borderSelected = personDisplayContainerTooltip.createRect(ba_variablemanager.BA_OVERFORM_COLOR.darker(), 1);
+                    UIComponentAPI borderSelected = personDisplayContainerTooltip.createRect(centralLimbColor, 1);
                     borderSelected.getPosition().setSize(1f, spacerH);
                     personDisplayContainerTooltip.addCustomDoNotSetPosition(borderSelected).getPosition().inTL(lineW/2, singleBionicInstalledNameH);
                     if(i == this.currentBioformData.size()-1) {
@@ -747,14 +756,18 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                         borderSelected.setOpacity(0);
                     }
                 }
-                //hover
+                //area hover for the central limb
                 int areaX = !ba_limbmanager.isLimbCentralLimb(augmentData.limb)? lineW: 0;
-                ButtonAPI areaChecker = personDisplayContainerTooltip.addAreaCheckbox("", null,!ba_limbmanager.isLimbCentralLimb(augmentData.limb)? Misc.getDarkPlayerColor().brighter(): ba_variablemanager.BA_OVERFORM_COLOR.darker(), !ba_limbmanager.isLimbCentralLimb(augmentData.limb)? Misc.getDarkPlayerColor(): ba_variablemanager.BA_OVERFORM_COLOR.darker(), Misc.getBrightPlayerColor(), bionicW - areaX, bionicH, 0);
+                ButtonAPI areaChecker = personDisplayContainerTooltip.addAreaCheckbox("", null,
+                        (ba_limbmanager.isLimbCentralLimb(augmentData.limb) && mode.equals("bioform"))? ba_variablemanager.BA_OVERFORM_COLOR.darker():Misc.getDarkPlayerColor().brighter(),
+                        (ba_limbmanager.isLimbCentralLimb(augmentData.limb) && mode.equals("bioform"))? ba_variablemanager.BA_OVERFORM_COLOR.brighter(): ba_limbmanager.isLimbCentralLimb(augmentData.limb)?Misc.getDarkPlayerColor().brighter().brighter():Misc.getDarkPlayerColor(),
+                        Misc.getBrightPlayerColor().brighter(), bionicW - areaX, bionicH, 0);
                 addButtonToList(areaChecker, "bioform:remove:"+augmentData.limb.limbId + (augmentData.bionicInstalled != null ? ":"+augmentData.bionicInstalled.getId() : ""));
                 areaChecker.getPosition().setLocation(0,0).inTL(areaX, 0);
-                if(ba_limbmanager.isLimbCentralLimb(augmentData.limb)) {
+                if(ba_limbmanager.isLimbCentralLimb(augmentData.limb) && mode.equals("bioform")) {
                     areaChecker.setClickable(false);
                 }
+                //todo modify this
                 if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb) && this.bioformRemoveList.contains(augmentData.limb.limbId)) {
                     areaChecker.highlight();
                 }

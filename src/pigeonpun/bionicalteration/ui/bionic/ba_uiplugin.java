@@ -298,7 +298,7 @@ public class ba_uiplugin extends ba_uicommon {
         TooltipMakerAPI tooltipContainer = container.createTooltip(containerTooltipKey, cW, cH, false, 0,0);
         creatorComponent.attachSubPanel(creatorComponentTooltip, containerPanelKey,container,0,0);
 
-        displayBioformTableWithKeyPreset(container, containerTooltipKey, "BIOFORM_WORKSHOP_MID_CENTER",true, cW, cH, cX, cY);
+        displayBioformTableWithKeyPreset(container, containerTooltipKey, "BIOFORM_WORKSHOP_MID_CENTER", this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_NONE)?"bionic":"bioform",true, cW, cH, cX, cY);
     }
     protected void displayWorkshopMidBottom(ba_component creatorComponent, String creatorComponentTooltip, float cW, float cH, float cX, float cY) {
         float pad = 10f;
