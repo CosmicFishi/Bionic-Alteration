@@ -254,9 +254,33 @@ public class ba_uiplugin extends ba_uicommon {
             }
         }
         if(this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_NONE)) {
-            LabelAPI header = tooltipContainer.addPara("---", Misc.getGrayColor(), 0f);
+            LabelAPI header = tooltipContainer.addPara("Mode: %s", 0f, (this.currentWorkShopMode.equals(EDIT_WORKSHOP)? bad: Misc.getBrightPlayerColor()), (this.currentWorkShopMode.equals(EDIT_WORKSHOP)? "Removal": "Installation"));
             header.getPosition().setSize(cW, cH);
             header.setAlignment(Alignment.MID);
+
+            //hover condition
+            float btnSize = cH*0.6f;
+            ButtonAPI changeModeareaChecker = tooltipContainer.addAreaCheckbox("< >", null, Misc.getBasePlayerColor(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), btnSize, btnSize, 0);
+            addButtonToList(changeModeareaChecker, "bionic:" + EDIT_WORKSHOP);
+            float textWidth = tooltipContainer.computeStringWidth("Mode: Installation");
+            changeModeareaChecker.getPosition().setLocation(0, 0).inTL(cW/2 + textWidth/2 + pad*2, cH/2 - btnSize/2);
+            tooltipContainer.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
+                @Override
+                public boolean isTooltipExpandable(Object tooltipParam) {
+                    return false;
+                }
+
+                @Override
+                public float getTooltipWidth(Object tooltipParam) {
+                    return 400;
+                }
+
+                @Override
+                public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                    tooltip.setParaFontOrbitron();
+                    tooltip.addPara("Change Bionic Workshop mode.", 0);
+                }
+            }, changeModeareaChecker, TooltipMakerAPI.TooltipLocation.BELOW);
         }
         tooltipContainer.setParaFontDefault();
     }
@@ -620,13 +644,116 @@ public class ba_uiplugin extends ba_uicommon {
             }
 
             TooltipMakerAPI confirmTooltipContainer = container.createTooltip("INVENTORY_OR_EFFECT_CONFIRM_TOOLTIP", confirmSectionW, confirmSectionH, false, cX + pad/2, cY+effectListH-invEffectBtnH);
-            String confirmText = true?"Confirm Installation":"Confirm Removal"; //todo: CHANGE THIS TEXT BASED ON REMOVING OR ADDING bionic
+            String confirmText = this.currentWorkShopMode.equals(INSTALL_WORKSHOP)?"Confirm Installation":"Confirm Removal"; //todo: CHANGE THIS TEXT BASED ON REMOVING OR ADDING bionic
             float confirmBtnW = confirmSectionW - confirmSectionH - pad*2;
-            ButtonAPI confirmButton = confirmTooltipContainer.addButton(confirmText, null, Misc.getTextColor(), Misc.getDarkPlayerColor(), Alignment.MID, CutStyle.TL_BR, confirmBtnW, confirmSectionH - pad, 0);
+            ButtonAPI confirmButton = confirmTooltipContainer.addButton(confirmText, null, Misc.getTextColor(), (currentWorkShopMode.equals(INSTALL_WORKSHOP)?Misc.getDarkPlayerColor():bad.darker().darker().darker()), Alignment.MID, CutStyle.TL_BR, confirmBtnW, confirmSectionH - pad, 0);
             confirmButton.getPosition().inTL(confirmSectionW-confirmBtnW-pad+2,0);
             addButtonToList(confirmButton, "");
+            confirmButton.setEnabled(false);
+            if(this.currentSelectedLimb != null && this.currentSelectedBionic != null && ba_officermanager.checkIfCanInstallBionic(this.currentSelectedBionic, this.currentSelectedLimb, this.currentPerson)) {
+                confirmButton.setEnabled(true);
+                confirmButton.flash(false);
+            }
+            confirmTooltipContainer.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
+                @Override
+                public boolean isTooltipExpandable(Object tooltipParam) {
+                    return false;
+                }
+
+                @Override
+                public float getTooltipWidth(Object tooltipParam) {
+                    return 600f;
+                }
+
+                @Override
+                public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                    if(currentWorkShopMode.equals(INSTALL_WORKSHOP)) {
+                        tooltip.addSectionHeading("Info", Alignment.MID, pad);
+                        tooltip.addPara("Modifying limb: %s", pad, currentSelectedLimb == null ? Misc.getGrayColor(): Misc.getBrightPlayerColor(),  currentSelectedLimb == null ? "None": currentSelectedLimb.name);
+                        tooltip.addPara("Modifying bionic: %s", pad, currentSelectedBionic == null? Misc.getGrayColor(): currentSelectedBionic.displayColor,  currentSelectedBionic == null? "None": currentSelectedBionic.getName());
+                        tooltip.addSectionHeading("Debug", Alignment.MID, pad);
+                        boolean isBionicInstallableOnLimb = false;
+                        boolean isBionicAlreadyInstalledOnLimb = false;
+                        boolean isBionicInstallableBaseOnPersonType = false;
+                        boolean isBrmExceed = false;
+                        boolean isConsciousnessReduceToZero = false;
+                        boolean isBionicConflicted = false;
+                        if(currentSelectedLimb != null && currentSelectedBionic != null) {
+                            if(ba_officermanager.checkIfBionicLimbGroupContainSelected(currentSelectedBionic, currentSelectedLimb)) isBionicInstallableOnLimb = true;
+                            if(ba_officermanager.checkIfBionicIsAlreadyInstalled(currentSelectedBionic, currentSelectedLimb, currentPerson)) isBionicAlreadyInstalledOnLimb = true;
+                            if(ba_officermanager.checkIfBionicInstallableBaseOnPersonType(currentSelectedBionic, currentPerson)) isBionicInstallableBaseOnPersonType = true;
+                            if(!ba_officermanager.checkIfCurrentBRMLowerThanLimitOnInstall(currentSelectedBionic, currentPerson)) isBrmExceed = true;
+                            if(!ba_officermanager.checkIfConsciousnessReduceAboveZeroOnInstall(currentSelectedBionic, currentPerson)) isConsciousnessReduceToZero = true;
+                            if(ba_bionicmanager.checkIfBionicConflicted(currentSelectedBionic, currentPerson)) isBionicConflicted = true;
+                        }
+                        tooltip.setParaFontVictor14();
+                        tooltip.addPara("Button is still disabled ? Hover on selected bionic / limb for more information.", pad);
+                        tooltip.setParaFontDefault();
+                        tooltip.addPara("Make sure that: ", pad);
+                        LabelAPI bionicInstallableLabel = tooltip.addPara("[ %s ] %s on selected limb.", pad/2, Misc.getHighlightColor(), isBionicInstallableOnLimb? "O": "X","Selected bionic can be installed");
+                        bionicInstallableLabel.setHighlightColors(isBionicInstallableOnLimb? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
+                        LabelAPI bionicInstalledLabel = tooltip.addPara("[ %s ] %s bionic installable per limb limit. The current limit is %s", pad/2, Misc.getHighlightColor(), !isBionicAlreadyInstalledOnLimb? "O": "X", "Selected limb is not exceeding", "" +ba_variablemanager.BIONIC_INSTALL_PER_LIMB);
+                        bionicInstalledLabel.setHighlightColors(!isBionicAlreadyInstalledOnLimb? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
+                        LabelAPI bionicPersonTypeLabel = tooltip.addPara("[ %s ] %s for the person profession (Officer/Admin). Note: Player can install both type", pad/2, Misc.getHighlightColor(), isBionicInstallableBaseOnPersonType? "O": "X", "Selected bionic have applying effect");
+                        bionicPersonTypeLabel.setHighlightColors(isBionicInstallableBaseOnPersonType? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
+                        LabelAPI brmLabel = tooltip.addPara("[ %s ] %s the person BRM limit.", pad/2, Misc.getHighlightColor(), !isBrmExceed? "O": "X","Selected bionics BRM do not go past");
+                        brmLabel.setHighlightColors(!isBrmExceed? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
+                        if(bionicalterationplugin.isBRMCapDisable) {
+                            brmLabel.setText("[ R ] BRM Cap removed");
+                            brmLabel.setHighlight("[ R ] BRM Cap removed");
+                            brmLabel.setHighlightColors(Misc.getGrayColor());
+                        }
+                        LabelAPI consciousnessLabel = tooltip.addPara("[ %s ] %s the person's consciousness to lower or equal to %s.", pad/2, Misc.getHighlightColor(), !isConsciousnessReduceToZero? "O": "X","Selected bionics consciousness cost does not reduce", "0");
+                        consciousnessLabel.setHighlightColors(!isConsciousnessReduceToZero? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
+                        LabelAPI conflictedLabel = tooltip.addPara("[ %s ] %s with other bionics installed on the person.", pad/2, Misc.getHighlightColor(), !isBionicConflicted? "O": "X", "Selected bionic is not conflicting");
+                        conflictedLabel.setHighlightColors(!isBionicConflicted? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
+                    }
+                    if(currentWorkShopMode.equals(EDIT_WORKSHOP)) {
+                        tooltip.addSectionHeading("Removing bionics:", Alignment.MID, pad);
+                        if(bioformRemoveList.isEmpty()) {
+                            tooltip.addPara("Empty", Misc.getGrayColor(), pad);
+                        } else {
+                            //todo: display removing list
+                        }
+                    }
+                }
+            }, confirmButton, TooltipMakerAPI.TooltipLocation.ABOVE);
             ButtonAPI helpButton = confirmTooltipContainer.addButton("?", null, Misc.getTextColor(), Misc.getPositiveHighlightColor().darker().darker().darker(), Alignment.MID, CutStyle.ALL, confirmSectionH - pad, confirmSectionH - pad, 0);
             helpButton.getPosition().inTL(pad,0);
+            confirmTooltipContainer.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
+                @Override
+                public boolean isTooltipExpandable(Object tooltipParam) {
+                    return false;
+                }
+
+                @Override
+                public float getTooltipWidth(Object tooltipParam) {
+                    return 600f;
+                }
+
+                @Override
+                public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                    tooltip.addSectionHeading("Bionic Installation", Alignment.MID, pad);
+                    tooltip.addPara("1. Change mode to %s", pad/2, Misc.getHighlightColor(), "Installation");
+                    tooltip.addPara("    The change mode button \"<>\" located at the top of the screen", Misc.getGrayColor(),pad/2);
+                    tooltip.addPara("2. Select a %s", pad/2, Misc.getHighlightColor(), "limb");
+                    tooltip.addPara("    Click on the bionic table and select the desired limb.", Misc.getGrayColor(),pad/2);
+                    tooltip.addPara("3. Select a %s, ", pad/2, Misc.getHighlightColor(), "bionic");
+                    tooltip.addPara("    Click on bionic item in the inventory if there are any bionic available.", Misc.getGrayColor(),pad/2);
+                    tooltip.addPara("4. Click the %s button to confirm installation.",pad/2, Misc.getHighlightColor(), "confirm");
+
+                    tooltip.addSectionHeading("Bionic Removal", Alignment.MID, pad);
+                    tooltip.addPara("1. Change mode to %s", pad/2, Misc.getHighlightColor(), "Removal");
+                    tooltip.addPara("    The change mode button \"<>\" located at the top of the screen", Misc.getGrayColor(),pad/2);
+                    tooltip.addPara("2. Select %s, select the desired limb(s) with bionic.", pad/2, Misc.getHighlightColor(), "limb(s)");
+                    tooltip.addPara("    Click on the bionic table and select the desired limb.", Misc.getGrayColor(),pad/2);
+                    tooltip.addPara("3. Click the %s button to confirm removal.",pad/2, Misc.getHighlightColor(), "confirm");
+                    tooltip.addPara("    Removal effects if applicable, will be displayed on hover.", Misc.getGrayColor() ,pad);
+                    tooltip.addPara("    Some bionics can on be removed.", Misc.getGrayColor() ,pad);
+                    tooltip.addPara("    Some bionics have effects on removed.", Misc.getGrayColor() ,pad);
+                    tooltip.addPara("    Some bionics once removed, DO NOT RETURN the bionic item", Misc.getGrayColor() ,pad);
+                }
+            }, helpButton, TooltipMakerAPI.TooltipLocation.ABOVE);
         }
         if(this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_BIOFORM)) {
             TooltipMakerAPI effectListTooltipContainer = container.createTooltip(rightInnerTooltipKey, effectListW, effectListH, false, cX, cY);

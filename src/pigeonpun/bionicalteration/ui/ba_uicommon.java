@@ -1291,7 +1291,13 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 String[] tokens = s.split(":");
                 if(tokens[0].equals("hover_bionic_item")) {
                     if(ba_bionicmanager.bionicItemMap.get(tokens[1]) != null) {
-                        this.currentSelectedBionic = (ba_bionicitemplugin) cargoBionic.get(Integer.parseInt(tokens[2])).getPlugin();;
+                        ba_bionicitemplugin selectedBionic = (ba_bionicitemplugin) cargoBionic.get(Integer.parseInt(tokens[2])).getPlugin();;
+
+                        if(this.currentSelectedBionic != null && this.currentSelectedBionic.getId().equals(selectedBionic.bionicId)) {
+                            this.currentSelectedBionic = null;
+                        } else {
+                            this.currentSelectedBionic = selectedBionic;
+                        }
 //                        this.currentSelectedBionic = ba_bionicmanager.bionicItemMap.get(tokens[1]);
                         needsReset = true;
                         break;
