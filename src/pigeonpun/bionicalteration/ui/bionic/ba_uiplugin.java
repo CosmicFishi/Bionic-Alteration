@@ -578,6 +578,8 @@ public class ba_uiplugin extends ba_uicommon {
             btnTooltipContainer.getPosition().inTL(0, 0);
             float invEffectBtnH = 30;
             float invEffectBtnW = (cW-15)/2;
+            float confirmSectionH = 50f;
+            float confirmSectionW = cW;
             int invBtnX = (int) (pad);
             int invBtnY = (int) (opad);
             int effectBtnX = (int) (invBtnX + invEffectBtnW);
@@ -611,11 +613,20 @@ public class ba_uiplugin extends ba_uicommon {
             //effect + inv
             TooltipMakerAPI effectListTooltipContainer = container.createTooltip(rightInnerTooltipKey, effectListW, effectListH, false, cX, cY + invEffectBtnH);
             if(Objects.equals(this.currentWorkshopEffectOrInvTab, WORKSHOP_INV)) {
-                displayInventoryWorkshop(container, rightInnerTooltipKey, effectListW, effectListH-invEffectBtnH, 0, invEffectBtnH);
+                displayInventoryWorkshop(container, rightInnerTooltipKey, effectListW, effectListH-invEffectBtnH-confirmSectionH, 0, invEffectBtnH);
             }
             if(Objects.equals(this.currentWorkshopEffectOrInvTab, WORKSHOP_EFFECT)) {
-                displayEffectListWorkshop(container, rightInnerTooltipKey, effectListW, effectListH-invEffectBtnH, pad/2,invEffectBtnH);
+                displayEffectListWorkshop(container, rightInnerTooltipKey, effectListW, effectListH-invEffectBtnH-confirmSectionH, pad/2,invEffectBtnH);
             }
+
+            TooltipMakerAPI confirmTooltipContainer = container.createTooltip("INVENTORY_OR_EFFECT_CONFIRM_TOOLTIP", confirmSectionW, confirmSectionH, false, cX + pad/2, cY+effectListH-invEffectBtnH);
+            String confirmText = true?"Confirm Installation":"Confirm Removal"; //todo: CHANGE THIS TEXT BASED ON REMOVING OR ADDING bionic
+            float confirmBtnW = confirmSectionW - confirmSectionH - pad*2;
+            ButtonAPI confirmButton = confirmTooltipContainer.addButton(confirmText, null, Misc.getTextColor(), Misc.getDarkPlayerColor(), Alignment.MID, CutStyle.TL_BR, confirmBtnW, confirmSectionH - pad, 0);
+            confirmButton.getPosition().inTL(confirmSectionW-confirmBtnW-pad+2,0);
+            addButtonToList(confirmButton, "");
+            ButtonAPI helpButton = confirmTooltipContainer.addButton("?", null, Misc.getTextColor(), Misc.getPositiveHighlightColor().darker().darker().darker(), Alignment.MID, CutStyle.ALL, confirmSectionH - pad, confirmSectionH - pad, 0);
+            helpButton.getPosition().inTL(pad,0);
         }
         if(this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_BIOFORM)) {
             TooltipMakerAPI effectListTooltipContainer = container.createTooltip(rightInnerTooltipKey, effectListW, effectListH, false, cX, cY);
