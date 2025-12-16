@@ -42,6 +42,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
     protected float currentScrollPositionPersonList = 0;
     protected float currentScrollPositionBioformList = 0;
     public ba_bionicitemplugin currentRemovingBionic; //selected for removing
+    public List<ba_officermanager.ba_bionicAugmentedData> currentRemovingBionics = new ArrayList<>();
     public static ba_debounceplugin debounceplugin = new ba_debounceplugin();
     public List<CargoStackAPI> cargoBionic = new ArrayList<>();
     public static boolean isDisplayingOtherFleets = false;
@@ -641,13 +642,14 @@ public class ba_uicommon implements CustomUIPanelPlugin {
             String creatorComponentTooltip,
             String preset,
             boolean isScroll , float tableW, float tableH, float tableX, float tableY) {
-        displayBioformTableWithKeyPreset(creatorComponent, creatorComponentTooltip, preset, "bioform", isScroll, tableW, tableH, tableX, tableY);
+        displayBioformTableWithKeyPreset(creatorComponent, creatorComponentTooltip, preset, "bioform", "", isScroll, tableW, tableH, tableX, tableY);
     }
     protected void displayBioformTableWithKeyPreset(
             ba_component creatorComponent,
             String creatorComponentTooltip,
             String preset,
             String mode, //"bioform" || "bionic"
+            String bionicSubMode, //ONLY USE FOR "bionic" mode - "INSTALL" || "EDIT" || ""
             boolean isScroll , float tableW, float tableH, float tableX, float tableY) {
         final float pad = 10f;
         float opad = 10f;
@@ -678,7 +680,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         }
         //if AI person have not set up bioform data
         if((this.currentBioformData == null || this.currentBioformData.isEmpty()) && this.currentPerson.isAICore()) {
-            //todo: set a price for creating new bioform
+            //todo: Only allow to make new bioform at the Bioform terminal
             LabelAPI loreBioformLabel = infoPersonBionicTooltipContainer.addPara("//SCANNING// ...  Synthetic bioform is not detected in current unit ...", 0f, ba_variablemanager.BA_OVERFORM_COLOR, "");
             loreBioformLabel.getPosition().inTL(tableW/2 - loreBioformLabel.computeTextWidth("//SCANNING// ...  Synthetic bioform is not detected in current unit")/2, tableH/2 - pad*3);
             LabelAPI createBioformLabel = infoPersonBionicTooltipContainer.addPara("//%s", 0f, ba_variablemanager.BA_OVERFORM_COLOR, "CREATE NEW BIOFORM ?");
@@ -762,15 +764,29 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                         (ba_limbmanager.isLimbCentralLimb(augmentData.limb) && mode.equals("bioform"))? ba_variablemanager.BA_OVERFORM_COLOR.darker():Misc.getDarkPlayerColor().brighter(),
                         (ba_limbmanager.isLimbCentralLimb(augmentData.limb) && mode.equals("bioform"))? ba_variablemanager.BA_OVERFORM_COLOR.brighter(): ba_limbmanager.isLimbCentralLimb(augmentData.limb)?Misc.getDarkPlayerColor().brighter().brighter():Misc.getDarkPlayerColor(),
                         Misc.getBrightPlayerColor().brighter(), bionicW - areaX, bionicH, 0);
-                addButtonToList(areaChecker, "bioform:remove:"+augmentData.limb.limbId + (augmentData.bionicInstalled != null ? ":"+augmentData.bionicInstalled.getId() : ""));
                 areaChecker.getPosition().setLocation(0,0).inTL(areaX, 0);
                 if(ba_limbmanager.isLimbCentralLimb(augmentData.limb) && mode.equals("bioform")) {
                     areaChecker.setClickable(false);
                 }
                 //todo modify this
-                if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb) && this.bioformRemoveList.contains(augmentData.limb.limbId)) {
-                    areaChecker.highlight();
+                if(mode.equals("bioform")) {
+                    if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb) && this.bioformRemoveList.contains(augmentData.limb.limbId)) {
+                        areaChecker.highlight();
+                    }
+                    addButtonToList(areaChecker, "bioform:remove:"+augmentData.limb.limbId + (augmentData.bionicInstalled != null ? ":"+augmentData.bionicInstalled.getId() : ""));
                 }
+                if(mode.equals("bionic")) {
+                    if(this.currentSelectedLimb != null && this.currentSelectedLimb.limbId.equals(augmentData.limb.limbId)) {
+                        areaChecker.highlight();
+                    }
+                    if(bionicSubMode.equals("INSTALL")) {
+                        addButtonToList(areaChecker, "hover_bionic_table_limb:"+augmentData.limb.limbId + (augmentData.bionicInstalled != null ? ":"+augmentData.bionicInstalled.getId() : ""));
+                    }
+                    if(bionicSubMode.equals("EDIT")) {
+                        addButtonToList(areaChecker, "bionic:addToRemoveBionicList:"+augmentData.limb.limbId);
+                    }
+                }
+
                 //hover pop up
                 personDisplayContainerTooltip.addTooltipToPrevious(new TooltipMakerAPI.TooltipCreator() {
                     @Override
@@ -803,12 +819,13 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                                     overclockLabel.setHighlightColors(special, g);
                                 }
                             }
-                            if(expanded) {
-                                LabelAPI expandedTooltip = tooltip.addPara("%s %s", pad, Misc.getBasePlayerColor(), "Description:", b.getSpec().getDesc());
-                                expandedTooltip.setHighlight("Description:", b.getSpec().getDesc());
-                                expandedTooltip.setHighlightColors(Misc.getGrayColor().brighter(), t);
-                            }
                             tooltip.addSpacer(pad);
+
+                            if(expanded) {
+                                tooltip.addSectionHeading("Details", Misc.getBrightPlayerColor(), Misc.getDarkPlayerColor().darker() ,Alignment.MID, 0);
+                                tooltip.addSpacer(pad);
+                                ba_bionicmanager.displayBionicItemDescription(tooltip, b);
+                            }
                         } else {
                             tooltip.addPara("No bionic installed", pad, Misc.getGrayColor(), "No bionic installed");
                             tooltip.addSpacer(pad);
@@ -822,21 +839,35 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 TooltipMakerAPI bionicLimbNameTooltip = bionicDisplayContainer.createTooltip("BIONIC_LIMB_NAME", nameW, nameH, false, 0, 0);
                 bionicLimbNameTooltip.getPosition().inTL(nameX, 0);
                 String limbText = augmentData.limb.name;
-                if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb) && this.bioformRemoveList.contains(augmentData.limb.limbId)) {
-                    limbText += " (-)";
-                }
-                if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb) && this.bioformAddList.contains(augmentData.limb.limbId)) {
-                    limbText += " (+)";
+                if(mode.equals("bioform")) {
+                    if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb) && this.bioformRemoveList.contains(augmentData.limb.limbId)) {
+                        limbText += " (-)";
+                    }
+                    if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb) && this.bioformAddList.contains(augmentData.limb.limbId)) {
+                        limbText += " (+)";
+                    }
                 }
                 LabelAPI limbName = bionicLimbNameTooltip.addPara(limbText, pad);
                 limbName.setHighlight(limbText);
-                limbName.setHighlightColors(t);
-                //todo: disable/enable the limb if selected
-                if(this.bioformAddList.contains(augmentData.limb.limbId)) {
-                    limbName.setHighlightColors(Misc.getPositiveHighlightColor());
+                limbName.setHighlight(augmentData.limb.name);
+                String highlightLimbId = this.currentSelectedBionic != null? this.currentSelectedBionic.bionicLimbGroupId: "";
+                if(highlightLimbId != "") {
+                    if(augmentData.limb.limbGroupList.contains(highlightLimbId)) {
+                        limbName.setHighlightColors(Misc.getPositiveHighlightColor());
+                    } else {
+                        limbName.setHighlightColors(t);
+                    }
+                } else {
+                    limbName.setHighlightColors(t);
                 }
-                if(this.bioformRemoveList.contains(augmentData.limb.limbId)) {
-                    limbName.setHighlightColors(Misc.getNegativeHighlightColor());
+                //todo: disable/enable the limb if selected
+                if(mode.equals("bioform")) {
+                    if(this.bioformAddList.contains(augmentData.limb.limbId)) {
+                        limbName.setHighlightColors(Misc.getPositiveHighlightColor());
+                    }
+                    if(this.bioformRemoveList.contains(augmentData.limb.limbId)) {
+                        limbName.setHighlightColors(Misc.getNegativeHighlightColor());
+                    }
                 }
                 limbName.getPosition().inTL(pad/2,12);
 
@@ -851,10 +882,28 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                     TooltipMakerAPI bionicNameTooltip = bionicDisplayContainer.createTooltip("BIONIC_NAME"+bionicInstalledI, sectionW, sectionH, false, sectionX, sectionSpacerY);
                     bionicNameTooltip.getPosition().inTL(sectionX, sectionSpacerY);
                     //>name
-                    LabelAPI bionicName = bionicNameTooltip.addPara("%s  -  %s", pad, g, "" + b.getName(), !Objects.equals(b.namePrefix, "") ? b.namePrefix: " ");
-                    bionicName.getPosition().setSize(bionicNameW,sectionH);
-                    bionicName.setHighlightColors(b.displayColor, Misc.getBasePlayerColor());
-                    bionicName.getPosition().inTL(0,12);
+                    int bionicBRM = (int) augmentData.bionicInstalled.brmCost;
+                    int bionicConsciousness = (int) (augmentData.bionicInstalled.consciousnessCost * 100);
+                    LabelAPI bionicName;
+                    if(bionicSubMode.equals("EDIT")) {
+                        boolean highlight = false;
+                        for (ba_officermanager.ba_bionicAugmentedData removingBionic : this.currentRemovingBionics) {
+                            if(augmentData.bionicInstalled != null && removingBionic.limb.limbId.equals(augmentData.limb.limbId)) {
+                                highlight = true;
+                                break;
+                            }
+                        }
+
+                        bionicName = bionicNameTooltip.addPara("%s  %s  %s  %s  %s", pad, Misc.getNegativeHighlightColor(),  highlight?"[ - ]":"[   ]" ,"" + b.getName(), "-", "" + bionicBRM, "" + bionicConsciousness + "%");
+                        bionicName.setHighlightColors(highlight? Misc.getNegativeHighlightColor(): g.darker().darker(), b.displayColor.brighter(), g.darker(), Color.red.darker().darker().darker(), Color.red.darker().darker().darker());
+                        bionicName.getPosition().setSize(bionicNameW,sectionH);
+                        bionicName.getPosition().inTL(0,12);
+                    } else {
+                        bionicName = bionicNameTooltip.addPara("%s  %s  %s  %s", pad, Misc.getNegativeHighlightColor(),  "" + b.getName(), "-", "" + bionicBRM, "" + bionicConsciousness + "%");
+                        bionicName.setHighlightColors(b.displayColor.brighter(), g.darker(), Color.red.darker().darker().darker(), Color.red.darker().darker().darker());
+                        bionicName.getPosition().setSize(bionicNameW,sectionH);
+                        bionicName.getPosition().inTL(0,12);
+                    }
                     if(b != null) {
                         ba_overclock overclock = augmentData.appliedOverclock;
                         int overclockRowY = singleBionicInstalledNameH;

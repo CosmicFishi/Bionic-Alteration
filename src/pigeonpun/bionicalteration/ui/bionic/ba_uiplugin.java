@@ -262,6 +262,7 @@ public class ba_uiplugin extends ba_uicommon {
             float btnSize = cH*0.6f;
             ButtonAPI changeModeareaChecker = tooltipContainer.addAreaCheckbox("< >", null, Misc.getBasePlayerColor(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), btnSize, btnSize, 0);
             addButtonToList(changeModeareaChecker, "bionic:" + EDIT_WORKSHOP);
+            changeModeareaChecker.setShortcut(Keyboard.KEY_M, true);
             float textWidth = tooltipContainer.computeStringWidth("Mode: Installation");
             changeModeareaChecker.getPosition().setLocation(0, 0).inTL(cW/2 + textWidth/2 + pad*2, cH/2 - btnSize/2);
             tooltipContainer.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
@@ -278,7 +279,8 @@ public class ba_uiplugin extends ba_uicommon {
                 @Override
                 public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
                     tooltip.setParaFontOrbitron();
-                    tooltip.addPara("Change Bionic Workshop mode.", 0);
+                    tooltip.addPara("Change Bionic Workshop mode.", pad);
+                    tooltip.addPara("Shortcut: %s", pad, Misc.getHighlightColor(),"M").setOpacity(0.6f);
                 }
             }, changeModeareaChecker, TooltipMakerAPI.TooltipLocation.BELOW);
         }
@@ -298,7 +300,7 @@ public class ba_uiplugin extends ba_uicommon {
         TooltipMakerAPI tooltipContainer = container.createTooltip(containerTooltipKey, cW, cH, false, 0,0);
         creatorComponent.attachSubPanel(creatorComponentTooltip, containerPanelKey,container,0,0);
 
-        displayBioformTableWithKeyPreset(container, containerTooltipKey, "BIOFORM_WORKSHOP_MID_CENTER", this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_NONE)?"bionic":"bioform",true, cW, cH, cX, cY);
+        displayBioformTableWithKeyPreset(container, containerTooltipKey, "BIOFORM_WORKSHOP_MID_CENTER", this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_NONE)?"bionic":"bioform", this.currentWorkShopMode,true, cW, cH, cX, cY);
     }
     protected void displayWorkshopMidBottom(ba_component creatorComponent, String creatorComponentTooltip, float cW, float cH, float cX, float cY) {
         float pad = 10f;
@@ -648,7 +650,7 @@ public class ba_uiplugin extends ba_uicommon {
             float confirmBtnW = confirmSectionW - confirmSectionH - pad*2;
             ButtonAPI confirmButton = confirmTooltipContainer.addButton(confirmText, null, Misc.getTextColor(), (currentWorkShopMode.equals(INSTALL_WORKSHOP)?Misc.getDarkPlayerColor():bad.darker().darker().darker()), Alignment.MID, CutStyle.TL_BR, confirmBtnW, confirmSectionH - pad, 0);
             confirmButton.getPosition().inTL(confirmSectionW-confirmBtnW-pad+2,0);
-            addButtonToList(confirmButton, "");
+            addButtonToList(confirmButton, "bionic:install");
             confirmButton.setEnabled(false);
             if(this.currentSelectedLimb != null && this.currentSelectedBionic != null && ba_officermanager.checkIfCanInstallBionic(this.currentSelectedBionic, this.currentSelectedLimb, this.currentPerson)) {
                 confirmButton.setEnabled(true);
@@ -662,7 +664,7 @@ public class ba_uiplugin extends ba_uicommon {
 
                 @Override
                 public float getTooltipWidth(Object tooltipParam) {
-                    return 600f;
+                    return 400f;
                 }
 
                 @Override
@@ -709,11 +711,23 @@ public class ba_uiplugin extends ba_uicommon {
                         conflictedLabel.setHighlightColors(!isBionicConflicted? Misc.getPositiveHighlightColor(): Misc.getNegativeHighlightColor(), Misc.getHighlightColor());
                     }
                     if(currentWorkShopMode.equals(EDIT_WORKSHOP)) {
-                        tooltip.addSectionHeading("Removing bionics:", Alignment.MID, pad);
-                        if(bioformRemoveList.isEmpty()) {
+                        tooltip.addSectionHeading("Removing bionics", Alignment.MID, pad);
+                        if(currentRemovingBionics.isEmpty()) {
                             tooltip.addPara("Empty", Misc.getGrayColor(), pad);
                         } else {
                             //todo: display removing list
+                            for(ba_officermanager.ba_bionicAugmentedData data: currentRemovingBionics) {
+                                tooltip.addPara("- %s", pad, data.bionicInstalled != null? data.bionicInstalled.displayColor: Misc.getHighlightColor(), data.bionicInstalled.getName());
+                                if(data.bionicInstalled.isAllowedRemoveAfterInstall) {
+                                    tooltip.addPara("  %s", pad/2, Misc.getGrayColor(), "On remove, return as item");
+                                } else {
+                                    tooltip.addPara("  %s", pad/2, Misc.getNegativeHighlightColor().darker().darker(), "Can not be removed");
+                                }
+                                if(data.bionicInstalled.isEffectAppliedAfterRemove) {
+                                    data.bionicInstalled.getLongOnRemoveEffectDescription(tooltip);
+                                }
+
+                            }
                         }
                     }
                 }
@@ -2206,6 +2220,16 @@ public class ba_uiplugin extends ba_uicommon {
         this.currentSelectedBionic = null;
         this.currentRemovingBionic = null;
     }
+    protected boolean removeBionicList(ba_officermanager.ba_bionicAugmentedData data) {
+        boolean success = ba_officermanager.removeBionic(data.bionicInstalled, data.limb, this.currentPerson);
+        if (!success) {
+            log.error("Can not remove " + this.currentRemovingBionic.getName() + " from person with tags: " + this.currentPerson.getTags().toString());
+        }
+//        this.currentSelectedLimb = null;
+        this.currentSelectedBionic = null;
+        this.currentRemovingBionic = null;
+        return success;
+    }
 
     /**
      * NOTE: For future me, DONT EVER ADD IN REFRESH METHOD HERE. It will cause max call stack error. Refresh() should be handle seperately
@@ -2341,6 +2365,7 @@ public class ba_uiplugin extends ba_uicommon {
                                     this.bioformAddList.clear();
                                     this.bioformChangeList.clear();
                                     this.currentBioformData.clear();
+                                    this.currentRemovingBionics.clear();
                                     break;
                             }
                         }
@@ -2371,10 +2396,10 @@ public class ba_uiplugin extends ba_uicommon {
                     if(tokens[1].equals(EDIT_WORKSHOP)) {
                         if(this.currentWorkShopMode.equals(this.EDIT_WORKSHOP)) {
                             this.currentWorkShopMode = this.INSTALL_WORKSHOP;
-                            this.currentSelectedLimb = null;
                         } else if(this.currentWorkShopMode.equals(this.INSTALL_WORKSHOP)) {
                             this.currentWorkShopMode = this.EDIT_WORKSHOP;
                         }
+                        this.currentSelectedLimb = null;
                         this.currentSelectedBionic = null;
                         this.currentRemovingBionic = null;
                         needsReset = true;
@@ -2411,6 +2436,49 @@ public class ba_uiplugin extends ba_uicommon {
                             }
                             needsReset = true;
                             break;
+                        }
+                    }
+                    if(tokens[1].equals("addToRemoveBionicList") && !Objects.equals(tokens[2], "")) {
+                        if(this.currentRemovingBionics.isEmpty()) {
+                            for (ba_officermanager.ba_bionicAugmentedData data : this.currentBioformData) {
+                                if (data.bionicInstalled != null && data.limb.limbId.equals(tokens[2])) {
+                                    this.currentRemovingBionics.add(data);
+                                    needsReset = true;
+                                    break;
+                                }
+                            }
+                        } else {
+                            ba_officermanager.ba_bionicAugmentedData augmentedData = null;
+                            for (ba_officermanager.ba_bionicAugmentedData data : this.currentRemovingBionics) {
+                                if (data.limb.limbId.equals(tokens[2])) {
+                                    augmentedData = data;
+                                }
+                            }
+                            if(augmentedData != null) {
+                                this.currentRemovingBionics.remove(augmentedData);
+                                needsReset = true;
+                                break;
+                            }
+                            for (ba_officermanager.ba_bionicAugmentedData data : this.currentBioformData) {
+                                if (data.bionicInstalled != null && data.limb.limbId.equals(tokens[2])) {
+                                    this.currentRemovingBionics.add(data);
+                                    needsReset = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if(tokens[1].equals("confirmRemoveBionicList")) { //todo: add functionality to this
+                        for (ba_officermanager.ba_bionicAugmentedData data : this.currentRemovingBionics) {
+                            for (ba_officermanager.ba_bionicAugmentedData augmentedData : this.currentBioformData) {
+                                if(data.limb.limbId.equals(augmentedData.limb.limbId) &&
+                                        data.bionicInstalled != null && augmentedData.bionicInstalled != null &&
+                                        data.bionicInstalled.getId().equals(augmentedData.bionicInstalled.bionicId)) {
+                                    boolean success = removeBionicList(data);
+                                    needsReset = true;
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
@@ -2551,6 +2619,9 @@ public class ba_uiplugin extends ba_uicommon {
                                                 if(!this.currentPerson.isAICore()) {
                                                     this.currentWorkShopSubMode = this.SUB_WORKSHOP_MODE_NONE;
                                                 }
+                                                this.currentSelectedLimb = null;
+                                                this.currentSelectedBionic = null;
+                                                this.currentRemovingBionics.clear();
                                                 shouldRefresh = true;
                                             }
                                         }
