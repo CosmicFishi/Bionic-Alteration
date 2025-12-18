@@ -822,7 +822,7 @@ public class ba_uiplugin extends ba_uicommon {
                     }
                 }
                 if(tokens[0].equals("hover_bionic_table_limb")) {
-                    this.currentSelectedLimb = ba_limbmanager.getLimb(tokens[1]);
+                    this.currentSelectedLimb = ba_limbmanager.getLimbFromPerson(this.currentPerson, tokens[1]); //Todo: Issue - normal person and AI having two different limb ID is not ideal, better unify them into the same system.
                     for(ba_officermanager.ba_bionicAugmentedData data: ba_officermanager.getBionicAnatomyList(this.currentPerson)) {
                         if(data.limb.limbId.equals(this.currentSelectedLimb.limbId)) {
 //                            this.previousSelectOverclockLimbId = this.currentSelectedLimb.limbId;

@@ -239,13 +239,13 @@ public class ba_uiplugin extends ba_uicommon {
 
         tooltipContainer.setParaOrbitronLarge();
         if(this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_BIOFORM)) {
-            if(this.currentPerson.isAICore()) {
-                ba_officermanager.ba_aimemorydata aimemorydata = ba_officermanager.getAIMemData(this.currentPerson, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
-                //if AI person have the bioform data
-                if(!aimemorydata.anatomy.isEmpty()) {
-                    this.currentBioformData = aimemorydata.anatomy;
-                }
-            }
+//            if(this.currentPerson.isAICore()) {
+//                ba_officermanager.ba_aimemorydata aimemorydata = ba_officermanager.getAIMemData(this.currentPerson, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
+//                //if AI person have the bioform data
+//                if(!aimemorydata.anatomy.isEmpty()) {
+//                    this.currentBioformData = aimemorydata.anatomy;
+//                }
+//            }
             if(this.currentPerson.isAICore() && !this.currentBioformData.isEmpty()) {
                 LabelAPI header = tooltipContainer.addPara("LIMB PART COUNT: %s / %s", 0f, getCurrentLimbPartCount() < getCurrentLimbLimit() ? Misc.getHighlightColor(): Misc.getNegativeHighlightColor(), "" + this.getCurrentLimbPartCount(), "" + getCurrentLimbLimit());
                 header.getPosition().setSize(cW, cH);
@@ -1941,9 +1941,14 @@ public class ba_uiplugin extends ba_uicommon {
                 }
                 for(Map.Entry<String, String> line: bioformChangeList.entrySet()) {
                     tooltip.addSpacer(pad);
-                    ba_officermanager.ba_bionicAugmentedData bioformData = currentBioformData.stream()
-                            .filter(data -> data.limb.limbId.equals(line.getKey())).toList().get(0);
+                    List<ba_officermanager.ba_bionicAugmentedData> bioformDataList = currentBioformData.stream()
+                            .filter(data -> data.limb.limbId.equals(line.getKey())).toList();
+                    ba_officermanager.ba_bionicAugmentedData bioformData = null;
+                    if(!bioformDataList.isEmpty()) {
+                        bioformData = bioformDataList.get(0);
+                    }
 //                    String str = String.join("",line.getValue().split("\\|  >"));
+                    if(bioformData == null) continue;
                     Color highLightColor = Misc.getTextColor();
                     String highLightText = "";
                     if (line.getValue().split(" ")[0].equals("-")) {
@@ -2375,7 +2380,7 @@ public class ba_uiplugin extends ba_uicommon {
                                     this.bioformRemoveList.clear();
                                     this.bioformAddList.clear();
                                     this.bioformChangeList.clear();
-                                    this.currentBioformData.clear();
+//                                    this.currentBioformData.clear();
                                     this.currentRemovingBionics.clear();
                                     break;
                             }

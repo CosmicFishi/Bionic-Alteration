@@ -669,13 +669,15 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         TooltipMakerAPI infoPersonBionicTooltipContainer = infoPersonBionicContainer.createTooltip(infoPersonBionicTooltipKey, tableW, tableH, isScroll, 0,0);
         creatorComponent.attachSubPanel(creatorComponentTooltip, infoPersonBionicPanelKey, infoPersonBionicContainer, tableX, tableY);
 
-
-        this.currentBioformData = ba_officermanager.getBionicAnatomyList(this.currentPerson);
-        if(this.currentPerson.isAICore()) {
-            ba_officermanager.ba_aimemorydata aimemorydata = ba_officermanager.getAIMemData(this.currentPerson, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
-            //if AI person have the bioform data
-            if(!aimemorydata.anatomy.isEmpty()) {
-                this.currentBioformData = aimemorydata.anatomy;
+        //Disable refreshing bioform data due to bioform menu works on alternative bioform.
+        if(mode.equals("bionic")) {
+            this.currentBioformData = ba_officermanager.getBionicAnatomyList(this.currentPerson);
+            if(this.currentPerson.isAICore()) {
+                ba_officermanager.ba_aimemorydata aimemorydata = ba_officermanager.getAIMemData(this.currentPerson, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
+                //if AI person have the bioform data
+                if(!aimemorydata.anatomy.isEmpty()) {
+                    this.currentBioformData = aimemorydata.anatomy;
+                }
             }
         }
         //if AI person have not set up bioform data
@@ -826,7 +828,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                             if(expanded) {
                                 tooltip.addSectionHeading("Details", Misc.getBrightPlayerColor(), Misc.getDarkPlayerColor().darker() ,Alignment.MID, 0);
                                 tooltip.addSpacer(pad);
-                                ba_bionicmanager.displayBionicItemDescription(tooltip, b);
+                                ba_bionicmanager.displayBionicItemDescription(tooltip, b, augmentData);
                             }
                         } else {
                             tooltip.addPara("No bionic installed", pad, Misc.getGrayColor(), "No bionic installed");
@@ -856,7 +858,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                         }
                         if(this.bioformAddList.contains(augmentData.limb.limbId)) {
                             selectedlimbText = "[ + ]";
-                            selectedHighlightColor = g;
+                            selectedHighlightColor = Misc.getPositiveHighlightColor();
                         }
                     }
 

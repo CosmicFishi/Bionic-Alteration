@@ -414,7 +414,7 @@ public class ba_bionicmanager {
         return new ArrayList<>(bionicItemMap.keySet());
     }
 
-    public static void displayBionicItemDescription(TooltipMakerAPI tooltip, ba_bionicitemplugin bionic) {
+    public static void displayBionicItemDescription(TooltipMakerAPI tooltip, ba_bionicitemplugin bionic, ba_officermanager.ba_bionicAugmentedData augmentedData) {
         final float pad = 10f;
         float opad = 10f;
         Color h = Misc.getHighlightColor();
@@ -474,14 +474,20 @@ public class ba_bionicmanager {
         conflictListLabel.setHighlight("Conflicts:", conflictsList.toString());
         conflictListLabel.setHighlightColors(g.brighter().brighter(), conflictsList.toString().equals("None")? g: Misc.getNegativeHighlightColor());
 
+        //----------overclock
         if(ba_overclockmanager.isBionicOverclockable(bionic)) {
-            //----------overclock
-            ba_overclock overclock = ba_overclockmanager.getOverclockFromItem(bionic);
+            ba_overclock overclock = null;
+            if(augmentedData == null) {
+                overclock = ba_overclockmanager.getOverclockFromItem(bionic);
+            } else {
+                overclock = augmentedData.appliedOverclock;
+            }
             String overclockApplied = overclock != null ? overclock.name : "none active";
             LabelAPI overclockLabel = tooltip.addPara("%s %s", pad, t, "Overclock:", overclockApplied);
             overclockLabel.setHighlight("Overclock:", overclockApplied);
             overclockLabel.setHighlightColors(special, overclock != null ? h: g);
         }
+
         //----------desc
         String desc = bionic.getSpec().getDesc();
         LabelAPI descLabel = tooltip.addPara("%s %s", pad, t, "Description:", desc);
@@ -497,5 +503,8 @@ public class ba_bionicmanager {
             LabelAPI removableLabel = tooltip.addPara("%s", pad, t, "Can not be uninstall AFTER installing");
             removableLabel.setHighlightColors(bad);
         }
+    }
+    public static void displayBionicItemDescription(TooltipMakerAPI tooltip, ba_bionicitemplugin bionic) {
+        displayBionicItemDescription(tooltip, bionic, null);
     }
 }
