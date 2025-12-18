@@ -768,7 +768,9 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 if(ba_limbmanager.isLimbCentralLimb(augmentData.limb) && mode.equals("bioform")) {
                     areaChecker.setClickable(false);
                 }
-                //todo modify this
+                if(bionicSubMode.equals("EDIT") && augmentData.bionicInstalled == null) {
+                    areaChecker.setEnabled(false);
+                }
                 if(mode.equals("bioform")) {
                     if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb) && this.bioformRemoveList.contains(augmentData.limb.limbId)) {
                         areaChecker.highlight();
@@ -838,35 +840,46 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 int nameX = limbX + (!ba_limbmanager.isLimbCentralLimb(augmentData.limb)? lineW: 0);
                 TooltipMakerAPI bionicLimbNameTooltip = bionicDisplayContainer.createTooltip("BIONIC_LIMB_NAME", nameW, nameH, false, 0, 0);
                 bionicLimbNameTooltip.getPosition().inTL(nameX, 0);
-                String limbText = augmentData.limb.name;
+                String selectedlimbText = "";
+                Color selectedHighlightColor = g;
                 if(mode.equals("bioform")) {
-                    if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb) && this.bioformRemoveList.contains(augmentData.limb.limbId)) {
-                        limbText += " (-)";
+                    if(ba_limbmanager.isLimbCentralLimb(augmentData.limb)) {
+                        selectedlimbText = "";
+                    } else {
+                        if(!this.bioformRemoveList.contains(augmentData.limb.limbId) && !this.bioformAddList.contains(augmentData.limb.limbId)) {
+                            selectedlimbText = "[   ]";
+                            selectedHighlightColor = g;
+                        }
+                        if(this.bioformRemoveList.contains(augmentData.limb.limbId)) {
+                            selectedlimbText = "[ - ]";
+                            selectedHighlightColor = bad;
+                        }
+                        if(this.bioformAddList.contains(augmentData.limb.limbId)) {
+                            selectedlimbText = "[ + ]";
+                            selectedHighlightColor = g;
+                        }
                     }
-                    if(!ba_limbmanager.isLimbCentralLimb(augmentData.limb) && this.bioformAddList.contains(augmentData.limb.limbId)) {
-                        limbText += " (+)";
-                    }
+
                 }
-                LabelAPI limbName = bionicLimbNameTooltip.addPara(limbText, pad);
-                limbName.setHighlight(limbText);
-                limbName.setHighlight(augmentData.limb.name);
-                String highlightLimbId = this.currentSelectedBionic != null? this.currentSelectedBionic.bionicLimbGroupId: "";
-                if(highlightLimbId != "") {
-                    if(augmentData.limb.limbGroupList.contains(highlightLimbId)) {
-                        limbName.setHighlightColors(Misc.getPositiveHighlightColor());
+                String limbText = selectedlimbText + augmentData.limb.name;
+                LabelAPI limbName = bionicLimbNameTooltip.addPara("%s  %s", pad, Misc.getGrayColor(), selectedlimbText, augmentData.limb.name);
+                if(mode.equals("bionic")) {
+                    String highlightLimbId = this.currentSelectedBionic != null? this.currentSelectedBionic.bionicLimbGroupId: "";
+                    if(highlightLimbId != "") {
+                        if(augmentData.limb.limbGroupList.contains(highlightLimbId)) {
+                            limbName.setHighlightColors(Misc.getPositiveHighlightColor());
+                        } else {
+                            limbName.setHighlightColors(t);
+                        }
                     } else {
                         limbName.setHighlightColors(t);
                     }
-                } else {
-                    limbName.setHighlightColors(t);
                 }
-                //todo: disable/enable the limb if selected
                 if(mode.equals("bioform")) {
-                    if(this.bioformAddList.contains(augmentData.limb.limbId)) {
-                        limbName.setHighlightColors(Misc.getPositiveHighlightColor());
-                    }
-                    if(this.bioformRemoveList.contains(augmentData.limb.limbId)) {
-                        limbName.setHighlightColors(Misc.getNegativeHighlightColor());
+                    if(ba_limbmanager.isLimbCentralLimb(augmentData.limb)) {
+                        limbName.setHighlightColors(Misc.getTextColor(), Misc.getTextColor());
+                    } else {
+                        limbName.setHighlightColors(selectedHighlightColor, Misc.getTextColor());
                     }
                 }
                 limbName.getPosition().inTL(pad/2,12);
@@ -895,12 +908,12 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                         }
 
                         bionicName = bionicNameTooltip.addPara("%s  %s  %s  %s  %s", pad, Misc.getNegativeHighlightColor(),  highlight?"[ - ]":"[   ]" ,"" + b.getName(), "-", "" + bionicBRM, "" + bionicConsciousness + "%");
-                        bionicName.setHighlightColors(highlight? Misc.getNegativeHighlightColor(): g.darker().darker(), b.displayColor.brighter(), g.darker(), Color.red.darker().darker().darker(), Color.red.darker().darker().darker());
+                        bionicName.setHighlightColors(highlight? Misc.getNegativeHighlightColor(): g.darker().darker(), b.displayColor.brighter(), g.darker(), Color.red.darker().darker(), Color.red.darker().darker());
                         bionicName.getPosition().setSize(bionicNameW,sectionH);
                         bionicName.getPosition().inTL(0,12);
                     } else {
                         bionicName = bionicNameTooltip.addPara("%s  %s  %s  %s", pad, Misc.getNegativeHighlightColor(),  "" + b.getName(), "-", "" + bionicBRM, "" + bionicConsciousness + "%");
-                        bionicName.setHighlightColors(b.displayColor.brighter(), g.darker(), Color.red.darker().darker().darker(), Color.red.darker().darker().darker());
+                        bionicName.setHighlightColors(b.displayColor.brighter(), g.darker(), Color.red.darker().darker(), Color.red.darker().darker());
                         bionicName.getPosition().setSize(bionicNameW,sectionH);
                         bionicName.getPosition().inTL(0,12);
                     }
