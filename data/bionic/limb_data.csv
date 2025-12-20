@@ -1,6 +1,6 @@
 limbId,groupId,name,description,tags,order
 heart,heart_group,Heart,Blood pumping machine,base_dynamic_limb,1100
-heart_2,heart_group,piggy-back Heart,"Wow, 2nd heart",,1101
+heart_2,heart_group,Heart (P),Piggy-back heart,,1101
 hands,"hand_group,leg_hand_group",Hands,Pair of fists,base_dynamic_limb,2100
 ,,,,,
 eyes,eye_group,Eyes,The things that let you see,base_dynamic_limb,1200

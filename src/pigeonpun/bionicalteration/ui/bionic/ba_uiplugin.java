@@ -220,8 +220,8 @@ public class ba_uiplugin extends ba_uicommon {
         float wMidW = cW * 0.6955f;
         float wRightW = cW - wMidW;
         displayWorkshopMidTop(container, containerTooltipKey, wMidW, wMidTopH, 0, 0);
-        displayWorkshopMidCenter(container, containerTooltipKey, wMidW, wMidCenterH, 0, wMidTopH);
-        displayWorkshopMidBottom(container, containerTooltipKey, wMidW, wMidBottomH, 0, wMidTopH+wMidCenterH);
+        displayWorkshopMidCenter(container, containerTooltipKey, wMidW - pad/2, wMidCenterH, pad, wMidTopH);
+        displayWorkshopMidBottom(container, containerTooltipKey, wMidW, wMidBottomH, pad, wMidTopH+wMidCenterH);
         displayWorkshopRight(container, containerTooltipKey, wRightW, cH, wMidW, 0);
     }
     protected void displayWorkshopMidTop(ba_component creatorComponent, String creatorComponentTooltip, float cW, float cH, float cX, float cY) {
@@ -333,106 +333,107 @@ public class ba_uiplugin extends ba_uicommon {
         personUpgradeTooltip.setParaOrbitronLarge();
         LabelAPI modeText = personUpgradeTooltip.addPara("" + (this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_NONE)?"Bionic Workshop":"Bioform Workshop"),0f);
         modeText.getPosition().setLocation((cX + upgradeBtnW/2), cY + upgradeBtnH/2);
-        modeText.getPosition().setSize(upgradeBtnW + pad *2, upgradeBtnH);
+        modeText.getPosition().setSize(upgradeBtnW, upgradeBtnH);
         modeText.setAlignment(Alignment.MID);
         personUpgradeTooltip.setParaFontDefault();
+        //Button switch page bioform
+        float bioformBtnH = upgradeBtnH;
+        float bioformBtnW = upgradeBtnW;
+        int bioformX = (int) (upgradeX);
+        int bioformY = (int) (cY + cH * 0.5f);
+        TooltipMakerAPI personbioformTooltip = container.createTooltip("PERSON_INFO_BTN", cW, cH * 0.5f, false, 0, 0);
+        personbioformTooltip.getPosition().setLocation(0, 0);
+        personbioformTooltip.getPosition().inTL(bioformX, bioformY);
+        personbioformTooltip.setParaFontVictor14();
+        String btnText = this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_BIOFORM)? "Switch to bionic": "Switch to bioform";
+        ButtonAPI bioformButton = personbioformTooltip.addButton(btnText, null, Misc.getTextColor(), this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_BIOFORM)?Misc.getPositiveHighlightColor().darker().darker().darker():ba_variablemanager.BA_OVERFORM_COLOR.darker(), Alignment.MID, CutStyle.NONE, bioformBtnW, bioformBtnH, 0);
+        addButtonToList(bioformButton, "tab:" + WORKSHOP + ":" + (this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_BIOFORM)?SUB_WORKSHOP_MODE_NONE: SUB_WORKSHOP_MODE_BIOFORM));
+        if (!this.currentPerson.isAICore()) {
+            bioformButton.setEnabled(false);
+            if (checkIfCanOpenBioformWorkshop()) {
+                personbioformTooltip.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
+                    @Override
+                    public boolean isTooltipExpandable(Object tooltipParam) {
+                        return false;
+                    }
+
+                    @Override
+                    public float getTooltipWidth(Object tooltipParam) {
+                        return 400;
+                    }
+
+                    @Override
+                    public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                        tooltip.setParaFontOrbitron();
+                        tooltip.addPara("ERR///", 0);
+                        tooltip.addPara("ERR///", 0);
+                        tooltip.addPara("...", 0);
+                        tooltip.addPara("Access denied. This procedure is %s to AI constructs", 0, Misc.getNegativeHighlightColor(), "restricted");
+                        tooltip.addPara("...", 0);
+                    }
+                }, bioformButton, TooltipMakerAPI.TooltipLocation.LEFT);
+            }
+        }
+        personbioformTooltip.setParaFontDefault();
+        bioformButton.setShortcut(Keyboard.KEY_S, false);
+        if (!checkIfCanOpenBioformWorkshop() && this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_NONE)) {
+            bioformButton.setEnabled(false);
+            personbioformTooltip.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
+                @Override
+                public boolean isTooltipExpandable(Object tooltipParam) {
+                    return false;
+                }
+
+                @Override
+                public float getTooltipWidth(Object tooltipParam) {
+                    return 400;
+                }
+
+                @Override
+                public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                    tooltip.setParaFontOrbitron();
+                    tooltip.addPara("ERR///", 0);
+                    tooltip.addPara("ERR///", 0);
+                    tooltip.addPara("...", 0);
+                    tooltip.addPara("%s NOT FOUND", 0, ba_variablemanager.BA_OVERFORM_COLOR, "BIOFORM TERMINAL");
+                    tooltip.addPara("...", 0);
+                    tooltip.addPara("Visit nearby bionic stations for more information.", 0);
+                }
+            }, bioformButton, TooltipMakerAPI.TooltipLocation.LEFT);
+        }
+        List<ba_officermanager.ba_bionicAugmentedData> tempBioformData = new ArrayList<>();
+        if(this.currentPerson.isAICore()) {
+            ba_officermanager.ba_aimemorydata aimemorydata = ba_officermanager.getAIMemData(this.currentPerson, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
+            //if AI person have the bioform data
+            if(!aimemorydata.anatomy.isEmpty()) {
+                tempBioformData = aimemorydata.anatomy;
+            }
+        }
+        if((tempBioformData == null || tempBioformData.isEmpty()) && currentPerson.isAICore()) {
+            bioformButton.setEnabled(false);
+            personbioformTooltip.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
+                @Override
+                public boolean isTooltipExpandable(Object tooltipParam) {
+                    return false;
+                }
+
+                @Override
+                public float getTooltipWidth(Object tooltipParam) {
+                    return 400;
+                }
+
+                @Override
+                public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                    tooltip.setParaFontOrbitron();
+                    tooltip.addPara("ERR///", 0);
+                    tooltip.addPara("...", 0);
+                    tooltip.addPara("SYNTHETIC BIOFORM NOT FOUND ", 0);
+                    tooltip.addPara("...", 0);
+                }
+            }, bioformButton, TooltipMakerAPI.TooltipLocation.LEFT);
+        }
         if (!isDisplayingOtherFleets) {
-            //Button switch page bioform
-            float bioformBtnH = upgradeBtnH;
-            float bioformBtnW = upgradeBtnW;
-            int bioformX = (int) (upgradeX);
-            int bioformY = (int) (cY + cH * 0.5f);
-            TooltipMakerAPI personbioformTooltip = container.createTooltip("PERSON_INFO_BTN", cW, cH * 0.5f, false, 0, 0);
-            personbioformTooltip.getPosition().setLocation(0, 0);
-            personbioformTooltip.getPosition().inTL(bioformX, bioformY);
-            personbioformTooltip.setParaFontVictor14();
-            String btnText = this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_BIOFORM)? "Switch to bionic": "Switch to bioform";
-            ButtonAPI bioformButton = personbioformTooltip.addButton(btnText, null, Misc.getTextColor(), this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_BIOFORM)?Misc.getPositiveHighlightColor().darker().darker().darker():ba_variablemanager.BA_OVERFORM_COLOR.darker(), Alignment.MID, CutStyle.NONE, bioformBtnW, bioformBtnH, 0);
-            addButtonToList(bioformButton, "tab:" + WORKSHOP + ":" + (this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_BIOFORM)?SUB_WORKSHOP_MODE_NONE: SUB_WORKSHOP_MODE_BIOFORM));
-            if (!this.currentPerson.isAICore()) {
-                bioformButton.setEnabled(false);
-                if (checkIfCanOpenBioformWorkshop()) {
-                    personbioformTooltip.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
-                        @Override
-                        public boolean isTooltipExpandable(Object tooltipParam) {
-                            return false;
-                        }
-
-                        @Override
-                        public float getTooltipWidth(Object tooltipParam) {
-                            return 400;
-                        }
-
-                        @Override
-                        public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
-                            tooltip.setParaFontOrbitron();
-                            tooltip.addPara("ERR///", 0);
-                            tooltip.addPara("ERR///", 0);
-                            tooltip.addPara("...", 0);
-                            tooltip.addPara("Access denied. This procedure is %s to AI constructs", 0, Misc.getNegativeHighlightColor(), "restricted");
-                            tooltip.addPara("...", 0);
-                        }
-                    }, bioformButton, TooltipMakerAPI.TooltipLocation.LEFT);
-                }
-            }
-            personbioformTooltip.setParaFontDefault();
-            bioformButton.setShortcut(Keyboard.KEY_S, false);
-            if (!checkIfCanOpenBioformWorkshop() && this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_NONE)) {
-                bioformButton.setEnabled(false);
-                personbioformTooltip.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
-                    @Override
-                    public boolean isTooltipExpandable(Object tooltipParam) {
-                        return false;
-                    }
-
-                    @Override
-                    public float getTooltipWidth(Object tooltipParam) {
-                        return 400;
-                    }
-
-                    @Override
-                    public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
-                        tooltip.setParaFontOrbitron();
-                        tooltip.addPara("ERR///", 0);
-                        tooltip.addPara("ERR///", 0);
-                        tooltip.addPara("...", 0);
-                        tooltip.addPara("%s NOT FOUND", 0, ba_variablemanager.BA_OVERFORM_COLOR, "BIOFORM TERMINAL");
-                        tooltip.addPara("...", 0);
-                        tooltip.addPara("Visit nearby bionic stations for more information.", 0);
-                    }
-                }, bioformButton, TooltipMakerAPI.TooltipLocation.LEFT);
-            }
-            List<ba_officermanager.ba_bionicAugmentedData> currentBioformData = new ArrayList<>();
-            if(this.currentPerson.isAICore()) {
-                ba_officermanager.ba_aimemorydata aimemorydata = ba_officermanager.getAIMemData(this.currentPerson, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
-                //if AI person have the bioform data
-                if(!aimemorydata.anatomy.isEmpty()) {
-                    currentBioformData = aimemorydata.anatomy;
-                }
-            }
-            if((currentBioformData == null || currentBioformData.isEmpty()) && currentPerson.isAICore()) {
-                bioformButton.setEnabled(false);
-                personbioformTooltip.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
-                    @Override
-                    public boolean isTooltipExpandable(Object tooltipParam) {
-                        return false;
-                    }
-
-                    @Override
-                    public float getTooltipWidth(Object tooltipParam) {
-                        return 400;
-                    }
-
-                    @Override
-                    public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
-                        tooltip.setParaFontOrbitron();
-                        tooltip.addPara("ERR///", 0);
-                        tooltip.addPara("...", 0);
-                        tooltip.addPara("SYNTHETIC BIOFORM NOT FOUND ", 0);
-                        tooltip.addPara("...", 0);
-                    }
-                }, bioformButton, TooltipMakerAPI.TooltipLocation.LEFT);
-            }
+            bioformButton.setEnabled(false);
         }
 
         //--------Stats
@@ -2670,27 +2671,27 @@ public class ba_uiplugin extends ba_uicommon {
                         String s = buttonMap.get(button);
                         String[] tokens = s.split(":");
 //                        log.info("hover " + s);
-                        if(currentTabId.equals(WORKSHOP)) {
-//                            ba_component component = componentMap.get("OVERVIEW_PERSON_LIST_PANEL");
-//                            if(component != null && component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP") != null) {
-//                                if(tokens[0].equals("hover_person") && debounceplugin.isDebounceOver("OVERVIEW_PERSON_LIST_TOOLTIP", 0, component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller().getYOffset())) {
-//                                    if(!this.currentPerson.getId().equals(tokens[1])) {
-//                                        for(PersonAPI person: ba_officermanager.listPersons) {
-//                                            if(tokens[1].equals(person.getId())) {
-//                                                this.currentPerson = person;
-//                                                this.currentBioformData.clear();
-//                                                if(!this.currentPerson.isAICore()) {
-//                                                    this.currentWorkShopSubMode = this.SUB_WORKSHOP_MODE_NONE;
-//                                                }
-//                                                this.currentSelectedLimb = null;
-//                                                this.currentSelectedBionic = null;
-//                                                this.currentRemovingBionics.clear();
-//                                                shouldRefresh = true;
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//                            }
+                        if(currentTabId.equals(WORKSHOP) && isDisplayingOtherFleets) {
+                            ba_component component = componentMap.get("OVERVIEW_PERSON_LIST_PANEL");
+                            if(component != null && component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP") != null) {
+                                if(tokens[0].equals("hover_person") && debounceplugin.isDebounceOver("OVERVIEW_PERSON_LIST_TOOLTIP", 0, component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller().getYOffset())) {
+                                    if(!this.currentPerson.getId().equals(tokens[1])) {
+                                        for(PersonAPI person: ba_officermanager.listPersons) {
+                                            if(tokens[1].equals(person.getId())) {
+                                                this.currentPerson = person;
+                                                this.currentBioformData.clear();
+                                                if(!this.currentPerson.isAICore()) {
+                                                    this.currentWorkShopSubMode = this.SUB_WORKSHOP_MODE_NONE;
+                                                }
+                                                this.currentSelectedLimb = null;
+                                                this.currentSelectedBionic = null;
+                                                this.currentRemovingBionics.clear();
+                                                shouldRefresh = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
 //                        if(currentTabId.equals(WORKSHOP)) {
 //                            ba_component component = componentMap.get("INVENTORY_PANEL");
