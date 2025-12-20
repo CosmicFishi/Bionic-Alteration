@@ -2671,26 +2671,26 @@ public class ba_uiplugin extends ba_uicommon {
                         String[] tokens = s.split(":");
 //                        log.info("hover " + s);
                         if(currentTabId.equals(WORKSHOP)) {
-                            ba_component component = componentMap.get("OVERVIEW_PERSON_LIST_PANEL");
-                            if(component != null && component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP") != null) {
-                                if(tokens[0].equals("hover_person") && debounceplugin.isDebounceOver("OVERVIEW_PERSON_LIST_TOOLTIP", 0, component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller().getYOffset())) {
-                                    if(!this.currentPerson.getId().equals(tokens[1])) {
-                                        for(PersonAPI person: ba_officermanager.listPersons) {
-                                            if(tokens[1].equals(person.getId())) {
-                                                this.currentPerson = person;
-                                                this.currentBioformData.clear();
-                                                if(!this.currentPerson.isAICore()) {
-                                                    this.currentWorkShopSubMode = this.SUB_WORKSHOP_MODE_NONE;
-                                                }
-                                                this.currentSelectedLimb = null;
-                                                this.currentSelectedBionic = null;
-                                                this.currentRemovingBionics.clear();
-                                                shouldRefresh = true;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+//                            ba_component component = componentMap.get("OVERVIEW_PERSON_LIST_PANEL");
+//                            if(component != null && component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP") != null) {
+//                                if(tokens[0].equals("hover_person") && debounceplugin.isDebounceOver("OVERVIEW_PERSON_LIST_TOOLTIP", 0, component.tooltipMap.get("OVERVIEW_PERSON_LIST_TOOLTIP").getExternalScroller().getYOffset())) {
+//                                    if(!this.currentPerson.getId().equals(tokens[1])) {
+//                                        for(PersonAPI person: ba_officermanager.listPersons) {
+//                                            if(tokens[1].equals(person.getId())) {
+//                                                this.currentPerson = person;
+//                                                this.currentBioformData.clear();
+//                                                if(!this.currentPerson.isAICore()) {
+//                                                    this.currentWorkShopSubMode = this.SUB_WORKSHOP_MODE_NONE;
+//                                                }
+//                                                this.currentSelectedLimb = null;
+//                                                this.currentSelectedBionic = null;
+//                                                this.currentRemovingBionics.clear();
+//                                                shouldRefresh = true;
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
                         }
 //                        if(currentTabId.equals(WORKSHOP)) {
 //                            ba_component component = componentMap.get("INVENTORY_PANEL");

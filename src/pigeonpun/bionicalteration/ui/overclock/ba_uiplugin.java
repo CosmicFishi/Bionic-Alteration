@@ -41,7 +41,6 @@ public class ba_uiplugin extends ba_uicommon {
     public static final float MAIN_CONTAINER_HEIGHT = ba_uicommon.getInitDialogContainerHeight();
     public static final String PERSON_LIST = "person_list", INVENTORY = "inventory";
     public String currentSelectOverclockLocation = PERSON_LIST;
-    public ba_bionicitemplugin currentSelectOverclockBionic = null;
     public String currentSelectedOverclock = null;
     int dW, dH, pW, pH;
     protected HashMap<String, ba_component> tabMap = new HashMap<>();
@@ -397,10 +396,10 @@ public class ba_uiplugin extends ba_uicommon {
 //        UIComponentAPI borderRight = inventoryRightTooltipContainer.createRect(Color.CYAN, 1);
 //        borderRight.getPosition().setSize(rightW, rightH);
 //        inventoryRightContainer.mainPanel.addComponent(borderRight).setLocation(0,0).inTL(0, 0);
-            displayBionicTable(inventoryRightContainer, inventoryRightTooltipKey, true, true, rightW, rightH, 0, 0);
+            displayBionicTable(inventoryRightContainer, inventoryRightTooltipKey, true, true, rightW+pad/2, rightH+pad, 0, 0);
         }
         if(currentSelectOverclockLocation.equals(INVENTORY)) {
-            displayInventoryWorkshop(creatorComponent, creatorComponentTooltip, cW, cH, cX, cY);
+            displayInventoryWorkshop(creatorComponent, creatorComponentTooltip, cW+(pad*1.5f), cH+pad*2, cX-pad, cY-pad);
         }
     }
     public void displaySelectedPersonInfo(ba_component creatorComponent, String creatorComponentTooltip, float cW, float cH, float cX, float cY) {
@@ -434,7 +433,7 @@ public class ba_uiplugin extends ba_uicommon {
         float inforRightW = cW - infoLeftW;
 
         //--------image
-        float imageX = (int) (0);
+        float imageX = (int) (pad);
         float imageY = (int) (selectH + pad);
         float imageW = (int) infoLeftW;
         float imageH = imageW;
@@ -470,7 +469,7 @@ public class ba_uiplugin extends ba_uicommon {
         //---------Name
         int nameH = 30;
         int nameW = (int) inforRightW;
-        int nameX = (int) (imageW + pad + pad);
+        int nameX = (int) (imageW + pad + pad + imageX);
         int nameY = (int) (selectH + pad);
         LabelAPI name = infoPersonTooltipContainer.addPara(this.currentPerson.getName().getFullName() + (this.currentPerson.isPlayer() ? " (" + "You" + ")": ""), pad);
         name.getPosition().inTL(nameX, nameY);
@@ -480,7 +479,7 @@ public class ba_uiplugin extends ba_uicommon {
         //BRM (Bionic Rights Management)
         int brmH = 30;
         int brmW = (int) inforRightW;
-        int brmX = (int) (imageW + pad + pad);
+        int brmX = (int) (imageW + pad + pad + imageX);
         int brmY = (int) (nameY + nameH);
         int currentBRM = ba_officermanager.getCurrentBRM(this.currentPerson);
         int limitBRM = ba_officermanager.getLimitBRM(this.currentPerson);
@@ -497,11 +496,11 @@ public class ba_uiplugin extends ba_uicommon {
         //>Consciousness
         float consciousness = ba_consciousmanager.getConsciousStat(this.currentPerson);
         int consciousnessY = (int) (brmY + brmH);
-        int consciousnessX = (int) (imageW + pad + pad);
+        int consciousnessX = (int) (imageW + pad + pad + imageX);
         int consciousnessH = 30;
         int consciousnessW = (int) inforRightW;
         int conditionY = (int) (consciousnessH + consciousnessY);
-        int conditionX = (int) (imageW + pad + pad);
+        int conditionX = (int) (imageW + pad + pad + imageX);
         int professionY = (int) (consciousnessH + conditionY);
         int professionX = (int) (conditionX);
         String condition = ba_consciousmanager.getConsciousnessLevel(consciousness).getDisplayName() == null? "----": ba_consciousmanager.getConsciousnessLevel(consciousness).getDisplayName();
@@ -563,9 +562,9 @@ public class ba_uiplugin extends ba_uicommon {
         //border
         float borderX = (int) (pad);
         float borderY = (int) (pad);
-        float borderW = (int) cW - pad - pad/2;
+        float borderW = (int) cW - pad - pad;
         float borderH = cH - pad - pad;
-        UIComponentAPI borderRight = infoOverclockingTooltipContainer.createRect(Misc.getDarkPlayerColor(), 1);
+        UIComponentAPI borderRight = infoOverclockingTooltipContainer.createRect(Misc.getDarkPlayerColor().darker().darker(), 1);
         borderRight.getPosition().setSize(borderW, borderH);
         infoOverclockingContainer.mainPanel.addComponent(borderRight).setLocation(0,0).inTL(borderX, borderY);
         float halfLeft = borderW * 30 / 100;
@@ -579,6 +578,25 @@ public class ba_uiplugin extends ba_uicommon {
         TooltipMakerAPI personImageTooltip = infoOverclockingContainer.createTooltip("OVERCLOCK_ITEM_IMAGE", imageW, imageH, false, 0, 0);
         personImageTooltip.getPosition().inTL(imageX, imageY);
         personImageTooltip.addImage(spriteName, imageW, imageH, 0);
+        personImageTooltip.addTooltipToPrevious(new TooltipMakerAPI.TooltipCreator() {
+
+            @Override
+            public boolean isTooltipExpandable(Object tooltipParam) {
+                return false;
+            }
+
+            @Override
+            public float getTooltipWidth(Object tooltipParam) {
+                return 400f;
+            }
+
+            @Override
+            public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                tooltip.addTitle("Evoshards");
+                tooltip.addPara("Essential material for overclocking bionics." ,pad);
+                tooltip.addPara("Obtain by ripping bionics or AI cores.", Misc.getGrayColor() ,pad);
+            }
+        }, TooltipMakerAPI.TooltipLocation.BELOW);
         //--------Grid
         float gridX = (int) (borderX + halfLeft);
         float gridY = (int) (borderY + pad);

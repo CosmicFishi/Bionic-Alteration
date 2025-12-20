@@ -43,6 +43,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
     protected float currentScrollPositionBioformList = 0;
     public ba_bionicitemplugin currentRemovingBionic; //selected for removing
     public List<ba_officermanager.ba_bionicAugmentedData> currentRemovingBionics = new ArrayList<>();
+    public ba_bionicitemplugin currentSelectOverclockBionic = null; //overclock UI usage
     public static ba_debounceplugin debounceplugin = new ba_debounceplugin();
     public List<CargoStackAPI> cargoBionic = new ArrayList<>();
     public static boolean isDisplayingOtherFleets = false;
@@ -183,6 +184,12 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                         areaChecker.getPosition().setLocation(0,0).inTL(itemX, itemY);
                         if(currentSelectedBionic != null) {
                             if(currentSelectedBionic.equals(bionic)) {
+                                areaChecker.setHighlightBrightness(0.6f);
+                                areaChecker.highlight();
+                            }
+                        }
+                        if(currentSelectOverclockBionic != null) {
+                            if(currentSelectOverclockBionic.equals(bionic)) {
                                 areaChecker.setHighlightBrightness(0.6f);
                                 areaChecker.highlight();
                             }
