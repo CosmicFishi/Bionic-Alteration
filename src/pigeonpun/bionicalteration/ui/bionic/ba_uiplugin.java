@@ -92,6 +92,7 @@ public class ba_uiplugin extends ba_uicommon {
         if(personList != null) {
             isDisplayingOtherFleets = true;
             this.currentFleets = ba_officermanager.getCurrentInteractingFleets(dialog, false);
+            this.currentWorkshopEffectOrInvTab = WORKSHOP_EFFECT;
         } else {
             isDisplayingOtherFleets = false;
             this.currentFleets = ba_officermanager.getCurrentInteractingFleets(null, true);
@@ -238,7 +239,12 @@ public class ba_uiplugin extends ba_uicommon {
         creatorComponent.attachSubPanel(creatorComponentTooltip, containerPanelKey,container,0,0);
 
         tooltipContainer.setParaOrbitronLarge();
-        if(this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_BIOFORM)) {
+        if(isDisplayingOtherFleets) {
+            LabelAPI header = tooltipContainer.addPara("Mode: %s", 0f, Misc.getBrightPlayerColor(),"Preview");
+            header.getPosition().setSize(cW, cH);
+            header.setAlignment(Alignment.MID);
+        } else {
+            if(this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_BIOFORM)) {
 //            if(this.currentPerson.isAICore()) {
 //                ba_officermanager.ba_aimemorydata aimemorydata = ba_officermanager.getAIMemData(this.currentPerson, Global.getSector().getCampaignUI().getCurrentInteractionDialog());
 //                //if AI person have the bioform data
@@ -246,42 +252,43 @@ public class ba_uiplugin extends ba_uicommon {
 //                    this.currentBioformData = aimemorydata.anatomy;
 //                }
 //            }
-            if(this.currentPerson.isAICore() && !this.currentBioformData.isEmpty()) {
-                LabelAPI header = tooltipContainer.addPara("LIMB PART COUNT: %s / %s", 0f, getCurrentLimbPartCount() < getCurrentLimbLimit() ? Misc.getHighlightColor(): Misc.getNegativeHighlightColor(), "" + this.getCurrentLimbPartCount(), "" + getCurrentLimbLimit());
+                if(this.currentPerson.isAICore() && !this.currentBioformData.isEmpty()) {
+                    LabelAPI header = tooltipContainer.addPara("LIMB PART COUNT: %s / %s", 0f, getCurrentLimbPartCount() < getCurrentLimbLimit() ? Misc.getHighlightColor(): Misc.getNegativeHighlightColor(), "" + this.getCurrentLimbPartCount(), "" + getCurrentLimbLimit());
+                    header.getPosition().setSize(cW, cH);
+                    header.setAlignment(Alignment.MID);
+                }
+            }
+            if(this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_NONE)) {
+                LabelAPI header = tooltipContainer.addPara("Mode: %s", 0f, (this.currentWorkShopMode.equals(EDIT_WORKSHOP)? bad: Misc.getBrightPlayerColor()), (this.currentWorkShopMode.equals(EDIT_WORKSHOP)? "Removal": "Installation"));
                 header.getPosition().setSize(cW, cH);
                 header.setAlignment(Alignment.MID);
+
+                //hover condition
+                float btnSize = cH*0.6f;
+                ButtonAPI changeModeareaChecker = tooltipContainer.addAreaCheckbox("< >", null, Misc.getBasePlayerColor(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), btnSize, btnSize, 0);
+                addButtonToList(changeModeareaChecker, "bionic:" + EDIT_WORKSHOP);
+                changeModeareaChecker.setShortcut(Keyboard.KEY_M, true);
+                float textWidth = tooltipContainer.computeStringWidth("Mode: Installation");
+                changeModeareaChecker.getPosition().setLocation(0, 0).inTL(cW/2 + textWidth/2 + pad*2, cH/2 - btnSize/2);
+                tooltipContainer.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
+                    @Override
+                    public boolean isTooltipExpandable(Object tooltipParam) {
+                        return false;
+                    }
+
+                    @Override
+                    public float getTooltipWidth(Object tooltipParam) {
+                        return 400;
+                    }
+
+                    @Override
+                    public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                        tooltip.setParaFontOrbitron();
+                        tooltip.addPara("Change Bionic Workshop mode.", pad);
+                        tooltip.addPara("Shortcut: %s", pad, Misc.getHighlightColor(),"M").setOpacity(0.6f);
+                    }
+                }, changeModeareaChecker, TooltipMakerAPI.TooltipLocation.BELOW);
             }
-        }
-        if(this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_NONE)) {
-            LabelAPI header = tooltipContainer.addPara("Mode: %s", 0f, (this.currentWorkShopMode.equals(EDIT_WORKSHOP)? bad: Misc.getBrightPlayerColor()), (this.currentWorkShopMode.equals(EDIT_WORKSHOP)? "Removal": "Installation"));
-            header.getPosition().setSize(cW, cH);
-            header.setAlignment(Alignment.MID);
-
-            //hover condition
-            float btnSize = cH*0.6f;
-            ButtonAPI changeModeareaChecker = tooltipContainer.addAreaCheckbox("< >", null, Misc.getBasePlayerColor(), Misc.getDarkPlayerColor(), Misc.getBrightPlayerColor(), btnSize, btnSize, 0);
-            addButtonToList(changeModeareaChecker, "bionic:" + EDIT_WORKSHOP);
-            changeModeareaChecker.setShortcut(Keyboard.KEY_M, true);
-            float textWidth = tooltipContainer.computeStringWidth("Mode: Installation");
-            changeModeareaChecker.getPosition().setLocation(0, 0).inTL(cW/2 + textWidth/2 + pad*2, cH/2 - btnSize/2);
-            tooltipContainer.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
-                @Override
-                public boolean isTooltipExpandable(Object tooltipParam) {
-                    return false;
-                }
-
-                @Override
-                public float getTooltipWidth(Object tooltipParam) {
-                    return 400;
-                }
-
-                @Override
-                public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
-                    tooltip.setParaFontOrbitron();
-                    tooltip.addPara("Change Bionic Workshop mode.", pad);
-                    tooltip.addPara("Shortcut: %s", pad, Misc.getHighlightColor(),"M").setOpacity(0.6f);
-                }
-            }, changeModeareaChecker, TooltipMakerAPI.TooltipLocation.BELOW);
         }
         tooltipContainer.setParaFontDefault();
     }
@@ -316,21 +323,20 @@ public class ba_uiplugin extends ba_uicommon {
         creatorComponent.attachSubPanel(creatorComponentTooltip, containerPanelKey, container, 0, 0);
 
         float upgradeBtnW = 0;
+        upgradeBtnW = cW * 0.26f;
+        float upgradeBtnH = cH * 0.5f - pad;
+        int upgradeX = (int) cX;
+        int upgradeY = (int) cY;
+        TooltipMakerAPI personUpgradeTooltip = container.createTooltip("PERSON_INFO_UPGRADE", cW, cH * 0.5f, false, 0, 0);
+        personUpgradeTooltip.getPosition().setLocation(0, 0);
+        personUpgradeTooltip.getPosition().inTL(upgradeX, upgradeY);
+        personUpgradeTooltip.setParaOrbitronLarge();
+        LabelAPI modeText = personUpgradeTooltip.addPara("" + (this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_NONE)?"Bionic Workshop":"Bioform Workshop"),0f);
+        modeText.getPosition().setLocation((cX + upgradeBtnW/2), cY + upgradeBtnH/2);
+        modeText.getPosition().setSize(upgradeBtnW + pad *2, upgradeBtnH);
+        modeText.setAlignment(Alignment.MID);
+        personUpgradeTooltip.setParaFontDefault();
         if (!isDisplayingOtherFleets) {
-            //Button switch page
-            float upgradeBtnH = cH * 0.5f - pad;
-            upgradeBtnW = cW * 0.26f;
-            int upgradeX = (int) cX;
-            int upgradeY = (int) cY;
-            TooltipMakerAPI personUpgradeTooltip = container.createTooltip("PERSON_INFO_UPGRADE", cW, cH * 0.5f, false, 0, 0);
-            personUpgradeTooltip.getPosition().setLocation(0, 0);
-            personUpgradeTooltip.getPosition().inTL(upgradeX, upgradeY);
-            personUpgradeTooltip.setParaOrbitronLarge();
-            LabelAPI modeText = personUpgradeTooltip.addPara("" + (this.currentWorkShopSubMode.equals(SUB_WORKSHOP_MODE_NONE)?"Bionic Workshop":"Bioform Workshop"),0f);
-            modeText.getPosition().setLocation(cX + upgradeBtnW/2, cY + upgradeBtnH/2);
-            modeText.getPosition().setSize(upgradeBtnW, upgradeBtnH);
-            modeText.setAlignment(Alignment.MID);
-            personUpgradeTooltip.setParaFontDefault();
             //Button switch page bioform
             float bioformBtnH = upgradeBtnH;
             float bioformBtnW = upgradeBtnW;
@@ -462,29 +468,66 @@ public class ba_uiplugin extends ba_uicommon {
         personStatsTooltip.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
             @Override
             public boolean isTooltipExpandable(Object tooltipParam) {
-                return false;
+                return true;
             }
 
             @Override
             public float getTooltipWidth(Object tooltipParam) {
-                return 300;
+                return 500;
             }
 
             @Override
             public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
-                tooltip.addSectionHeading("Bionic Right Management Limit", Alignment.MID, 0);
-                if (!currentPerson.isAICore()) {
-                    tooltip.addPara(ba_stringhelper.getString("BRM", "BRM_explain"), 10f);
-                    tooltip.addPara(ba_stringhelper.getString("BRM", "BRM_galatia"), 10f);
+                tooltip.addSectionHeading("Bionic Right Management", Alignment.MID, 0);
+                tooltip.addPara("Limit: %s", pad, Misc.getBrightPlayerColor(), ""+limitBRM).setAlignment(Alignment.MID);
+                tooltip.addPara("Usage: %s", pad, Misc.getHighlightColor(), ""+currentBRM).setAlignment(Alignment.MID);
+                tooltip.addPara("Available: %s", pad, (limitBRM - currentBRM)>0?Misc.getPositiveHighlightColor():Misc.getNegativeHighlightColor(), ""+(limitBRM - currentBRM)).setAlignment(Alignment.MID);
+                List<ba_officermanager.ba_bionicAugmentedData> tempBioformData = new ArrayList<>();
+                for(ba_officermanager.ba_bionicAugmentedData data: currentBioformData) {
+                    if(data.bionicInstalled != null) {
+                        tempBioformData.add(data);
+                    }
+                }
+                tooltip.addSpacer(pad);
+                tempBioformData.sort((o1, o2) -> o1.bionicInstalled.brmCost < o2.bionicInstalled.brmCost ? 1 : 0);
+                tooltip.beginGrid(getTooltipWidth(null)/4 - 10, 4);
+                tooltip.setGridRowHeight(25);
+                tooltip.setGridLabelColor(Misc.getBrightPlayerColor().darker());
+                tooltip.addToGrid(0, 0, "Name", "", Misc.getBrightPlayerColor().darker());
+                tooltip.addToGrid(2, 0, "", "Limb", Misc.getBrightPlayerColor().darker());
+                tooltip.addToGrid(3, 0, "", "Cost", Misc.getBrightPlayerColor().darker());
+                tooltip.setGridRowHeight(15);
+                if(tempBioformData.isEmpty()) {
+                    tooltip.setGridLabelColor(Misc.getGrayColor());
+                    tooltip.addToGrid(0, 1, "Empty", "", Misc.getGrayColor());
+                    tooltip.addToGrid(2, 1, "", "Empty", Misc.getGrayColor());
+                    tooltip.addToGrid(3, 1, "", "Empty", Misc.getGrayColor());
                 } else {
-                    tooltip.addPara(ba_stringhelper.getString("BRM", "BRM_explain_ai"), 10f);
-                    tooltip.addPara("...", 10f);
-                    tooltip.addPara("...", 10f);
-                    tooltip.addPara("...", 10f);
-                    tooltip.addPara("Override Completed...", 10f);
+                    int i = 1;
+                    for(ba_officermanager.ba_bionicAugmentedData data: tempBioformData) {
+                        tooltip.setGridLabelColor(data.bionicInstalled.displayColor);
+                        tooltip.addToGrid(0, i, "" + data.bionicInstalled.getName(), "", t);
+                        tooltip.setGridLabelColor(data.bionicInstalled.displayColor);
+                        tooltip.addToGrid(2, i, "", "" + data.limb.name, Misc.getGrayColor());
+                        tooltip.addToGrid(3, i, "", "" + ( (int) data.bionicInstalled.brmCost), Misc.getNegativeHighlightColor());
+                        i++;
+                    }
+                }
+                tooltip.addGrid(pad);
+                if(expanded) {
+                    if (!currentPerson.isAICore()) {
+                        tooltip.addPara(ba_stringhelper.getString("BRM", "BRM_explain"), Misc.getGrayColor(), 10f);
+                        tooltip.addPara(ba_stringhelper.getString("BRM", "BRM_galatia"), Misc.getGrayColor(), 10f);
+                    } else {
+                        tooltip.addPara(ba_stringhelper.getString("BRM", "BRM_explain_ai"), Misc.getGrayColor(), 10f);
+                        tooltip.addPara("...", Misc.getGrayColor(), 10f);
+                        tooltip.addPara("...", Misc.getGrayColor(), 10f);
+                        tooltip.addPara("...", Misc.getGrayColor(), 10f);
+                        tooltip.addPara("Override Completed...", Misc.getGrayColor(), 10f);
+                    }
                 }
             }
-        }, BRMUnderline, TooltipMakerAPI.TooltipLocation.LEFT);
+        }, BRMUnderline, TooltipMakerAPI.TooltipLocation.ABOVE);
         //>Consciousness
         float consciousness = ba_consciousmanager.getConsciousStat(this.currentPerson);
         int consciousnessY = (int) (0);
@@ -615,12 +658,15 @@ public class ba_uiplugin extends ba_uicommon {
             if(this.currentTabId.equals(WORKSHOP)) {
                 invButton.setShortcut(Keyboard.KEY_1, true);
             }
-            invButton.setButtonDisabledPressedSound("ui_button_pressed");
+//            invButton.setButtonDisabledPressedSound("ui_button_pressed");
             invButton.setPerformActionWhenDisabled(true);
             if(this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_INV)) {
                 invButton.setHighlightBrightness(0);
                 invButton.setFlashBrightness(0);
                 invButton.setButtonPressedSound(null);
+            }
+            if(isDisplayingOtherFleets) {
+                invButton.setEnabled(false);
             }
             ButtonAPI effectButton = btnTooltipContainer.addButton("Effect", null, Misc.getTextColor(), this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_EFFECT)?Misc.getDarkPlayerColor():Misc.getDarkPlayerColor().darker().darker(), Alignment.MID, CutStyle.NONE, invEffectBtnW, invEffectBtnH, 0);
             addButtonToList(effectButton, "workshop_tab:" + WORKSHOP_EFFECT);
@@ -628,7 +674,7 @@ public class ba_uiplugin extends ba_uicommon {
             if(this.currentTabId.equals(WORKSHOP)) {
                 effectButton.setShortcut(Keyboard.KEY_2, true);
             }
-            effectButton.setButtonDisabledPressedSound("ui_button_pressed");
+//            effectButton.setButtonDisabledPressedSound("ui_button_pressed");
             effectButton.setPerformActionWhenDisabled(true);
             if(this.currentWorkshopEffectOrInvTab.equals(WORKSHOP_EFFECT)) {
                 effectButton.setHighlightBrightness(0);
