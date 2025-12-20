@@ -23,6 +23,8 @@ public class lunaconfighelper implements LunaSettingsListener {
         addSetting("maxAcademyBRMTier", "int", null, bionicalterationplugin.maxAcademyBRMTier, 1, 100);
         addSetting("brmUpgradeBaseCredit", "int", null, bionicalterationplugin.academyBRMUpgradeBase, 0, 10000000);
         addSetting("brmUpgradePerTier", "int", null, bionicalterationplugin.brmUpgradePerTier, 1, 100);
+        addHeader("Bioform", null);
+        addSetting("bioformMaxLimbCount", "int", null, bionicalterationplugin.bioformMaxLimbCount, 1, 100);
 
         addHeader("debug", null);
         addSetting("isDevmode", "boolean", null, bionicalterationplugin.isDevmode);
@@ -50,6 +52,7 @@ public class lunaconfighelper implements LunaSettingsListener {
         bionicalterationplugin.maxAcademyBRMTier = (int) loadSetting("maxAcademyBRMTier", "int");
         bionicalterationplugin.academyBRMUpgradeBase = (int) loadSetting("brmUpgradeBaseCredit", "int");
         bionicalterationplugin.brmUpgradePerTier = (int) loadSetting("brmUpgradePerTier", "int");
+        bionicalterationplugin.bioformMaxLimbCount = (int) loadSetting("bioformMaxLimbCount", "int");
     }
 
     public static Object loadSetting(String var, String type) {

@@ -19,7 +19,6 @@ public class ba_overclock implements ba_overclockeffect{
     public boolean isApplyCaptainEffect;
     public boolean isApplyAdminEffect;
     public int upgradeCost;
-    //todo: add feature for this V
     public float prebuiltChance; //the chance of which the overclock is already applied when the bionic spawned in
     public float order;
     public ba_overclock() {};

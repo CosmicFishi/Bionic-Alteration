@@ -30,6 +30,9 @@
     "tooltip_brmUpgradeBaseCredit": "Base credit about you need for each tier increase, the upgrade cost formular is base cost x tier.",
     "name_brmUpgradePerTier": "BRM per tier",
     "tooltip_brmUpgradePerTier": "Determine the amount of BRM you get per BRM tier",
+    "header_Bioform": "Bioform",
+    "name_bioformMaxLimbCount": "Bioform Max Limb Count",
+    "tooltip_bioformMaxLimbCount": "Determine the maximum number of limbs you can configure with bioform menu",
     "header_BRM": "Bionic Right Management",
     "header_debug": "Debug",
     "name_isDevmode": "Dev mode"
