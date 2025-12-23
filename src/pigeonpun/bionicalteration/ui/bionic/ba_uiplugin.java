@@ -543,6 +543,53 @@ public class ba_uiplugin extends ba_uicommon {
         consciousnessLabel.setHighlightColor(ba_consciousmanager.getConsciousnessColorByLevel(consciousness));
         consciousnessLabel.getPosition().setSize(consciousnessW, 20);
         consciousnessLabel.getPosition().inTL(consciousnessX, consciousnessY);
+        personStatsTooltip.addTooltipToPrevious(new TooltipMakerAPI.TooltipCreator() {
+            @Override
+            public boolean isTooltipExpandable(Object tooltipParam) {
+                return false;
+            }
+
+            @Override
+            public float getTooltipWidth(Object tooltipParam) {
+                return 500;
+            }
+
+            @Override
+            public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                tooltip.addSectionHeading(ba_consciousmanager.getDisplayConditionLabel(currentPerson), Alignment.MID, 0);
+                List<ba_officermanager.ba_bionicAugmentedData> tempBioformData = new ArrayList<>();
+                for(ba_officermanager.ba_bionicAugmentedData data: currentBioformData) {
+                    if(data.bionicInstalled != null) {
+                        tempBioformData.add(data);
+                    }
+                }
+                tempBioformData.sort((o1, o2) -> o1.bionicInstalled.consciousnessCost < o2.bionicInstalled.consciousnessCost ? 1 : 0);
+                tooltip.beginGrid(getTooltipWidth(null)/4 - 10, 4);
+                tooltip.setGridRowHeight(25);
+                tooltip.setGridLabelColor(Misc.getBrightPlayerColor().darker());
+                tooltip.addToGrid(0, 0, "Name", "", Misc.getBrightPlayerColor().darker());
+                tooltip.addToGrid(2, 0, "", "Limb", Misc.getBrightPlayerColor().darker());
+                tooltip.addToGrid(3, 0, "", "Cost", Misc.getBrightPlayerColor().darker());
+                tooltip.setGridRowHeight(15);
+                if(tempBioformData.isEmpty()) {
+                    tooltip.setGridLabelColor(Misc.getGrayColor());
+                    tooltip.addToGrid(0, 1, "Empty", "", Misc.getGrayColor());
+                    tooltip.addToGrid(2, 1, "", "Empty", Misc.getGrayColor());
+                    tooltip.addToGrid(3, 1, "", "Empty", Misc.getGrayColor());
+                } else {
+                    int i = 1;
+                    for(ba_officermanager.ba_bionicAugmentedData data: tempBioformData) {
+                        tooltip.setGridLabelColor(data.bionicInstalled.displayColor);
+                        tooltip.addToGrid(0, i, "" + data.bionicInstalled.getName(), "", t);
+                        tooltip.setGridLabelColor(data.bionicInstalled.displayColor);
+                        tooltip.addToGrid(2, i, "", "" + data.limb.name, Misc.getGrayColor());
+                        tooltip.addToGrid(3, i, "", "" + ( (int) data.bionicInstalled.consciousnessCost), Misc.getNegativeHighlightColor());
+                        i++;
+                    }
+                }
+                tooltip.addGrid(pad);
+            }
+        }, TooltipMakerAPI.TooltipLocation.ABOVE);
         //>Conditions: tiled with conscious
         LabelAPI conditionLabel = personStatsTooltip.addPara("Condition: " + condition + "", 0);
         conditionLabel.setHighlight("" + condition);
