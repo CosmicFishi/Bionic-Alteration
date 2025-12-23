@@ -159,12 +159,6 @@ public class ba_uiplugin extends ba_uicommon {
         }
         refresh();
     }
-    public boolean checkIfCanOpenBioformWorkshop() {
-        if(this.dialog != null && this.dialog.getInteractionTarget() != null && this.dialog.getInteractionTarget().hasTag(ba_variablemanager.BA_OVERCLOCK_STATION_ENTITY_TAG)) {
-            return this.dialog.getInteractionTarget().getMemoryWithoutUpdate().contains("$upgraded_bioform") && this.dialog.getInteractionTarget().getMemoryWithoutUpdate().getBoolean("$upgraded_bioform");
-        }
-        return false;
-    }
     protected void displayOverviewWorkshop() {
 
         float pad = 5f;
@@ -770,7 +764,6 @@ public class ba_uiplugin extends ba_uicommon {
                         if(currentRemovingBionics.isEmpty()) {
                             tooltip.addPara("Empty", Misc.getGrayColor(), pad);
                         } else {
-                            //todo: display removing list
                             for(ba_officermanager.ba_bionicAugmentedData data: currentRemovingBionics) {
                                 tooltip.addPara("- %s", pad, data.bionicInstalled != null? data.bionicInstalled.displayColor: Misc.getHighlightColor(), data.bionicInstalled.getName());
                                 if(data.bionicInstalled.isAllowedRemoveAfterInstall) {
@@ -1233,8 +1226,6 @@ public class ba_uiplugin extends ba_uicommon {
                     }, bioformButton, TooltipMakerAPI.TooltipLocation.LEFT);
                 }
             }
-            //todo: implement feature to install bioform into AI ships
-            //todo: change workshop so it can install ^
             //--------Bionic table
             int tableX = (int) (leftColumn);
             int tableY = (int) (row1H + headerH);
@@ -2625,7 +2616,6 @@ public class ba_uiplugin extends ba_uicommon {
                         break;
                     }
                     if(tokens[1].equals("saveVariant")) {
-                        //todo: make pop up somehow or have a wait time on the confirm button ?
                         for(String limbId: this.bioformRemoveList) {
                             for (ba_officermanager.ba_bionicAugmentedData currentBioformDatum : new ArrayList<>(this.currentBioformData)) {
                                 if(currentBioformDatum.limb.limbId.equals(limbId)) {

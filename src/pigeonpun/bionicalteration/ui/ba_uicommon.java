@@ -107,6 +107,12 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         buttonMap.clear();
         componentMap.clear();
     }
+    public boolean checkIfCanOpenBioformWorkshop() {
+        if(this.dialog != null && this.dialog.getInteractionTarget() != null && this.dialog.getInteractionTarget().hasTag(ba_variablemanager.BA_OVERCLOCK_STATION_ENTITY_TAG)) {
+            return this.dialog.getInteractionTarget().getMemoryWithoutUpdate().contains("$upgraded_bioform") && this.dialog.getInteractionTarget().getMemoryWithoutUpdate().getBoolean("$upgraded_bioform");
+        }
+        return false;
+    }
     public void displayInventoryWorkshop(
             ba_component creatorComponent,
             String creatorComponentTooltip,
@@ -689,7 +695,6 @@ public class ba_uicommon implements CustomUIPanelPlugin {
         }
         //if AI person have not set up bioform data
         if((this.currentBioformData == null || this.currentBioformData.isEmpty()) && this.currentPerson.isAICore()) {
-            //todo: Only allow to make new bioform at the Bioform terminal
             LabelAPI loreBioformLabel = infoPersonBionicTooltipContainer.addPara("//SCANNING// ...  Synthetic bioform is not detected in current unit ...", 0f, ba_variablemanager.BA_OVERFORM_COLOR, "");
             loreBioformLabel.getPosition().inTL(tableW/2 - loreBioformLabel.computeTextWidth("//SCANNING// ...  Synthetic bioform is not detected in current unit")/2, tableH/2 - pad*3);
             LabelAPI createBioformLabel = infoPersonBionicTooltipContainer.addPara("//%s", 0f, ba_variablemanager.BA_OVERFORM_COLOR, "CREATE NEW BIOFORM ?");
@@ -702,7 +707,33 @@ public class ba_uicommon implements CustomUIPanelPlugin {
             ButtonAPI bioformButton = infoPersonBionicTooltipContainer.addButton("Confirm", null, Misc.getTextColor(), Misc.getPositiveHighlightColor().darker().darker(), Alignment.MID, CutStyle.TL_BR,  bioformBtnW, bioformBtnH, 0);
             bioformButton.getPosition().inTL(bioformBtnX - bioformBtnW/2,bioformBtnY);
             bioformButton.setShortcut(Keyboard.KEY_G, true);
-            addButtonToList(bioformButton, "bioform:createBaselineVariant");
+            if(!checkIfCanOpenBioformWorkshop()) {
+                bioformButton.setEnabled(false);
+                infoPersonBionicTooltipContainer.addTooltipTo(new TooltipMakerAPI.TooltipCreator() {
+                    @Override
+                    public boolean isTooltipExpandable(Object tooltipParam) {
+                        return false;
+                    }
+
+                    @Override
+                    public float getTooltipWidth(Object tooltipParam) {
+                        return 400;
+                    }
+
+                    @Override
+                    public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+                        tooltip.setParaFontOrbitron();
+                        tooltip.addPara("ERR///",0);
+                        tooltip.addPara("ERR///",0);
+                        tooltip.addPara("...",0);
+                        tooltip.addPara("%s NOT FOUND", 0, ba_variablemanager.BA_OVERFORM_COLOR, "BIOFORM TERMINAL");
+                        tooltip.addPara("...",0);
+                        tooltip.addPara("Visit nearby bionic stations for more information.", 0);
+                    }
+                }, bioformButton, TooltipMakerAPI.TooltipLocation.ABOVE);
+            } else {
+                addButtonToList(bioformButton, "bioform:createBaselineVariant");
+            }
         } else {
             this.currentBioformData = ba_limbmanager.sortBionicDataByLimbOrder(this.currentBioformData);
             int limbX = (int) pad;
