@@ -808,6 +808,8 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 if(ba_limbmanager.isLimbCentralLimb(augmentData.limb) && mode.equals("bioform")) {
                     areaChecker.setClickable(false);
                 }
+                //todo: UNREMOVABLE displace on table when change to removal mode.
+                //todo: add functionality to it
                 if(bionicSubMode.equals("EDIT") && augmentData.bionicInstalled == null) {
                     areaChecker.setEnabled(false);
                 }

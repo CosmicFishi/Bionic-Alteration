@@ -426,7 +426,7 @@ public class ba_uiplugin extends ba_uicommon {
                 }
             }, bioformButton, TooltipMakerAPI.TooltipLocation.LEFT);
         }
-        if (!isDisplayingOtherFleets) {
+        if (isDisplayingOtherFleets) {
             bioformButton.setEnabled(false);
         }
 
@@ -583,7 +583,7 @@ public class ba_uiplugin extends ba_uicommon {
                         tooltip.addToGrid(0, i, "" + data.bionicInstalled.getName(), "", t);
                         tooltip.setGridLabelColor(data.bionicInstalled.displayColor);
                         tooltip.addToGrid(2, i, "", "" + data.limb.name, Misc.getGrayColor());
-                        tooltip.addToGrid(3, i, "", "" + ( (int) data.bionicInstalled.consciousnessCost), Misc.getNegativeHighlightColor());
+                        tooltip.addToGrid(3, i, "", "" + (int) (data.bionicInstalled.consciousnessCost*100) + "%", Misc.getNegativeHighlightColor());
                         i++;
                     }
                 }
@@ -2324,7 +2324,7 @@ public class ba_uiplugin extends ba_uicommon {
     protected boolean removeBionicList(ba_officermanager.ba_bionicAugmentedData data) {
         boolean success = ba_officermanager.removeBionic(data.bionicInstalled, data.limb, this.currentPerson);
         if (!success) {
-            log.error("Can not remove " + this.currentRemovingBionic.getName() + " from person with tags: " + this.currentPerson.getTags().toString());
+            log.error("Can not remove " + data.bionicInstalled.getName() + " from person with tags: " + this.currentPerson.getTags().toString());
         }
 //        this.currentSelectedLimb = null;
         this.currentSelectedBionic = null;
@@ -2484,6 +2484,9 @@ public class ba_uiplugin extends ba_uicommon {
                     }
                     if(this.currentPerson != null) {
                         focusContent(WORKSHOP);
+                        if(!this.currentPerson.isAICore()) {
+                            this.currentWorkShopSubMode = this.SUB_WORKSHOP_MODE_NONE;
+                        }
                         needsReset = true;
                         break;
                     }
