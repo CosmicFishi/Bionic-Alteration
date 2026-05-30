@@ -810,6 +810,7 @@ public class ba_uicommon implements CustomUIPanelPlugin {
                 }
                 //todo: UNREMOVABLE displace on table when change to removal mode.
                 //todo: add functionality to it
+                //todo: overclock seems to shuffle the AI bioform ?
                 if(bionicSubMode.equals("EDIT") && augmentData.bionicInstalled == null) {
                     areaChecker.setEnabled(false);
                 }
