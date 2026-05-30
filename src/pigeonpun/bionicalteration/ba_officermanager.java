@@ -420,7 +420,8 @@ public class ba_officermanager {
         return anatomyList;
     }
     public static boolean checkIfPersonHasBionicMemoryData(PersonAPI person) {
-        return person.getMemoryWithoutUpdate().get(ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY) != null && person.getMemoryWithoutUpdate().get(ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY) instanceof ba_personmemorydata;
+        //replacing ba_variablemanager.BA_PERSON_MEMORY_BIONIC_KEY with $ba_bionic_key string due to report of save scumming lead to corrupting saves.
+        return person.getMemoryWithoutUpdate().get("$ba_bionic_key") != null && person.getMemoryWithoutUpdate().get("$ba_bionic_key") instanceof ba_personmemorydata;
     }
     /**
      * @param bionic the bionic going to be installed
